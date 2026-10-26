@@ -1,0 +1,158 @@
+name: Release installers
+
+# Builds DoCode installers for Windows, Linux and macOS and attaches them to a
+# GitHub Release. Trigger: push a tag such as `v1.0.0`, or run manually.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Large TypeScript build; the gulp script already sets 8 GB, keep npm in line.
+  NODE_OPTIONS: --max-old-space-size=8192
+  # Avoids GitHub API rate limits when the build downloads built-in extensions.
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        arch: [x64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # node-gyp needs distutils
+      - name: Install dependencies
+        run: npm ci
+      - name: Build app
+        run: |
+          npm run gulp core-ci
+          npm run gulp vscode-win32-${{ matrix.arch }}-min-ci
+      - name: Build installers
+        run: |
+          npm run gulp vscode-win32-${{ matrix.arch }}-inno-updater
+          npm run gulp vscode-win32-${{ matrix.arch }}-user-setup
+          npm run gulp vscode-win32-${{ matrix.arch }}-system-setup
+      - name: Collect artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item ".build/win32-${{ matrix.arch }}/user-setup/VSCodeSetup.exe" "dist/DoCode-UserSetup-${{ matrix.arch }}.exe"
+          Copy-Item ".build/win32-${{ matrix.arch }}/system-setup/VSCodeSetup.exe" "dist/DoCode-Setup-${{ matrix.arch }}.exe"
+          Compress-Archive -Path "../VSCode-win32-${{ matrix.arch }}/*" -DestinationPath "dist/DoCode-win32-${{ matrix.arch }}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docode-win32-${{ matrix.arch }}
+          path: dist/*
+
+  linux:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [x64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: System packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev \
+            libgtk-3-dev libnss3 libasound2 fakeroot rpm dpkg-dev
+      - name: Install dependencies
+        run: npm ci
+      - name: Build app
+        run: |
+          npm run gulp core-ci
+          npm run gulp vscode-linux-${{ matrix.arch }}-min-ci
+      - name: Build packages
+        run: |
+          npm run gulp vscode-linux-${{ matrix.arch }}-prepare-deb
+          npm run gulp vscode-linux-${{ matrix.arch }}-build-deb
+          npm run gulp vscode-linux-${{ matrix.arch }}-prepare-rpm
+          npm run gulp vscode-linux-${{ matrix.arch }}-build-rpm
+      - name: Collect artifacts
+        run: |
+          mkdir -p dist
+          find .build/linux -name '*.deb' -exec cp {} dist/DoCode-linux-${{ matrix.arch }}.deb \;
+          find .build/linux -name '*.rpm' -exec cp {} dist/DoCode-linux-${{ matrix.arch }}.rpm \;
+          tar -czf dist/DoCode-linux-${{ matrix.arch }}.tar.gz -C .. VSCode-linux-${{ matrix.arch }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docode-linux-${{ matrix.arch }}
+          path: dist/*
+
+  macos:
+    strategy:
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-14
+          - arch: x64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build app
+        run: |
+          npm run gulp core-ci
+          npm run gulp vscode-darwin-${{ matrix.arch }}-min-ci
+      - name: Package dmg and zip
+        run: |
+          mkdir -p dist
+          APP_DIR="../VSCode-darwin-${{ matrix.arch }}"
+          hdiutil create -volname "DoCode" -srcfolder "$APP_DIR/DoCode.app" -ov -format UDZO \
+            "dist/DoCode-darwin-${{ matrix.arch }}.dmg"
+          ditto -c -k --keepParent "$APP_DIR/DoCode.app" "dist/DoCode-darwin-${{ matrix.arch }}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docode-darwin-${{ matrix.arch }}
+          path: dist/*
+
+  bundle:
+    needs: [windows, linux, macos]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Arrange installer/ folders
+        run: |
+          mkdir -p installer/windows installer/macos installer/linux
+          mv dist/*win32* dist/DoCode-Setup-* dist/DoCode-UserSetup-* installer/windows/
+          mv dist/*darwin* installer/macos/
+          mv dist/*linux* installer/linux/
+          zip -r DoCode-installers.zip installer
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer
+          path: installer
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            installer/*/*
+            DoCode-installers.zip
+          generate_release_notes: true
