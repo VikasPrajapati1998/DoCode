@@ -48,7 +48,7 @@ jobs:
           Copy-Item ".build/win32-${{ matrix.arch }}/user-setup/DoCodeSetup.exe" "dist/DoCode-UserSetup-${{ matrix.arch }}.exe"
           Copy-Item ".build/win32-${{ matrix.arch }}/system-setup/DoCodeSetup.exe" "dist/DoCode-Setup-${{ matrix.arch }}.exe"
           Compress-Archive -Path "../DoCode-win32-${{ matrix.arch }}/*" -DestinationPath "dist/DoCode-win32-${{ matrix.arch }}.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: docode-win32-${{ matrix.arch }}
           path: dist/*
@@ -89,7 +89,7 @@ jobs:
           find .build/linux -name '*.deb' -exec cp {} dist/DoCode-linux-${{ matrix.arch }}.deb \;
           find .build/linux -name '*.rpm' -exec cp {} dist/DoCode-linux-${{ matrix.arch }}.rpm \;
           tar -czf dist/DoCode-linux-${{ matrix.arch }}.tar.gz -C .. DoCode-linux-${{ matrix.arch }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: docode-linux-${{ matrix.arch }}
           path: dist/*
@@ -124,7 +124,7 @@ jobs:
           hdiutil create -volname "DoCode" -srcfolder "$APP_DIR/DoCode.app" -ov -format UDZO \
             "dist/DoCode-darwin-${{ matrix.arch }}.dmg"
           ditto -c -k --keepParent "$APP_DIR/DoCode.app" "dist/DoCode-darwin-${{ matrix.arch }}.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: docode-darwin-${{ matrix.arch }}
           path: dist/*
@@ -144,7 +144,7 @@ jobs:
           mv dist/*darwin* installer/macos/
           mv dist/*linux* installer/linux/
           zip -r DoCode-installers.zip installer
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: installer
           path: installer
