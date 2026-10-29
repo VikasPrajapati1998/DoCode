@@ -1,6 +1,6 @@
 # Contributing
 
-This extension provides language features for working with Markdown files in vscode. This include the Markdown Preview, as well as IntelliSense, link validation, and other language features.
+This extension provides language features for working with Markdown files in docode. This include the Markdown Preview, as well as IntelliSense, link validation, and other language features.
 
 Almost all language features are implemented in the upstream [Markdown Language Service](https://github.com/microsoft/vscode-markdown-languageservice) and surfaced through the [Markdown Language Server](https://github.com/microsoft/vscode-markdown-languageserver), so many language feature changes belong in one of those repositories instead of this one.
 
@@ -28,24 +28,24 @@ Build outputs are written to `out/` (desktop), `dist/` (web), and `notebook-out/
 
 1. **Know the repositories and integration points**
 
-   `@vscode/markdown-editor` lives in the sibling `microsoft/vscode-packages` checkout at `vscode-team-tools/packages/markdown-editor`. In this repo, the integration is in `extensions/markdown-language-features`, especially `markdown-editor-src`, `src/preview/markdownEditorProvider.ts`, and `esbuild.markdownEditor.mts`. These instructions assume `vscode` and `vscode-packages` are sibling folders.
+   `@vscode/markdown-editor` lives in the sibling `microsoft/vscode-packages` checkout at `docode-team-tools/packages/markdown-editor`. In this repo, the integration is in `extensions/markdown-language-features`, especially `markdown-editor-src`, `src/preview/markdownEditorProvider.ts`, and `esbuild.markdownEditor.mts`. These instructions assume `docode` and `docode-packages` are sibling folders.
 
 2. **Build the package first**
 
-   The package exports files from `dist`, so VS Code does not consume its TypeScript sources directly. Run `pnpm build` once in `vscode-packages/vscode-team-tools/packages/markdown-editor`. For ongoing work, keep `pnpm dev` running there so `dist` stays up to date.
+   The package exports files from `dist`, so VS Code does not consume its TypeScript sources directly. Run `pnpm build` once in `docode-packages/docode-team-tools/packages/markdown-editor`. For ongoing work, keep `pnpm dev` running there so `dist` stays up to date.
 
 3. **Point the extension at your local package**
 
    **A. Override the webview build without changing installed dependencies**
 
-   Set `VSCODE_MARKDOWN_EDITOR_PATH` to the built local package directory in the shell running extension build/watch and manifest-generation commands:
+   Set `DOCODE_MARKDOWN_EDITOR_PATH` to the built local package directory in the shell running extension build/watch and manifest-generation commands:
 
    ```powershell
-   $env:VSCODE_MARKDOWN_EDITOR_PATH = 'D:\src\vscode-packages\vscode-team-tools\packages\markdown-editor'
+   $env:DOCODE_MARKDOWN_EDITOR_PATH = 'D:\src\docode-packages\docode-team-tools\packages\markdown-editor'
    npm run watch-markdown-editor
    ```
 
-   This overrides esbuild resolution for the package and all its exported subpaths, including CSS. Command contribution generation uses the same package selection. The watcher follows the selected package directory, including built output and source assets, but excludes its `node_modules` and `.git` directories. The build prints the selected real directory as `Markdown editor package override: ...`; `node_modules` still contains the installed dependency. No symlink, dependency-manifest edit, or lockfile edit is needed. Relative paths resolve against the build process's working directory. Invalid overrides fail explicitly instead of falling back to the installed package. Unset the variable to use the installed dependency (`Remove-Item Env:VSCODE_MARKDOWN_EDITOR_PATH` in PowerShell).
+   This overrides esbuild resolution for the package and all its exported subpaths, including CSS. Command contribution generation uses the same package selection. The watcher follows the selected package directory, including built output and source assets, but excludes its `node_modules` and `.git` directories. The build prints the selected real directory as `Markdown editor package override: ...`; `node_modules` still contains the installed dependency. No symlink, dependency-manifest edit, or lockfile edit is needed. Relative paths resolve against the build process's working directory. Invalid overrides fail explicitly instead of falling back to the installed package. Unset the variable to use the installed dependency (`Remove-Item Env:DOCODE_MARKDOWN_EDITOR_PATH` in PowerShell).
 
    This is a build-time override: standalone TypeScript checks and other tools still resolve types from the installed dependency. Use a dependency link instead if those tools must also consume unpublished local type changes. Generated command contributions may still update tracked manifests when the package's commands change.
 
@@ -56,20 +56,20 @@ Build outputs are written to `out/` (desktop), `dist/` (web), and `notebook-out/
    Set the dependency in `extensions/markdown-language-features/package.json` to:
 
    ```json
-   "@vscode/markdown-editor": "file:../../../vscode-packages/vscode-team-tools/packages/markdown-editor"
+   "@vscode/markdown-editor": "file:../../../docode-packages/docode-team-tools/packages/markdown-editor"
    ```
 
    Then run `npm install` in `extensions/markdown-language-features`. This updates `package.json` and `package-lock.json`, creates a local link, and survives later `npm install` runs. This is development-only; restore the dependency to a published version before submitting changes that should consume a release.
 
    **C. Use `npm link` for a temporary setup**
 
-   In `vscode-packages/vscode-team-tools/packages/markdown-editor`, run:
+   In `docode-packages/docode-team-tools/packages/markdown-editor`, run:
 
    ```bash
    npm link
    ```
 
-   In `vscode\extensions\markdown-language-features`, run:
+   In `docode\extensions\markdown-language-features`, run:
 
    ```bash
    npm link @vscode/markdown-editor
@@ -83,7 +83,7 @@ Build outputs are written to `out/` (desktop), `dist/` (web), and `notebook-out/
    node -e "console.log(require('node:fs').realpathSync('node_modules/@vscode/markdown-editor'))"
    ```
 
-   The output should be the local `vscode-packages/vscode-team-tools/packages/markdown-editor` directory.
+   The output should be the local `docode-packages/docode-team-tools/packages/markdown-editor` directory.
 
 4. **Rebuild and run VS Code**
 
@@ -93,7 +93,7 @@ Build outputs are written to `out/` (desktop), `dist/` (web), and `notebook-out/
 
 5. **Update editor commands**
 
-   Markdown editor commands and their default keybindings are defined in `vscode-packages/vscode-team-tools/packages/markdown-editor/src/editorCommands.ts`. Do not manually edit entries marked with `"$generated": true` in this extension's `package.json` or their titles in `package.nls.json`: `npm run build-markdown-editor` and `npm run watch-markdown-editor` regenerate them while preserving manual entries. Run `npm run check-markdown-editor-package-json` to verify that the checked-in manifests are current without modifying them.
+   Markdown editor commands and their default keybindings are defined in `docode-packages/docode-team-tools/packages/markdown-editor/src/editorCommands.ts`. Do not manually edit entries marked with `"$generated": true` in this extension's `package.json` or their titles in `package.nls.json`: `npm run build-markdown-editor` and `npm run watch-markdown-editor` regenerate them while preserving manual entries. Run `npm run check-markdown-editor-package-json` to verify that the checked-in manifests are current without modifying them.
 
 ### Embedded code-block editor presentation
 
@@ -138,7 +138,7 @@ The rich editor opts into `customTextEditorNavigation`. The workbench reuses the
 
 Keep navigation independent of editing mode. Breadcrumb previews must preserve focus and selection, canceled previews must not override newer navigation, and opening a symbol to the side must retain the custom editor type. Navigation regression coverage lives in `src/test/markdownEditorNavigation.test.ts` and `src/test/markdownEditorBridge.test.ts`, with workbench coverage in the custom-editor navigation and document-symbol Outline suites.
 
-Chat also consumes this per-panel navigation selection as implicit context, including in the Agents window. It attaches a range in the underlying Markdown document, not rendered HTML, and respects the existing implicit-context settings and ignored-file checks. A collapsed or cleared selection falls back to the document URI. No separate Markdown chat bridge is needed. Workbench regression coverage lives in `src/vs/workbench/contrib/chat/test/browser/attachments/chatImplicitContext.test.ts`.
+Chat also consumes this per-panel navigation selection as implicit context, including in the Agents window. It attaches a range in the underlying Markdown document, not rendered HTML, and respects the existing implicit-context settings and ignored-file checks. A collapsed or cleared selection falls back to the document URI. No separate Markdown chat bridge is needed. Workbench regression coverage lives in `src/do/workbench/contrib/chat/test/browser/attachments/chatImplicitContext.test.ts`.
 
 Selection, document, and webview changes share a 500 ms debounce before refreshing chat context, matching code-editor behavior. Navigation availability changes refresh immediately, and registering a chat widget refreshes existing widgets as well so a superseded asynchronous refresh cannot leave them stale.
 
@@ -194,14 +194,14 @@ npm link vscode-markdown-languageservice
 npm run compile
 
 
-# And finally in vscode, link in the service
+# And finally in docode, link in the service
 cd extensions/markdown-language-features
 npm link vscode-markdown-languageserver
 ```
 
 ## Related Code
 
-Additional Markdown features in vscode are split across several built-in extensions. Depending on your change, the right place to make it may be one of these:
+Additional Markdown features in docode are split across several built-in extensions. Depending on your change, the right place to make it may be one of these:
 
 - [`markdown-basics`](../markdown-basics) — Markdown language basics: the TextMate grammar, language configuration, and snippets. Change this for syntax highlighting and tokenization.
 

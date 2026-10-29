@@ -3,21 +3,21 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { initializeMermaidWebview } from './mermaidWebview';
-import { VsCodeApi } from './vscodeApi';
+import { VsCodeApi } from './docodeApi';
 
 declare function acquireVsCodeApi(): VsCodeApi;
-const vscode = acquireVsCodeApi();
+const docode = acquireVsCodeApi();
 
 
 async function main() {
-	await initializeMermaidWebview(vscode);
+	await initializeMermaidWebview(docode);
 
 	// Set up the "Open in Editor" button
 	const openBtn = document.querySelector('.open-in-editor-btn');
 	if (openBtn) {
 		openBtn.addEventListener('click', e => {
 			e.stopPropagation();
-			vscode.postMessage({ type: 'openInEditor' });
+			docode.postMessage({ type: 'openInEditor' });
 		});
 	}
 }

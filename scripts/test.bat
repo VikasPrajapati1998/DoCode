@@ -13,7 +13,7 @@ set NAMESHORT=%NAMESHORT:"=%.exe
 set CODE=".build\electron\%NAMESHORT%"
 
 :: Download Electron if needed
-if "%VSCODE_SKIP_PRELAUNCH%"=="" (
+if "%DOCODE_SKIP_PRELAUNCH%"=="" (
 	call :ensure_electron
 	if errorlevel 1 exit /b 1
 )
@@ -34,7 +34,7 @@ if %errorlevel% == 255 set errorlevel=0
 exit /b %errorlevel%
 
 :ensure_electron
-if defined VSCODE_FORCE_PRELAUNCH goto download_electron
+if defined DOCODE_FORCE_PRELAUNCH goto download_electron
 if not exist %CODE% goto download_electron
 if not exist ".build\electron\version" goto download_electron
 

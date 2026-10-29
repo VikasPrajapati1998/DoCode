@@ -11,7 +11,7 @@ export default new class NoNlsInStandaloneEditorRule implements eslint.Rule.Rule
 
 	readonly meta: eslint.Rule.RuleMetaData = {
 		messages: {
-			noNls: 'Not allowed to import vs/nls in standalone editor modules. Use standaloneStrings.ts'
+			noNls: 'Not allowed to import do/nls in standalone editor modules. Use standaloneStrings.ts'
 		},
 		schema: false,
 	};
@@ -20,11 +20,11 @@ export default new class NoNlsInStandaloneEditorRule implements eslint.Rule.Rule
 
 		const fileName = context.filename;
 		if (
-			/vs(\/|\\)editor(\/|\\)standalone(\/|\\)/.test(fileName)
-			|| /vs(\/|\\)editor(\/|\\)common(\/|\\)standalone(\/|\\)/.test(fileName)
-			|| /vs(\/|\\)editor(\/|\\)editor.api/.test(fileName)
-			|| /vs(\/|\\)editor(\/|\\)editor.main/.test(fileName)
-			|| /vs(\/|\\)editor(\/|\\)editor.worker.start/.test(fileName)
+			/do(\/|\\)editor(\/|\\)standalone(\/|\\)/.test(fileName)
+			|| /do(\/|\\)editor(\/|\\)common(\/|\\)standalone(\/|\\)/.test(fileName)
+			|| /do(\/|\\)editor(\/|\\)editor.api/.test(fileName)
+			|| /do(\/|\\)editor(\/|\\)editor.main/.test(fileName)
+			|| /do(\/|\\)editor(\/|\\)editor.worker.start/.test(fileName)
 		) {
 			return createImportRuleListener((node, path) => {
 				// resolve relative paths
@@ -33,7 +33,7 @@ export default new class NoNlsInStandaloneEditorRule implements eslint.Rule.Rule
 				}
 
 				if (
-					/vs(\/|\\)nls/.test(path)
+					/do(\/|\\)nls/.test(path)
 				) {
 					context.report({
 						loc: node.loc,

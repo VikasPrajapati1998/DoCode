@@ -3,20 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type * as Proto from '../../tsServer/protocol/protocol';
 import * as PConst from '../../tsServer/protocol/protocol.const';
 
 export function snippetForFunctionCall(
-	item: { insertText?: string | vscode.SnippetString; label: string },
+	item: { insertText?: string | docode.SnippetString; label: string },
 	displayParts: ReadonlyArray<Proto.SymbolDisplayPart>
-): { snippet: vscode.SnippetString; parameterCount: number } {
+): { snippet: docode.SnippetString; parameterCount: number } {
 	if (item.insertText && typeof item.insertText !== 'string') {
 		return { snippet: item.insertText, parameterCount: 0 };
 	}
 
 	const parameterListParts = getParameterListParts(displayParts);
-	const snippet = new vscode.SnippetString();
+	const snippet = new docode.SnippetString();
 	snippet.appendText(`${item.insertText || item.label}(`);
 	appendJoinedPlaceholders(snippet, parameterListParts.parts, ', ');
 	if (parameterListParts.hasOptionalParameters) {
@@ -28,7 +28,7 @@ export function snippetForFunctionCall(
 }
 
 function appendJoinedPlaceholders(
-	snippet: vscode.SnippetString,
+	snippet: docode.SnippetString,
 	parts: ReadonlyArray<Proto.SymbolDisplayPart>,
 	joiner: string
 ) {

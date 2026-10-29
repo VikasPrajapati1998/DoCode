@@ -16,9 +16,9 @@
 		"../../src/**/common/**/*.ts",
 		"../../src/**/browser/**/*.ts",
 		"../../src/typings/*.d.ts",
-		"../../src/vs/monaco.d.ts",
-		"../../src/vscode-dts/vscode.proposed.*.d.ts",
-		"../../src/vscode-dts/vscode.d.ts",
+		"../../src/do/monaco.d.ts",
+		"../../src/docode-dts/docode.proposed.*.d.ts",
+		"../../src/docode-dts/docode.d.ts",
 		"../../node_modules/@webgpu/types/dist/index.d.ts",
 		"../../node_modules/@types/trusted-types/index.d.ts",
 		"../../node_modules/@types/wicg-file-system-access/index.d.ts"

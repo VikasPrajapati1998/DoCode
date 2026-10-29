@@ -16,14 +16,14 @@ export function setup(logger: Logger) {
 			return opts;
 		});
 
-		it.skip('install and enable vscode-smoketest-check extension', async function () {
+		it.skip('install and enable docode-smoketest-check extension', async function () {
 			const app = this.app as Application;
 
 			await app.workbench.extensions.installExtension('ms-vscode.vscode-smoketest-check', true);
 
 			// Close extension editor because keybindings dispatch is not working when web views are opened and focused
 			// https://github.com/microsoft/vscode/issues/110276
-			await app.workbench.extensions.closeExtension('vscode-smoketest-check');
+			await app.workbench.extensions.closeExtension('docode-smoketest-check');
 
 			await app.workbench.quickaccess.runCommand('Smoke Test Check', { match: 'exactLabel' });
 		});

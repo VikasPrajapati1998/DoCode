@@ -21,17 +21,17 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 	for (const name of ['dark', 'light']) {
 		const theme = JSON5.parse(await readFile(fileURLToPath(new URL(`../../theme-defaults/themes/${name}_modern.json`, import.meta.url)), 'utf8')) as { colors: Record<string, string> };
 		const tokens = ['editor.foreground', 'editor.background', 'descriptionForeground', 'progressBar.background', 'focusBorder']
-			.map(token => `--vscode-${token.replaceAll('.', '-')}: ${theme.colors[token]};`).join(' ');
+			.map(token => `--docode-${token.replaceAll('.', '-')}: ${theme.colors[token]};`).join(' ');
 		const track = name === 'dark' ? 'rgba(121, 121, 121, 0.4)' : 'rgba(100, 100, 100, 0.4)';
-		themes[name] = `${tokens} --vscode-scrollbarSlider-background: ${track}; --vscode-font-size: 13px; --vscode-font-family: "Segoe UI"; color-scheme: ${name};`;
+		themes[name] = `${tokens} --docode-scrollbarSlider-background: ${track}; --docode-font-size: 13px; --docode-font-family: "Segoe UI"; color-scheme: ${name};`;
 	}
 	const bundle = await esbuild.build({
 		stdin: {
 			resolveDir: extensionDir,
 			loader: 'ts',
 			contents: `
-				import { EditorModel, EditorView, StringValue } from '@vscode/markdown-editor';
-				import { VirtualizedIframeEmbeddedEditorFactory } from '@vscode/markdown-editor/web-editors';
+				import { EditorModel, EditorView, StringValue } from '@docode/markdown-editor';
+				import { VirtualizedIframeEmbeddedEditorFactory } from '@docode/markdown-editor/web-editors';
 				import { createTaskProgressProvider } from './markdown-editor-src/taskProgress/taskProgressProvider';
 				import { codeBlockEditorTheme } from './markdown-editor-src/codeBlockEditorTheme';
 				const model = new EditorModel();
@@ -43,7 +43,7 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 				let view: EditorView | undefined;
 				const themes = ${JSON.stringify(themes)};
 				document.documentElement.style.cssText = themes.dark;
-				document.body.dataset.vscodeThemeKind = 'vscode-dark';
+				document.body.dataset.docodeThemeKind = 'docode-dark';
 				const factory = new VirtualizedIframeEmbeddedEditorFactory({
 					providers: [provider],
 					scriptNonce: 'task-progress-test',
@@ -55,7 +55,7 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 					embeddedCodeEditorFactory: factory,
 					onToggleCheckbox: (item, checked) => model.setTaskCheckboxChecked(item, checked),
 				});
-				view.element.classList.add('md-theme-vscode-default');
+				view.element.classList.add('md-theme-docode-default');
 				document.getElementById('editor').appendChild(view.element);
 				window.taskProgressTest = {
 					setSource: text => model.replaceSourceText(new StringValue(text)),
@@ -64,7 +64,7 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 					refreshProviders: () => factory.updateProviders([provider]),
 					setTheme: name => {
 						document.documentElement.style.cssText = themes[name];
-						document.body.dataset.vscodeThemeKind = 'vscode-' + name;
+						document.body.dataset.docodeThemeKind = 'docode-' + name;
 					},
 					dispose: () => { view.dispose(); factory.dispose(); },
 				};
@@ -82,8 +82,8 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 			},
 		}],
 	});
-	const editorCss = await readFile(fileURLToPath(import.meta.resolve('@vscode/markdown-editor/editor.css')), 'utf8');
-	const themeCss = await readFile(fileURLToPath(import.meta.resolve('@vscode/markdown-editor/themes/vscode-default.css')), 'utf8');
+	const editorCss = await readFile(fileURLToPath(import.meta.resolve('@docode/markdown-editor/editor.css')), 'utf8');
+	const themeCss = await readFile(fileURLToPath(import.meta.resolve('@docode/markdown-editor/themes/docode-default.css')), 'utf8');
 	const context = await chromium.launchPersistentContext('.task-progress-browser', {
 		channel: process.platform === 'win32' ? 'msedge' : undefined,
 		headless: true,
@@ -105,7 +105,7 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 		}
 		return route.fulfill({
 			contentType: 'text/html',
-			body: `<html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-task-progress-test'; style-src 'unsafe-inline'; frame-src 'self';"><style>${editorCss} ${themeCss} body { background: var(--vscode-editor-background); }</style></head><body><div id="editor"></div><script nonce="task-progress-test" src="/test.js"></script></body></html>`,
+			body: `<html><head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-task-progress-test'; style-src 'unsafe-inline'; frame-src 'self';"><style>${editorCss} ${themeCss} body { background: var(--docode-editor-background); }</style></head><body><div id="editor"></div><script nonce="task-progress-test" src="/test.js"></script></body></html>`,
 		});
 	});
 	try {
@@ -172,10 +172,10 @@ it('renders isolated progress widgets with live checkbox/source updates, localiz
 		await page.waitForFunction(() => Array.from(document.querySelectorAll('iframe')).every(frame =>
 			frame.contentDocument?.body.dataset.themeTest === 'same-document'
 			&& getComputedStyle(frame.contentDocument.body).color === 'rgb(204, 204, 204)'));
-		await page.evaluate(() => { document.body.dataset.vscodeThemeKind = 'vscode-high-contrast-light'; });
+		await page.evaluate(() => { document.body.dataset.docodeThemeKind = 'docode-high-contrast-light'; });
 		await page.waitForFunction(() => Array.from(document.querySelectorAll('iframe')).every(frame =>
 			frame.contentDocument && getComputedStyle(frame.contentDocument.documentElement).colorScheme === 'light'));
-		await page.evaluate(() => { document.body.dataset.vscodeThemeKind = 'vscode-high-contrast'; });
+		await page.evaluate(() => { document.body.dataset.docodeThemeKind = 'docode-high-contrast'; });
 		await page.waitForFunction(() => Array.from(document.querySelectorAll('iframe')).every(frame =>
 			frame.contentDocument && getComputedStyle(frame.contentDocument.documentElement).colorScheme === 'dark'));
 		await page.frames().find(frame => frame.parentFrame())!.locator('#fill').evaluate(fill => {

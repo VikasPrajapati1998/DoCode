@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { AccountInfo, AuthenticationResult, AuthError, ClientAuthError, ClientAuthErrorCodes, PublicClientApplication, ServerError } from '@azure/msal-node';
-import { AuthenticationChallenge, AuthenticationConstraint, AuthenticationGetSessionOptions, AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationProviderSessionOptions, AuthenticationSession, AuthenticationSessionAccountInformation, CancellationError, env, EventEmitter, ExtensionContext, ExtensionKind, l10n, LogOutputChannel, Uri, window } from 'vscode';
+import { AuthenticationChallenge, AuthenticationConstraint, AuthenticationGetSessionOptions, AuthenticationProvider, AuthenticationProviderAuthenticationSessionsChangeEvent, AuthenticationProviderSessionOptions, AuthenticationSession, AuthenticationSessionAccountInformation, CancellationError, env, EventEmitter, ExtensionContext, ExtensionKind, l10n, LogOutputChannel, Uri, window } from 'docode';
 import { Environment } from '@azure/ms-rest-azure-env';
 import { CachedPublicClientApplicationManager } from './publicClientCache';
 import { getNativeBrokerOptions } from './cachedPublicClientApplication';
@@ -243,7 +243,7 @@ export class MsalAuthProvider implements AuthenticationProvider {
 			}
 		};
 
-		const callbackUri = await env.asExternalUri(Uri.parse(`${env.uriScheme}://vscode.microsoft-authentication`));
+		const callbackUri = await env.asExternalUri(Uri.parse(`${env.uriScheme}://docode.microsoft-authentication`));
 		const flows = getMsalFlows({
 			extensionHost: this._context.extension.extensionKind === ExtensionKind.UI ? ExtensionHost.Local : ExtensionHost.Remote,
 			supportedClient: isSupportedClient(callbackUri),
@@ -381,7 +381,7 @@ export class MsalAuthProvider implements AuthenticationProvider {
 			}
 		};
 
-		const callbackUri = await env.asExternalUri(Uri.parse(`${env.uriScheme}://vscode.microsoft-authentication`));
+		const callbackUri = await env.asExternalUri(Uri.parse(`${env.uriScheme}://docode.microsoft-authentication`));
 		const flows = getMsalFlows({
 			extensionHost: this._context.extension.extensionKind === ExtensionKind.UI ? ExtensionHost.Local : ExtensionHost.Remote,
 			isBrokerSupported: cachedPca.isBrokerAvailable,

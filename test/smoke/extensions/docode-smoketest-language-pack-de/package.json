@@ -1,0 +1,27 @@
+{
+	"name": "docode-smoketest-language-pack-de",
+	"displayName": "Smoke Test German Language Pack",
+	"description": "German language pack fixture for smoke testing",
+	"version": "0.0.1",
+	"publisher": "docode",
+	"license": "MIT",
+	"private": true,
+	"engines": {
+		"docode": "^1.55.0"
+	},
+	"contributes": {
+		"localizations": [
+			{
+				"languageId": "de",
+				"languageName": "German",
+				"localizedLanguageName": "Deutsch",
+				"translations": [
+					{
+						"id": "docode",
+						"path": "./translations/main.i18n.json"
+					}
+				]
+			}
+		]
+	}
+}

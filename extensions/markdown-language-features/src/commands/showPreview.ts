@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command } from '../commandManager';
 import { DynamicPreviewSettings, MarkdownPreviewManager } from '../preview/previewManager';
 import { TelemetryReporter } from '../telemetryReporter';
@@ -17,36 +17,36 @@ interface ShowPreviewSettings {
 async function showPreview(
 	webviewManager: MarkdownPreviewManager,
 	telemetryReporter: TelemetryReporter,
-	uri: vscode.Uri | undefined,
+	uri: docode.Uri | undefined,
 	previewSettings: ShowPreviewSettings,
 ): Promise<any> {
 	let resource = uri;
-	if (!(resource instanceof vscode.Uri)) {
-		if (vscode.window.activeTextEditor) {
+	if (!(resource instanceof docode.Uri)) {
+		if (docode.window.activeTextEditor) {
 			// we are relaxed and don't check for markdown files
-			resource = vscode.window.activeTextEditor.document.uri;
+			resource = docode.window.activeTextEditor.document.uri;
 		}
 	}
 
-	if (!(resource instanceof vscode.Uri)) {
-		if (!vscode.window.activeTextEditor) {
+	if (!(resource instanceof docode.Uri)) {
+		if (!docode.window.activeTextEditor) {
 			// this is most likely toggling the preview
-			return vscode.commands.executeCommand('markdown.showSource');
+			return docode.commands.executeCommand('markdown.showSource');
 		}
 		// nothing found that could be shown or toggled
 		return;
 	}
 
-	const resourceColumn = vscode.window.activeTextEditor?.viewColumn || vscode.ViewColumn.One;
+	const resourceColumn = docode.window.activeTextEditor?.viewColumn || docode.ViewColumn.One;
 	webviewManager.openDynamicPreview(resource, {
 		resourceColumn: resourceColumn,
-		previewColumn: previewSettings.sideBySide ? vscode.ViewColumn.Beside : resourceColumn,
+		previewColumn: previewSettings.sideBySide ? docode.ViewColumn.Beside : resourceColumn,
 		locked: !!previewSettings.locked
 	});
 
 	telemetryReporter.sendTelemetryEvent('openPreview', {
 		where: previewSettings.sideBySide ? 'sideBySide' : 'inPlace',
-		how: (uri instanceof vscode.Uri) ? 'action' : 'pallete'
+		how: (uri instanceof docode.Uri) ? 'action' : 'pallete'
 	});
 }
 
@@ -64,7 +64,7 @@ export class ShowPreviewCommand implements Command {
 		this.#telemetryReporter = telemetryReporter;
 	}
 
-	public execute(mainUri?: vscode.Uri, allUris?: vscode.Uri[], previewSettings?: DynamicPreviewSettings) {
+	public execute(mainUri?: docode.Uri, allUris?: docode.Uri[], previewSettings?: DynamicPreviewSettings) {
 		for (const uri of Array.isArray(allUris) ? allUris : [mainUri]) {
 			showPreview(this.#webviewManager, this.#telemetryReporter, uri, {
 				sideBySide: false,
@@ -88,7 +88,7 @@ export class ShowPreviewToSideCommand implements Command {
 		this.#telemetryReporter = telemetryReporter;
 	}
 
-	public execute(uri?: vscode.Uri, previewSettings?: DynamicPreviewSettings) {
+	public execute(uri?: docode.Uri, previewSettings?: DynamicPreviewSettings) {
 		showPreview(this.#webviewManager, this.#telemetryReporter, uri, {
 			sideBySide: true,
 			locked: previewSettings?.locked
@@ -111,7 +111,7 @@ export class ShowLockedPreviewToSideCommand implements Command {
 		this.#telemetryReporter = telemetryReporter;
 	}
 
-	public execute(uri?: vscode.Uri) {
+	public execute(uri?: docode.Uri) {
 		showPreview(this.#webviewManager, this.#telemetryReporter, uri, {
 			sideBySide: true,
 			locked: true

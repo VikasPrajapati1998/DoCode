@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { validate } from './util';
 
 export function fetchEditPoint(direction: string): void {
-	if (!validate() || !vscode.window.activeTextEditor) {
+	if (!validate() || !docode.window.activeTextEditor) {
 		return;
 	}
-	const editor = vscode.window.activeTextEditor;
+	const editor = docode.window.activeTextEditor;
 
-	const newSelections: vscode.Selection[] = [];
+	const newSelections: docode.Selection[] = [];
 	editor.selections.forEach(selection => {
 		const updatedSelection = direction === 'next' ? nextEditPoint(selection, editor) : prevEditPoint(selection, editor);
 		newSelections.push(updatedSelection);
@@ -21,7 +21,7 @@ export function fetchEditPoint(direction: string): void {
 	editor.revealRange(editor.selections[editor.selections.length - 1]);
 }
 
-function nextEditPoint(selection: vscode.Selection, editor: vscode.TextEditor): vscode.Selection {
+function nextEditPoint(selection: docode.Selection, editor: docode.TextEditor): docode.Selection {
 	for (let lineNum = selection.anchor.line; lineNum < editor.document.lineCount; lineNum++) {
 		const updatedSelection = findEditPoint(lineNum, editor, selection.anchor, 'next');
 		if (updatedSelection) {
@@ -31,7 +31,7 @@ function nextEditPoint(selection: vscode.Selection, editor: vscode.TextEditor): 
 	return selection;
 }
 
-function prevEditPoint(selection: vscode.Selection, editor: vscode.TextEditor): vscode.Selection {
+function prevEditPoint(selection: docode.Selection, editor: docode.TextEditor): docode.Selection {
 	for (let lineNum = selection.anchor.line; lineNum >= 0; lineNum--) {
 		const updatedSelection = findEditPoint(lineNum, editor, selection.anchor, 'prev');
 		if (updatedSelection) {
@@ -42,12 +42,12 @@ function prevEditPoint(selection: vscode.Selection, editor: vscode.TextEditor): 
 }
 
 
-function findEditPoint(lineNum: number, editor: vscode.TextEditor, position: vscode.Position, direction: string): vscode.Selection | undefined {
+function findEditPoint(lineNum: number, editor: docode.TextEditor, position: docode.Position, direction: string): docode.Selection | undefined {
 	const line = editor.document.lineAt(lineNum);
 	let lineContent = line.text;
 
 	if (lineNum !== position.line && line.isEmptyOrWhitespace && lineContent.length) {
-		return new vscode.Selection(lineNum, lineContent.length, lineNum, lineContent.length);
+		return new docode.Selection(lineNum, lineContent.length, lineNum, lineContent.length);
 	}
 
 	if (lineNum === position.line && direction === 'prev') {
@@ -67,7 +67,7 @@ function findEditPoint(lineNum: number, editor: vscode.TextEditor, position: vsc
 	}
 
 	if (winner > -1) {
-		return new vscode.Selection(lineNum, winner + 1, lineNum, winner + 1);
+		return new docode.Selection(lineNum, winner + 1, lineNum, winner + 1);
 	}
 	return;
 }

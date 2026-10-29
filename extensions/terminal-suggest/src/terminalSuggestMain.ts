@@ -6,7 +6,7 @@
 import { ExecOptionsWithStringEncoding } from 'child_process';
 import * as fs from 'fs';
 import { basename, delimiter } from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import azdSpec from './completions/azd';
 import cdSpec from './completions/cd';
 import codeCompletionSpec from './completions/code';
@@ -48,7 +48,7 @@ const cachedGlobals: Map<string, ShellGlobalsCacheEntryWithMeta> = new Map();
 const inflightRequests: Map<string, Promise<ICompletionResource[] | undefined>> = new Map();
 let pathExecutableCache: PathExecutableCache;
 const CACHE_KEY = 'terminalSuggestGlobalsCacheV2';
-let globalStorageUri: vscode.Uri;
+let globalStorageUri: docode.Uri;
 const CACHE_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 function getCacheKey(machineId: string, remoteAuthority: string | undefined, shellType: TerminalShellType): string {
@@ -202,11 +202,11 @@ async function writeGlobalsCache(): Promise<void> {
 	}
 	try {
 		// Ensure the directory exists
-		const terminalSuggestDir = vscode.Uri.joinPath(globalStorageUri, 'terminal-suggest');
-		await vscode.workspace.fs.createDirectory(terminalSuggestDir);
-		const cacheFile = vscode.Uri.joinPath(terminalSuggestDir, `${CACHE_KEY}.json`);
+		const terminalSuggestDir = docode.Uri.joinPath(globalStorageUri, 'terminal-suggest');
+		await docode.workspace.fs.createDirectory(terminalSuggestDir);
+		const cacheFile = docode.Uri.joinPath(terminalSuggestDir, `${CACHE_KEY}.json`);
 		const data = Buffer.from(JSON.stringify(obj), 'utf8');
-		await vscode.workspace.fs.writeFile(cacheFile, data);
+		await docode.workspace.fs.writeFile(cacheFile, data);
 	} catch (err) {
 		console.error('Failed to write terminal suggest globals cache:', err);
 	}
@@ -218,9 +218,9 @@ async function readGlobalsCache(): Promise<void> {
 		return;
 	}
 	try {
-		const terminalSuggestDir = vscode.Uri.joinPath(globalStorageUri, 'terminal-suggest');
-		const cacheFile = vscode.Uri.joinPath(terminalSuggestDir, `${CACHE_KEY}.json`);
-		const data = await vscode.workspace.fs.readFile(cacheFile);
+		const terminalSuggestDir = docode.Uri.joinPath(globalStorageUri, 'terminal-suggest');
+		const cacheFile = docode.Uri.joinPath(terminalSuggestDir, `${CACHE_KEY}.json`);
+		const data = await docode.workspace.fs.readFile(cacheFile);
 		const obj = JSON.parse(data.toString()) as Record<string, ShellGlobalsCacheEntryWithMeta>;
 		if (obj) {
 			for (const key of Object.keys(obj)) {
@@ -229,7 +229,7 @@ async function readGlobalsCache(): Promise<void> {
 		}
 	} catch (err) {
 		// File might not exist yet, which is expected on first run
-		if (err instanceof vscode.FileSystemError && err.code === 'FileNotFound') {
+		if (err instanceof docode.FileSystemError && err.code === 'FileNotFound') {
 			// This is expected on first run
 			return;
 		}
@@ -239,7 +239,7 @@ async function readGlobalsCache(): Promise<void> {
 
 
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: docode.ExtensionContext) {
 	pathExecutableCache = new PathExecutableCache();
 	context.subscriptions.push(pathExecutableCache);
 	let currentTerminalEnv: ITerminalEnvironment = process.env;
@@ -248,11 +248,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	await readGlobalsCache();
 
 	// Get a machineId for this install (persisted per machine, not synced)
-	const machineId = await vscode.env.machineId;
-	const remoteAuthority = vscode.env.remoteName;
+	const machineId = await docode.env.machineId;
+	const remoteAuthority = docode.env.remoteName;
 
-	context.subscriptions.push(vscode.window.registerTerminalCompletionProvider({
-		async provideTerminalCompletions(terminal: vscode.Terminal, terminalContext: vscode.TerminalCompletionContext, token: vscode.CancellationToken): Promise<vscode.TerminalCompletionItem[] | vscode.TerminalCompletionList | undefined> {
+	context.subscriptions.push(docode.window.registerTerminalCompletionProvider({
+		async provideTerminalCompletions(terminal: docode.Terminal, terminalContext: docode.TerminalCompletionContext, token: docode.CancellationToken): Promise<docode.TerminalCompletionItem[] | docode.TerminalCompletionList | undefined> {
 			currentTerminalEnv = terminal.shellIntegration?.env?.value ?? process.env;
 			if (token.isCancellationRequested) {
 				console.debug('#terminalCompletions token cancellation requested');
@@ -300,15 +300,15 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (terminal.shellIntegration?.env) {
 				const homeDirCompletion = result.items.find(i => i.label === '~');
 				if (homeDirCompletion && terminal.shellIntegration.env?.value?.HOME) {
-					homeDirCompletion.documentation = getFriendlyResourcePath(vscode.Uri.file(terminal.shellIntegration.env.value.HOME), pathSeparator, vscode.TerminalCompletionItemKind.Folder);
-					homeDirCompletion.kind = vscode.TerminalCompletionItemKind.Folder;
+					homeDirCompletion.documentation = getFriendlyResourcePath(docode.Uri.file(terminal.shellIntegration.env.value.HOME), pathSeparator, docode.TerminalCompletionItemKind.Folder);
+					homeDirCompletion.kind = docode.TerminalCompletionItemKind.Folder;
 				}
 			}
 
 			const cwd = result.cwd ?? terminal.shellIntegration?.cwd;
 			if (cwd && (result.showFiles || result.showDirectories)) {
 				const globPattern = createFileGlobPattern(result.fileExtensions, result.fileNames);
-				return new vscode.TerminalCompletionList(result.items, {
+				return new docode.TerminalCompletionList(result.items, {
 					showFiles: result.showFiles,
 					showDirectories: result.showDirectories,
 					globPattern,
@@ -320,12 +320,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	}, '/', '\\'));
 	watchPathDirectories(context, currentTerminalEnv, pathExecutableCache);
 
-	context.subscriptions.push(vscode.commands.registerCommand('terminal.integrated.suggest.clearCachedGlobals', () => {
+	context.subscriptions.push(docode.commands.registerCommand('terminal.integrated.suggest.clearCachedGlobals', () => {
 		cachedGlobals.clear();
 	}));
 }
 
-async function watchPathDirectories(context: vscode.ExtensionContext, env: ITerminalEnvironment, pathExecutableCache: PathExecutableCache | undefined): Promise<void> {
+async function watchPathDirectories(context: docode.ExtensionContext, env: ITerminalEnvironment, pathExecutableCache: PathExecutableCache | undefined): Promise<void> {
 	const pathDirectories = new Set<string>();
 
 	const envPath = env.PATH;
@@ -363,7 +363,7 @@ async function watchPathDirectories(context: vscode.ExtensionContext, env: ITerm
 			continue;
 		}
 
-		const watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(vscode.Uri.file(dir), '*'));
+		const watcher = docode.workspace.createFileSystemWatcher(new docode.RelativePattern(docode.Uri.file(dir), '*'));
 		context.subscriptions.push(
 			watcher,
 			watcher.onDidCreate(() => handleChange()),
@@ -381,7 +381,7 @@ async function watchPathDirectories(context: vscode.ExtensionContext, env: ITerm
  * @param currentCwd - The current working directory.
  * @returns The new working directory.
  */
-export async function resolveCwdFromCurrentCommandString(currentCommandString: string, currentCwd?: vscode.Uri): Promise<vscode.Uri | undefined> {
+export async function resolveCwdFromCurrentCommandString(currentCommandString: string, currentCwd?: docode.Uri): Promise<docode.Uri | undefined> {
 	const prefix = currentCommandString.split(/\s+/).pop()?.trim() ?? '';
 
 	if (!currentCwd) {
@@ -411,11 +411,11 @@ export async function resolveCwdFromCurrentCommandString(currentCommandString: s
 			return undefined;
 		}
 
-		// Use vscode.Uri.joinPath for path resolution
-		const resolvedUri = vscode.Uri.joinPath(currentCwd, relativeFolder);
+		// Use docode.Uri.joinPath for path resolution
+		const resolvedUri = docode.Uri.joinPath(currentCwd, relativeFolder);
 
-		const stat = await vscode.workspace.fs.stat(resolvedUri);
-		if (stat.type & vscode.FileType.Directory) {
+		const stat = await docode.workspace.fs.stat(resolvedUri);
+		if (stat.type & docode.FileType.Directory) {
 			return resolvedUri;
 		}
 	} catch {
@@ -468,17 +468,17 @@ export function asArray<T>(x: T | T[]): T[] {
 
 export async function getCompletionItemsFromSpecs(
 	specs: Fig.Spec[],
-	terminalContext: vscode.TerminalCompletionContext,
+	terminalContext: docode.TerminalCompletionContext,
 	availableCommands: ICompletionResource[],
 	currentCommandString: string,
 	tokenType: TokenType,
-	shellIntegrationCwd: vscode.Uri | undefined,
+	shellIntegrationCwd: docode.Uri | undefined,
 	env: Record<string, string>,
 	name: string,
-	token?: vscode.CancellationToken,
+	token?: docode.CancellationToken,
 	executeExternals?: IFigExecuteExternals,
-): Promise<{ items: vscode.TerminalCompletionItem[]; showFiles: boolean; showDirectories: boolean; fileExtensions?: string[]; fileNames?: string[]; cwd?: vscode.Uri }> {
-	let items: vscode.TerminalCompletionItem[] = [];
+): Promise<{ items: docode.TerminalCompletionItem[]; showFiles: boolean; showDirectories: boolean; fileExtensions?: string[]; fileNames?: string[]; cwd?: docode.Uri }> {
+	let items: docode.TerminalCompletionItem[] = [];
 	let showFiles = false;
 	let showDirectories = false;
 	let hasCurrentArg = false;
@@ -537,7 +537,7 @@ export async function getCompletionItemsFromSpecs(
 					command,
 					command.detail,
 					command.documentation,
-					vscode.TerminalCompletionItemKind.Method
+					docode.TerminalCompletionItemKind.Method
 				));
 				labels.add(commandTextLabel);
 			}
@@ -558,7 +558,7 @@ export async function getCompletionItemsFromSpecs(
 		showDirectories = true;
 	}
 
-	let cwd: vscode.Uri | undefined;
+	let cwd: docode.Uri | undefined;
 	if (shellIntegrationCwd && (showFiles || showDirectories)) {
 		cwd = await resolveCwdFromCurrentCommandString(currentCommandString, shellIntegrationCwd);
 	}
@@ -588,7 +588,7 @@ function getTerminalShellType(shellType: string | undefined): TerminalShellType 
 		case 'zsh':
 			return TerminalShellType.Zsh;
 		case 'pwsh':
-			return basename(vscode.env.shell, '.exe') === 'powershell' ? TerminalShellType.WindowsPowerShell : TerminalShellType.PowerShell;
+			return basename(docode.env.shell, '.exe') === 'powershell' ? TerminalShellType.WindowsPowerShell : TerminalShellType.PowerShell;
 		case 'fish':
 			return TerminalShellType.Fish;
 		default:
@@ -603,7 +603,7 @@ export function sanitizeProcessEnvironment(env: Record<string, string>, ...prese
 	}, {});
 	const keysToRemove = [
 		/^ELECTRON_.$/,
-		/^VSCODE_(?!(PORTABLE|SHELL_LOGIN|ENV_REPLACE|ENV_APPEND|ENV_PREPEND)).+$/,
+		/^DOCODE_(?!(PORTABLE|SHELL_LOGIN|ENV_REPLACE|ENV_APPEND|ENV_PREPEND)).+$/,
 		/^SNAP(|_.*)$/,
 		/^GDK_PIXBUF_.$/,
 	];

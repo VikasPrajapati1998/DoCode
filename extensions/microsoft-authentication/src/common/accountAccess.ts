@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, Event, EventEmitter, LogOutputChannel, SecretStorage } from 'vscode';
+import { Disposable, Event, EventEmitter, LogOutputChannel, SecretStorage } from 'docode';
 import { AccountInfo } from '@azure/msal-node';
 
 export interface IAccountAccess {

@@ -43,7 +43,7 @@ export function ensureNpmPackage(packageName: string, nodeModulesRoot = 'node_mo
 		throw new Error(`[ensureNpmPackage] Missing ${lockPackageKey} in ${lockFilePath}. Run npm install to refresh the lockfile.`);
 	}
 
-	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-npm-package-'));
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-npm-package-'));
 	try {
 		const tarballPath = packNpmPackage(packageName, lockPackage.version, tempDir, options);
 		verifyNpmIntegrity(tarballPath, lockPackage.integrity);
@@ -68,7 +68,7 @@ export function ensureNpmPackage(packageName: string, nodeModulesRoot = 'node_mo
  * relevant lockfile) to verify the fetched tarball before extraction.
  */
 export function materializeNpmPackageVersion(packageName: string, version: string, targetDir: string, expectedIntegrity: string | undefined, options: EnsureNpmPackageOptions = {}): void {
-	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-npm-package-'));
+	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-npm-package-'));
 	try {
 		const tarballPath = packNpmPackage(packageName, version, tempDir, options);
 		verifyNpmIntegrity(tarballPath, expectedIntegrity);

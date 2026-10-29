@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Config } from './config';
 import { AccountLinks } from './common/accountLinks';
 import { CANCELLATION_ERROR } from './common/errors';
@@ -70,7 +70,7 @@ export interface IEntraLoginOptions {
 	 * The Microsoft account to sign in with. Left out, the user's preferred account is used and the
 	 * picker appears when there is more than one.
 	 */
-	readonly microsoftAccount?: vscode.AuthenticationSessionAccountInformation;
+	readonly microsoftAccount?: docode.AuthenticationSessionAccountInformation;
 }
 
 /** What renewing a session needs to know about the session it is renewing. */
@@ -89,7 +89,7 @@ export interface IEntraRenewal {
 	 */
 	readonly gitHubAccountId: string;
 	/** The Microsoft identity to renew against, which has to be the one the session came from. */
-	readonly microsoftAccount: vscode.AuthenticationSessionAccountInformation;
+	readonly microsoftAccount: docode.AuthenticationSessionAccountInformation;
 }
 
 /** A GitHub token minted to replace one a session no longer has. */
@@ -127,7 +127,7 @@ export interface IGitHubHostEndpoints {
 
 /**
  * The modal that asks the user to confirm the GitHub identity before it becomes a session. Injected
- * so tests assert on the real message without stubbing `vscode.window`.
+ * so tests assert on the real message without stubbing `docode.window`.
  */
 export interface IConfirmationDialog {
 	show(message: string, ...actions: string[]): Promise<string | undefined>;
@@ -136,7 +136,7 @@ export interface IConfirmationDialog {
 export class ModalConfirmationDialog implements IConfirmationDialog {
 
 	async show(message: string, ...actions: string[]): Promise<string | undefined> {
-		return await vscode.window.showInformationMessage(message, { modal: true }, ...actions);
+		return await docode.window.showInformationMessage(message, { modal: true }, ...actions);
 	}
 }
 
@@ -241,7 +241,7 @@ export class EntraTokenExchange {
 			this._logger.info('No Microsoft token was available without asking the user, so the session cannot renew itself.');
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.MicrosoftSignIn,
-				vscode.l10n.t('Signing in to Microsoft again is required.'));
+				docode.l10n.t('Signing in to Microsoft again is required.'));
 		}
 		const renewed = await this.exchange(endpoint, microsoft.token, scopes);
 		const account = await this.verifyAccount(renewed.token, gitHubAccountId);
@@ -336,7 +336,7 @@ export class EntraTokenExchange {
 			this._logger.error('The GitHub token is for a different account than the one that was asked for. Discarding it.');
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.AccountMismatch,
-				vscode.l10n.t('Your Microsoft account is now linked to a different GitHub account.'));
+				docode.l10n.t('Your Microsoft account is now linked to a different GitHub account.'));
 		}
 		return account;
 	}
@@ -352,14 +352,14 @@ export class EntraTokenExchange {
 			this._logger.error('This GitHub host does not accept a Microsoft token exchange.');
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.Configuration,
-				vscode.l10n.t('This GitHub host does not support signing in with Microsoft.'));
+				docode.l10n.t('This GitHub host does not support signing in with Microsoft.'));
 		}
 		return url;
 	}
 
 	private async getMicrosoftToken(
 		forceNewSession: boolean,
-		account: vscode.AuthenticationSessionAccountInformation | undefined
+		account: docode.AuthenticationSessionAccountInformation | undefined
 	): Promise<IMicrosoftToken> {
 		let acquired: IMicrosoftToken | undefined;
 		try {
@@ -371,7 +371,7 @@ export class EntraTokenExchange {
 			this._logger.error(`Could not acquire a Microsoft access token: ${e?.message ?? e}`);
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.MicrosoftSignIn,
-				vscode.l10n.t('Could not sign in to Microsoft. Try again or choose a different way to sign in.'));
+				docode.l10n.t('Could not sign in to Microsoft. Try again or choose a different way to sign in.'));
 		}
 		if (!acquired) {
 			throw new Error(CANCELLATION_ERROR);
@@ -395,7 +395,7 @@ export class EntraTokenExchange {
 			this._logger.error(`Could not resolve the GitHub account for the Microsoft sign in: ${e?.message ?? e}`);
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.Identity,
-				vscode.l10n.t('Could not read the GitHub account linked to your Microsoft account.'));
+				docode.l10n.t('Could not read the GitHub account linked to your Microsoft account.'));
 		}
 	}
 
@@ -403,10 +403,10 @@ export class EntraTokenExchange {
 		// The handle alone. `name` is free text the account holder sets, and this modal is the one
 		// place where the string being shown decides whether we mint a token as this identity.
 		const identity = `@${account.accountName}`;
-		const signIn = vscode.l10n.t('Sign in with SSO');
-		const useDifferent = vscode.l10n.t('Use a Different Microsoft Account');
+		const signIn = docode.l10n.t('Sign in with SSO');
+		const useDifferent = docode.l10n.t('Use a Different Microsoft Account');
 		const choice = await this._confirmation.show(
-			vscode.l10n.t("Your organization's Microsoft sign-in is linked to this GitHub account:\n\n{0}\n\nSign in to GitHub with this account?", identity),
+			docode.l10n.t("Your organization's Microsoft sign-in is linked to this GitHub account:\n\n{0}\n\nSign in to GitHub with this account?", identity),
 			signIn,
 			useDifferent);
 		switch (choice) {
@@ -458,7 +458,7 @@ export class EntraTokenExchange {
 			this._logger.error(`Could not reach GitHub to exchange the Microsoft token: ${e?.message ?? e}`);
 			throw new EntraTokenExchangeError(
 				EntraTokenExchangeFailure.Network,
-				vscode.l10n.t('Could not reach GitHub to finish signing in with Microsoft. Check your connection and try again.'));
+				docode.l10n.t('Could not reach GitHub to finish signing in with Microsoft. Check your connection and try again.'));
 		}
 
 		let payload: unknown;
@@ -538,18 +538,18 @@ export class EntraTokenExchange {
 				// configuration on GitHub's side.
 				return new EntraTokenExchangeError(
 					EntraTokenExchangeFailure.Configuration,
-					vscode.l10n.t('GitHub is not configured to accept Microsoft sign in from this application ({0}).', code));
+					docode.l10n.t('GitHub is not configured to accept Microsoft sign in from this application ({0}).', code));
 			case 'invalid_grant':
 				// Ambiguous by design: the Microsoft identity may be unmapped, or the token may not
 				// be acceptable. We must not guess at a cause, and in particular must not infer that
 				// the user belongs on GHE.com.
 				return new EntraTokenExchangeError(
 					EntraTokenExchangeFailure.Identity,
-					vscode.l10n.t('GitHub did not accept your Microsoft account for sign in.'));
+					docode.l10n.t('GitHub did not accept your Microsoft account for sign in.'));
 			default:
 				return new EntraTokenExchangeError(
 					EntraTokenExchangeFailure.Protocol,
-					vscode.l10n.t('GitHub rejected the Microsoft sign in ({0}).', code));
+					docode.l10n.t('GitHub rejected the Microsoft sign in ({0}).', code));
 		}
 	}
 
@@ -557,7 +557,7 @@ export class EntraTokenExchange {
 		this._logger.error(`The GitHub token exchange returned an unexpected response: ${reason}.`);
 		return new EntraTokenExchangeError(
 			EntraTokenExchangeFailure.Protocol,
-			vscode.l10n.t('GitHub returned an unexpected response while signing in with Microsoft.'));
+			docode.l10n.t('GitHub returned an unexpected response while signing in with Microsoft.'));
 	}
 
 	/**

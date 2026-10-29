@@ -145,7 +145,7 @@ const loggerWarn = logger.warn;
 logger.warn = (msg, options) => {
 	// the baseUrl code cannot be analyzed by vite.
 	// However, it is not needed, so it is okay to silence the warning.
-	if (msg.indexOf('await import(new URL(`vs/workbench/workbench.desktop.main.js`, baseUrl).href)') !== -1) {
+	if (msg.indexOf('await import(new URL(`do/workbench/workbench.desktop.main.js`, baseUrl).href)') !== -1) {
 		return;
 	}
 	if (msg.indexOf('const result2 = await import(workbenchUrl);') !== -1) {
@@ -175,7 +175,7 @@ export default defineConfig({
 	customLogger: logger,
 	resolve: {
 		alias: {
-			'~@vscode/codicons': join(__dirname, '../../node_modules/@vscode/codicons'),
+			'~@docode/codicons': join(__dirname, '../../node_modules/@docode/codicons'),
 		}
 	},
 	esbuild: {

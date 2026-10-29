@@ -19,10 +19,10 @@ To test changes:
 node build/next/index.ts transpile --out out-test
 
 # Test bundle (server-web target to test the auth fix)
-node build/next/index.ts bundle --nls --target server-web --out out-vscode-reh-web-test
+node build/next/index.ts bundle --nls --target server-web --out out-docode-reh-web-test
 
 # Verify product config was injected
-grep -l "serverLicense" out-vscode-reh-web-test/vs/code/browser/workbench/workbench.js
+grep -l "serverLicense" out-docode-reh-web-test/do/code/browser/workbench/workbench.js
 ```
 
 ---
@@ -61,7 +61,7 @@ grep -l "serverLicense" out-vscode-reh-web-test/vs/code/browser/workbench/workbe
 
 ### Gulp Integration and Retained Build Tooling
 
-In [build/gulpfile.vscode.ts](../../build/gulpfile.vscode.ts), the `core-ci` task wires up these helpers (defined in [build/lib/esbuild.ts](../../build/lib/esbuild.ts)):
+In [build/gulpfile.docode.ts](../../build/gulpfile.docode.ts), the `core-ci` task wires up these helpers (defined in [build/lib/esbuild.ts](../../build/lib/esbuild.ts)):
 - `runEsbuildTranspile()` → transpile command
 - `runEsbuildBundle()` → bundle command
 
@@ -73,7 +73,7 @@ The canonical production entry points and product/built-in-extension injection l
 Do not remove shared tooling based on its age:
 - `editor-distro` still uses [createCompile()](../../build/lib/compilation.ts), the TypeScript stream compiler, and [nls.ts](../../build/lib/nls.ts) to emit Monaco ESM with English messages preserved.
 - Development and extension transpilation still use the stream transpilers; declaration generation and editor extraction still use the TypeScript API.
-- [i18n.ts](../../build/lib/i18n.ts) serves Monaco, translation export/import, and localization packages. `vscode-translations-export` obtains core metadata from `core-ci`.
+- [i18n.ts](../../build/lib/i18n.ts) serves Monaco, translation export/import, and localization packages. `docode-translations-export` obtains core metadata from `core-ci`.
 - `source-map` is used by the current NLS/private-field transforms as well as the stream compiler. `gulp-sourcemaps` remains in the Monaco/development/extension pipelines; its type augmentation lives in [gulp-sourcemaps.d.ts](../../build/lib/typings/gulp-sourcemaps.d.ts).
 
 ### TypeScript Helpers in Production Bundles
@@ -133,7 +133,7 @@ The `[svg]` build log reports actual input/output byte counts. These are uncompr
 3. Browser's `SignService.vsda()` can't decrypt vsda WASM (needs serverLicense as key)
 4. Browser's `sign()` returns original challenge instead of signed value
 5. Server validates signature → fails
-6. Server is in built mode (no `VSCODE_DEV`) → rejects connection
+6. Server is in built mode (no `DOCODE_DEV`) → rejects connection
 
 **Fix:** The `fileContentMapperPlugin` now runs during `onLoad`, replacing placeholders before esbuild strips them.
 
@@ -143,20 +143,20 @@ Two placeholders that need injection:
 
 | Placeholder | Location | Purpose |
 |-------------|----------|---------|
-| `/*BUILD->INSERT_PRODUCT_CONFIGURATION*/` | `src/vs/platform/product/common/product.ts` | Product config (commit, version, serverLicense, etc.) |
-| `/*BUILD->INSERT_BUILTIN_EXTENSIONS*/` | `src/vs/workbench/services/extensionManagement/browser/builtinExtensionsScannerService.ts` | List of built-in extensions |
+| `/*BUILD->INSERT_PRODUCT_CONFIGURATION*/` | `src/do/platform/product/common/product.ts` | Product config (commit, version, serverLicense, etc.) |
+| `/*BUILD->INSERT_BUILTIN_EXTENSIONS*/` | `src/do/workbench/services/extensionManagement/browser/builtinExtensionsScannerService.ts` | List of built-in extensions |
 
 ### 4. Server-web Target Specifics
 
 - Removes `webEndpointUrlTemplate` from product config in `fileContentMapperPlugin()`
 - Uses `.build/extensions` for builtin extensions (not `.build/web/extensions`)
-- Bundles the browser shell `vs/code/browser/workbench/workbench`, which statically imports the web workbench. Do not also emit `vs/workbench/workbench.web.main.internal` as a separate server-web entry; standalone `web` still needs that entry.
+- Bundles the browser shell `do/code/browser/workbench/workbench`, which statically imports the web workbench. Do not also emit `do/workbench/workbench.web.main.internal` as a separate server-web entry; standalone `web` still needs that entry.
 
 ### 5. Entry Point Parity with Old Build
 
 **Problem:** The desktop target had `keyboardMapEntryPoints` as separate esbuild entry points, producing `layout.contribution.darwin.js`, `layout.contribution.linux.js`, and `layout.contribution.win.js` as standalone files in the output.
 
-**Root cause:** In the old build (`gulpfile.vscode.ts`), `vscodeEntryPoints` does NOT include `buildfile.keyboardMaps`. These files are only separate entry points for server-web (`gulpfile.reh.ts`) and web (`gulpfile.vscode.web.ts`). For desktop, they're imported as dependencies of `workbench.desktop.main` and get bundled into it.
+**Root cause:** In the old build (`gulpfile.docode.ts`), `docodeEntryPoints` does NOT include `buildfile.keyboardMaps`. These files are only separate entry points for server-web (`gulpfile.reh.ts`) and web (`gulpfile.docode.web.ts`). For desktop, they're imported as dependencies of `workbench.desktop.main` and get bundled into it.
 
 **Fix:** Removed `...keyboardMapEntryPoints` from the `desktop` case in `getEntryPointsForTarget()`. Keep for `server-web` and `web`.
 
@@ -174,11 +174,11 @@ Desktop, server, and server-web packaging compute `nlsMetadataHash` from the com
 
 **Problem:** The new build used curated, specific resource pattern lists (e.g., `desktopResourcePatterns`) for **both** transpile/dev and production/bundle builds. Team members kept discovering missing resources because every new non-TS file in `src/` required manually adding its pattern.
 
-**Root cause:** The old gulp build uses `gulp.src('src/**')` for dev/transpile — a catch-all glob that streams **every file** in `src/`. Non-TS files bypass the compiler via `tsFilter` + `tsFilter.restore` and land in `out/` untouched. This is inherently complete. The old build only uses curated resource lists for **production packaging** (`vscodeResourceIncludes`, `serverResourceIncludes` in the gulpfiles).
+**Root cause:** The old gulp build uses `gulp.src('src/**')` for dev/transpile — a catch-all glob that streams **every file** in `src/`. Non-TS files bypass the compiler via `tsFilter` + `tsFilter.restore` and land in `out/` untouched. This is inherently complete. The old build only uses curated resource lists for **production packaging** (`docodeResourceIncludes`, `serverResourceIncludes` in the gulpfiles).
 
 **Fix:**
 - **Transpile/dev path** (`transpile` command, `--watch` mode): Now uses `copyAllNonTsFiles()` which copies ALL non-TS files from `src/` to the output, matching old `gulp.src('src/**')` behavior. No curated patterns needed.
-- **Bundle/production path** (`bundle` command): Continues using `copyResources()` with curated per-target patterns, matching old `vscodeResourceIncludes` etc.
+- **Bundle/production path** (`bundle` command): Continues using `copyResources()` with curated per-target patterns, matching old `docodeResourceIncludes` etc.
 - Removed `devOnlyResourcePatterns` and `testFixturePatterns` — no longer needed since the broad copy handles all dev resources.
 - Watch mode incremental copy now accepts **any** non-`.ts` file change (removed the `copyExtensions` allowlist).
 
@@ -188,7 +188,7 @@ Desktop, server, and server-web packaging compute `nlsMetadataHash` from the com
 
 [resources.ts](../../build/next/resources.ts) owns the per-target resource patterns. `bundle --minify` minifies each selected JavaScript resource while copying it from `src/`; it does not traverse or re-minify bundled/generated outputs. Without `--minify`, copying remains byte-for-byte. Transpile, watch, and incremental development builds still use the separate unmodified copy path.
 
-The current JavaScript inventory is `vs/workbench/contrib/webview/browser/pre/service-worker.js` for desktop, server-web, and standalone web; server-only selects no JavaScript resources. The processing policy applies to JavaScript resources, not that filename, so additional scripts selected by the resource patterns receive the same handling.
+The current JavaScript inventory is `do/workbench/contrib/webview/browser/pre/service-worker.js` for desktop, server-web, and standalone web; server-only selects no JavaScript resources. The processing policy applies to JavaScript resources, not that filename, so additional scripts selected by the resource patterns receive the same handling.
 
 - Minification does not bundle, wrap, force an output module format, or tree-shake the scripts. A resolver bypasses the repository's `package.json` module-type inference, so classic globals/top-level `this` and CommonJS contexts are preserved; explicit ESM imports/exports remain ESM.
 - Legal comments and ordinary leading copyright/license headers are retained.
@@ -204,7 +204,7 @@ node --test build/next/test/resources.test.ts build/next/test/transpile.test.ts 
 
 ### Standalone Electron Preload Source Maps
 
-[standalone.ts](../../build/next/standalone.ts) compiles all three desktop preloads: [preload.ts](../../src/vs/base/parts/sandbox/electron-browser/preload.ts), [preload-aux.ts](../../src/vs/base/parts/sandbox/electron-browser/preload-aux.ts), and [preload-browserView.ts](../../src/vs/platform/browserView/electron-browser/preload-browserView.ts). These special-context scripts retain `bundle: false`, `format: 'cjs'`, the existing target and copyright banner. They must not use the normal ESM bundle options or receive NLS/private-field post-processing.
+[standalone.ts](../../build/next/standalone.ts) compiles all three desktop preloads: [preload.ts](../../src/do/base/parts/sandbox/electron-browser/preload.ts), [preload-aux.ts](../../src/do/base/parts/sandbox/electron-browser/preload-aux.ts), and [preload-browserView.ts](../../src/do/platform/browserView/electron-browser/preload-browserView.ts). These special-context scripts retain `bundle: false`, `format: 'cjs'`, the existing target and copyright banner. They must not use the normal ESM bundle options or receive NLS/private-field post-processing.
 
 - Both minified and non-minified bundle outputs embed the original TypeScript in `sourcesContent`. Finalization uses the existing [rewriteSourceMappingURL()](../../build/next/source-map-url.ts), including platform-independent URL separators, before writing JavaScript. Only the trailing map comment changes; executable bytes and esbuild's mappings are preserved.
 - With an omitted or empty `--source-map-base-url`, the sibling `*.js.map` reference remains local. Development transpile/watch/build-fast paths remain separate and retain their inline maps without embedded sources.
@@ -225,13 +225,13 @@ This repairs production debugging/source publication, not startup performance.
 
 ```bash
 # Build server-web with new system
-node build/next/index.ts bundle --nls --target server-web --out out-vscode-reh-web-min
+node build/next/index.ts bundle --nls --target server-web --out out-docode-reh-web-min
 
 # Package it (uses gulp task)
-npm run gulp vscode-reh-web-darwin-arm64-min
+npm run gulp docode-reh-web-darwin-arm64-min
 
 # Run server
-./vscode-server-darwin-arm64-web/bin/code-server-oss --connection-token dev-token
+./docode-server-darwin-arm64-web/bin/code-server-oss --connection-token dev-token
 
 # Open browser - should connect without "Unauthorized client refused"
 ```
@@ -270,7 +270,7 @@ The following measurements and action items describe the initial migration, not 
 
 | File | Why Missing | Fix |
 |------|-------------|-----|
-| `out/vs/platform/browserView/electron-browser/preload-browserView.js` | Not listed in `desktopStandaloneFiles` in index.ts. Only `preload.ts` and `preload-aux.ts` are compiled as standalone files. | **Add** `'vs/platform/browserView/electron-browser/preload-browserView.ts'` to the `desktopStandaloneFiles` array in `index.ts`. |
+| `out/do/platform/browserView/electron-browser/preload-browserView.js` | Not listed in `desktopStandaloneFiles` in index.ts. Only `preload.ts` and `preload-aux.ts` are compiled as standalone files. | **Add** `'do/platform/browserView/electron-browser/preload-browserView.ts'` to the `desktopStandaloneFiles` array in `index.ts`. |
 
 ### 309 Extra Files (in NEW, not in OLD) — Breakdown
 
@@ -278,39 +278,39 @@ The following measurements and action items describe the initial migration, not 
 |----------|-------|-------------|
 | **CSS files** | 291 | `copyCssFiles()` copies ALL `.css` from `src/` to the output. The old bundler inlines CSS into the main `.css` bundle (e.g., `workbench.desktop.main.css`) and never ships individual CSS files. These individual files ARE needed at runtime because the new ESM system uses `import './foo.css'` resolved by an import map. |
 | **Vendor JS files** | 3 | `dompurify.js`, `marked.js`, `semver.js` — listed in `commonResourcePatterns`. The old bundler inlines these into the main bundle. The new system keeps them as separate files because they're plain JS (not TS). They're needed. |
-| **Web workbench bundle** | 1 | `vs/code/browser/workbench/workbench.js` (15.4 MB). This is the web workbench entry point bundle. It should NOT be in a desktop build — the old build explicitly excludes `out-build/vs/code/browser/**`. The `desktopResourcePatterns` in index.ts includes `vs/code/browser/workbench/*.html` and `callback.html` which is correct, but the actual bundle gets written by the esbuild desktop bundle step because the desktop entry points include web entry points. |
-| **Web workbench internal** | 1 | `vs/workbench/workbench.web.main.internal.js` (15.4 MB). Similar: shouldn't ship in a desktop build. It's output by the esbuild bundler. |
+| **Web workbench bundle** | 1 | `do/code/browser/workbench/workbench.js` (15.4 MB). This is the web workbench entry point bundle. It should NOT be in a desktop build — the old build explicitly excludes `out-build/do/code/browser/**`. The `desktopResourcePatterns` in index.ts includes `do/code/browser/workbench/*.html` and `callback.html` which is correct, but the actual bundle gets written by the esbuild desktop bundle step because the desktop entry points include web entry points. |
+| **Web workbench internal** | 1 | `do/workbench/workbench.web.main.internal.js` (15.4 MB). Similar: shouldn't ship in a desktop build. It's output by the esbuild bundler. |
 | **Keyboard layout contributions** | 3 | `layout.contribution.{darwin,linux,win}.js` — the old bundler inlines these into the main bundle. These are new separate files from the esbuild bundler. |
 | **NLS files** | 2 | `nls.messages.js` (new) and `nls.metadata.json` (new). The old build has `nls.messages.json` and `nls.keys.json` but not a `.js` version or metadata. The `.js` version is produced by the NLS plugin. |
-| **HTML files** | 2 | `vs/code/browser/workbench/workbench.html` and `callback.html` — correctly listed in `desktopResourcePatterns` (these are needed for desktop's built-in web server). |
-| **SVG loading spinners** | 3 | `loading-dark.svg`, `loading-hc.svg`, `loading.svg` in `vs/workbench/contrib/extensions/browser/media/`. The old build only copies `theme-icon.png` and `language-icon.svg` from that folder; the new build's `desktopResourcePatterns` uses `*.svg` which is broader. |
-| **codicon.ttf (duplicate)** | 1 | At `vs/base/browser/ui/codicons/codicon/codicon.ttf`. The old build copies this to `out/media/codicon.ttf` only. The new build has BOTH: the copy in `out/media/` (from esbuild's `file` loader) AND the original path (from `commonResourcePatterns`). Duplicate. |
-| **PSReadLine.psm1** | 1 | `vs/workbench/contrib/terminal/common/scripts/psreadline/PSReadLine.psm1` — the old build uses `*.psm1` in `terminal/common/scripts/` (non-recursive?). The new build uses `**/*.psm1` (recursive), picking up this subdirectory file. Check if it's needed. |
+| **HTML files** | 2 | `do/code/browser/workbench/workbench.html` and `callback.html` — correctly listed in `desktopResourcePatterns` (these are needed for desktop's built-in web server). |
+| **SVG loading spinners** | 3 | `loading-dark.svg`, `loading-hc.svg`, `loading.svg` in `do/workbench/contrib/extensions/browser/media/`. The old build only copies `theme-icon.png` and `language-icon.svg` from that folder; the new build's `desktopResourcePatterns` uses `*.svg` which is broader. |
+| **codicon.ttf (duplicate)** | 1 | At `do/base/browser/ui/codicons/codicon/codicon.ttf`. The old build copies this to `out/media/codicon.ttf` only. The new build has BOTH: the copy in `out/media/` (from esbuild's `file` loader) AND the original path (from `commonResourcePatterns`). Duplicate. |
+| **PSReadLine.psm1** | 1 | `do/workbench/contrib/terminal/common/scripts/psreadline/PSReadLine.psm1` — the old build uses `*.psm1` in `terminal/common/scripts/` (non-recursive?). The new build uses `**/*.psm1` (recursive), picking up this subdirectory file. Check if it's needed. |
 | **date file** | 1 | `out/date` — build timestamp, produced by the new build's `bundle()` function. The old build doesn't write this; it reads `package.json.date` instead. |
 
 ### Size Increase Breakdown by Area
 
 | Area | OLD | NEW | Delta | Why |
 |------|-----|-----|-------|-----|
-| `vs/code` | 1.5 MB | 17.4 MB | +15.9 MB | Web workbench bundle (15.4 MB) shouldn't be in desktop build |
-| `vs/workbench` | 18.9 MB | 38.7 MB | +19.8 MB | `workbench.web.main.internal.js` (15.4 MB) + unmangled desktop bundle (+2.5 MB) + individual CSS files (~1 MB) |
-| `vs/base` | 0 MB | 0.4 MB | +0.4 MB | Individual CSS files + vendor JS |
-| `vs/editor` | 0.3 MB | 0.5 MB | +0.1 MB | Individual CSS files |
-| `vs/platform` | 1.7 MB | 1.9 MB | +0.2 MB | Individual CSS files |
+| `do/code` | 1.5 MB | 17.4 MB | +15.9 MB | Web workbench bundle (15.4 MB) shouldn't be in desktop build |
+| `do/workbench` | 18.9 MB | 38.7 MB | +19.8 MB | `workbench.web.main.internal.js` (15.4 MB) + unmangled desktop bundle (+2.5 MB) + individual CSS files (~1 MB) |
+| `do/base` | 0 MB | 0.4 MB | +0.4 MB | Individual CSS files + vendor JS |
+| `do/editor` | 0.3 MB | 0.5 MB | +0.1 MB | Individual CSS files |
+| `do/platform` | 1.7 MB | 1.9 MB | +0.2 MB | Individual CSS files |
 
 ### JS Files with >2× Size Change
 
 | File | OLD | NEW | Ratio | Reason |
 |------|-----|-----|-------|--------|
-| `vs/workbench/contrib/webview/browser/pre/service-worker.js` | 7 KB | 15 KB | 2.2× | Not minified / includes more inlined code |
-| `vs/code/electron-browser/workbench/workbench.js` | 10 KB | 28 KB | 2.75× | OLD is minified to 6 lines; NEW is 380 lines (not compressed, includes tslib banner) |
+| `do/workbench/contrib/webview/browser/pre/service-worker.js` | 7 KB | 15 KB | 2.2× | Not minified / includes more inlined code |
+| `do/code/electron-browser/workbench/workbench.js` | 10 KB | 28 KB | 2.75× | OLD is minified to 6 lines; NEW is 380 lines (not compressed, includes tslib banner) |
 
 ### Action Items
 
 1. **[CRITICAL] Missing `preload-browserView.ts`** — Add to `desktopStandaloneFiles` in index.ts. Without it, BrowserView (used for Simple Browser) may fail.
-2. **[SIZE] Web bundles in desktop build** — `workbench.web.main.internal.js` and `vs/code/browser/workbench/workbench.js` together add ~31 MB. These are written by the esbuild bundler and not filtered out. Consider: either don't bundle web entry points for the desktop target, or ensure the packaging step excludes them (currently `packageTask` takes `out-vscode-min/**` without filtering).
+2. **[SIZE] Web bundles in desktop build** — `workbench.web.main.internal.js` and `do/code/browser/workbench/workbench.js` together add ~31 MB. These are written by the esbuild bundler and not filtered out. Consider: either don't bundle web entry points for the desktop target, or ensure the packaging step excludes them (currently `packageTask` takes `out-docode-min/**` without filtering).
 3. **[SIZE] No mangling** — The desktop main bundle is 2.5 MB larger due to no property mangling. Known open item.
-4. **[MINOR] Duplicate codicon.ttf** — Exists at both `out/media/codicon.ttf` (from esbuild `file` loader) and `out/vs/base/browser/ui/codicons/codicon/codicon.ttf` (from `commonResourcePatterns`). Consider removing from `commonResourcePatterns` if it's already handled by the loader.
+4. **[MINOR] Duplicate codicon.ttf** — Exists at both `out/media/codicon.ttf` (from esbuild `file` loader) and `out/do/base/browser/ui/codicons/codicon/codicon.ttf` (from `commonResourcePatterns`). Consider removing from `commonResourcePatterns` if it's already handled by the loader.
 5. **[MINOR] Extra SVGs** — `desktopResourcePatterns` uses `*.svg` for extensions media but old build only ships `language-icon.svg`. The loading spinners may be unused in the desktop build.
 6. **[MINOR] Extra PSReadLine.psm1** from recursive glob — verify if needed.
 
@@ -324,7 +324,7 @@ Any step that modifies JS output - whether in an esbuild plugin or in post-proce
 
 ### Root Causes (before fixes)
 
-Source maps worked in transpile mode but failed in bundle mode. The observed pattern was "class-heavy files fail, simple utilities work" but the real cause was **"files with NLS calls vs files without"**. Class-heavy UI components use `localize()` extensively; utility files in `vs/base/` don't.
+Source maps worked in transpile mode but failed in bundle mode. The observed pattern was "class-heavy files fail, simple utilities work" but the real cause was **"files with NLS calls vs files without"**. Class-heavy UI components use `localize()` extensively; utility files in `do/base/` don't.
 
 Two categories of corruption:
 
@@ -357,9 +357,9 @@ Two categories of corruption:
 
 **Plugin interaction:** Both the NLS plugin and `fileContentMapperPlugin` register `onLoad({ filter: /\.ts$/ })`. In esbuild, the first `onLoad` to return non-`undefined` wins. The NLS plugin is `unshift`ed (runs first), so files with NLS calls skip `fileContentMapperPlugin`. This is safe in practice since `product.ts` (which has `BUILD->INSERT_PRODUCT_CONFIGURATION`) has no localize calls.
 
-### Still Broken — Full Production Build (`npm run gulp vscode-min`)
+### Still Broken — Full Production Build (`npm run gulp docode-min`)
 
-**Symptom:** Source maps are totally broken in the minified production build. E.g. a breakpoint at `src/vs/editor/browser/editorExtensions.ts` line 308 resolves to `src/vs/editor/common/cursor/cursorMoveCommands.ts` line 732 — a completely different file. This is **cross-file** mapping corruption, not just column drift.
+**Symptom:** Source maps are totally broken in the minified production build. E.g. a breakpoint at `src/do/editor/browser/editorExtensions.ts` line 308 resolves to `src/do/editor/common/cursor/cursorMoveCommands.ts` line 732 — a completely different file. This is **cross-file** mapping corruption, not just column drift.
 
 **Status of unit tests:** The fixes above pass in isolated unit tests (small 1–2 file bundles via `esbuild.build` with `minify: true`). The tests verify column drift ≤ 20 and correct line mapping for single-file bundles with NLS. **183 tests pass, 0 failing.** But the full production build bundles hundreds of files into huge minified outputs (e.g. `workbench.desktop.main.js` at ~15 MB) and the source maps break at that scale.
 
@@ -393,8 +393,8 @@ Two categories of corruption:
 
 **How to reproduce:**
 ```bash
-npm run gulp vscode-min
-# Open out-vscode-min/ in a debugger, set breakpoints in editor files
+npm run gulp docode-min
+# Open out-docode-min/ in a debugger, set breakpoints in editor files
 # Observe breakpoints resolve to wrong files
 ```
 
@@ -415,7 +415,7 @@ node build/next/index.ts bundle --minify --target desktop --out out-debug
 node -e "
 const {SourceMapConsumer} = require('source-map');
 const fs = require('fs');
-const map = JSON.parse(fs.readFileSync('./out-debug/vs/workbench/workbench.desktop.main.js.map','utf8'));
+const map = JSON.parse(fs.readFileSync('./out-debug/do/workbench/workbench.desktop.main.js.map','utf8'));
 const c = new SourceMapConsumer(map);
 // Look up a known position and see which source file it resolves to
 console.log(c.originalPositionFor({line: 1, column: XXXX}));
@@ -439,5 +439,5 @@ The default `VS Code - Build` task now runs three parallel watchers:
 - **`build/lib/compilation.ts`**: `watchTypeCheckTask()` runs tsgo with `noEmit: true` in response to source changes, alongside Monaco declaration generation.
 - **`build/gulpfile.ts`**: `watchClientTask` is now `task.parallel(compilation.watchTypeCheckTask('src'), ...)` — no `rimraf('out')` (the transpiler owns that), no JS emit.
 - **`build/next/index.ts`**: Watch mode emits `Starting transpilation...` / `Finished transpilation with N errors after X ms` for VS Code problem matcher.
-- **`.vscode/tasks.json`**: Old "Core - Build" split into "Core - Transpile" + "Core - Typecheck" with separate problem matchers (owners: `esbuild` vs `typescript`).
+- **`.docode/tasks.json`**: Old "Core - Build" split into "Core - Transpile" + "Core - Typecheck" with separate problem matchers (owners: `esbuild` vs `typescript`).
 - **`package.json`**: Added `watch-client-transpile`, `watch-client-transpiled`, `kill-watch-client-transpiled` scripts.

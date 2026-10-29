@@ -1,0 +1,11 @@
+{
+  "displayName": "DoCode Runner",
+  "description": "Run the current file in the integrated terminal with one click.",
+  "command.run": "Run Code",
+  "command.stop": "Stop Running Code",
+  "config.title": "DoCode Runner",
+  "config.executorMap": "Command used to run each language, keyed by language id. Merged over the built-in defaults. Placeholders: `${file}`, `${fileName}`, `${fileBaseName}`, `${dir}`. Example: `{ \"python\": \"python3 -u ${file}\" }`.",
+  "config.saveBeforeRun": "Save the file before running it.",
+  "config.clearTerminal": "Clear the DoCode Runner terminal before each run.",
+  "config.runInFileDirectory": "Run the command from the file's folder instead of the workspace folder."
+}

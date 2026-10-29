@@ -5,8 +5,8 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
-import { HubRpcConnection } from '@vscode/hubrpc';
+import * as docode from 'docode';
+import { HubRpcConnection } from '@docode/hubrpc';
 import { MarkdownContributions } from '../markdownExtensions';
 import { MarkdownEditorProvider } from '../preview/markdownEditorProvider';
 import { markdownEditorHost, markdownEditorRenderer, type MarkdownEditorRenderer } from '../preview/markdownEditorProtocol';
@@ -15,20 +15,20 @@ import { MdLinkOpener } from '../util/openDocumentLink';
 
 suite('Markdown editor bridge', () => {
 	test('resynchronizes the ready race and rejects stale edits while preserving CRLF sequential edits', async () => {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: 'initial\r\ncontent' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: 'initial\r\ncontent' });
 		const initialVersion = document.version;
 		const panel = new TestPanel();
 		const state = new TestMemento();
 		const provider = createProvider(state);
-		const cancellation = new vscode.CancellationTokenSource();
+		const cancellation = new docode.CancellationTokenSource();
 		let renderer: HubRpcConnection<undefined> | undefined;
 		try {
 			await provider.resolveCustomTextEditor(document, panel, cancellation.token);
-			const secret = /name="vscode-markdown-editor-message-secret" content="([^"]+)"/.exec(panel.webview.html)?.[1];
+			const secret = /name="docode-markdown-editor-message-secret" content="([^"]+)"/.exec(panel.webview.html)?.[1];
 			assert.ok(secret);
 			await replaceDocument(document, 'changed\r\nbefore-ready');
 			const navigation = provider.resolveCustomTextEditorNavigation(document, panel, cancellation.token);
-			const navigationBeforeReady = navigation.revealRange(new vscode.Range(1, 0, 1, 6), { preserveFocus: true }, cancellation.token);
+			const navigationBeforeReady = navigation.revealRange(new docode.Range(1, 0, 1, 6), { preserveFocus: true }, cancellation.token);
 			assert.strictEqual(panel.webview.sent.length, 0, 'do not start requests before the renderer is listening');
 			renderer = HubRpcConnection.fromTransport(new MarkdownEditorRpcTransport(
 				secret,
@@ -73,7 +73,7 @@ suite('Markdown editor bridge', () => {
 			assert.strictEqual(document.getText(), '\r\nxchanged\r\nbefore-ready');
 			assert.strictEqual(updates.length, 1, 'accepted local edits must not echo authoritative replacements');
 			await host.selectionChanged({ editEpoch: epoch, selection: { anchor: 1, active: 9 } });
-			assert.deepStrictEqual(navigation.selection, new vscode.Selection(1, 0, 1, 8));
+			assert.deepStrictEqual(navigation.selection, new docode.Selection(1, 0, 1, 8));
 			const externalUpdate = new Promise<void>(resolve => updated = resolve);
 			await replaceDocument(document, 'external\r\n');
 			await externalUpdate;
@@ -99,21 +99,21 @@ suite('Markdown editor bridge', () => {
 	});
 
 	test('cancels navigation waiting for renderer readiness and releases it when the panel is disposed', async () => {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: '# Heading' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: '# Heading' });
 		const panel = new TestPanel();
 		const provider = createProvider(new TestMemento());
-		const cancellation = new vscode.CancellationTokenSource();
+		const cancellation = new docode.CancellationTokenSource();
 		try {
 			await provider.resolveCustomTextEditor(document, panel, cancellation.token);
 			const navigation = provider.resolveCustomTextEditorNavigation(document, panel, cancellation.token);
-			const reveal = navigation.revealRange(new vscode.Range(0, 0, 0, 9), {}, cancellation.token);
+			const reveal = navigation.revealRange(new docode.Range(0, 0, 0, 9), {}, cancellation.token);
 			cancellation.cancel();
-			await assert.rejects(Promise.resolve(reveal), vscode.CancellationError);
+			await assert.rejects(Promise.resolve(reveal), docode.CancellationError);
 			const captured = navigation.captureViewState();
 			panel.dispose();
-			await assert.rejects(Promise.resolve(captured), vscode.CancellationError);
+			await assert.rejects(Promise.resolve(captured), docode.CancellationError);
 			assert.strictEqual(panel.webview.sent.length, 0);
-			assert.throws(() => provider.resolveCustomTextEditorNavigation(document, panel, cancellation.token), vscode.CancellationError);
+			assert.throws(() => provider.resolveCustomTextEditorNavigation(document, panel, cancellation.token), docode.CancellationError);
 		} finally {
 			panel.dispose();
 			provider.dispose();
@@ -122,15 +122,15 @@ suite('Markdown editor bridge', () => {
 	});
 });
 
-function createProvider(state: vscode.Memento): MarkdownEditorProvider {
-	const extensionUri = vscode.extensions.getExtension('vscode.markdown-language-features')!.extensionUri;
+function createProvider(state: docode.Memento): MarkdownEditorProvider {
+	const extensionUri = docode.extensions.getExtension('docode.markdown-language-features')!.extensionUri;
 	return new MarkdownEditorProvider(
 		extensionUri, state,
 		new MdLinkOpener({ resolveLinkTarget: async () => undefined }),
 		{
 			extensionUri,
 			contributions: MarkdownContributions.Empty,
-			onContributionsChanged: () => new vscode.Disposable(() => { }),
+			onContributionsChanged: () => new docode.Disposable(() => { }),
 			dispose: () => { },
 		},
 		{ trace: () => { } },
@@ -138,13 +138,13 @@ function createProvider(state: vscode.Memento): MarkdownEditorProvider {
 	);
 }
 
-async function replaceDocument(document: vscode.TextDocument, content: string): Promise<void> {
-	const edit = new vscode.WorkspaceEdit();
-	edit.replace(document.uri, new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length)), content);
-	assert.ok(await vscode.workspace.applyEdit(edit));
+async function replaceDocument(document: docode.TextDocument, content: string): Promise<void> {
+	const edit = new docode.WorkspaceEdit();
+	edit.replace(document.uri, new docode.Range(document.positionAt(0), document.positionAt(document.getText().length)), content);
+	assert.ok(await docode.workspace.applyEdit(edit));
 }
 
-class TestPanel implements vscode.WebviewPanel {
+class TestPanel implements docode.WebviewPanel {
 	readonly viewType = MarkdownEditorProvider.viewType;
 	title = 'RPC test';
 	readonly webview = new TestWebview();
@@ -152,9 +152,9 @@ class TestPanel implements vscode.WebviewPanel {
 	readonly viewColumn = undefined;
 	readonly active = true;
 	readonly visible = true;
-	readonly #dispose = new vscode.EventEmitter<void>();
+	readonly #dispose = new docode.EventEmitter<void>();
 	readonly onDidDispose = this.#dispose.event;
-	readonly onDidChangeViewState: vscode.Event<vscode.WebviewPanelOnDidChangeViewStateEvent> = () => new vscode.Disposable(() => { });
+	readonly onDidChangeViewState: docode.Event<docode.WebviewPanelOnDidChangeViewStateEvent> = () => new docode.Disposable(() => { });
 	reveal(): void { }
 	dispose(): void {
 		this.#dispose.fire();
@@ -164,12 +164,12 @@ class TestPanel implements vscode.WebviewPanel {
 	}
 }
 
-class TestWebview implements vscode.Webview {
-	options: vscode.WebviewOptions = {};
+class TestWebview implements docode.Webview {
+	options: docode.WebviewOptions = {};
 	html = '';
 	readonly cspSource = 'test:';
-	readonly incoming = new vscode.EventEmitter<unknown>();
-	readonly outgoing = new vscode.EventEmitter<unknown>();
+	readonly incoming = new docode.EventEmitter<unknown>();
+	readonly outgoing = new docode.EventEmitter<unknown>();
 	readonly onDidReceiveMessage = this.incoming.event;
 	readonly sent: unknown[] = [];
 	async postMessage(message: unknown): Promise<boolean> {
@@ -177,12 +177,12 @@ class TestWebview implements vscode.Webview {
 		this.outgoing.fire(JSON.parse(JSON.stringify(message)));
 		return true;
 	}
-	asWebviewUri(uri: vscode.Uri): vscode.Uri {
+	asWebviewUri(uri: docode.Uri): docode.Uri {
 		return uri;
 	}
 }
 
-class TestMemento implements vscode.Memento {
+class TestMemento implements docode.Memento {
 	readonly values = new Map<string, unknown>();
 	keys(): readonly string[] { return [...this.values.keys()]; }
 	get<T>(key: string): T | undefined;

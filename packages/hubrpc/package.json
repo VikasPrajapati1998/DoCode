@@ -1,0 +1,45 @@
+{
+	"name": "@docode/hubrpc",
+	"version": "0.0.2-20",
+	"type": "module",
+	"license": "MIT",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"@docode/source": "./src/index.ts",
+			"default": "./dist/index.js"
+		},
+		"./hub/client": {
+			"@docode/source": "./src/hub/client/index.ts",
+			"default": "./dist/hub/client/index.js"
+		},
+		"./hub/common": {
+			"@docode/source": "./src/hub/common/index.ts",
+			"default": "./dist/hub/common/index.js"
+		},
+		"./node": {
+			"@docode/source": "./src/node.ts",
+			"default": "./dist/node.js"
+		},
+		"./web": {
+			"@docode/source": "./src/web.ts",
+			"default": "./dist/web.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"dist/"
+	],
+	"sideEffects": false,
+	"peerDependencies": {
+		"zod": "^4.4.3"
+	},
+	"dependencies": {
+		"@hpke/core": "^1.9.0",
+		"ws": "^8.18.0"
+	},
+	"inlinedDependencies": {
+		"@hpke/common": "1.10.1",
+		"@hpke/core": "1.9.0"
+	}
+}

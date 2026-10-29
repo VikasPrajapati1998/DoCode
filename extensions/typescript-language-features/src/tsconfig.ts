@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TypeScriptServiceConfiguration } from './configuration/configuration';
 import { API } from './tsServer/api';
 import type * as Proto from './tsServer/protocol/protocol';
@@ -72,7 +72,7 @@ function inferredProjectConfigSnippet(
 	}
 
 	const compilerOptions = Object.keys(baseConfig).map(key => `"${key}": ${JSON.stringify(baseConfig[key])}`);
-	return new vscode.SnippetString(`{
+	return new docode.SnippetString(`{
 	"compilerOptions": {
 		${compilerOptions.join(',\n\t\t')}$0
 	},
@@ -86,17 +86,17 @@ function inferredProjectConfigSnippet(
 export async function openOrCreateConfig(
 	version: API,
 	projectType: ProjectType,
-	rootPath: vscode.Uri,
+	rootPath: docode.Uri,
 	configuration: TypeScriptServiceConfiguration,
-): Promise<vscode.TextEditor | null> {
-	const configFile = vscode.Uri.joinPath(rootPath, projectType === ProjectType.TypeScript ? 'tsconfig.json' : 'jsconfig.json');
-	const col = vscode.window.activeTextEditor?.viewColumn;
+): Promise<docode.TextEditor | null> {
+	const configFile = docode.Uri.joinPath(rootPath, projectType === ProjectType.TypeScript ? 'tsconfig.json' : 'jsconfig.json');
+	const col = docode.window.activeTextEditor?.viewColumn;
 	try {
-		const doc = await vscode.workspace.openTextDocument(configFile);
-		return vscode.window.showTextDocument(doc, col);
+		const doc = await docode.workspace.openTextDocument(configFile);
+		return docode.window.showTextDocument(doc, col);
 	} catch {
-		const doc = await vscode.workspace.openTextDocument(configFile.with({ scheme: 'untitled' }));
-		const editor = await vscode.window.showTextDocument(doc, col);
+		const doc = await docode.workspace.openTextDocument(configFile.with({ scheme: 'untitled' }));
+		const editor = await docode.window.showTextDocument(doc, col);
 		if (editor.document.getText().length === 0) {
 			await editor.insertSnippet(inferredProjectConfigSnippet(version, projectType, configuration));
 		}
@@ -107,25 +107,25 @@ export async function openOrCreateConfig(
 export async function openProjectConfigOrPromptToCreate(
 	projectType: ProjectType,
 	client: ITypeScriptServiceClient,
-	rootPath: vscode.Uri,
+	rootPath: docode.Uri,
 	configFilePath: string,
 ): Promise<void> {
 	if (!isImplicitProjectConfigFile(configFilePath)) {
-		const doc = await vscode.workspace.openTextDocument(client.toResource(configFilePath));
-		vscode.window.showTextDocument(doc, vscode.window.activeTextEditor?.viewColumn);
+		const doc = await docode.workspace.openTextDocument(client.toResource(configFilePath));
+		docode.window.showTextDocument(doc, docode.window.activeTextEditor?.viewColumn);
 		return;
 	}
 
-	const CreateConfigItem: vscode.MessageItem = {
+	const CreateConfigItem: docode.MessageItem = {
 		title: projectType === ProjectType.TypeScript
-			? vscode.l10n.t("Configure tsconfig.json")
-			: vscode.l10n.t("Configure jsconfig.json"),
+			? docode.l10n.t("Configure tsconfig.json")
+			: docode.l10n.t("Configure jsconfig.json"),
 	};
 
-	const selected = await vscode.window.showInformationMessage(
+	const selected = await docode.window.showInformationMessage(
 		(projectType === ProjectType.TypeScript
-			? vscode.l10n.t("File is not part of a TypeScript project. View the [tsconfig.json documentation]({0}) to learn more.", 'https://go.microsoft.com/fwlink/?linkid=841896')
-			: vscode.l10n.t("File is not part of a JavaScript project. View the [jsconfig.json documentation]({0}) to learn more.", 'https://go.microsoft.com/fwlink/?linkid=759670')
+			? docode.l10n.t("File is not part of a TypeScript project. View the [tsconfig.json documentation]({0}) to learn more.", 'https://go.microsoft.com/fwlink/?linkid=841896')
+			: docode.l10n.t("File is not part of a JavaScript project. View the [jsconfig.json documentation]({0}) to learn more.", 'https://go.microsoft.com/fwlink/?linkid=759670')
 		),
 		CreateConfigItem);
 
@@ -139,20 +139,20 @@ export async function openProjectConfigOrPromptToCreate(
 export async function openProjectConfigForFile(
 	projectType: ProjectType,
 	client: ITypeScriptServiceClient,
-	resource: vscode.Uri,
+	resource: docode.Uri,
 ): Promise<void> {
 	const rootPath = client.getWorkspaceRootForResource(resource);
 	if (!rootPath) {
-		vscode.window.showInformationMessage(
-			vscode.l10n.t("Please open a folder in DoCode to use a TypeScript or JavaScript project"));
+		docode.window.showInformationMessage(
+			docode.l10n.t("Please open a folder in DoCode to use a TypeScript or JavaScript project"));
 		return;
 	}
 
 	const file = client.toTsFilePath(resource);
 	// TSServer errors when 'projectInfo' is invoked on a non js/ts file
 	if (!file || !client.toTsFilePath(resource)) {
-		vscode.window.showWarningMessage(
-			vscode.l10n.t("Could not determine TypeScript or JavaScript project. Unsupported file type"));
+		docode.window.showWarningMessage(
+			docode.l10n.t("Could not determine TypeScript or JavaScript project. Unsupported file type"));
 		return;
 	}
 
@@ -164,7 +164,7 @@ export async function openProjectConfigForFile(
 	}
 
 	if (res?.type !== 'response' || !res.body) {
-		vscode.window.showWarningMessage(vscode.l10n.t("Could not determine TypeScript or JavaScript project"));
+		docode.window.showWarningMessage(docode.l10n.t("Could not determine TypeScript or JavaScript project"));
 		return;
 	}
 	return openProjectConfigOrPromptToCreate(projectType, client, rootPath, res.body.configFileName);

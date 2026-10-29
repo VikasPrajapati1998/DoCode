@@ -1,0 +1,20 @@
+{
+	"name": "@docode/sync-api-common",
+	"version": "0.7.2",
+	"description": "An RPC implementation between Web and NodeJS workers that works sync",
+	"engines": {
+		"node": ">=16.15.1"
+	},
+	"main": "./lib/node/main.js",
+	"browser": {
+		"./lib/node/main.js": "./lib/browser/main.js"
+	},
+	"typings": "./lib/common/api.d.ts",
+	"keywords": [
+		"DoCode",
+		"rpc",
+		"sync"
+	],
+	"author": "Visual Studio Code Team",
+	"license": "MIT"
+}

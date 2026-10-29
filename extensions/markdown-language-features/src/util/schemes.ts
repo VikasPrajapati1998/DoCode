@@ -9,9 +9,9 @@ export const Schemes = Object.freeze({
 	file: 'file',
 	untitled: 'untitled',
 	mailto: 'mailto',
-	vscode: 'vscode',
-	'vscode-insiders': 'vscode-insiders',
-	notebookCell: 'vscode-notebook-cell',
+	docode: 'docode',
+	'docode-insiders': 'docode-insiders',
+	notebookCell: 'docode-notebook-cell',
 });
 
 export function isOfScheme(scheme: string, link: string): boolean {

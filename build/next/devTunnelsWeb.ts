@@ -9,14 +9,14 @@ import { createRequire } from 'module';
 import * as path from 'path';
 import { rewriteSourceMappingURL } from './source-map-url.ts';
 
-export const devTunnelsWebOutDir = 'vs/sessions/contrib/providers/remoteAgentHost/browser';
+export const devTunnelsWebOutDir = 'do/sessions/contrib/providers/remoteAgentHost/browser';
 
 const REPO_ROOT = path.dirname(path.dirname(import.meta.dirname));
 const ENTRY_POINT = path.join(REPO_ROOT, 'build', 'next', 'devTunnelsWebEntry.js');
 const SHIMS_ROOT = path.join(REPO_ROOT, 'build', 'next', 'devTunnelsShims');
 const NODE_MODULES_ROOT = path.join(REPO_ROOT, 'node_modules');
 const BUFFER_GLOBAL_SHIM = path.join(SHIMS_ROOT, 'buffer.js');
-const VSCODE_JSONRPC_SHIM = path.join(SHIMS_ROOT, 'vscodeJsonrpc.cjs');
+const DOCODE_JSONRPC_SHIM = path.join(SHIMS_ROOT, 'docodeJsonrpc.cjs');
 const SSH_ALGORITHMS_ROOT = path.join(REPO_ROOT, 'node_modules', '@microsoft', 'dev-tunnels-ssh', 'algorithms');
 const WEB_DEV_OUT_DIR = path.join('out', devTunnelsWebOutDir);
 const nodeRequire = createRequire(import.meta.url);
@@ -29,8 +29,8 @@ const allowedImporterRoots = [
 ];
 const nodeBuiltinNames = ['net', 'os', 'path', 'crypto', 'child_process', 'fs', 'http', 'https', 'tls', 'dns', 'zlib'];
 const nodeBuiltinFilter = new RegExp(`^(?:node:)?(?:${nodeBuiltinNames.join('|')}|stream|buffer)$`);
-const vscodeJsonrpcEventsPath = resolveDevTunnelsJsonRpcModule('events');
-const vscodeJsonrpcCancellationPath = resolveDevTunnelsJsonRpcModule('cancellation');
+const docodeJsonrpcEventsPath = resolveDevTunnelsJsonRpcModule('events');
+const docodeJsonrpcCancellationPath = resolveDevTunnelsJsonRpcModule('cancellation');
 
 /**
  * Builds the browser-only Dev Tunnels SDK bundle loaded through a dynamic ESM import.
@@ -126,15 +126,15 @@ export function devTunnelsBrowserShimPlugin(): esbuild.Plugin {
 				if (!isAllowedImporter(args.importer)) {
 					return;
 				}
-				return { path: path.join(SHIMS_ROOT, 'vscodeJsonrpc.cjs') };
+				return { path: path.join(SHIMS_ROOT, 'docodeJsonrpc.cjs') };
 			});
 
 			build.onResolve({ filter: /^vscode-jsonrpc\/lib\/(?:events|cancellation)$/ }, args => {
-				if (args.importer !== VSCODE_JSONRPC_SHIM) {
+				if (args.importer !== DOCODE_JSONRPC_SHIM) {
 					return;
 				}
 				return {
-					path: args.path.endsWith('/events') ? vscodeJsonrpcEventsPath : vscodeJsonrpcCancellationPath
+					path: args.path.endsWith('/events') ? docodeJsonrpcEventsPath : docodeJsonrpcCancellationPath
 				};
 			});
 		}

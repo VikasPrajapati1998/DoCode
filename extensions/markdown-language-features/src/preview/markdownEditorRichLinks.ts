@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import { DisposableStore } from '@vscode/observables';
+import * as docode from 'docode';
+import { DisposableStore } from '@docode/observables';
 import type { ILogger } from '../logging';
 import { Disposable } from '../util/dispose';
 import { getAbsoluteUri, MdLinkOpener } from '../util/openDocumentLink';
@@ -13,14 +13,14 @@ import { resolveGitCommitHref } from './linkPresentation/gitLinkPresentationReso
 import type { MarkdownEditorRenderer, RichLinkSubscriptions } from './markdownEditorProtocol';
 
 export class MarkdownEditorRichLinkController extends Disposable {
-	readonly #documentUri: vscode.Uri;
+	readonly #documentUri: docode.Uri;
 	readonly #linkOpener: MdLinkOpener;
 	readonly #logger: ILogger;
 	readonly #publish: MarkdownEditorRenderer['richLinkPresentations'];
 	readonly #subscriptions = new Map<string, DisposableStore>();
 
 	constructor(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		linkOpener: MdLinkOpener,
 		logger: ILogger,
 		publish: MarkdownEditorRenderer['richLinkPresentations'],
@@ -81,13 +81,13 @@ export class MarkdownEditorRichLinkController extends Disposable {
 				return;
 			}
 			const resourceString = resource.toString(true);
-			const rule = vscode.window.linkPresentationRules.find(rule => matchesRule(rule.uriPattern, resourceString));
+			const rule = docode.window.linkPresentationRules.find(rule => matchesRule(rule.uriPattern, resourceString));
 			if (!rule) {
 				publishPresentation(undefined);
 				return;
 			}
 
-			const watcher = store.add(vscode.window.createLinkPresentationWatcher(rule.id, resource));
+			const watcher = store.add(docode.window.createLinkPresentationWatcher(rule.id, resource));
 			store.add(watcher.onDidChangePresentation(() => publishPresentation(toMarkdownEditorPresentation(watcher.presentation))));
 			publishPresentation(toMarkdownEditorPresentation(watcher.presentation));
 		} catch (error) {
@@ -97,7 +97,7 @@ export class MarkdownEditorRichLinkController extends Disposable {
 	}
 }
 
-function toMarkdownEditorPresentation(presentation: vscode.LinkPresentationData | undefined): LinkPresentation | undefined {
+function toMarkdownEditorPresentation(presentation: docode.LinkPresentationData | undefined): LinkPresentation | undefined {
 	if (!presentation) {
 		return undefined;
 	}
@@ -107,14 +107,14 @@ function toMarkdownEditorPresentation(presentation: vscode.LinkPresentationData 
 	};
 }
 
-async function resolveLinkResource(href: string, documentUri: vscode.Uri, linkOpener: MdLinkOpener): Promise<vscode.Uri | undefined> {
+async function resolveLinkResource(href: string, documentUri: docode.Uri, linkOpener: MdLinkOpener): Promise<docode.Uri | undefined> {
 	href = resolveGitCommitHref(href, documentUri);
 	const absoluteUri = getAbsoluteUri(href);
 	if (absoluteUri) {
 		return absoluteUri;
 	}
 	const resolved = await linkOpener.resolveDocumentLink(href, documentUri);
-	return resolved && resolved.kind !== 'external' ? vscode.Uri.from(resolved.uri) : undefined;
+	return resolved && resolved.kind !== 'external' ? docode.Uri.from(resolved.uri) : undefined;
 }
 
 function matchesRule(rule: RegExp, value: string): boolean {

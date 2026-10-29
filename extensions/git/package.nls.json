@@ -397,9 +397,9 @@
 		]
 	},
 	"view.workbench.scm.empty": {
-		"message": "In order to use Git features, you can open a folder containing a Git repository or clone from a URL.\n[Open Folder](command:vscode.openFolder)\n[Clone Repository](command:git.cloneRecursive)\nTo learn more about how to use Git and source control in DoCode [read our docs](https://aka.ms/vscode-scm).",
+		"message": "In order to use Git features, you can open a folder containing a Git repository or clone from a URL.\n[Open Folder](command:docode.openFolder)\n[Clone Repository](command:git.cloneRecursive)\nTo learn more about how to use Git and source control in DoCode [read our docs](https://aka.ms/vscode-scm).",
 		"comment": [
-			"{Locked='](command:vscode.openFolder'}",
+			"{Locked='](command:docode.openFolder'}",
 			"Do not translate the 'command:*' part inside of the '(..)'. It is an internal command syntax for VS Code",
 			"Please make sure there is no space between the right bracket and left parenthesis:  ]( this is an internal syntax for links"
 		]

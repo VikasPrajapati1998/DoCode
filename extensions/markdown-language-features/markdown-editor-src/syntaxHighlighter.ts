@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LengthEdit, OffsetRange, StringEdit } from '@vscode/markdown-editor';
-import { observableValue, type ISettableObservable, type ITransaction } from '@vscode/observables';
+import { LengthEdit, OffsetRange, StringEdit } from '@docode/markdown-editor';
+import { observableValue, type ISettableObservable, type ITransaction } from '@docode/observables';
 import type { MarkdownEditorHost, HighlightResult } from '../src/preview/markdownEditorProtocol';
 
 /**
@@ -12,7 +12,7 @@ import type { MarkdownEditorHost, HighlightResult } from '../src/preview/markdow
  * proposed API. Tokens are dense and offset-free: `sum(length)` equals the
  * highlighted source length.
  */
-/** A `Token` as consumed by `@vscode/markdown-editor`'s code block view. */
+/** A `Token` as consumed by `@docode/markdown-editor`'s code block view. */
 interface IRenderToken {
 	readonly length: number;
 	readonly className: string | undefined;
@@ -27,7 +27,7 @@ interface ISnapshot {
  * The bit values mirror the `SyntaxHighlightingTokenFontStyle` enum from the
  * `documentSyntaxHighlighting` proposed API (Italic = 1, Bold = 2, Underline = 4,
  * Strikethrough = 8), defined in
- * `../../../src/vscode-dts/vscode.proposed.documentSyntaxHighlighting.d.ts`.
+ * `../../../src/docode-dts/docode.proposed.documentSyntaxHighlighting.d.ts`.
  * They cannot be imported here because this module is bundled into the webview.
  */
 function fontStyleRules(): string {
@@ -150,7 +150,7 @@ class HighlighterDocument {
 }
 
 /**
- * Bridges `@vscode/markdown-editor`'s `ISyntaxHighlighter` contract to the
+ * Bridges `@docode/markdown-editor`'s `ISyntaxHighlighter` contract to the
  * extension host's `documentSyntaxHighlighting` proposed API over the webview
  * message channel. The webview cannot call the proposed API directly, so each
  * highlight request is proxied to the host and the themed result posted back.

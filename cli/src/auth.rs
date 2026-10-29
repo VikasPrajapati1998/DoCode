@@ -211,7 +211,7 @@ where
 	T: Serialize + ?Sized,
 {
 	let dec = serde_json::to_string(value).expect("expected to serialize");
-	if std::env::var("VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT").is_ok() {
+	if std::env::var("DOCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT").is_ok() {
 		return dec;
 	}
 	encrypt(&dec)
@@ -222,7 +222,7 @@ fn unseal<T>(value: &str) -> Option<T>
 where
 	T: DeserializeOwned,
 {
-	// small back-compat for old unencrypted values, or if VSCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT set
+	// small back-compat for old unencrypted values, or if DOCODE_CLI_DISABLE_KEYCHAIN_ENCRYPT set
 	if let Ok(v) = serde_json::from_str::<T>(value) {
 		return Some(v);
 	}
@@ -424,8 +424,8 @@ impl Auth {
 			Some(ns) => format!("token-{ns}.json"),
 		};
 		let keyring_prefix = match &namespace {
-			None => "vscode-cli".to_string(),
-			Some(ns) => format!("vscode-cli-{ns}"),
+			None => "docode-cli".to_string(),
+			Some(ns) => format!("docode-cli-{ns}"),
 		};
 		Auth {
 			log,
@@ -461,7 +461,7 @@ impl Auth {
 			0o600,
 		));
 
-		let native_storage_result = if std::env::var("VSCODE_CLI_USE_FILE_KEYCHAIN").is_ok()
+		let native_storage_result = if std::env::var("DOCODE_CLI_USE_FILE_KEYCHAIN").is_ok()
 			|| self.file_storage_path.exists()
 		{
 			Err(wrap("", "user prefers file storage").into())
@@ -918,7 +918,7 @@ impl AuthorizationProvider for Auth {
 	}
 }
 
-#[cfg(feature = "vscode-encrypt")]
+#[cfg(feature = "docode-encrypt")]
 static HOSTNAME: std::sync::LazyLock<Vec<u8>> = std::sync::LazyLock::new(|| {
 	gethostname::gethostname()
 		.to_string_lossy()
@@ -926,23 +926,23 @@ static HOSTNAME: std::sync::LazyLock<Vec<u8>> = std::sync::LazyLock::new(|| {
 		.collect()
 });
 
-#[cfg(feature = "vscode-encrypt")]
+#[cfg(feature = "docode-encrypt")]
 fn encrypt(value: &str) -> String {
-	vscode_encrypt::encrypt(&HOSTNAME, value.as_bytes()).expect("expected to encrypt")
+	docode_encrypt::encrypt(&HOSTNAME, value.as_bytes()).expect("expected to encrypt")
 }
 
-#[cfg(feature = "vscode-encrypt")]
+#[cfg(feature = "docode-encrypt")]
 fn decrypt(value: &str) -> Option<String> {
-	let b = vscode_encrypt::decrypt(&HOSTNAME, value).ok()?;
+	let b = docode_encrypt::decrypt(&HOSTNAME, value).ok()?;
 	String::from_utf8(b).ok()
 }
 
-#[cfg(not(feature = "vscode-encrypt"))]
+#[cfg(not(feature = "docode-encrypt"))]
 fn encrypt(value: &str) -> String {
 	value.to_owned()
 }
 
-#[cfg(not(feature = "vscode-encrypt"))]
+#[cfg(not(feature = "docode-encrypt"))]
 fn decrypt(value: &str) -> Option<String> {
 	Some(value.to_owned())
 }

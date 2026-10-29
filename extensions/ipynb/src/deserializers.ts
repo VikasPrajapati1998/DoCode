@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as nbformat from '@jupyterlab/nbformat';
-import { extensions, NotebookCellData, NotebookCellExecutionSummary, NotebookCellKind, NotebookCellOutput, NotebookCellOutputItem, NotebookData } from 'vscode';
+import { extensions, NotebookCellData, NotebookCellExecutionSummary, NotebookCellKind, NotebookCellOutput, NotebookCellOutputItem, NotebookData } from 'docode';
 import { CellMetadata, CellOutputMetadata } from './common';
 import { textMimeTypes } from './constants';
 
@@ -26,7 +26,7 @@ export function getPreferredLanguage(metadata?: nbformat.INotebookMetadata) {
 	const defaultLanguage =
 		extensions.getExtension('ms-python.python')
 			? 'python'
-			: (extensions.getExtension('ms-dotnettools.dotnet-interactive-vscode') ? 'csharp' : 'python');
+			: (extensions.getExtension('ms-dotnettools.dotnet-interactive-docode') ? 'csharp' : 'python');
 
 	// Note, whatever language is returned here, when the user selects a kernel, the cells (of blank documents) get updated based on that kernel selection.
 	return translateKernelLanguageToMonaco(jupyterLanguage || defaultLanguage);
@@ -268,13 +268,13 @@ export function jupyterCellOutputToCellOutput(output: nbformat.IOutput): Noteboo
 	 * Rich, { mime: value }
 	 *
 	 * outputs: [
-			new vscode.NotebookCellOutput([
-				new vscode.NotebookCellOutputItem('application/x.notebook.stream', 2),
-				new vscode.NotebookCellOutputItem('application/x.notebook.stream', 3),
+			new docode.NotebookCellOutput([
+				new docode.NotebookCellOutputItem('application/x.notebook.stream', 2),
+				new docode.NotebookCellOutputItem('application/x.notebook.stream', 3),
 			]),
-			new vscode.NotebookCellOutput([
-				new vscode.NotebookCellOutputItem('text/markdown', '## header 2'),
-				new vscode.NotebookCellOutputItem('image/svg+xml', [
+			new docode.NotebookCellOutput([
+				new docode.NotebookCellOutputItem('text/markdown', '## header 2'),
+				new docode.NotebookCellOutputItem('image/svg+xml', [
 					"<svg baseProfile=\"full\" height=\"200\" version=\"1.1\" width=\"300\" xmlns=\"http://www.w3.org/2000/svg\">\n",
 					"  <rect fill=\"blue\" height=\"100%\" width=\"100%\"/>\n",
 					"  <circle cx=\"150\" cy=\"100\" fill=\"green\" r=\"80\"/>\n",
@@ -322,8 +322,8 @@ function createNotebookCellDataFromCodeCell(cell: nbformat.ICodeCell, cellLangua
 		? { executionOrder: cell.execution_count as number }
 		: {};
 
-	const vscodeCustomMetadata = cell.metadata?.['vscode'] as { [key: string]: any } | undefined;
-	const cellLanguageId = vscodeCustomMetadata && vscodeCustomMetadata.languageId && typeof vscodeCustomMetadata.languageId === 'string' ? vscodeCustomMetadata.languageId : cellLanguage;
+	const docodeCustomMetadata = cell.metadata?.['docode'] as { [key: string]: any } | undefined;
+	const cellLanguageId = docodeCustomMetadata && docodeCustomMetadata.languageId && typeof docodeCustomMetadata.languageId === 'string' ? docodeCustomMetadata.languageId : cellLanguage;
 	const cellData = new NotebookCellData(NotebookCellKind.Code, source, cellLanguageId);
 
 	cellData.outputs = outputs;

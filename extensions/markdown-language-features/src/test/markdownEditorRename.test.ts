@@ -6,24 +6,24 @@
 import * as assert from 'assert';
 import * as os from 'os';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MarkdownEditorRename, type MarkdownRenameApi } from '../preview/markdownEditorRename';
 
 suite('Markdown editor rename', () => {
-	const prepared = { range: new vscode.Range(2, 0, 2, 6), placeholder: 'Target' };
+	const prepared = { range: new docode.Range(2, 0, 2, 6), placeholder: 'Target' };
 	const request = { requestId: 1, offset: 10, editEpoch: 0 };
 
 	async function setup(overrides: Partial<MarkdownRenameApi> = {}, drain: () => Promise<void> = async () => { }) {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: '# Title\r\n\r\nTarget' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: '# Title\r\n\r\nTarget' });
 		const state = { text: '# Title\n\nTarget', editEpoch: 0, active: true };
-		const calls: { uri: vscode.Uri; position: vscode.Position; name?: string }[] = [];
-		const edit = new vscode.WorkspaceEdit();
+		const calls: { uri: docode.Uri; position: docode.Position; name?: string }[] = [];
+		const edit = new docode.WorkspaceEdit();
 		edit.replace(document.uri, prepared.range, 'Renamed');
 		let applications = 0;
 		const api: MarkdownRenameApi = {
 			prepare: async (uri, position) => { calls.push({ uri, position }); return prepared; },
 			rename: async (uri, position, name) => { calls.push({ uri, position, name }); return edit; },
-			apply: async changes => { applications++; return vscode.workspace.applyEdit(changes); },
+			apply: async changes => { applications++; return docode.workspace.applyEdit(changes); },
 			...overrides,
 		};
 		const rename = new MarkdownEditorRename(document, drain, () => state, () => state.active, api);
@@ -33,9 +33,9 @@ suite('Markdown editor rename', () => {
 	test('maps LF renderer offsets to CRLF document positions and back', async () => {
 		const test = await setup();
 		assert.deepStrictEqual(await test.rename.prepare(request), { start: 9, endExclusive: 15, placeholder: 'Target' });
-		assert.deepStrictEqual(test.calls[0].position, new vscode.Position(2, 1));
+		assert.deepStrictEqual(test.calls[0].position, new docode.Position(2, 1));
 		await test.rename.rename({ requestId: 1, newName: 'Renamed' });
-		assert.deepStrictEqual(test.calls[1].position, new vscode.Position(2, 1));
+		assert.deepStrictEqual(test.calls[1].position, new docode.Position(2, 1));
 		assert.strictEqual(test.document.getText(), '# Title\r\n\r\nRenamed');
 		assert.strictEqual(test.applications, 1);
 		await assert.rejects(test.rename.rename({ requestId: 1, newName: 'Again' }), /Start rename again/);
@@ -61,7 +61,7 @@ suite('Markdown editor rename', () => {
 		await entered.promise;
 		test.rename.cancel(1);
 		finish.resolve();
-		await assert.rejects(result, vscode.CancellationError);
+		await assert.rejects(result, docode.CancellationError);
 		await test.rename.prepare({ ...request, requestId: 2 });
 		test.rename.cancel(1);
 		await test.rename.rename({ requestId: 2, newName: 'Renamed' });
@@ -82,7 +82,7 @@ suite('Markdown editor rename', () => {
 		const test = await setup({ prepare: async () => { entered.resolve(); await finish.promise; return prepared; } });
 		const result = test.rename.prepare(request);
 		await entered.promise;
-		await vscode.workspace.applyEdit(test.edit);
+		await docode.workspace.applyEdit(test.edit);
 		finish.resolve();
 		await assert.rejects(result, /document changed/);
 		assert.strictEqual(test.applications, 0);
@@ -90,7 +90,7 @@ suite('Markdown editor rename', () => {
 
 	test('rejects renamed sessions after document changes, reload, or deactivation', async () => {
 		for (const invalidate of [
-			async (test: Awaited<ReturnType<typeof setup>>) => { await vscode.workspace.applyEdit(test.edit); },
+			async (test: Awaited<ReturnType<typeof setup>>) => { await docode.workspace.applyEdit(test.edit); },
 			async (test: Awaited<ReturnType<typeof setup>>) => { test.state.editEpoch++; },
 			async (test: Awaited<ReturnType<typeof setup>>) => { test.state.active = false; },
 			async (test: Awaited<ReturnType<typeof setup>>) => { test.rename.cancel(); },
@@ -113,15 +113,15 @@ suite('Markdown editor rename', () => {
 		await assert.rejects(test.rename.rename({ requestId: 1, newName: 'Twice' }), /already in progress/);
 		test.rename.cancel(1);
 		finish.resolve();
-		await assert.rejects(result, vscode.CancellationError);
+		await assert.rejects(result, docode.CancellationError);
 		assert.strictEqual(test.applications, 0);
 		assert.strictEqual(test.document.getText(), '# Title\r\n\r\nTarget');
 	});
 
 	test('applies all files from the provider workspace edit', async () => {
 		const test = await setup();
-		const reference = await vscode.workspace.openTextDocument({ language: 'markdown', content: '[Target](#target)' });
-		test.edit.replace(reference.uri, new vscode.Range(0, 10, 0, 16), 'renamed');
+		const reference = await docode.workspace.openTextDocument({ language: 'markdown', content: '[Target](#target)' });
+		test.edit.replace(reference.uri, new docode.Range(0, 10, 0, 16), 'renamed');
 		await test.rename.prepare(request);
 		await test.rename.rename({ requestId: 1, newName: 'Renamed' });
 		assert.strictEqual(test.document.lineAt(2).text, 'Renamed');
@@ -132,7 +132,7 @@ suite('Markdown editor rename', () => {
 		let drains = 0;
 		const test = await setup({}, async () => {
 			if (++drains === 3) {
-				await vscode.workspace.applyEdit(test.edit);
+				await docode.workspace.applyEdit(test.edit);
 			}
 		});
 		await test.rename.prepare(request);
@@ -144,15 +144,15 @@ suite('Markdown editor rename', () => {
 	test('does not overwrite a referenced document changed during provider execution', async () => {
 		const entered = Promise.withResolvers<void>();
 		const finish = Promise.withResolvers<void>();
-		const reference = await vscode.workspace.openTextDocument({ language: 'markdown', content: 'Target' });
+		const reference = await docode.workspace.openTextDocument({ language: 'markdown', content: 'Target' });
 		const test = await setup({ rename: async () => { entered.resolve(); await finish.promise; return test.edit; } });
-		test.edit.replace(reference.uri, new vscode.Range(0, 0, 0, 6), 'Renamed');
+		test.edit.replace(reference.uri, new docode.Range(0, 0, 0, 6), 'Renamed');
 		await test.rename.prepare(request);
 		const result = test.rename.rename({ requestId: 1, newName: 'Renamed' });
 		await entered.promise;
-		const external = new vscode.WorkspaceEdit();
-		external.insert(reference.uri, new vscode.Position(0, 0), 'External ');
-		await vscode.workspace.applyEdit(external);
+		const external = new docode.WorkspaceEdit();
+		external.insert(reference.uri, new docode.Position(0, 0), 'External ');
+		await docode.workspace.applyEdit(external);
 		finish.resolve();
 		await assert.rejects(result, /document changed/);
 		assert.strictEqual(reference.getText(), 'External Target');
@@ -177,24 +177,24 @@ suite('Markdown editor rename', () => {
 	});
 
 	test('applies a resource-only rename even though WorkspaceEdit.size is zero', async () => {
-		const root = vscode.Uri.joinPath(vscode.Uri.file(os.tmpdir()), `markdown-rename-${crypto.randomUUID()}`);
-		const before = vscode.Uri.joinPath(root, 'before.md');
-		const after = vscode.Uri.joinPath(root, 'after.md');
+		const root = docode.Uri.joinPath(docode.Uri.file(os.tmpdir()), `markdown-rename-${crypto.randomUUID()}`);
+		const before = docode.Uri.joinPath(root, 'before.md');
+		const after = docode.Uri.joinPath(root, 'after.md');
 		const contents = new TextEncoder().encode('# Target');
-		await vscode.workspace.fs.createDirectory(root);
+		await docode.workspace.fs.createDirectory(root);
 		try {
-			await vscode.workspace.fs.writeFile(before, contents);
-			const edit = new vscode.WorkspaceEdit();
+			await docode.workspace.fs.writeFile(before, contents);
+			const edit = new docode.WorkspaceEdit();
 			edit.renameFile(before, after);
 			assert.strictEqual(edit.size, 0);
 			const test = await setup({ rename: async () => edit });
 			await test.rename.prepare(request);
 			await test.rename.rename({ requestId: 1, newName: 'after' });
-			assert.deepStrictEqual(await vscode.workspace.fs.readDirectory(root), [['after.md', vscode.FileType.File]]);
-			assert.deepStrictEqual(Uint8Array.from(await vscode.workspace.fs.readFile(after)), contents);
+			assert.deepStrictEqual(await docode.workspace.fs.readDirectory(root), [['after.md', docode.FileType.File]]);
+			assert.deepStrictEqual(Uint8Array.from(await docode.workspace.fs.readFile(after)), contents);
 			assert.strictEqual(test.applications, 1);
 		} finally {
-			await vscode.workspace.fs.delete(root, { recursive: true });
+			await docode.workspace.fs.delete(root, { recursive: true });
 		}
 	});
 

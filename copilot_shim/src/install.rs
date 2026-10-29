@@ -122,7 +122,7 @@ impl HostTarget {
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct ToolInventory {
-	/// The running shim, which installs GitHub's MSI on Windows through `--vscode-shim install --interactive`.
+	/// The running shim, which installs GitHub's MSI on Windows through `--docode-shim install --interactive`.
 	pub(crate) shim: Option<PathBuf>,
 	pub(crate) brew: Option<PathBuf>,
 	pub(crate) curl: Option<PathBuf>,
@@ -329,7 +329,7 @@ pub(crate) struct NativeTemporaryScriptFactory;
 impl TemporaryScriptFactory for NativeTemporaryScriptFactory {
 	fn create(&self) -> io::Result<Box<dyn TemporaryScript>> {
 		let file = tempfile::Builder::new()
-			.prefix("vscode-copilot-install-")
+			.prefix("docode-copilot-install-")
 			.suffix(".sh")
 			.tempfile()?;
 		Ok(Box::new(NativeTemporaryScript {
@@ -529,9 +529,9 @@ fn run_command<R: ProcessEffects>(
 
 fn msi_command(tools: &ToolInventory, verbose: bool) -> Option<CommandSpec> {
 	tools.shim.as_ref().map(|shim| {
-		let mut arguments = vec![OsString::from("--vscode-shim")];
+		let mut arguments = vec![OsString::from("--docode-shim")];
 		if verbose {
-			arguments.extend([OsString::from("verbose"), OsString::from("--vscode-shim")]);
+			arguments.extend([OsString::from("verbose"), OsString::from("--docode-shim")]);
 		}
 		arguments.extend([OsString::from("install"), OsString::from("--interactive")]);
 		native_command(shim.as_os_str(), arguments)
@@ -1452,16 +1452,16 @@ mod tests {
 			),
 			(
 				OsStr::new("copilot.exe"),
-				["--vscode-shim", "install", "--interactive"]
+				["--docode-shim", "install", "--interactive"]
 					.into_iter()
 					.map(OsString::from)
 					.collect(),
 				SupervisionMode::InteractiveBootstrap,
 				OsStr::new("copilot.exe"),
 				[
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"install",
 					"--interactive"
 				]

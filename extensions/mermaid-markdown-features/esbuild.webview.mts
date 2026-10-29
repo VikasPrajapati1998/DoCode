@@ -48,7 +48,7 @@ await Promise.all([
 		entryPoints: {
 			'index': path.join(chatSrcDir, 'index.ts'),
 			'index-editor': path.join(chatSrcDir, 'index-editor.ts'),
-			'codicon': path.join(rootDir, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.css'),
+			'codicon': path.join(rootDir, 'node_modules', '@docode', 'codicons', 'dist', 'codicon.css'),
 		},
 		srcDir: chatSrcDir,
 		outdir: path.join(rootDir, 'chat-webview-out'),

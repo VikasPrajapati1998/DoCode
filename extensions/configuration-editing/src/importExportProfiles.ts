@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { basename } from 'path';
 
-type GitHubApi = Pick<typeof vscode.github, 'getClient' | 'getAnonymousClient'>;
-type AuthenticationApi = Pick<typeof vscode.authentication, 'getSession'>;
+type GitHubApi = Pick<typeof docode.github, 'getClient' | 'getAnonymousClient'>;
+type AuthenticationApi = Pick<typeof docode.authentication, 'getSession'>;
 
-export class GitHubGistProfileContentHandler implements vscode.ProfileContentHandler {
+export class GitHubGistProfileContentHandler implements docode.ProfileContentHandler {
 
-	readonly name = vscode.l10n.t('GitHub');
-	readonly description = vscode.l10n.t('gist');
+	readonly name = docode.l10n.t('GitHub');
+	readonly description = docode.l10n.t('gist');
 
 	constructor(
-		private readonly github: GitHubApi = vscode.github,
-		private readonly authentication: AuthenticationApi = vscode.authentication,
+		private readonly github: GitHubApi = docode.github,
+		private readonly authentication: AuthenticationApi = docode.authentication,
 	) { }
 
-	async saveProfile(name: string, content: string, token?: vscode.CancellationToken): Promise<{ readonly id: string; readonly link: vscode.Uri } | null> {
+	async saveProfile(name: string, content: string, token?: docode.CancellationToken): Promise<{ readonly id: string; readonly link: docode.Uri } | null> {
 		this.throwIfCancelled(token);
 		const session = await this.authentication.getSession('github', ['gist', 'user:email'], { createIfNone: true });
 		this.throwIfCancelled(token);
@@ -39,10 +39,10 @@ export class GitHubGistProfileContentHandler implements vscode.ProfileContentHan
 		}
 	}
 
-	async readProfile(idOrUri: string | vscode.Uri, token?: vscode.CancellationToken): Promise<string | null> {
+	async readProfile(idOrUri: string | docode.Uri, token?: docode.CancellationToken): Promise<string | null> {
 		this.throwIfCancelled(token);
 		const gistId = typeof idOrUri === 'string' ? idOrUri : basename(idOrUri.path);
-		let client: vscode.GitHubAnonymousClient | undefined;
+		let client: docode.GitHubAnonymousClient | undefined;
 		try {
 			client = await this.github.getAnonymousClient(token);
 			this.throwIfCancelled(token);
@@ -54,7 +54,7 @@ export class GitHubGistProfileContentHandler implements vscode.ProfileContentHan
 			}
 			return file.content;
 		} catch (error) {
-			if (error instanceof vscode.CancellationError) {
+			if (error instanceof docode.CancellationError) {
 				throw error;
 			}
 			// Other failures mean the gist cannot be read as a profile.
@@ -64,14 +64,14 @@ export class GitHubGistProfileContentHandler implements vscode.ProfileContentHan
 		return null;
 	}
 
-	private throwIfCancelled(token: vscode.CancellationToken | undefined): void {
+	private throwIfCancelled(token: docode.CancellationToken | undefined): void {
 		if (token?.isCancellationRequested) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 	}
 
 }
 
-export function registerGitHubGistProfileContentHandler(): vscode.Disposable {
-	return vscode.window.registerProfileContentHandler('github', new GitHubGistProfileContentHandler());
+export function registerGitHubGistProfileContentHandler(): docode.Disposable {
+	return docode.window.registerProfileContentHandler('github', new GitHubGistProfileContentHandler());
 }

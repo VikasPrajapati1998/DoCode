@@ -6,8 +6,8 @@ with this extension through `WebEditorClient.hostTransport`.
 
 From the VS Code repository:
 
-1. Build `@vscode/markdown-editor` and `@vscode/web-editors` in the adjacent
-   `vscode-packages` checkout.
+1. Build `@vscode/markdown-editor` and `@docode/web-editors` in the adjacent
+   `docode-packages` checkout.
 2. Run `npm install` and `npm run build` in this folder, then run `npm install`
    in `extensions/markdown-language-features`.
 3. Start the **Markdown Code Block Editor Demo** launch configuration.
@@ -15,6 +15,6 @@ From the VS Code repository:
 5. Toggle or edit task-list checkboxes. The count rendered by the code block
    editor updates through the extension host.
 
-The build bundles `@vscode/web-editors` and its transitive dependencies into
+The build bundles `@docode/web-editors` and its transitive dependencies into
 the iframe entrypoint. The formatter remains a separate generated chunk so the
 demo also exercises relative dynamic imports.

@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { PackageManager, ResolvedProject } from '@vscode/ts-package-manager';
+import { PackageManager, ResolvedProject } from '@docode/ts-package-manager';
 import { basename, join } from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { URI } from 'vscode-uri';
 import { Disposable } from '../utils/dispose';
 import { MemFs } from './memFs';
@@ -14,13 +14,13 @@ import { Logger } from '../logging/logger';
 const TEXT_DECODER = new TextDecoder('utf-8');
 const TEXT_ENCODER = new TextEncoder();
 
-export class AutoInstallerFs extends Disposable implements vscode.FileSystemProvider {
+export class AutoInstallerFs extends Disposable implements docode.FileSystemProvider {
 
 	private readonly memfs: MemFs;
 	private readonly packageManager: PackageManager;
 	private readonly _projectCache = new Map</* root */ string, Promise<void> | undefined>();
 
-	private readonly _emitter = this._register(new vscode.EventEmitter<vscode.FileChangeEvent[]>());
+	private readonly _emitter = this._register(new docode.EventEmitter<docode.FileChangeEvent[]>());
 	readonly onDidChangeFile = this._emitter.event;
 
 	constructor(
@@ -58,7 +58,7 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 			directoryExists(path: string): boolean {
 				try {
 					const stat = memfs.stat(URI.file(path));
-					return stat.type === vscode.FileType.Directory;
+					return stat.type === docode.FileType.Directory;
 				} catch (e) {
 					return false;
 				}
@@ -74,12 +74,12 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 		});
 	}
 
-	watch(resource: vscode.Uri): vscode.Disposable {
+	watch(resource: docode.Uri): docode.Disposable {
 		this.logger.trace(`AutoInstallerFs.watch. Resource: ${resource.toString()}}`);
 		return this.memfs.watch(resource);
 	}
 
-	async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
+	async stat(uri: docode.Uri): Promise<docode.FileStat> {
 		this.logger.trace(`AutoInstallerFs.stat: ${uri}`);
 
 		const mapped = new MappedUri(uri);
@@ -92,7 +92,7 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 			return {
 				mtime: 0,
 				ctime: 0,
-				type: vscode.FileType.Directory,
+				type: docode.FileType.Directory,
 				size: 0
 			};
 		}
@@ -102,7 +102,7 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 		return this.memfs.stat(URI.file(mapped.path));
 	}
 
-	async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
+	async readDirectory(uri: docode.Uri): Promise<[string, docode.FileType][]> {
 		this.logger.trace(`AutoInstallerFs.readDirectory: ${uri}`);
 
 		const mapped = new MappedUri(uri);
@@ -111,7 +111,7 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 		return this.memfs.readDirectory(URI.file(mapped.path));
 	}
 
-	async readFile(uri: vscode.Uri): Promise<Uint8Array> {
+	async readFile(uri: docode.Uri): Promise<Uint8Array> {
 		this.logger.trace(`AutoInstallerFs.readFile: ${uri}`);
 
 		const mapped = new MappedUri(uri);
@@ -120,31 +120,31 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 		return this.memfs.readFile(URI.file(mapped.path));
 	}
 
-	writeFile(_uri: vscode.Uri, _content: Uint8Array, _options: { create: boolean; overwrite: boolean }): void {
+	writeFile(_uri: docode.Uri, _content: Uint8Array, _options: { create: boolean; overwrite: boolean }): void {
 		throw new Error('not implemented');
 	}
 
-	rename(_oldUri: vscode.Uri, _newUri: vscode.Uri, _options: { overwrite: boolean }): void {
+	rename(_oldUri: docode.Uri, _newUri: docode.Uri, _options: { overwrite: boolean }): void {
 		throw new Error('not implemented');
 	}
 
-	delete(_uri: vscode.Uri): void {
+	delete(_uri: docode.Uri): void {
 		throw new Error('not implemented');
 	}
 
-	createDirectory(_uri: vscode.Uri): void {
+	createDirectory(_uri: docode.Uri): void {
 		throw new Error('not implemented');
 	}
 
 	private async ensurePackageContents(incomingUri: MappedUri): Promise<void> {
 		// If we're not looking for something inside node_modules, bail early.
 		if (!incomingUri.path.includes('node_modules')) {
-			throw vscode.FileSystemError.FileNotFound();
+			throw docode.FileSystemError.FileNotFound();
 		}
 
 		// standard lib files aren't handled through here
 		if (incomingUri.path.includes('node_modules/@typescript') || incomingUri.path.includes('node_modules/@types/typescript__')) {
-			throw vscode.FileSystemError.FileNotFound();
+			throw docode.FileSystemError.FileNotFound();
 		}
 
 		const root = await this.getProjectRoot(incomingUri.original);
@@ -180,7 +180,7 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 	}
 
 	private async getInstallOpts(originalUri: URI, root: string) {
-		const vsfs = vscode.workspace.fs;
+		const vsfs = docode.workspace.fs;
 
 		// We definitely need a package.json to be there.
 		const pkgJson = TEXT_DECODER.decode(await vsfs.readFile(originalUri.with({ path: join(root, 'package.json') })));
@@ -203,7 +203,7 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 	}
 
 	private async getProjectRoot(incomingUri: URI): Promise<string | undefined> {
-		const vsfs = vscode.workspace.fs;
+		const vsfs = docode.workspace.fs;
 		const pkgPath = incomingUri.path.match(/^(.*?)\/node_modules/);
 		const ret = pkgPath?.[1];
 		if (!ret) {
@@ -219,10 +219,10 @@ export class AutoInstallerFs extends Disposable implements vscode.FileSystemProv
 }
 
 class MappedUri {
-	readonly raw: vscode.Uri;
-	readonly original: vscode.Uri;
-	readonly mapped: vscode.Uri;
-	constructor(uri: vscode.Uri) {
+	readonly raw: docode.Uri;
+	readonly original: docode.Uri;
+	readonly mapped: docode.Uri;
+	constructor(uri: docode.Uri) {
 		this.raw = uri;
 
 		const parts = uri.path.match(/^\/([^\/]+)\/([^\/]*)(?:\/(.+))?$/);

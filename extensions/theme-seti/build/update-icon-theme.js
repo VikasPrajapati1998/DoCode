@@ -10,7 +10,7 @@ const fs = require('fs');
 const https = require('https');
 const minimatch = require('minimatch');
 
-// list of languagesId not shipped with VSCode. The information is used to associate an icon with a language association
+// list of languagesId not shipped with DoCode. The information is used to associate an icon with a language association
 // Please try and keep this list in alphabetical order! Thank you.
 const nonBuiltInLanguages = { // { fileNames, extensions  }
 	"argdown": { extensions: ['ad', 'adown', 'argdown', 'argdn'] },
@@ -57,7 +57,7 @@ const ignoreExtAssociation = {
 	"properties": true
 };
 
-const FROM_DISK = true; // set to true to take content from a repo checked out next to the vscode repo
+const FROM_DISK = true; // set to true to take content from a repo checked out next to the docode repo
 
 let font, fontMappingsFile, fileAssociationFile, colorsFile;
 if (!FROM_DISK) {

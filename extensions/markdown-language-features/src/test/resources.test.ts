@@ -5,20 +5,20 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getMarkdownLocalResourceRoots } from '../util/resources';
 
 suite('Markdown local resource roots', () => {
-	const mediaRoot = vscode.Uri.parse('test:/extension/media');
-	const workspaceRootA = vscode.Uri.parse('test:/workspace/a');
-	const workspaceRootB = vscode.Uri.parse('test:/workspace/b');
-	const workspaceFolders: readonly vscode.WorkspaceFolder[] = [
+	const mediaRoot = docode.Uri.parse('test:/extension/media');
+	const workspaceRootA = docode.Uri.parse('test:/workspace/a');
+	const workspaceRootB = docode.Uri.parse('test:/workspace/b');
+	const workspaceFolders: readonly docode.WorkspaceFolder[] = [
 		{ index: 0, name: 'a', uri: workspaceRootA },
 		{ index: 1, name: 'b', uri: workspaceRootB },
 	];
 
 	test('Uses all workspace roots for a workspace resource', () => {
-		const resource = vscode.Uri.parse('test:/workspace/a/docs/readme.md');
+		const resource = docode.Uri.parse('test:/workspace/a/docs/readme.md');
 		const workspaceContext = {
 			workspaceFolders,
 			getWorkspaceFolder: () => workspaceFolders[0],
@@ -31,7 +31,7 @@ suite('Markdown local resource roots', () => {
 	});
 
 	test('Uses the document directory outside a workspace', () => {
-		const resource = vscode.Uri.parse('test:/outside/docs/readme.md');
+		const resource = docode.Uri.parse('test:/outside/docs/readme.md');
 		const workspaceContext = {
 			workspaceFolders,
 			getWorkspaceFolder: () => undefined,
@@ -39,12 +39,12 @@ suite('Markdown local resource roots', () => {
 
 		assert.deepStrictEqual(
 			getMarkdownLocalResourceRoots(resource, [mediaRoot], { workspaceContext }),
-			[mediaRoot, vscode.Uri.parse('test:/outside/docs')],
+			[mediaRoot, docode.Uri.parse('test:/outside/docs')],
 		);
 	});
 
 	test('Does not include workspace resources when disabled', () => {
-		const resource = vscode.Uri.parse('test:/workspace/a/docs/readme.md');
+		const resource = docode.Uri.parse('test:/workspace/a/docs/readme.md');
 		const workspaceContext = {
 			workspaceFolders,
 			getWorkspaceFolder: () => workspaceFolders[0],

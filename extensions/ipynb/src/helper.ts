@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationError } from 'vscode';
+import { CancellationError } from 'docode';
 
 export function deepClone<T>(obj: T): T {
 	if (obj === null || typeof obj !== 'object') {
@@ -149,7 +149,7 @@ export interface ITask<T> {
 
 
 /**
- * Copied from src/vs/base/common/uuid.ts
+ * Copied from src/do/base/common/uuid.ts
  */
 export function generateUuid(): string {
 	// use `randomUUID` if possible

@@ -3,20 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 import PHPCompletionItemProvider from './features/completionItemProvider';
 import PHPHoverProvider from './features/hoverProvider';
 import PHPSignatureHelpProvider from './features/signatureHelpProvider';
 import PHPValidationProvider from './features/validationProvider';
 
-export function activate(context: vscode.ExtensionContext): any {
+export function activate(context: docode.ExtensionContext): any {
 
 	const validator = new PHPValidationProvider();
 	validator.activate(context.subscriptions);
 
 	// add providers
-	context.subscriptions.push(vscode.languages.registerCompletionItemProvider('php', new PHPCompletionItemProvider(), '>', '$'));
-	context.subscriptions.push(vscode.languages.registerHoverProvider('php', new PHPHoverProvider()));
-	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('php', new PHPSignatureHelpProvider(), '(', ','));
+	context.subscriptions.push(docode.languages.registerCompletionItemProvider('php', new PHPCompletionItemProvider(), '>', '$'));
+	context.subscriptions.push(docode.languages.registerHoverProvider('php', new PHPHoverProvider()));
+	context.subscriptions.push(docode.languages.registerSignatureHelpProvider('php', new PHPSignatureHelpProvider(), '(', ','));
 }

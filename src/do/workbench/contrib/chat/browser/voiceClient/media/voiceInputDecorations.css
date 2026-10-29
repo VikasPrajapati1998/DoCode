@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.voice-transcript-overlay-scrollable {
+	position: absolute !important;
+	inset: 0 0 36px;
+	z-index: 10;
+	pointer-events: none;
+	background: var(--docode-input-background, transparent);
+	border-radius: inherit;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.voice-transcript-overlay-scrollable.has-transcript {
+	pointer-events: auto;
+}
+
+.voice-transcript-overlay {
+	height: 100%;
+	box-sizing: border-box;
+	padding: var(--docode-spacing-size80) var(--docode-spacing-size120);
+	font-size: var(--docode-fontSize-body1);
+	line-height: 1.4;
+	word-break: break-word;
+	overflow: hidden;
+	overscroll-behavior: contain;
+}
+
+.voice-transcript-overlay .committed {
+	color: var(--docode-foreground);
+}
+
+.voice-transcript-overlay .partial {
+	color: var(--docode-foreground);
+	opacity: 0.6;
+	font-style: italic;
+}
+
+.voice-transcript-overlay .listening {
+	color: var(--docode-descriptionForeground);
+	font-style: italic;
+}
+
+.voice-transcript-overlay .assistant-text {
+	color: var(--docode-descriptionForeground);
+	white-space: pre-wrap;
+}

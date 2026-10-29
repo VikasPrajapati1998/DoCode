@@ -3,27 +3,27 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { SymbolItemEditorHighlights } from './references-view';
 
 export class EditorHighlights<T> {
 
-	private readonly _decorationType: vscode.TextEditorDecorationType;
+	private readonly _decorationType: docode.TextEditorDecorationType;
 
-	private readonly disposables: vscode.Disposable[] = [];
+	private readonly disposables: docode.Disposable[] = [];
 	private readonly _ignore = new Set<string>();
 
-	constructor(private readonly _view: vscode.TreeView<T>, private readonly _delegate: SymbolItemEditorHighlights<T>) {
-		this._decorationType = vscode.window.createTextEditorDecorationType({
-			backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
-			rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
-			overviewRulerLane: vscode.OverviewRulerLane.Center,
-			overviewRulerColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
+	constructor(private readonly _view: docode.TreeView<T>, private readonly _delegate: SymbolItemEditorHighlights<T>) {
+		this._decorationType = docode.window.createTextEditorDecorationType({
+			backgroundColor: new docode.ThemeColor('editor.findMatchHighlightBackground'),
+			rangeBehavior: docode.DecorationRangeBehavior.ClosedClosed,
+			overviewRulerLane: docode.OverviewRulerLane.Center,
+			overviewRulerColor: new docode.ThemeColor('editor.findMatchHighlightBackground'),
 		});
 		this.disposables.push(
 			this._decorationType,
-			vscode.workspace.onDidChangeTextDocument(e => this._ignore.add(e.document.uri.toString())),
-			vscode.window.onDidChangeActiveTextEditor(() => _view.visible && this.update()),
+			docode.workspace.onDidChangeTextDocument(e => this._ignore.add(e.document.uri.toString())),
+			docode.window.onDidChangeActiveTextEditor(() => _view.visible && this.update()),
 			_view.onDidChangeVisibility(e => e.visible ? this._show() : this._hide()),
 			_view.onDidChangeSelection(() => {
 				if (_view.visible) {
@@ -35,11 +35,11 @@ export class EditorHighlights<T> {
 	}
 
 	dispose() {
-		vscode.Disposable.from(...this.disposables).dispose();
+		docode.Disposable.from(...this.disposables).dispose();
 	}
 
 	private _show(): void {
-		const { activeTextEditor: editor } = vscode.window;
+		const { activeTextEditor: editor } = docode.window;
 		if (!editor || !editor.viewColumn) {
 			return;
 		}
@@ -57,7 +57,7 @@ export class EditorHighlights<T> {
 	}
 
 	private _hide(): void {
-		for (const editor of vscode.window.visibleTextEditors) {
+		for (const editor of docode.window.visibleTextEditors) {
 			editor.setDecorations(this._decorationType, []);
 		}
 	}

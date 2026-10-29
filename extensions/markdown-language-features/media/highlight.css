@@ -99,14 +99,14 @@ https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs201
 }
 
 .hljs-addition {
-	background-color: var(--vscode-diffEditor-insertedTextBackground, rgba(155, 185, 85, 0.2));
+	background-color: var(--docode-diffEditor-insertedTextBackground, rgba(155, 185, 85, 0.2));
 	color: rgb(155, 185, 85);
 	display: inline-block;
 	width: 100%;
 }
 
 .hljs-deletion {
-	background: var(--vscode-diffEditor-removedTextBackground, rgba(255, 0, 0, 0.2));
+	background: var(--docode-diffEditor-removedTextBackground, rgba(255, 0, 0, 0.2));
 	color: rgb(255, 0, 0);
 	display: inline-block;
 	width: 100%;
@@ -122,70 +122,70 @@ Visual Studio-like style based on original C# coloring by Jason Diamond <jason@d
 
 */
 
-.vscode-light .hljs-function,
-.vscode-light .hljs-params,
-.vscode-light .hljs-number,
-.vscode-light .hljs-class  {
+.docode-light .hljs-function,
+.docode-light .hljs-params,
+.docode-light .hljs-number,
+.docode-light .hljs-class  {
 	color: inherit;
 }
 
-.vscode-light .hljs-comment,
-.vscode-light .hljs-quote,
-.vscode-light .hljs-number,
-.vscode-light .hljs-class,
-.vscode-light .hljs-variable {
+.docode-light .hljs-comment,
+.docode-light .hljs-quote,
+.docode-light .hljs-number,
+.docode-light .hljs-class,
+.docode-light .hljs-variable {
 	color: #008000;
 }
 
-.vscode-light .hljs-keyword,
-.vscode-light .hljs-selector-tag,
-.vscode-light .hljs-name,
-.vscode-light .hljs-tag {
+.docode-light .hljs-keyword,
+.docode-light .hljs-selector-tag,
+.docode-light .hljs-name,
+.docode-light .hljs-tag {
 	color: #00f;
 }
 
-.vscode-light .hljs-built_in,
-.vscode-light .hljs-builtin-name {
+.docode-light .hljs-built_in,
+.docode-light .hljs-builtin-name {
 	color: #007acc;
 }
 
-.vscode-light .hljs-string,
-.vscode-light .hljs-section,
-.vscode-light .hljs-attribute,
-.vscode-light .hljs-literal,
-.vscode-light .hljs-template-tag,
-.vscode-light .hljs-template-variable,
-.vscode-light .hljs-type {
+.docode-light .hljs-string,
+.docode-light .hljs-section,
+.docode-light .hljs-attribute,
+.docode-light .hljs-literal,
+.docode-light .hljs-template-tag,
+.docode-light .hljs-template-variable,
+.docode-light .hljs-type {
 	color: #a31515;
 }
 
-.vscode-light .hljs-subst,
-.vscode-light .hljs-selector-attr,
-.vscode-light .hljs-selector-pseudo,
-.vscode-light .hljs-meta,
-.vscode-light .hljs-meta-keyword {
+.docode-light .hljs-subst,
+.docode-light .hljs-selector-attr,
+.docode-light .hljs-selector-pseudo,
+.docode-light .hljs-meta,
+.docode-light .hljs-meta-keyword {
 	color: #2b91af;
 }
-.vscode-light .hljs-title,
-.vscode-light .hljs-doctag {
+.docode-light .hljs-title,
+.docode-light .hljs-doctag {
 	color: #808080;
 }
 
-.vscode-light .hljs-attr {
+.docode-light .hljs-attr {
 	color: #f00;
 }
 
-.vscode-light .hljs-symbol,
-.vscode-light .hljs-bullet,
-.vscode-light .hljs-link {
+.docode-light .hljs-symbol,
+.docode-light .hljs-bullet,
+.docode-light .hljs-link {
 	color: #00b0e8;
 }
 
 
-.vscode-light .hljs-emphasis {
+.docode-light .hljs-emphasis {
 	font-style: italic;
 }
 
-.vscode-light .hljs-strong {
+.docode-light .hljs-strong {
 	font-weight: bold;
 }

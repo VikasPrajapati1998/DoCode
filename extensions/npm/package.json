@@ -1,13 +1,13 @@
 {
   "name": "npm",
-  "publisher": "vscode",
+  "publisher": "docode",
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "10.0.0",
   "private": true,
   "license": "MIT",
   "engines": {
-    "vscode": "0.10.x"
+    "docode": "0.10.x"
   },
   "icon": "images/npm_icon.png",
   "categories": [

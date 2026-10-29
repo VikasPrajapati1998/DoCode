@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command } from '../commandManager';
 
 export class ReopenAsPreviewCommand implements Command {
 	public readonly id = 'markdown.reopenAsPreview';
 
 	public async execute() {
-		await vscode.commands.executeCommand('reopenActiveEditorWith', 'vscode.markdown.preview.editor');
+		await docode.commands.executeCommand('reopenActiveEditorWith', 'docode.markdown.preview.editor');
 	}
 }
 
@@ -18,7 +18,7 @@ export class ReopenAsSourceCommand implements Command {
 	public readonly id = 'markdown.reopenAsSource';
 
 	public async execute() {
-		await vscode.commands.executeCommand('reopenActiveEditorWith', 'default');
+		await docode.commands.executeCommand('reopenActiveEditorWith', 'default');
 	}
 }
 
@@ -26,12 +26,12 @@ export class TogglePreviewCommand implements Command {
 	public readonly id = 'markdown.togglePreview';
 
 	public async execute() {
-		if (vscode.window.activeTextEditor) {
+		if (docode.window.activeTextEditor) {
 			// In source editor, switch to preview
-			await vscode.commands.executeCommand('reopenActiveEditorWith', 'vscode.markdown.preview.editor');
+			await docode.commands.executeCommand('reopenActiveEditorWith', 'docode.markdown.preview.editor');
 		} else {
 			// In custom editor preview, switch to source
-			await vscode.commands.executeCommand('reopenActiveEditorWith', 'default');
+			await docode.commands.executeCommand('reopenActiveEditorWith', 'default');
 		}
 	}
 }

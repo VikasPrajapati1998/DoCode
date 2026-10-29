@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { LanguageDescription } from '../configuration/languageDescription';
 import type * as Proto from '../tsServer/protocol/protocol';
@@ -17,13 +17,13 @@ class TagClosing extends Disposable {
 
 	private _disposed = false;
 	private _timeout: NodeJS.Timeout | undefined = undefined;
-	private _cancel: vscode.CancellationTokenSource | undefined = undefined;
+	private _cancel: docode.CancellationTokenSource | undefined = undefined;
 
 	constructor(
 		private readonly client: ITypeScriptServiceClient
 	) {
 		super();
-		vscode.workspace.onDidChangeTextDocument(
+		docode.workspace.onDidChangeTextDocument(
 			event => this.onDidChangeTextDocument(event),
 			null,
 			this._disposables);
@@ -46,13 +46,13 @@ class TagClosing extends Disposable {
 	}
 
 	private onDidChangeTextDocument(
-		{ document, contentChanges, reason }: vscode.TextDocumentChangeEvent
+		{ document, contentChanges, reason }: docode.TextDocumentChangeEvent
 	) {
-		if (contentChanges.length === 0 || reason === vscode.TextDocumentChangeReason.Undo || reason === vscode.TextDocumentChangeReason.Redo) {
+		if (contentChanges.length === 0 || reason === docode.TextDocumentChangeReason.Undo || reason === docode.TextDocumentChangeReason.Redo) {
 			return;
 		}
 
-		const activeDocument = vscode.window.activeTextEditor?.document;
+		const activeDocument = docode.window.activeTextEditor?.document;
 		if (document !== activeDocument) {
 			return;
 		}
@@ -79,7 +79,7 @@ class TagClosing extends Disposable {
 		}
 
 		const priorCharacter = lastChange.range.start.character > 0
-			? document.getText(new vscode.Range(lastChange.range.start.translate({ characterDelta: -1 }), lastChange.range.start))
+			? document.getText(new docode.Range(lastChange.range.start.translate({ characterDelta: -1 }), lastChange.range.start))
 			: '';
 		if (priorCharacter === '>') {
 			return;
@@ -96,10 +96,10 @@ class TagClosing extends Disposable {
 			const addedLines = lastChange.text.split(/\r\n|\n/g);
 			const position = addedLines.length <= 1
 				? lastChange.range.start.translate({ characterDelta: lastChange.text.length })
-				: new vscode.Position(lastChange.range.start.line + addedLines.length - 1, addedLines[addedLines.length - 1].length);
+				: new docode.Position(lastChange.range.start.line + addedLines.length - 1, addedLines[addedLines.length - 1].length);
 
 			const args: Proto.JsxClosingTagRequestArgs = typeConverters.Position.toFileLocationRequestArgs(filepath, position);
-			this._cancel = new vscode.CancellationTokenSource();
+			this._cancel = new docode.CancellationTokenSource();
 			const response = await this.client.execute('jsxClosingTag', args, this._cancel.token);
 			if (response.type !== 'response' || !response.body) {
 				return;
@@ -109,7 +109,7 @@ class TagClosing extends Disposable {
 				return;
 			}
 
-			const activeEditor = vscode.window.activeTextEditor;
+			const activeEditor = docode.window.activeTextEditor;
 			if (!activeEditor) {
 				return;
 			}
@@ -124,14 +124,14 @@ class TagClosing extends Disposable {
 		}, 100);
 	}
 
-	private getTagSnippet(closingTag: Proto.TextInsertion): vscode.SnippetString {
-		const snippet = new vscode.SnippetString();
+	private getTagSnippet(closingTag: Proto.TextInsertion): docode.SnippetString {
+		const snippet = new docode.SnippetString();
 		snippet.appendPlaceholder('', 0);
 		snippet.appendText(closingTag.newText);
 		return snippet;
 	}
 
-	private getInsertionPositions(editor: vscode.TextEditor, position: vscode.Position) {
+	private getInsertionPositions(editor: docode.TextEditor, position: docode.Position) {
 		const activeSelectionPositions = editor.selections.map(s => s.active);
 		return activeSelectionPositions.some(p => p.isEqual(position))
 			? activeSelectionPositions
@@ -140,23 +140,23 @@ class TagClosing extends Disposable {
 }
 
 function requireActiveDocumentSetting(
-	selector: vscode.DocumentSelector,
+	selector: docode.DocumentSelector,
 	language: LanguageDescription,
 ) {
 	return new Condition(
 		() => {
-			const editor = vscode.window.activeTextEditor;
-			if (!editor || !vscode.languages.match(selector, editor.document)) {
+			const editor = docode.window.activeTextEditor;
+			if (!editor || !docode.languages.match(selector, editor.document)) {
 				return false;
 			}
 
 			return !!readUnifiedConfig<boolean>('autoClosingTags.enabled', true, { scope: editor.document, fallbackSection: language.id, fallbackSubSectionNameOverride: 'autoClosingTags' });
 		},
 		handler => {
-			return vscode.Disposable.from(
-				vscode.window.onDidChangeActiveTextEditor(handler),
-				vscode.workspace.onDidOpenTextDocument(handler),
-				vscode.workspace.onDidChangeConfiguration(handler));
+			return docode.Disposable.from(
+				docode.window.onDidChangeActiveTextEditor(handler),
+				docode.workspace.onDidOpenTextDocument(handler),
+				docode.workspace.onDidChangeConfiguration(handler));
 		});
 }
 

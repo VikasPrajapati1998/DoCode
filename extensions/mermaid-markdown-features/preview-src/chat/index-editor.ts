@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { initializeMermaidWebview } from './mermaidWebview';
-import { VsCodeApi } from './vscodeApi';
+import { VsCodeApi } from './docodeApi';
 
 declare function acquireVsCodeApi(): VsCodeApi;
-const vscode = acquireVsCodeApi();
+const docode = acquireVsCodeApi();
 
-initializeMermaidWebview(vscode, { defaultView: 'fit' }).then(panZoomHandler => {
+initializeMermaidWebview(docode, { defaultView: 'fit' }).then(panZoomHandler => {
 	if (!panZoomHandler) {
 		return;
 	}

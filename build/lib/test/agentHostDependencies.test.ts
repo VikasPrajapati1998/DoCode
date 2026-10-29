@@ -12,18 +12,18 @@ import * as ts from 'typescript';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '../../..');
 const agentHostEntryPoints = [
-	'src/vs/platform/agentHost/node/agentHostMain.ts',
-	'src/vs/platform/agentHost/node/agentHostServerMain.ts',
+	'src/do/platform/agentHost/node/agentHostMain.ts',
+	'src/do/platform/agentHost/node/agentHostServerMain.ts',
 ];
 const excludedLiteralDynamicImports = new Set([
 	// Test-only provider loaded by the standalone server's --enable-mock-agent option.
 	literalDynamicImportKey(
-		path.join(repositoryRoot, 'src/vs/platform/agentHost/node/agentHostServerMain.ts'),
+		path.join(repositoryRoot, 'src/do/platform/agentHost/node/agentHostServerMain.ts'),
 		'../test/node/mockAgent.js'
 	),
 	// Built products use the downloaded SDK path; the bare package import is a dev fallback.
 	literalDynamicImportKey(
-		path.join(repositoryRoot, 'src/vs/platform/agentHost/node/claude/claudeAgentSdkService.ts'),
+		path.join(repositoryRoot, 'src/do/platform/agentHost/node/claude/claudeAgentSdkService.ts'),
 		'@anthropic-ai/claude-agent-sdk'
 	),
 ]);
@@ -58,14 +58,14 @@ suite('Agent Host dependencies', () => {
 			ts.ScriptKind.TS
 		);
 		const mockAgentServerSource = ts.createSourceFile(
-			path.join(repositoryRoot, 'src/vs/platform/agentHost/node/agentHostServerMain.ts'),
+			path.join(repositoryRoot, 'src/do/platform/agentHost/node/agentHostServerMain.ts'),
 			`import('../test/node/mockAgent.js'); import('node-pty');`,
 			ts.ScriptTarget.Latest,
 			true,
 			ts.ScriptKind.TS
 		);
 		const claudeSdkServiceSource = ts.createSourceFile(
-			path.join(repositoryRoot, 'src/vs/platform/agentHost/node/claude/claudeAgentSdkService.ts'),
+			path.join(repositoryRoot, 'src/do/platform/agentHost/node/claude/claudeAgentSdkService.ts'),
 			`import('@anthropic-ai/claude-agent-sdk'); import('node-pty');`,
 			ts.ScriptTarget.Latest,
 			true,

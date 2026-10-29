@@ -5,7 +5,7 @@
 
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import type { EditorCommandDefinition } from '@vscode/markdown-editor/commands';
+import type { EditorCommandDefinition } from '@docode/markdown-editor/commands';
 import { debounceAsync, updatePackageJson, updatePackageNlsJson } from './updateMarkdownEditorPackageJson.mts';
 
 const command: EditorCommandDefinition = {
@@ -51,7 +51,7 @@ describe('updatePackageJson', () => {
 				command: command.id,
 				title: `%${command.id}.title%`,
 				category: 'Markdown Editor',
-				enablement: `activeCustomEditorId == 'vscode.markdown.editor'`,
+				enablement: `activeCustomEditorId == 'docode.markdown.editor'`,
 				$generated: true,
 			},
 		]);
@@ -68,13 +68,13 @@ describe('updatePackageJson', () => {
 			{
 				command: command.id,
 				key: 'left',
-				when: `activeCustomEditorId == 'vscode.markdown.editor' && markdownEditorFocus`,
+				when: `activeCustomEditorId == 'docode.markdown.editor' && markdownEditorFocus`,
 				$generated: true,
 			},
 			{
 				command: command.id,
 				key: 'ctrl+b',
-				when: `activeCustomEditorId == 'vscode.markdown.editor' && markdownEditorFocus && isMac`,
+				when: `activeCustomEditorId == 'docode.markdown.editor' && markdownEditorFocus && isMac`,
 				$generated: true,
 			},
 		]);
@@ -119,7 +119,7 @@ describe('updatePackageJson', () => {
 			command: localCommand.id,
 			title: `%${localCommand.id}.title%`,
 			category: 'Markdown Editor',
-			enablement: `activeCustomEditorId == 'vscode.markdown.editor'`,
+			enablement: `activeCustomEditorId == 'docode.markdown.editor'`,
 			$generated: true,
 		}]);
 		assert.deepEqual(result.value.contributes?.menus?.commandPalette, [{
@@ -145,7 +145,7 @@ describe('updatePackageNlsJson', () => {
 				displayName: 'Markdown Language Features',
 				[`${command.id}.title`]: {
 					message: command.title,
-					comment: ['Generated from @vscode/markdown-editor/commands. Do not edit manually.'],
+					comment: ['Generated from @docode/markdown-editor/commands. Do not edit manually.'],
 					$generated: true,
 				},
 				description: 'Provides rich language support for Markdown.',
@@ -158,7 +158,7 @@ describe('updatePackageNlsJson', () => {
 			displayName: 'Markdown Language Features',
 			[`${command.id}.title`]: {
 				message: command.title,
-				comment: ['Generated from @vscode/markdown-editor/commands. Do not edit manually.'],
+				comment: ['Generated from @docode/markdown-editor/commands. Do not edit manually.'],
 				$generated: true as const,
 			},
 		};

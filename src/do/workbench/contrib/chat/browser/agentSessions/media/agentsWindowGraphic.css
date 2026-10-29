@@ -1,0 +1,405 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Layout */
+
+.agents-window-graphic {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--docode-spacing-size240) var(--docode-spacing-size320);
+	max-width: 100%;
+}
+
+.agents-window-graphic-figure {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--docode-spacing-size80);
+	min-width: 0;
+	max-width: 100%;
+	margin: 0;
+}
+
+/* Design 1's two windows shrink together, then stack when they don't fit side by side. */
+.agents-window-graphic.window-comparison .agents-window-graphic-figure {
+	flex: 1 1 0;
+	min-width: min(200px, 100%);
+	max-width: 240px;
+}
+
+/* Design 2 scales down to fit: a replaced element with a percentage max-width doesn't add to its container's min-content width. */
+.agents-window-graphic.many-windows-to-one .agents-window-graphic-svg {
+	width: 540px;
+	max-width: 100%;
+}
+
+.agents-window-graphic-svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	overflow: visible;
+}
+
+/* Compact graphics fill the width of their container, such as a hover card. */
+.agents-window-graphic.compact {
+	flex-wrap: nowrap;
+	gap: var(--docode-spacing-size120);
+}
+
+.agents-window-graphic.compact .agents-window-graphic-figure {
+	gap: var(--docode-spacing-size60);
+}
+
+.agents-window-graphic.window-comparison.compact .agents-window-graphic-figure {
+	min-width: 0;
+	max-width: none;
+}
+
+.agents-window-graphic.many-windows-to-one.compact .agents-window-graphic-figure {
+	flex: 1 1 auto;
+}
+
+.agents-window-graphic.many-windows-to-one.compact .agents-window-graphic-svg {
+	width: 100%;
+}
+
+.agents-window-graphic.compact .agents-window-graphic-caption {
+	font-size: var(--docode-fontSize-body2);
+	line-height: 16px;
+}
+
+.agents-window-graphic.compact .agents-window-graphic-title {
+	color: var(--docode-descriptionForeground);
+	font-weight: var(--docode-fontWeight-regular);
+}
+
+.agents-window-graphic-caption {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--docode-spacing-size40);
+	text-align: center;
+	font-size: var(--docode-fontSize-body1);
+	line-height: 18px;
+}
+
+.agents-window-graphic-title {
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size60);
+	color: var(--docode-foreground);
+	font-weight: var(--docode-fontWeight-semiBold);
+}
+
+.agents-window-graphic.window-comparison .agents-window-graphic-description {
+	color: var(--docode-descriptionForeground);
+}
+
+.agents-window-graphic.many-windows-to-one .agents-window-graphic-description {
+	color: var(--docode-foreground);
+}
+
+.agents-window-graphic-badge {
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size40);
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, transparent);
+	border-radius: var(--docode-cornerRadius-small);
+	background-color: var(--docode-activityBarBadge-background);
+	color: var(--docode-activityBarBadge-foreground);
+	font-size: var(--docode-fontSize-body2);
+	font-weight: var(--docode-fontWeight-regular);
+	line-height: 14px;
+}
+
+/* Window surfaces */
+
+.agents-window-graphic .awg-window-shape {
+	rx: var(--docode-cornerRadius-large);
+}
+
+.agents-window-graphic .awg-window-frame {
+	rx: calc(var(--docode-cornerRadius-large) - 0.5px);
+	fill: none;
+	stroke: var(--docode-foreground);
+	stroke-opacity: 0.16;
+}
+
+.agents-window-graphic .awg-window-shadow {
+	filter: drop-shadow(0 2px 4px var(--docode-widget-shadow));
+}
+
+.agents-window-graphic .awg-editor {
+	fill: var(--docode-editor-background);
+}
+
+.agents-window-graphic .awg-titlebar {
+	fill: var(--docode-titleBar-activeBackground);
+}
+
+.agents-window-graphic .awg-sidebar {
+	fill: var(--docode-sideBar-background);
+}
+
+.agents-window-graphic .awg-divider {
+	fill: var(--docode-foreground);
+	fill-opacity: 0.07;
+}
+
+.agents-window-graphic .awg-command-center {
+	fill: var(--docode-foreground);
+	fill-opacity: 0.05;
+	stroke: var(--docode-foreground);
+	stroke-opacity: 0.12;
+}
+
+.agents-window-graphic .awg-radius-small {
+	rx: var(--docode-cornerRadius-small);
+}
+
+.agents-window-graphic .awg-radius-medium {
+	rx: var(--docode-cornerRadius-medium);
+}
+
+/* Text and content, from faint to full emphasis */
+
+.agents-window-graphic :is(.awg-ink-faint, .awg-ink-subtle, .awg-ink-medium, .awg-ink-strong, .awg-ink-full, .awg-row-selected, .awg-surface-subtle, .awg-surface-faint, .awg-input) {
+	fill: var(--docode-foreground);
+}
+
+.agents-window-graphic .awg-ink-faint {
+	fill-opacity: 0.2;
+}
+
+.agents-window-graphic .awg-ink-subtle {
+	fill-opacity: 0.28;
+}
+
+.agents-window-graphic .awg-ink-medium {
+	fill-opacity: 0.4;
+}
+
+.agents-window-graphic .awg-ink-strong {
+	fill-opacity: 0.55;
+}
+
+.agents-window-graphic .awg-ink-full {
+	fill-opacity: 0.85;
+}
+
+.agents-window-graphic :is(.awg-icon, .awg-icon-active) {
+	fill: none;
+	stroke: var(--docode-foreground);
+	stroke-opacity: 0.3;
+}
+
+.agents-window-graphic .awg-icon-active {
+	stroke-opacity: 0.55;
+}
+
+.agents-window-graphic .awg-row-selected,
+.agents-window-graphic .awg-surface-subtle {
+	fill-opacity: 0.08;
+}
+
+.agents-window-graphic .awg-surface-faint {
+	fill-opacity: 0.04;
+}
+
+.agents-window-graphic .awg-input {
+	fill-opacity: 0.04;
+	stroke: var(--docode-foreground);
+	stroke-opacity: 0.14;
+}
+
+.agents-window-graphic .awg-accent {
+	fill: var(--docode-focusBorder);
+}
+
+.agents-window-graphic .awg-button {
+	fill: var(--docode-button-background);
+}
+
+.agents-window-graphic .awg-button-icon {
+	fill: none;
+	stroke: var(--docode-button-foreground);
+	stroke-width: 1.2;
+	stroke-linecap: round;
+}
+
+.agents-window-graphic .awg-button-label {
+	fill: var(--docode-button-foreground);
+	fill-opacity: 0.9;
+}
+
+/* Code and projects */
+
+.agents-window-graphic .awg-syntax-blue {
+	fill: var(--docode-charts-blue);
+	fill-opacity: 0.75;
+}
+
+.agents-window-graphic .awg-syntax-yellow {
+	fill: var(--docode-charts-yellow);
+	fill-opacity: 0.6;
+}
+
+.agents-window-graphic .awg-syntax-orange {
+	fill: var(--docode-agentsWindowGraphic-orange);
+	fill-opacity: 0.6;
+}
+
+.agents-window-graphic .awg-project-blue {
+	fill: var(--docode-charts-blue);
+	fill-opacity: 0.9;
+}
+
+.agents-window-graphic .awg-project-purple {
+	fill: var(--docode-charts-purple);
+	fill-opacity: 0.9;
+}
+
+.agents-window-graphic .awg-project-orange {
+	fill: var(--docode-agentsWindowGraphic-orange);
+	fill-opacity: 0.9;
+}
+
+.agents-window-graphic .awg-avatar {
+	fill: var(--docode-charts-blue);
+	fill-opacity: 0.85;
+}
+
+.agents-window-graphic .awg-diff-added {
+	fill: var(--docode-charts-green);
+	fill-opacity: 0.9;
+}
+
+.agents-window-graphic .awg-diff-removed {
+	fill: var(--docode-charts-red);
+	fill-opacity: 0.9;
+}
+
+.agents-window-graphic .awg-arrow {
+	fill: none;
+	stroke: var(--docode-foreground);
+	stroke-opacity: 0.4;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+/* Agent states */
+
+.agents-window-graphic :is(.awg-spinner-track, .awg-spinner-arc, .awg-done) {
+	fill: none;
+	stroke-width: 1.5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.agents-window-graphic :is(.awg-spinner-track, .awg-spinner-arc) {
+	stroke: var(--docode-charts-blue);
+}
+
+.agents-window-graphic .awg-spinner-track {
+	stroke-opacity: 0.25;
+}
+
+.agents-window-graphic .awg-done {
+	stroke: var(--docode-charts-green);
+}
+
+.agents-window-graphic .awg-waiting {
+	fill: var(--docode-charts-yellow);
+}
+
+.agents-window-graphic .awg-waiting-halo {
+	fill: var(--docode-charts-yellow);
+	fill-opacity: 0.25;
+}
+
+.agents-window-graphic .awg-spinner {
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: agents-window-graphic-spin 2s linear infinite;
+}
+
+@keyframes agents-window-graphic-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.agents-window-graphic .awg-spinner {
+		animation: none;
+	}
+}
+
+.monaco-reduce-motion .agents-window-graphic .awg-spinner {
+	animation: none;
+}
+
+/* High contrast: outline the structure and keep low-opacity content visible. */
+
+:is(.hc-black, .hc-light) .agents-window-graphic :is(.awg-window-frame, .awg-command-center, .awg-input, .awg-surface-subtle) {
+	fill: none;
+	stroke: var(--docode-contrastBorder);
+	stroke-opacity: 1;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-row-selected {
+	fill: none;
+	stroke: var(--docode-contrastActiveBorder);
+	stroke-opacity: 1;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-surface-faint {
+	fill: none;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-divider {
+	fill: var(--docode-contrastBorder);
+	fill-opacity: 1;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-button {
+	stroke: var(--docode-contrastBorder);
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-window-shadow {
+	filter: none;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-ink-faint {
+	fill-opacity: 0.55;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-ink-subtle {
+	fill-opacity: 0.65;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-ink-medium {
+	fill-opacity: 0.75;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic :is(.awg-ink-strong, .awg-ink-full) {
+	fill-opacity: 1;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic :is(.awg-icon, .awg-icon-active, .awg-arrow) {
+	stroke-opacity: 1;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic :is(.awg-syntax-blue, .awg-syntax-yellow, .awg-syntax-orange, .awg-project-blue, .awg-project-purple, .awg-project-orange, .awg-avatar, .awg-diff-added, .awg-diff-removed, .awg-button-label) {
+	fill-opacity: 1;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-spinner-track {
+	stroke-opacity: 0.5;
+}
+
+:is(.hc-black, .hc-light) .agents-window-graphic .awg-waiting-halo {
+	fill-opacity: 0.4;
+}

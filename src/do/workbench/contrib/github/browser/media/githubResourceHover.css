@@ -1,0 +1,149 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+:is(.sessions-issue-hover-header, .sessions-pr-hover-header, .sessions-commit-hover-header) {
+	display: flex;
+	align-items: baseline;
+	gap: var(--docode-spacing-size40);
+	min-width: 0;
+	font-size: var(--docode-fontSize-body1);
+	line-height: 1.4;
+}
+
+:is(.sessions-issue-hover-repository, .sessions-pr-hover-repository, .sessions-commit-hover-repository) {
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+:is(.sessions-issue-hover-date, .sessions-pr-hover-date, .sessions-commit-hover-date, .sessions-issue-hover-author, .sessions-pr-hover-author, .sessions-commit-hover-author) {
+	color: var(--docode-descriptionForeground);
+}
+
+:is(.sessions-issue-hover-date, .sessions-pr-hover-date, .sessions-commit-hover-date) {
+	flex-shrink: 0;
+}
+
+:is(.sessions-issue-hover-status-row, .sessions-pr-hover-status-row) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--docode-spacing-size80);
+}
+
+.github-reference-refresh-status {
+	align-self: center;
+	color: var(--docode-descriptionForeground);
+}
+
+:is(.sessions-issue-hover-status, .sessions-pr-hover-status, .sessions-pr-hover-checks) {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--docode-spacing-size40);
+	flex-shrink: 0;
+	width: max-content;
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size80);
+	border: var(--docode-strokeThickness) solid var(--docode-editorHoverWidget-border);
+	border-radius: var(--docode-cornerRadius-circle);
+	background: var(--docode-textCodeBlock-background);
+	color: var(--docode-descriptionForeground);
+}
+
+:is(.sessions-issue-hover-status, .sessions-pr-hover-status, .sessions-pr-hover-checks) .codicon {
+	font-size: var(--docode-codiconFontSize-compact);
+}
+
+.sessions-pr-hover-checks[data-status='pending'] .codicon {
+	color: var(--docode-testing-iconQueued, var(--docode-editorWarning-foreground));
+}
+
+.sessions-pr-hover-checks[data-status='failure'] .codicon {
+	color: var(--docode-testing-iconFailed, var(--docode-errorForeground));
+}
+
+.sessions-pr-hover-checks[data-status='success'] .codicon {
+	color: var(--docode-testing-iconPassed, var(--docode-charts-green));
+}
+
+:is(.sessions-issue-hover-title, .sessions-pr-hover-title, .sessions-commit-hover-title) {
+	min-width: 0;
+	font-size: var(--docode-fontSize-body1);
+	font-weight: var(--docode-fontWeight-semiBold);
+	line-height: 1.4;
+}
+
+:is(.sessions-issue-hover-title-content, .sessions-pr-hover-title-content, .sessions-commit-hover-title-content) {
+	display: block;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+:is(.sessions-issue-hover-title-tail, .sessions-pr-hover-title-tail, .sessions-commit-hover-title-tail) {
+	white-space: nowrap;
+}
+
+.sessions-issue-hover .sessions-issue-hover-reference,
+.sessions-pr-hover .sessions-pr-hover-reference {
+	font-weight: var(--docode-fontWeight-regular);
+	overflow-wrap: normal;
+	white-space: nowrap;
+}
+
+.sessions-commit-hover .sessions-commit-hover-reference {
+	font-weight: var(--docode-fontWeight-regular);
+	overflow-wrap: normal;
+	white-space: nowrap;
+}
+
+:is(.sessions-issue-hover-description, .sessions-pr-hover-description, .sessions-commit-hover-description) {
+	font-size: var(--docode-fontSize-body1);
+	line-height: 1.4;
+	color: var(--docode-descriptionForeground);
+	overflow-wrap: anywhere;
+}
+
+:is(.sessions-issue-hover-description-content, .sessions-pr-hover-description-content, .sessions-commit-hover-description-content) {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+}
+
+.sessions-pr-hover-branches {
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size80);
+	min-width: 0;
+}
+
+.sessions-pr-hover-branch {
+	appearance: none;
+	min-width: 0;
+	max-width: 200px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size80);
+	border-radius: var(--docode-cornerRadius-circle);
+	background-color: var(--docode-textCodeBlock-background);
+	border: var(--docode-strokeThickness) solid var(--docode-editorHoverWidget-border);
+	color: var(--docode-textLink-foreground);
+	font-family: var(--monaco-monospace-font);
+	font-size: var(--docode-fontSize-label1);
+	line-height: 1.4;
+}
+
+button.sessions-pr-hover-branch {
+	cursor: pointer;
+}
+
+button.sessions-pr-hover-branch:hover {
+	border-color: var(--docode-focusBorder);
+}
+
+.sessions-pr-hover-branch-arrow {
+	flex-shrink: 0;
+	color: var(--docode-descriptionForeground);
+}

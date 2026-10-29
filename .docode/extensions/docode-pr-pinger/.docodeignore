@@ -1,0 +1,5 @@
+.gitignore
+.docode/**
+.docode-test/**
+src/**
+**/tsconfig.json

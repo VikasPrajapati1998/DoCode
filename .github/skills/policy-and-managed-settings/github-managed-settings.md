@@ -11,13 +11,13 @@ Workbench-projected managed settings layer **on top of** the existing policy fra
 The workbench managed-settings service exposes a single normalized bag:
 
 ```ts
-// src/vs/base/common/policy.ts
+// src/do/base/common/policy.ts
 export type PolicyValue = string | number | boolean;
 export type ManagedSettingValue = PolicyValue;
 export type ManagedSettingsData = Readonly<Record<string, ManagedSettingValue>>;
 ```
 
-…surfaced on `IPolicyData.managedSettings` (`src/vs/base/common/defaultAccount.ts`). The real JSDoc there summarizes it as: a normalized bag keyed by dot-separated paths (e.g. `permissions.disableBypassPermissionsMode`), the single channel for enterprise-managed config so server-delivered and native MDM settings resolve identically, with structured settings (e.g. `enabledPlugins`, `extraKnownMarketplaces`) carried as canonical JSON strings:
+…surfaced on `IPolicyData.managedSettings` (`src/do/base/common/defaultAccount.ts`). The real JSDoc there summarizes it as: a normalized bag keyed by dot-separated paths (e.g. `permissions.disableBypassPermissionsMode`), the single channel for enterprise-managed config so server-delivered and native MDM settings resolve identically, with structured settings (e.g. `enabledPlugins`, `extraKnownMarketplaces`) carried as canonical JSON strings:
 
 ```ts
 export interface IPolicyData {
@@ -34,9 +34,9 @@ VS Code implements **three** channels feeding the bag, matching the external sch
 
 | Channel | Where it's read | Implementation | Lands on |
 |---------|-----------------|----------------|----------|
-| **Native MDM** (Windows registry / macOS plist) | OS managed preferences | `NativeManagedSettingsService` (`src/vs/platform/policy/node/nativeManagedSettingsService.ts`) via `@vscode/policy-watcher` | `INativeManagedSettingsService.managedSettings` |
-| **Server-managed** (`/copilot_internal/managed_settings`) | GitHub endpoint; per the code comment in `managedSettings.ts`, it returns the enterprise's `.github/copilot/settings.json` content | `adaptManagedSettings` (`src/vs/workbench/services/accounts/browser/managedSettings.ts`) → `DefaultAccountService.policyData` | `accountPolicyData.managedSettings` |
-| **File-based** (`managed-settings.json`) | well-known per-OS disk path (e.g. `/Library/Application Support/GitHubCopilot/` on macOS), read in the main process and exposed to renderer windows over IPC | `FileManagedSettingsService` (`src/vs/platform/policy/common/fileManagedSettingsService.ts`) | `IFileManagedSettingsService.rawManagedSettings` + `.managedSettings` |
+| **Native MDM** (Windows registry / macOS plist) | OS managed preferences | `NativeManagedSettingsService` (`src/do/platform/policy/node/nativeManagedSettingsService.ts`) via `@vscode/policy-watcher` | `INativeManagedSettingsService.managedSettings` |
+| **Server-managed** (`/copilot_internal/managed_settings`) | GitHub endpoint; per the code comment in `managedSettings.ts`, it returns the enterprise's `.github/copilot/settings.json` content | `adaptManagedSettings` (`src/do/workbench/services/accounts/browser/managedSettings.ts`) → `DefaultAccountService.policyData` | `accountPolicyData.managedSettings` |
+| **File-based** (`managed-settings.json`) | well-known per-OS disk path (e.g. `/Library/Application Support/GitHubCopilot/` on macOS), read in the main process and exposed to renderer windows over IPC | `FileManagedSettingsService` (`src/do/platform/policy/common/fileManagedSettingsService.ts`) | `IFileManagedSettingsService.rawManagedSettings` + `.managedSettings` |
 
 All three VS Code channels converge in `AccountPolicyService.getPolicyData()`.
 
@@ -77,12 +77,12 @@ Note the schema's `x-composition` describes the **server/runtime** layering acro
 
 ## Declaring a managed setting on a policy
 
-A policy that should be driven by a managed-settings key declares two things on its `IPolicy` object (`src/vs/base/common/policy.ts`):
+A policy that should be driven by a managed-settings key declares two things on its `IPolicy` object (`src/do/base/common/policy.ts`):
 
 1. `managedSettings` — the dot-path keys it reads, with their value `type`.
 2. A `value(policyData)` callback that reads `policyData.managedSettings?.[KEY]`.
 
-Use the exported key constants from `src/vs/platform/policy/common/copilotManagedSettings.ts` — never inline the strings:
+Use the exported key constants from `src/do/platform/policy/common/copilotManagedSettings.ts` — never inline the strings:
 
 ```ts
 import {
@@ -150,13 +150,13 @@ managedSettings: { [COPILOT_ENABLED_PLUGINS_KEY]: { type: 'string' } },
 
 ### Governance presence disables the third-party harnesses
 
-`IPolicyData.managedSettingsActive` is `true` when a channel contributes managed-settings governance. `AccountPolicyService.getPolicyData` derives it from effective managed settings and raw settings that normalization cannot represent, independently of which keys VS Code declares. Presence governs for existing settings. The `vscode.temporaryAllowLocalHarness` control is excluded from this flag at every value; its explicit false value separately disables Local, Claude, and Codex without affecting unrelated presence-gated features. Channel resolution retains its value for precedence and diagnostics, but neither its normalized value nor its raw container contributes general governance. Empty server responses or responses containing only this control explicitly clear a previously cached raw-governance flag.
+`IPolicyData.managedSettingsActive` is `true` when a channel contributes managed-settings governance. `AccountPolicyService.getPolicyData` derives it from effective managed settings and raw settings that normalization cannot represent, independently of which keys VS Code declares. Presence governs for existing settings. The `docode.temporaryAllowLocalHarness` control is excluded from this flag at every value; its explicit false value separately disables Local, Claude, and Codex without affecting unrelated presence-gated features. Channel resolution retains its value for precedence and diagnostics, but neither its normalized value nor its raw container contributes general governance. Empty server responses or responses containing only this control explicitly clear a previously cached raw-governance flag.
 
-The `Claude3PIntegration` and `Codex3PIntegration` policies both use `thirdPartyAgentEnabledValue`, which forces its setting to `false` when the account disables chat preview features, when `managedSettingsActive` is `true`, or when effective `vscode.temporaryAllowLocalHarness` is boolean `false`. Rationale: managed settings are composed and enforced by the Copilot runtime and never reach the Claude or Codex harnesses, so leaving those harnesses available would hand a governed user an ungoverned path around every control the enterprise set. This mirrors the runtime-owned `sandbox.enabled` floor retiring the local harness (`IAgentHostEnablementService.managedSandboxEnforced`).
+The `Claude3PIntegration` and `Codex3PIntegration` policies both use `thirdPartyAgentEnabledValue`, which forces its setting to `false` when the account disables chat preview features, when `managedSettingsActive` is `true`, or when effective `docode.temporaryAllowLocalHarness` is boolean `false`. Rationale: managed settings are composed and enforced by the Copilot runtime and never reach the Claude or Codex harnesses, so leaving those harnesses available would hand a governed user an ungoverned path around every control the enterprise set. This mirrors the runtime-owned `sandbox.enabled` floor retiring the local harness (`IAgentHostEnablementService.managedSandboxEnforced`).
 
 Invariants:
 
-- Both policies declare `vscode.temporaryAllowLocalHarness` as a boolean managed key and use the shared callback. True, absence, or malformed values do not independently disable either provider; other managed settings and preview-feature restrictions still apply.
+- Both policies declare `docode.temporaryAllowLocalHarness` as a boolean managed key and use the shared callback. True, absence, or malformed values do not independently disable either provider; other managed settings and preview-feature restrictions still apply.
 - `AccountPolicyService.resolvePolicyValue` probes declared keys and presence dependence so **Developer: Policy Diagnostics** attributes the value to the governing channel rather than to the account. Presence attribution also clears declared values so an independently sufficient harness denial does not mask general governance.
 - The `value` callback stays pure and deterministic — attribution evaluates it more than once.
 
@@ -181,7 +181,7 @@ Constants (also in `copilotManagedSettings.ts`):
 
 ## Wiring (where the MDM service is constructed)
 
-Native MDM is desktop-main only (`src/vs/code/electron-main/main.ts`). The real wiring constructs the platform service first (Windows / macOS only), then registers it — falling back to `NullNativeManagedSettingsService` on Linux (abbreviated):
+Native MDM is desktop-main only (`src/do/code/electron-main/main.ts`). The real wiring constructs the platform service first (Windows / macOS only), then registers it — falling back to `NullNativeManagedSettingsService` on Linux (abbreviated):
 
 ```ts
 let nativeManagedSettingsService: NativeManagedSettingsService | undefined;
@@ -203,7 +203,7 @@ It is exposed to the renderer over IPC via `NativeManagedSettingsChannel` / `Nat
 
 The service watches keys that policies declare plus the fixed transport controls in `MANAGED_SETTINGS_CONTROL_DEFINITIONS`. `updatePolicyDefinitions` combines those schemas, then `@vscode/policy-watcher` watches exactly those keys.
 
-The **file-based** channel is wired the same way (`src/vs/code/electron-main/main.ts`): `FileManagedSettingsService` reads `managed-settings.json` from the per-OS well-known path (`MANAGED_SETTINGS_*` constants in `copilotManagedSettings.ts`), falling back to `NullFileManagedSettingsService` when no path applies. It is exposed to the renderer over IPC via `FileManagedSettingsChannel` / `FileManagedSettingsChannelClient` (`fileManagedSettingsIpc.ts`), registered as the `fileManagedSettings` channel in `app.ts`, and `AccountPolicyService` subscribes to its `onDidChangeManagedSettings` too. The service also retains the parsed source object as `rawManagedSettings` with a separate change event. That raw snapshot is diagnostics-only; policy evaluation continues to consume the normalized `managedSettings` bag.
+The **file-based** channel is wired the same way (`src/do/code/electron-main/main.ts`): `FileManagedSettingsService` reads `managed-settings.json` from the per-OS well-known path (`MANAGED_SETTINGS_*` constants in `copilotManagedSettings.ts`), falling back to `NullFileManagedSettingsService` when no path applies. It is exposed to the renderer over IPC via `FileManagedSettingsChannel` / `FileManagedSettingsChannelClient` (`fileManagedSettingsIpc.ts`), registered as the `fileManagedSettings` channel in `app.ts`, and `AccountPolicyService` subscribes to its `onDidChangeManagedSettings` too. The service also retains the parsed source object as `rawManagedSettings` with a separate change event. That raw snapshot is diagnostics-only; policy evaluation continues to consume the normalized `managedSettings` bag.
 
 ## Diagnostics pipeline
 
@@ -215,7 +215,7 @@ The **file-based** channel is wired the same way (`src/vs/code/electron-main/mai
 
 It then shows per-key channel precedence, the merged normalized bag, and the final bag delivered to VS Code policy callbacks. Runtime-owned settings can therefore remain visible in a raw source even when VS Code has no corresponding policy declaration and the projected bag is empty.
 
-The report separately queries capable Agent Host providers for their own managed-settings snapshot. Copilot uses `client.rpc.managedSettings.resolve()` through the host's configured SDK client, passing the current GitHub token and `vscode-agent-host` client identity without creating a session. The report retains the resolved snapshot, account, channel layers, and diagnostics, including source failures and cached-policy fallback warnings. This sessionless resolution does not include session-local client contributions or execute policy helpers, and a returned snapshot does not prove a successful live server fetch. This runtime snapshot is not treated as another VS Code delivery channel because the runtime owns its schema and authority resolution independently.
+The report separately queries capable Agent Host providers for their own managed-settings snapshot. Copilot uses `client.rpc.managedSettings.resolve()` through the host's configured SDK client, passing the current GitHub token and `docode-agent-host` client identity without creating a session. The report retains the resolved snapshot, account, channel layers, and diagnostics, including source failures and cached-policy fallback warnings. This sessionless resolution does not include session-local client contributions or execute policy helpers, and a returned snapshot does not prove a successful live server fetch. This runtime snapshot is not treated as another VS Code delivery channel because the runtime owns its schema and authority resolution independently.
 
 ## Projecting a managed-settings key into VS Code (checklist)
 
@@ -225,7 +225,7 @@ Follow this checklist only after the root [SKILL.md](./SKILL.md) routes the cont
 2. **Attach it to a policy** on the governing setting: add `managedSettings: { [KEY]: { type } }` and a `value` callback. For a plain pass-through use `value: managedSettingValue(KEY)`; only hand-write the callback when combining with another condition. A transport control with no governing configuration setting is the exception: add its schema to `MANAGED_SETTINGS_CONTROL_DEFINITIONS` and consume it in the delivery pipeline instead.
 3. **If the value is structured** (object/array), declare the managed key as `'string'` and let `PolicyConfiguration` parse the JSON back on read. Then teach the **shared normalizer** by adding one row to `STRUCTURED_MANAGED_SETTINGS` in `copilotManagedSettings.ts` (the `key` and an `encode` that normalizes the raw shape into what an admin would author in MDM) plus the matching field on the server `IManagedSettingsResponse`. That table is the single place structured-key handling lives, and it applies to every channel (server, file-based, …) because they all funnel through `normalizeManagedSettings`.
 4. **Keep the schema aligned.** The runtime, the server endpoint, and `managed-settings-schema.json` must agree on the key name and value type. The declaration-driven projection (`projectManagedSettings`) silently drops anything that doesn't match the declared type, so a type drift = a silently ignored setting.
-5. **Export & test** as described in [vscode-policy.md](./vscode-policy.md) (`npm run typecheck-client` when needed, then `npm run export-policy-data`). Verify the policy appears in `policyData.jsonc`. A transport-only control has no policy catalog entry, so it does not require a policy-data export.
+5. **Export & test** as described in [docode-policy.md](./docode-policy.md) (`npm run typecheck-client` when needed, then `npm run export-policy-data`). Verify the policy appears in `policyData.jsonc`. A transport-only control has no policy catalog entry, so it does not require a policy-data export.
 
 ### Transport-only control: `forceRemoteSettingsRefresh`
 
@@ -234,18 +234,18 @@ Follow this checklist only after the root [SKILL.md](./SKILL.md) routes the cont
 Once satisfied in the current window, the gate remains satisfied while subsequent refreshes for the same scope are in flight, including forced refreshes and refreshes after cache expiry. The last accepted policy stays active until the response arrives; a failure or timeout closes the gate, and retrying does not reopen it before success. Startup and scope changes still require a successful response before AI use. This does not change the polling interval or introduce a hard maximum policy age.
 
 Reference tests:
-- `src/vs/platform/policy/test/common/copilotManagedSettings.test.ts`
-- `src/vs/platform/policy/test/node/nativeManagedSettingsService.test.ts`
-- `src/vs/workbench/services/policies/test/browser/accountPolicyService.test.ts`
-- `src/vs/workbench/services/accounts/test/browser/defaultAccount.test.ts`
-- `src/vs/workbench/services/accounts/test/browser/managedSettings.test.ts` (includes an end-to-end equivalence test: a server JSON string and a native MDM JSON string resolve to the **identical** typed object).
-- `src/vs/platform/policy/test/common/fileManagedSettingsService.test.ts` (covers `normalizeManagedSettings` and the file-based channel reader).
+- `src/do/platform/policy/test/common/copilotManagedSettings.test.ts`
+- `src/do/platform/policy/test/node/nativeManagedSettingsService.test.ts`
+- `src/do/workbench/services/policies/test/browser/accountPolicyService.test.ts`
+- `src/do/workbench/services/accounts/test/browser/defaultAccount.test.ts`
+- `src/do/workbench/services/accounts/test/browser/managedSettings.test.ts` (includes an end-to-end equivalence test: a server JSON string and a native MDM JSON string resolve to the **identical** typed object).
+- `src/do/platform/policy/test/common/fileManagedSettingsService.test.ts` (covers `normalizeManagedSettings` and the file-based channel reader).
 
 **Manual/local testing:** use the mock policy server to serve arbitrary `managed_settings` (and entitlement/token) responses and apply them via **Developer: Sync Account Policy** — see [local-testing.md](./local-testing.md).
 
 ## Related: one policy governing many settings (`policyReference`)
 
-A single enterprise policy can lock **more than one setting** — e.g. gate an agent in both the editor window and the Agents window. This is the `policyReference` mechanism (`src/vs/base/common/policy.ts` → `IPolicyReference`).
+A single enterprise policy can lock **more than one setting** — e.g. gate an agent in both the editor window and the Agents window. This is the `policyReference` mechanism (`src/do/base/common/policy.ts` → `IPolicyReference`).
 
 - The **owner** setting declares the full `policy: { name, … }` (type, metadata, runtime `value`/`managedSettings`). Exactly one setting may own a given policy name.
 - Other settings declare `policyReference: { name }` pointing at that owner's policy name. A reference is a **pure pointer**: no type, no value, no localization. It only contributes the name so the setting is gated and the OS watcher observes the name in processes where the owner module isn't loaded.

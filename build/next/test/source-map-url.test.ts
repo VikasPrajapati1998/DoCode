@@ -20,7 +20,7 @@ suite('rewriteSourceMappingURL', () => {
 		{ name: 'Windows', paths: path.win32, outDir: 'C:\\repo\\out' },
 		{ name: 'POSIX', paths: path.posix, outDir: '/repo/out' },
 	]) {
-		for (const directories of [[], ['vs', 'workbench', 'api', 'node']]) {
+		for (const directories of [[], ['do', 'workbench', 'api', 'node']]) {
 			const location = directories.length > 0 ? 'nested' : 'root-level';
 			const relativeJsPath = paths.relative(outDir, paths.join(outDir, ...directories, 'main.js'));
 			const relativeCssPath = paths.relative(outDir, paths.join(outDir, ...directories, 'main.css'));

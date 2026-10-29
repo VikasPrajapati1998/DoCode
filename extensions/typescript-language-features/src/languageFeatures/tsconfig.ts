@@ -5,7 +5,7 @@
 
 import * as jsonc from 'jsonc-parser';
 import { isAbsolute, posix } from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Utils } from 'vscode-uri';
 import { coalesce } from '../utils/arrays';
 import { exists, looksLikeAbsoluteWindowsPath } from '../utils/fs';
@@ -25,18 +25,18 @@ enum TsConfigLinkType {
 }
 
 type OpenExtendsLinkCommandArgs = {
-	readonly resourceUri: vscode.Uri;
+	readonly resourceUri: docode.Uri;
 	readonly extendsValue: string;
 	readonly linkType: TsConfigLinkType;
 };
 
 
-class TsconfigLinkProvider implements vscode.DocumentLinkProvider {
+class TsconfigLinkProvider implements docode.DocumentLinkProvider {
 
 	public provideDocumentLinks(
-		document: vscode.TextDocument,
-		_token: vscode.CancellationToken
-	): vscode.DocumentLink[] {
+		document: docode.TextDocument,
+		_token: docode.CancellationToken
+	): docode.DocumentLink[] {
 		const root = jsonc.parseTree(document.getText());
 		if (!root) {
 			return [];
@@ -49,12 +49,12 @@ class TsconfigLinkProvider implements vscode.DocumentLinkProvider {
 		]);
 	}
 
-	private getExtendsLink(document: vscode.TextDocument, root: jsonc.Node): vscode.DocumentLink | undefined {
+	private getExtendsLink(document: docode.TextDocument, root: jsonc.Node): docode.DocumentLink | undefined {
 		const node = jsonc.findNodeAtLocation(root, ['extends']);
 		return node && this.tryCreateTsConfigLink(document, node, TsConfigLinkType.Extends);
 	}
 
-	private getReferencesLinks(document: vscode.TextDocument, root: jsonc.Node) {
+	private getReferencesLinks(document: docode.TextDocument, root: jsonc.Node) {
 		return mapChildren(
 			jsonc.findNodeAtLocation(root, ['references']),
 			child => {
@@ -63,7 +63,7 @@ class TsconfigLinkProvider implements vscode.DocumentLinkProvider {
 			});
 	}
 
-	private tryCreateTsConfigLink(document: vscode.TextDocument, node: jsonc.Node, linkType: TsConfigLinkType): vscode.DocumentLink | undefined {
+	private tryCreateTsConfigLink(document: docode.TextDocument, node: jsonc.Node, linkType: TsConfigLinkType): docode.DocumentLink | undefined {
 		if (!this.isPathValue(node)) {
 			return undefined;
 		}
@@ -74,25 +74,25 @@ class TsconfigLinkProvider implements vscode.DocumentLinkProvider {
 			linkType
 		};
 
-		const link = new vscode.DocumentLink(
+		const link = new docode.DocumentLink(
 			this.getRange(document, node),
-			vscode.Uri.parse(`command:${openExtendsLinkCommandId}?${JSON.stringify(args)}`));
-		link.tooltip = vscode.l10n.t("Follow link");
+			docode.Uri.parse(`command:${openExtendsLinkCommandId}?${JSON.stringify(args)}`));
+		link.tooltip = docode.l10n.t("Follow link");
 		return link;
 	}
 
-	private getFilesLinks(document: vscode.TextDocument, root: jsonc.Node) {
+	private getFilesLinks(document: docode.TextDocument, root: jsonc.Node) {
 		return mapChildren(
 			jsonc.findNodeAtLocation(root, ['files']),
 			child => this.pathNodeToLink(document, child));
 	}
 
 	private pathNodeToLink(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		node: jsonc.Node | undefined
-	): vscode.DocumentLink | undefined {
+	): docode.DocumentLink | undefined {
 		return this.isPathValue(node)
-			? new vscode.DocumentLink(this.getRange(document, node), this.getFileTarget(document, node))
+			? new docode.DocumentLink(this.getRange(document, node), this.getFileTarget(document, node))
 			: undefined;
 	}
 
@@ -102,42 +102,42 @@ class TsconfigLinkProvider implements vscode.DocumentLinkProvider {
 			&& !(node.value as string).includes('*'); // don't treat globs as links.
 	}
 
-	private getFileTarget(document: vscode.TextDocument, node: jsonc.Node): vscode.Uri {
+	private getFileTarget(document: docode.TextDocument, node: jsonc.Node): docode.Uri {
 		if (isAbsolute(node.value)) {
-			return vscode.Uri.file(node.value);
+			return docode.Uri.file(node.value);
 		}
 
-		return vscode.Uri.joinPath(Utils.dirname(document.uri), node.value);
+		return docode.Uri.joinPath(Utils.dirname(document.uri), node.value);
 	}
 
-	private getRange(document: vscode.TextDocument, node: jsonc.Node) {
+	private getRange(document: docode.TextDocument, node: jsonc.Node) {
 		const offset = node.offset;
 		const start = document.positionAt(offset + 1);
 		const end = document.positionAt(offset + (node.length - 1));
-		return new vscode.Range(start, end);
+		return new docode.Range(start, end);
 	}
 }
 
-async function resolveNodeModulesPath(baseDirUri: vscode.Uri, pathCandidates: string[]): Promise<vscode.Uri | undefined> {
+async function resolveNodeModulesPath(baseDirUri: docode.Uri, pathCandidates: string[]): Promise<docode.Uri | undefined> {
 	let currentUri = baseDirUri;
 	const baseCandidate = pathCandidates[0];
 	const sepIndex = baseCandidate.startsWith('@') ? 2 : 1;
 	const moduleBasePath = baseCandidate.split(posix.sep).slice(0, sepIndex).join(posix.sep);
 	while (true) {
-		const moduleAbsoluteUrl = vscode.Uri.joinPath(currentUri, 'node_modules', moduleBasePath);
-		let moduleStat: vscode.FileStat | undefined;
+		const moduleAbsoluteUrl = docode.Uri.joinPath(currentUri, 'node_modules', moduleBasePath);
+		let moduleStat: docode.FileStat | undefined;
 		try {
-			moduleStat = await vscode.workspace.fs.stat(moduleAbsoluteUrl);
+			moduleStat = await docode.workspace.fs.stat(moduleAbsoluteUrl);
 		} catch (err) {
 			// noop
 		}
 
-		if (moduleStat && (moduleStat.type & vscode.FileType.Directory)) {
+		if (moduleStat && (moduleStat.type & docode.FileType.Directory)) {
 			for (const uriCandidate of pathCandidates
 				.map((relativePath) => relativePath.split(posix.sep).slice(sepIndex).join(posix.sep))
 				// skip empty paths within module
 				.filter(Boolean)
-				.map((relativeModulePath) => vscode.Uri.joinPath(moduleAbsoluteUrl, relativeModulePath))
+				.map((relativeModulePath) => docode.Uri.joinPath(moduleAbsoluteUrl, relativeModulePath))
 			) {
 				if (await exists(uriCandidate)) {
 					return uriCandidate;
@@ -147,7 +147,7 @@ async function resolveNodeModulesPath(baseDirUri: vscode.Uri, pathCandidates: st
 		}
 
 		const oldUri = currentUri;
-		currentUri = vscode.Uri.joinPath(currentUri, '..');
+		currentUri = docode.Uri.joinPath(currentUri, '..');
 
 		// Can't go next. Reached the system root
 		if (oldUri.path === currentUri.path) {
@@ -161,8 +161,8 @@ async function resolveNodeModulesPath(baseDirUri: vscode.Uri, pathCandidates: st
 /**
 * @returns Returns undefined in case of lack of result while trying to resolve from node_modules
 */
-async function getTsconfigPath(baseDirUri: vscode.Uri, pathValue: string, linkType: TsConfigLinkType): Promise<vscode.Uri | undefined> {
-	async function resolve(absolutePath: vscode.Uri): Promise<vscode.Uri> {
+async function getTsconfigPath(baseDirUri: docode.Uri, pathValue: string, linkType: TsConfigLinkType): Promise<docode.Uri | undefined> {
+	async function resolve(absolutePath: docode.Uri): Promise<docode.Uri> {
 		if (absolutePath.path.endsWith('.json') || await exists(absolutePath)) {
 			return absolutePath;
 		}
@@ -173,11 +173,11 @@ async function getTsconfigPath(baseDirUri: vscode.Uri, pathValue: string, linkTy
 
 	const isRelativePath = ['./', '../'].some(str => pathValue.startsWith(str));
 	if (isRelativePath) {
-		return resolve(vscode.Uri.joinPath(baseDirUri, pathValue));
+		return resolve(docode.Uri.joinPath(baseDirUri, pathValue));
 	}
 
 	if (pathValue.startsWith('/') || looksLikeAbsoluteWindowsPath(pathValue)) {
-		return resolve(vscode.Uri.file(pathValue));
+		return resolve(docode.Uri.file(pathValue));
 	}
 
 	// Otherwise resolve like a module
@@ -191,30 +191,30 @@ async function getTsconfigPath(baseDirUri: vscode.Uri, pathValue: string, linkTy
 }
 
 export function register() {
-	const patterns: vscode.GlobPattern[] = [
+	const patterns: docode.GlobPattern[] = [
 		'**/[jt]sconfig.json',
 		'**/[jt]sconfig.*.json',
 	];
 
 	const languages = ['json', 'jsonc'];
 
-	const selector: vscode.DocumentSelector =
-		languages.map(language => patterns.map((pattern): vscode.DocumentFilter => ({ language, pattern })))
+	const selector: docode.DocumentSelector =
+		languages.map(language => patterns.map((pattern): docode.DocumentFilter => ({ language, pattern })))
 			.flat();
 
-	return vscode.Disposable.from(
-		vscode.commands.registerCommand(openExtendsLinkCommandId, async ({ resourceUri, extendsValue, linkType }: OpenExtendsLinkCommandArgs) => {
-			const tsconfigPath = await getTsconfigPath(Utils.dirname(vscode.Uri.from(resourceUri)), extendsValue, linkType);
+	return docode.Disposable.from(
+		docode.commands.registerCommand(openExtendsLinkCommandId, async ({ resourceUri, extendsValue, linkType }: OpenExtendsLinkCommandArgs) => {
+			const tsconfigPath = await getTsconfigPath(Utils.dirname(docode.Uri.from(resourceUri)), extendsValue, linkType);
 			if (tsconfigPath === undefined) {
-				vscode.window.showErrorMessage(getSafeNotificationMessage(
-					vscode.l10n.t("Failed to resolve {0} as module", extendsValue),
-					vscode.l10n.t("Failed to resolve the referenced configuration as a module."),
+				docode.window.showErrorMessage(getSafeNotificationMessage(
+					docode.l10n.t("Failed to resolve {0} as module", extendsValue),
+					docode.l10n.t("Failed to resolve the referenced configuration as a module."),
 				));
 				return;
 			}
 			// Will suggest to create a .json variant if it doesn't exist yet (but only for relative paths)
-			await vscode.commands.executeCommand('vscode.open', tsconfigPath);
+			await docode.commands.executeCommand('docode.open', tsconfigPath);
 		}),
-		vscode.languages.registerDocumentLinkProvider(selector, new TsconfigLinkProvider()),
+		docode.languages.registerDocumentLinkProvider(selector, new TsconfigLinkProvider()),
 	);
 }

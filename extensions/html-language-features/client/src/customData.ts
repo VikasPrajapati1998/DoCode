@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { workspace, extensions, Uri, EventEmitter, Disposable } from 'vscode';
+import { workspace, extensions, Uri, EventEmitter, Disposable } from 'docode';
 import { Runtime } from './htmlClient';
 import { Utils } from 'vscode-uri';
 

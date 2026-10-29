@@ -1,5 +1,5 @@
 {
-  "name": "vscode-automation",
+  "name": "docode-automation",
   "version": "1.71.0",
   "description": "VS Code UI automation driver",
   "author": {
@@ -13,7 +13,7 @@
     "watch": "npm-run-all2 -lp watch-driver-definition watch-tsc",
     "watch-tsc": "node ../../node_modules/typescript/bin/tsc6 --watch --preserveWatchOutput",
     "copy-driver-definition": "node tools/copy-driver-definition.js",
-    "watch-driver-definition": "nodemon --watch ../../src/vs/workbench/services/driver/common/driver.ts tools/copy-driver-definition.js",
+    "watch-driver-definition": "nodemon --watch ../../src/do/workbench/services/driver/common/driver.ts tools/copy-driver-definition.js",
     "copy-package-version": "node tools/copy-package-version.js",
     "prepublishOnly": "npm run copy-package-version"
   },

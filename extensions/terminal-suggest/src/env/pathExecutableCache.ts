@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs/promises';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { SettingsIds, TerminalShellType } from '../constants';
 import { isExecutable, WindowsExecutableExtensionsCache } from '../helpers/executable';
 import { osIsWindows } from '../helpers/os';
@@ -18,8 +18,8 @@ export interface IExecutablesInPath {
 	labels: Set<string> | undefined;
 }
 
-export class PathExecutableCache implements vscode.Disposable {
-	private _disposables: vscode.Disposable[] = [];
+export class PathExecutableCache implements docode.Disposable {
+	private _disposables: docode.Disposable[] = [];
 
 	private readonly _windowsExecutableExtensionsCache: WindowsExecutableExtensionsCache | undefined;
 	private _cachedExes: Map<string, Set<ICompletionResource> | undefined> = new Map();
@@ -33,7 +33,7 @@ export class PathExecutableCache implements vscode.Disposable {
 	constructor() {
 		if (isWindows) {
 			this._windowsExecutableExtensionsCache = new WindowsExecutableExtensionsCache(this._getConfiguredWindowsExecutableExtensions());
-			this._disposables.push(vscode.workspace.onDidChangeConfiguration(e => {
+			this._disposables.push(docode.workspace.onDidChangeConfiguration(e => {
 				if (e.affectsConfiguration(SettingsIds.CachedWindowsExecutableExtensions)) {
 					this._windowsExecutableExtensionsCache?.update(this._getConfiguredWindowsExecutableExtensions());
 					this._cachedExes.clear();
@@ -156,17 +156,17 @@ export class PathExecutableCache implements vscode.Disposable {
 				return undefined;
 			}
 			const result = new Set<ICompletionResource>();
-			const fileResource = vscode.Uri.file(path);
-			const files = await vscode.workspace.fs.readDirectory(fileResource);
+			const fileResource = docode.Uri.file(path);
+			const files = await docode.workspace.fs.readDirectory(fileResource);
 			const windowsExecutableExtensions = this._windowsExecutableExtensionsCache?.getExtensions();
 			await Promise.all(
 				files.map(([file, fileType]) => (async () => {
-					let kind: vscode.TerminalCompletionItemKind | undefined;
+					let kind: docode.TerminalCompletionItemKind | undefined;
 					let formattedPath: string | undefined;
-					const resource = vscode.Uri.joinPath(fileResource, file);
+					const resource = docode.Uri.joinPath(fileResource, file);
 
 					// Skip unknown or directory file types early
-					if (fileType === vscode.FileType.Unknown || fileType === vscode.FileType.Directory) {
+					if (fileType === docode.FileType.Unknown || fileType === docode.FileType.Directory) {
 						return;
 					}
 
@@ -179,7 +179,7 @@ export class PathExecutableCache implements vscode.Disposable {
 								if (!isExec) {
 									return;
 								}
-								kind = vscode.TerminalCompletionItemKind.Method;
+								kind = docode.TerminalCompletionItemKind.Method;
 								formattedPath = `${resource.fsPath} -> ${symlinkRealPath}`;
 							} catch {
 								return;
@@ -197,7 +197,7 @@ export class PathExecutableCache implements vscode.Disposable {
 						return;
 					}
 
-					const isExec = kind === vscode.TerminalCompletionItemKind.Method || await isExecutable(resource.fsPath, windowsExecutableExtensions);
+					const isExec = kind === docode.TerminalCompletionItemKind.Method || await isExecutable(resource.fsPath, windowsExecutableExtensions);
 					if (!isExec) {
 						return;
 					}
@@ -205,7 +205,7 @@ export class PathExecutableCache implements vscode.Disposable {
 					result.add({
 						label: file,
 						documentation: formattedPath,
-						kind: kind ?? vscode.TerminalCompletionItemKind.Method
+						kind: kind ?? docode.TerminalCompletionItemKind.Method
 					});
 					labels.add(file);
 				})())
@@ -218,7 +218,7 @@ export class PathExecutableCache implements vscode.Disposable {
 	}
 
 	private _getConfiguredWindowsExecutableExtensions(): { [key: string]: boolean | undefined } | undefined {
-		return vscode.workspace.getConfiguration(SettingsIds.SuggestPrefix).get(SettingsIds.CachedWindowsExecutableExtensionsSuffixOnly);
+		return docode.workspace.getConfiguration(SettingsIds.SuggestPrefix).get(SettingsIds.CachedWindowsExecutableExtensionsSuffixOnly);
 	}
 }
 

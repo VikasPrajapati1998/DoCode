@@ -6,17 +6,17 @@
 /* eslint-disable local/code-no-dangerous-type-assertions */
 
 // Import the mobile diff view CSS
-import '../../src/vs/sessions/browser/parts/mobile/contributions/media/mobileOverlayViews.css';
-import '../../src/vs/sessions/browser/parts/mobile/contributions/media/mobileMultiDiffView.css';
+import '../../src/do/sessions/browser/parts/mobile/contributions/media/mobileOverlayViews.css';
+import '../../src/do/sessions/browser/parts/mobile/contributions/media/mobileMultiDiffView.css';
 
-import { URI } from '../../src/vs/base/common/uri.js';
-import { MobileMultiDiffView, IMobileMultiDiffViewData } from '../../src/vs/sessions/browser/parts/mobile/contributions/mobileMultiDiffView.js';
-import { IFileDiffViewData } from '../../src/vs/sessions/browser/parts/mobile/contributions/mobileDiffView.js';
-import { computeUnifiedDiff, type IDiffHunk } from '../../src/vs/sessions/browser/parts/mobile/contributions/mobileDiffHelpers.js';
-import { ITextFileService } from '../../src/vs/workbench/services/textfile/common/textfiles.js';
-import { ILanguageService } from '../../src/vs/editor/common/languages/language.js';
-import { IFileService } from '../../src/vs/platform/files/common/files.js';
-import { VSBuffer } from '../../src/vs/base/common/buffer.js';
+import { URI } from '../../src/do/base/common/uri.js';
+import { MobileMultiDiffView, IMobileMultiDiffViewData } from '../../src/do/sessions/browser/parts/mobile/contributions/mobileMultiDiffView.js';
+import { IFileDiffViewData } from '../../src/do/sessions/browser/parts/mobile/contributions/mobileDiffView.js';
+import { computeUnifiedDiff, type IDiffHunk } from '../../src/do/sessions/browser/parts/mobile/contributions/mobileDiffHelpers.js';
+import { ITextFileService } from '../../src/do/workbench/services/textfile/common/textfiles.js';
+import { ILanguageService } from '../../src/do/editor/common/languages/language.js';
+import { IFileService } from '../../src/do/platform/files/common/files.js';
+import { VSBuffer } from '../../src/do/base/common/buffer.js';
 
 // --- Sample file contents ---
 

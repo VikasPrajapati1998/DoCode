@@ -114,10 +114,10 @@ Reuse these patterns rather than copying entire implementations:
 
 | Surface | Example |
 |---|---|
-| Settings | [Managed-setting indicator and accessible policy text](../../../src/vs/workbench/contrib/preferences/browser/settingsEditorSettingIndicators.ts) |
-| Model picker | [Unavailable models with distinct admin, upgrade, and update explanations](../../../src/vs/workbench/contrib/chat/browser/widget/input/modelPicker/modelPickerItemPrimitives.ts) |
-| Harness picker | [Availability descriptions and policy help links](../../../src/vs/workbench/contrib/chat/browser/agentSessions/sessionTypeAvailability.ts) |
-| Permissions picker | [Shared permission-level policy presentation](../../../src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostModePickerPresentation.ts) and [picker integration](../../../src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostChatInputPicker.ts), with [runtime policy boundaries](../policy-and-managed-settings/sdk-runtime-policy.md) |
+| Settings | [Managed-setting indicator and accessible policy text](../../../src/do/workbench/contrib/preferences/browser/settingsEditorSettingIndicators.ts) |
+| Model picker | [Unavailable models with distinct admin, upgrade, and update explanations](../../../src/do/workbench/contrib/chat/browser/widget/input/modelPicker/modelPickerItemPrimitives.ts) |
+| Harness picker | [Availability descriptions and policy help links](../../../src/do/workbench/contrib/chat/browser/agentSessions/sessionTypeAvailability.ts) |
+| Permissions picker | [Shared permission-level policy presentation](../../../src/do/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostModePickerPresentation.ts) and [picker integration](../../../src/do/workbench/contrib/chat/browser/agentSessions/agentHost/agentHostChatInputPicker.ts), with [runtime policy boundaries](../policy-and-managed-settings/sdk-runtime-policy.md) |
 
 > **Worked example - a boxed-in toolbar**
 > - **See:** a toolbar sits on a solid filled bar, separator lines between every button, the buttons pushed up against each other.
@@ -191,7 +191,7 @@ Moves are the **concrete mechanics** - the tokens, ramps, and tiers. On their ow
 
 This is the one section that touches implementation - and even here, the goal is to keep the *conversation* about design. Treat the Moves as the **shared vocabulary that lets an agreed design be built consistently**, not as the opening move in a review. Reach for them *after* you've named the feeling and the principle, never instead of it.
 
-The size and font tokens live in [`baseSizes.ts`](../../../src/vs/platform/theme/common/sizes/baseSizes.ts); the full reference is in [design-tokens.instructions.md](../../instructions/design-tokens.instructions.md).
+The size and font tokens live in [`baseSizes.ts`](../../../src/do/platform/theme/common/sizes/baseSizes.ts); the full reference is in [design-tokens.instructions.md](../../instructions/design-tokens.instructions.md).
 
 <a id="design-tokens"></a>
 ### Tokens are the source of truth, not the pixel
@@ -209,11 +209,11 @@ Corner radius encodes **how far a surface floats above the one beneath it**. Eve
 
 | Tier | Radius | Token | What it is |
 |------|--------|-------|------------|
-| **Control** | 4px | `--vscode-cornerRadius-small` | interactible elements - buttons, inputs, list rows, tabs |
-| **Inner** | 6px | `--vscode-cornerRadius-medium` | non-control containers sitting *inside* a surface |
-| **Outer** | 8px | `--vscode-cornerRadius-large` | floating / overlay surfaces - menus, hovers, dialogs, toasts |
+| **Control** | 4px | `--docode-cornerRadius-small` | interactible elements - buttons, inputs, list rows, tabs |
+| **Inner** | 6px | `--docode-cornerRadius-medium` | non-control containers sitting *inside* a surface |
+| **Outer** | 8px | `--docode-cornerRadius-large` | floating / overlay surfaces - menus, hovers, dialogs, toasts |
 
-Pills (radius ≈ half the height) are **fully round** (`--vscode-cornerRadius-circle`), not "a big radius."
+Pills (radius ≈ half the height) are **fully round** (`--docode-cornerRadius-circle`), not "a big radius."
 - **Decision rule:** pick the tier by the surface's **role in the stack**, not by how the corner looks. A bug here sounds like *"this overlay is rounded at the control tier,"* never *"this needs more border-radius."*
 - **Serves:** *Elevation is encoded* (5), *Room to breathe* (2).
 
@@ -241,14 +241,14 @@ Codicons are **16px (base)** or **12px (compact)** - nothing in between; `14px` 
 <a id="one-stroke"></a>
 ### One stroke
 
-The standard border/separator stroke is **1px** (`--vscode-strokeThickness`).
+The standard border/separator stroke is **1px** (`--docode-strokeThickness`).
 - **Decision rule:** whether an ordinary border is present is a **yes/no** decision. Preserve thicker semantic or accessibility strokes, such as focus indicators.
 - **Serves:** *Quiet at rest* (1), *Sameness signals sameness* (6).
 
 <a id="theme-color"></a>
 ### Color comes from the theme
 
-Every color is a `--vscode-*` theme token, so the UI tracks the active theme and high-contrast modes.
+Every color is a `--docode-*` theme token, so the UI tracks the active theme and high-contrast modes.
 - **Decision rule:** a hardcoded hex is a bug by construction. Color bugs are *"wrong theme token"* (or *"a token that disappears in light/HC"*), never a hex value to nudge.
 - **Serves:** *Quiet at rest* (1), *Sameness signals sameness* (6).
 

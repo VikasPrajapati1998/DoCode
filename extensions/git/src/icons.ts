@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ThemeIcon } from 'vscode';
+import { ThemeIcon } from 'docode';
 
 /**
  * Shared, immutable ThemeIcon instances used across the git extension. ThemeIcon has no

@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Lazy } from '../utils/lazy';
 
 export class Logger {
 
-	private readonly output = new Lazy<vscode.LogOutputChannel>(() => {
-		return vscode.window.createOutputChannel('TypeScript', { log: true });
+	private readonly output = new Lazy<docode.LogOutputChannel>(() => {
+		return docode.window.createOutputChannel('TypeScript', { log: true });
 	});
 
-	public get logLevel(): vscode.LogLevel {
+	public get logLevel(): docode.LogLevel {
 		return this.output.value.logLevel;
 	}
 

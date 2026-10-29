@@ -14,9 +14,9 @@ const telemetryMethods = new Set(['publicLog', 'publicLog2', 'publicLogError', '
  * overwritten by the common properties that the telemetry pipeline injects.
  *
  * Collected from:
- *   - src/vs/platform/telemetry/common/commonProperties.ts  (resolveCommonProperties)
- *   - src/vs/workbench/services/telemetry/common/workbenchCommonProperties.ts
- *   - src/vs/workbench/services/telemetry/browser/workbenchCommonProperties.ts
+ *   - src/do/platform/telemetry/common/commonProperties.ts  (resolveCommonProperties)
+ *   - src/do/workbench/services/telemetry/common/workbenchCommonProperties.ts
+ *   - src/do/workbench/services/telemetry/browser/workbenchCommonProperties.ts
  */
 const commonTelemetryProperties = new Set([
 	'common.machineid',

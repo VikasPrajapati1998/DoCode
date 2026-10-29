@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { LanguageDescription } from '../configuration/languageDescription';
 import * as typeConverters from '../typeConverters';
@@ -13,27 +13,27 @@ import FileConfigurationManager from './fileConfigurationManager';
 
 
 
-const defaultJsDoc = new vscode.SnippetString(`/**\n * $0\n */`);
+const defaultJsDoc = new docode.SnippetString(`/**\n * $0\n */`);
 
-class JsDocCompletionItem extends vscode.CompletionItem {
+class JsDocCompletionItem extends docode.CompletionItem {
 	constructor(
-		public readonly document: vscode.TextDocument,
-		public readonly position: vscode.Position
+		public readonly document: docode.TextDocument,
+		public readonly position: docode.Position
 	) {
-		super('/** */', vscode.CompletionItemKind.Text);
-		this.detail = vscode.l10n.t("JSDoc comment");
+		super('/** */', docode.CompletionItemKind.Text);
+		this.detail = docode.l10n.t("JSDoc comment");
 		this.sortText = '\0';
 
 		const line = document.lineAt(position.line).text;
 		const prefix = line.slice(0, position.character).match(/\/\**\s*$/);
 		const suffix = line.slice(position.character).match(/^\s*\**\//);
 		const start = position.translate(0, prefix ? -prefix[0].length : 0);
-		const range = new vscode.Range(start, position.translate(0, suffix ? suffix[0].length : 0));
+		const range = new docode.Range(start, position.translate(0, suffix ? suffix[0].length : 0));
 		this.range = { inserting: range, replacing: range };
 	}
 }
 
-class JsDocCompletionProvider implements vscode.CompletionItemProvider {
+class JsDocCompletionProvider implements docode.CompletionItemProvider {
 
 	constructor(
 		private readonly client: ITypeScriptServiceClient,
@@ -42,10 +42,10 @@ class JsDocCompletionProvider implements vscode.CompletionItemProvider {
 	) { }
 
 	public async provideCompletionItems(
-		document: vscode.TextDocument,
-		position: vscode.Position,
-		token: vscode.CancellationToken
-	): Promise<vscode.CompletionItem[] | undefined> {
+		document: docode.TextDocument,
+		position: docode.Position,
+		token: docode.CancellationToken
+	): Promise<docode.CompletionItem[] | undefined> {
 		if (!readUnifiedConfig<boolean>('suggest.jsdoc.enabled', true, { scope: document, fallbackSection: this.language.id, fallbackSubSectionNameOverride: 'suggest.completeJSDocs' })) {
 			return undefined;
 		}
@@ -84,8 +84,8 @@ class JsDocCompletionProvider implements vscode.CompletionItemProvider {
 	}
 
 	private isPotentiallyValidDocCompletionPosition(
-		document: vscode.TextDocument,
-		position: vscode.Position
+		document: docode.TextDocument,
+		position: docode.Position
 	): boolean {
 		// Only show the JSdoc completion when the everything before the cursor is whitespace
 		// or could be the opening of a comment
@@ -101,7 +101,7 @@ class JsDocCompletionProvider implements vscode.CompletionItemProvider {
 	}
 }
 
-export function templateToSnippet(template: string): vscode.SnippetString {
+export function templateToSnippet(template: string): docode.SnippetString {
 	// TODO: use append placeholder
 	let snippetIndex = 1;
 	template = template.replace(/\$/g, '\\$'); // CodeQL [SM02383] This is only used for text which is put into the editor. It is not for rendered html
@@ -120,7 +120,7 @@ export function templateToSnippet(template: string): vscode.SnippetString {
 
 	template = template.replace(/\* @returns[ \t]*$/gm, `* @returns \${${snippetIndex++}}`);
 
-	return new vscode.SnippetString(template);
+	return new docode.SnippetString(template);
 }
 
 export function register(
@@ -129,8 +129,8 @@ export function register(
 	client: ITypeScriptServiceClient,
 	fileConfigurationManager: FileConfigurationManager,
 
-): vscode.Disposable {
-	return vscode.languages.registerCompletionItemProvider(selector.syntax,
+): docode.Disposable {
+	return docode.languages.registerCompletionItemProvider(selector.syntax,
 		new JsDocCompletionProvider(client, language, fileConfigurationManager),
 		'*');
 }

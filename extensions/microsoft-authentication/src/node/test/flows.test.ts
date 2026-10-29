@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import type { AccountInfo, AuthenticationResult, DeviceCodeRequest, InteractiveRequest, RefreshTokenRequest, SilentFlowRequest } from '@azure/msal-node';
-import { EventEmitter, LogOutputChannel, Uri, window } from 'vscode';
+import { EventEmitter, LogOutputChannel, Uri, window } from 'docode';
 import { allFlows, ExtensionHost, getMsalFlows, IMsalFlowQuery } from '../flows';
 import { ICachedPublicClientApplication } from '../../common/publicClientCache';
 import { UriEventHandler } from '../../UriEventHandler';

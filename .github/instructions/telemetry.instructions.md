@@ -120,7 +120,7 @@ Generic workbench notifications use `notificationShown` and `notificationInterac
 
 ### Assigning Safe Identity
 
-The producer contract is in [notificationTelemetry.ts](../../src/vs/platform/notification/common/notificationTelemetry.ts); event construction and classifications are in [workbench notificationTelemetry.ts](../../src/vs/workbench/common/notificationTelemetry.ts).
+The producer contract is in [notificationTelemetry.ts](../../src/do/platform/notification/common/notificationTelemetry.ts); event construction and classifications are in [workbench notificationTelemetry.ts](../../src/do/workbench/common/notificationTelemetry.ts).
 
 - Add a code-defined, nonlocalized operation/notification type to `NotificationTelemetryId`. Keep it stable across instances, languages, message updates, and releases. Reuse an ID only for the same semantic operation. Pass it through `telemetry` on `notify()`, prompt options, or progress options:
 
@@ -208,13 +208,13 @@ The initial proposed-API migration tags 21 semantic types; `ExtensionNotificatio
 
 | Extension | Tagged notification types |
 | --- | --- |
-| `vscode.github-authentication` | Browser sign-in and device-code progress; alternate sign-in prompts after cancellation/failure; sign-in/sign-out failures; invalid Enterprise URI, Enterprise update failure, and Enterprise initialization failure |
-| `vscode.git` | Missing Git, legacy/affected Windows Git versions, parent repositories, unsafe repositories, submodule/worktree limits, and auto-fetch opt-in |
-| `vscode.typescript-language-features` | Workspace TypeScript version, workspace Node installation, TypeScript native-preview suggestion, and invalid TS Server path fallback |
+| `docode.github-authentication` | Browser sign-in and device-code progress; alternate sign-in prompts after cancellation/failure; sign-in/sign-out failures; invalid Enterprise URI, Enterprise update failure, and Enterprise initialization failure |
+| `docode.git` | Missing Git, legacy/affected Windows Git versions, parent repositories, unsafe repositories, submodule/worktree limits, and auto-fetch opt-in |
+| `docode.typescript-language-features` | Workspace TypeScript version, workspace Node installation, TypeScript native-preview suggestion, and invalid TS Server path fallback |
 
-For example, a Git producer supplies `{ notificationId: 'git.parentRepository' }` as message options. Both exposure and interaction events retain `origin: 'extension'` and `extensionId: 'vscode.git'`, with `notificationId: 'git.parentRepository'`; button positions remain positional rather than inferred action semantics. Message updates retain the type, and dedup replacement inherits exposure/correlation state only when the complete attribution matches.
+For example, a Git producer supplies `{ notificationId: 'git.parentRepository' }` as message options. Both exposure and interaction events retain `origin: 'extension'` and `extensionId: 'docode.git'`, with `notificationId: 'git.parentRepository'`; button positions remain positional rather than inferred action semantics. Message updates retain the type, and dedup replacement inherits exposure/correlation state only when the complete attribution matches.
 
-Third-party extensions such as vscode-icons and Java still require producer adoption and audited allowlist entries; this change does not infer their messages from text or button labels. Historical generic events cannot be retroactively identified, and the proposed API does not add modal-dialog telemetry or bypass existing consent/policy controls.
+Third-party extensions such as docode-icons and Java still require producer adoption and audited allowlist entries; this change does not infer their messages from text or button labels. Historical generic events cannot be retroactively identified, and the proposed API does not add modal-dialog telemetry or bypass existing consent/policy controls.
 
 Status-bar-only progress (including chat setup progress that supplies a command), editor/view progress that never produces a notification, modal extension messages, and chat-input notices are deliberately outside these events. Nothing here retroactively identifies operations behind historical generic cancellation events.
 
@@ -225,17 +225,17 @@ Recorded implementation validation: **92 tests passed**, client compilation/type
 ```bash
 npm run transpile-client
 ./scripts/test.sh --reporter dot \
-  --run src/vs/workbench/test/common/notifications.test.ts \
-  --run src/vs/workbench/test/common/notificationTelemetry.test.ts \
-  --run src/vs/workbench/test/browser/notificationsToasts.test.ts \
-  --run src/vs/workbench/test/browser/notificationsList.test.ts \
-  --run src/vs/workbench/test/browser/notificationAccessibleView.test.ts \
-  --run src/vs/workbench/test/browser/notificationTelemetry.test.ts \
-  --run src/vs/workbench/services/progress/test/browser/progressService.test.ts \
-  --run src/vs/workbench/api/test/browser/mainThreadProgress.test.ts \
-  --run src/vs/workbench/api/test/browser/extHostMessagerService.test.ts \
-  --run src/vs/workbench/contrib/chat/test/browser/agentSessions/agentHostDownloadProgress.test.ts \
-  --run src/vs/sessions/contrib/providers/remoteAgentHost/test/browser/remoteAgentHostActions.test.ts
+  --run src/do/workbench/test/common/notifications.test.ts \
+  --run src/do/workbench/test/common/notificationTelemetry.test.ts \
+  --run src/do/workbench/test/browser/notificationsToasts.test.ts \
+  --run src/do/workbench/test/browser/notificationsList.test.ts \
+  --run src/do/workbench/test/browser/notificationAccessibleView.test.ts \
+  --run src/do/workbench/test/browser/notificationTelemetry.test.ts \
+  --run src/do/workbench/services/progress/test/browser/progressService.test.ts \
+  --run src/do/workbench/api/test/browser/mainThreadProgress.test.ts \
+  --run src/do/workbench/api/test/browser/extHostMessagerService.test.ts \
+  --run src/do/workbench/contrib/chat/test/browser/agentSessions/agentHostDownloadProgress.test.ts \
+  --run src/do/sessions/contrib/providers/remoteAgentHost/test/browser/remoteAgentHostActions.test.ts
 npm run typecheck-client
 npm run gulp compile-client
 npm run valid-layers-check
@@ -251,7 +251,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const { extractAndResolveDeclarations } = require('@vscode/telemetry-extractor');
 (async () => {
- const { events } = await extractAndResolveDeclarations([{ sourceDirs: [path.resolve('src/vs/workbench/common')], excludedDirs: [], parserOptions: { eventPrefix: '', applyEndpoints: false, patchDebugEvents: false, lowerCaseEvents: false, silenceOutput: true, verbose: false } }]);
+ const { events } = await extractAndResolveDeclarations([{ sourceDirs: [path.resolve('src/do/workbench/common')], excludedDirs: [], parserOptions: { eventPrefix: '', applyEndpoints: false, patchDebugEvents: false, lowerCaseEvents: false, silenceOutput: true, verbose: false } }]);
  for (const name of ['notificationShown', 'notificationInteraction']) {
   const event = events[name];
   assert.ok(event, `Missing extracted event: ${name}`);
@@ -276,7 +276,7 @@ Validation limits: the initial standard-test dependency bootstrap encountered re
 These new events are not present in the historical sample. This example uses the raw core-events table and expected lowercased property/measurement keys. Filter to a deployed application version before real comparisons. Existing `SessionId`, `TimeSinceSessionStart`, and `Sequence` support session-relative joining/ordering; the existing Agents-window boolean is in `Measures`.
 
 ```kql
-database("VSCode").RawEventsVSCode
+database("DoCode").RawEventsDoCode
 | where ServerUploadTimestamp > ago(7d)
 | where EventName in~ ("monacoworkbench/notificationShown", "monacoworkbench/notificationInteraction")
 // Optional Agents-window-only filter:

@@ -8,7 +8,7 @@ It is based on:
 
 - a WSL terminal transcript captured on 2026-09-30;
 - the last legacy TypeScript shim, which
-  `git show 315c844ac15^:extensions/copilot/src/extension/chatSessions/vscode-node/copilotCLIShim.ts`
+  `git show 315c844ac15^:extensions/copilot/src/extension/chatSessions/docode-node/copilotCLIShim.ts`
   shows;
 - the `install.sh` in `github/copilot-cli` on `main` on 2026-09-30; and
 - the current Rust shim in this directory.
@@ -216,5 +216,5 @@ macOS filtering works around the script accepting any `copilot`. Linux instead p
 - Command model and process creation: [`src/model.rs`](./src/model.rs) and
   [`src/platform/mod.rs`](./src/platform/mod.rs)
 - Legacy shim:
-  `git show 315c844ac15^:extensions/copilot/src/extension/chatSessions/vscode-node/copilotCLIShim.ts`
+  `git show 315c844ac15^:extensions/copilot/src/extension/chatSessions/docode-node/copilotCLIShim.ts`
 - Official script: <https://github.com/github/copilot-cli/blob/main/install.sh>

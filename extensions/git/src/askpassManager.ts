@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cp from 'child_process';
-import { env, LogOutputChannel } from 'vscode';
+import { env, LogOutputChannel } from 'docode';
 
 /**
  * Manages content-addressed copies of askpass scripts in a user-controlled folder.

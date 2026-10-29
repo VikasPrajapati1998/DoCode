@@ -1,0 +1,10 @@
+{
+	"name": "@types/docode-notebook-renderer",
+	"version": "1.72.0",
+	"description": "TypeScript definitions for docode-notebook-renderer",
+	"license": "MIT",
+	"main": "",
+	"types": "index.d.ts",
+	"dependencies": {},
+	"typeScriptVersion": "4.1"
+}

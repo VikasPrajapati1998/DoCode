@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Channel, HubRpcConnection, JsonRpcChannel, isResponse, type IMessageTransport, type JsonRpcMessage } from '@vscode/hubrpc';
+import { Channel, HubRpcConnection, JsonRpcChannel, isResponse, type IMessageTransport, type JsonRpcMessage } from '@docode/hubrpc';
 import * as z from 'zod/mini';
 
 export function createMarkdownEditorRpcConnection(

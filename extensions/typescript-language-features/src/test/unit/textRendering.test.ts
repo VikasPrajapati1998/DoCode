@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import { Uri } from 'vscode';
+import { Uri } from 'docode';
 import { IFilePathToResourceConverter, documentationToMarkdown, asPlainTextWithLinks, tagsToMarkdown } from '../../languageFeatures/util/textRendering';
 import { SymbolDisplayPart } from '../../tsServer/protocol/protocol';
 

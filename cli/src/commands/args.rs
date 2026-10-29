@@ -42,11 +42,11 @@ const INTEGRATED_TEMPLATE: &str = concatcp!(
 {all-args}"
 );
 
-const COMMIT_IN_VERSION: &str = match constants::VSCODE_CLI_COMMIT {
+const COMMIT_IN_VERSION: &str = match constants::DOCODE_CLI_COMMIT {
 	Some(c) => c,
 	None => "unknown",
 };
-const NUMBER_IN_VERSION: &str = match constants::VSCODE_CLI_VERSION {
+const NUMBER_IN_VERSION: &str = match constants::DOCODE_CLI_VERSION {
 	Some(c) => c,
 	None => "dev",
 };
@@ -263,8 +263,8 @@ pub struct AgentHostArgs {
 	/// agent-host endpoint registry
 	/// (`<user-data-dir>/agent-host/local-endpoint/entries/`, the directory of
 	/// per-instance entry files editor windows also publish to). Defaults to
-	/// the platform user data directory (honoring `VSCODE_PORTABLE` /
-	/// `VSCODE_APPDATA` when set), matching the editor's own resolution rules.
+	/// the platform user data directory (honoring `DOCODE_PORTABLE` /
+	/// `DOCODE_APPDATA` when set), matching the editor's own resolution rules.
 	#[clap(long)]
 	pub user_data_dir: Option<String>,
 
@@ -515,7 +515,7 @@ pub struct CommandShellArgs {
 	#[clap[long]]
 	pub on_host: Option<String>,
 	/// Require the given token string to be given in the handshake.
-	#[clap(long, env = "VSCODE_CLI_REQUIRE_TOKEN")]
+	#[clap(long, env = "DOCODE_CLI_REQUIRE_TOKEN")]
 	pub require_token: Option<String>,
 	/// Optional parent process id. If provided, the server will be stopped when the process of the given pid no longer exists
 	#[clap(long, hide = true)]
@@ -604,7 +604,7 @@ pub struct InstallExtensionArgs {
 	/// Either an extension id or a path to a VSIX. The identifier of an
 	/// extension is '${publisher}.${name}'. Use '--force' argument to update
 	/// to latest version. To install a specific version provide '@${version}'.
-	/// For example: 'vscode.csharp@1.2.3'.
+	/// For example: 'docode.csharp@1.2.3'.
 	#[clap(name = "ext-id | id")]
 	pub id_or_path: Vec<String>,
 
@@ -774,7 +774,7 @@ impl DesktopCodeOptions {
 #[derive(Args, Debug, Default, Clone)]
 pub struct GlobalOptions {
 	/// Directory where CLI metadata should be stored.
-	#[clap(long, env = "VSCODE_CLI_DATA_DIR", global = true)]
+	#[clap(long, env = "DOCODE_CLI_DATA_DIR", global = true)]
 	pub cli_data_dir: Option<String>,
 
 	/// Print verbose output (implies --wait).
@@ -955,8 +955,8 @@ pub struct TunnelServeArgs {
 	/// agent-host endpoint registry
 	/// (`<user-data-dir>/agent-host/local-endpoint/entries/`, the directory of
 	/// per-instance entry files editor windows also publish to). Defaults to
-	/// the platform user data directory (honoring `VSCODE_PORTABLE` /
-	/// `VSCODE_APPDATA` when set), matching the editor's own resolution rules.
+	/// the platform user data directory (honoring `DOCODE_PORTABLE` /
+	/// `DOCODE_APPDATA` when set), matching the editor's own resolution rules.
 	#[clap(long, hide = true)]
 	pub user_data_dir: Option<String>,
 
@@ -965,7 +965,7 @@ pub struct TunnelServeArgs {
 	#[clap(
 		long,
 		hide = true,
-		env = "VSCODE_CLI_MACHINE_STATUS",
+		env = "DOCODE_CLI_MACHINE_STATUS",
 		action = clap::ArgAction::Set,
 		num_args = 0..=1,
 		default_value = "false",
@@ -1120,11 +1120,11 @@ pub enum TunnelUserSubCommands {
 #[derive(Args, Debug, Clone)]
 pub struct LoginArgs {
 	/// An access token to store for authentication.
-	#[clap(long, requires = "provider", env = "VSCODE_CLI_ACCESS_TOKEN")]
+	#[clap(long, requires = "provider", env = "DOCODE_CLI_ACCESS_TOKEN")]
 	pub access_token: Option<String>,
 
 	/// An access token to store for authentication.
-	#[clap(long, requires = "access_token", env = "VSCODE_CLI_REFRESH_TOKEN")]
+	#[clap(long, requires = "access_token", env = "DOCODE_CLI_REFRESH_TOKEN")]
 	pub refresh_token: Option<String>,
 
 	/// The auth provider to use. If not provided, a prompt will be shown.
@@ -1143,7 +1143,7 @@ mod tests {
 	use super::{AgentHostArgs, AgentSubcommand, Commands, IntegratedCli, TunnelServeArgs};
 	use clap::Parser;
 
-	const MACHINE_STATUS_ENV: &str = "VSCODE_CLI_MACHINE_STATUS";
+	const MACHINE_STATUS_ENV: &str = "DOCODE_CLI_MACHINE_STATUS";
 
 	fn parse_machine_status(args: &[&str]) -> bool {
 		let cli = IntegratedCli::try_parse_from(args).unwrap();
@@ -1399,7 +1399,7 @@ mod tests {
 
 	/// Mutates process-global environment, which `cargo test` runs in parallel
 	/// with every other test. This is only safe because no other test reads
-	/// `VSCODE_CLI_MACHINE_STATUS`; if a second env-dependent test is added
+	/// `DOCODE_CLI_MACHINE_STATUS`; if a second env-dependent test is added
 	/// here, serialize them (a shared mutex) rather than letting them race.
 	#[test]
 	fn parses_machine_status_from_flag_and_environment() {

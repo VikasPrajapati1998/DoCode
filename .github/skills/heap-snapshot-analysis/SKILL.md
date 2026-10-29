@@ -175,7 +175,7 @@ override dispose() {
 ### False Retainers to Watch For
 
 - **DevTools debugger global handles**: If the snapshot was captured after opening DevTools, large source strings, compiled scripts, preview data, inspected objects, or debugger bookkeeping can be retained by paths like `DevTools debugger(internal)` → `synthetic::(Global handles)` → GC roots. Treat these as debugger-induced until proven otherwise. They may not exist in the app before DevTools opens, and they should not be confused with application-owned leaks.
-- **`DevToolsLogger._aliveInstances`** (Map): Enabled by `VSCODE_DEV_DEBUG_OBSERVABLES` env var. Retains ALL observed observables. Check if this is active before investigating observable-rooted paths.
+- **`DevToolsLogger._aliveInstances`** (Map): Enabled by `DOCODE_DEV_DEBUG_OBSERVABLES` env var. Retains ALL observed observables. Check if this is active before investigating observable-rooted paths.
 - **`GCBasedDisposableTracker` (FinalizationRegistry)**: If `register(target, held, target)` is used (target === unregister token), creates a strong self-reference preventing GC. Currently commented out in production.
 - **WeakMap backing arrays**: Show up in retainer paths but don't prevent collection.
 

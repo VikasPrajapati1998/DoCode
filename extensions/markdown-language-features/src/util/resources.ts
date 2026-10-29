@@ -3,29 +3,29 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Utils } from 'vscode-uri';
 
 export interface WebviewResourceProvider {
-	asWebviewUri(resource: vscode.Uri): vscode.Uri;
+	asWebviewUri(resource: docode.Uri): docode.Uri;
 
 	readonly cspSource: string;
 }
 
 export function getMarkdownLocalResourceRoots(
-	resource: vscode.Uri,
-	baseRoots: readonly vscode.Uri[],
+	resource: docode.Uri,
+	baseRoots: readonly docode.Uri[],
 	options: {
 		readonly includeWorkspaceResources?: boolean;
-		readonly workspaceContext?: Pick<typeof vscode.workspace, 'getWorkspaceFolder' | 'workspaceFolders'>;
+		readonly workspaceContext?: Pick<typeof docode.workspace, 'getWorkspaceFolder' | 'workspaceFolders'>;
 	} = {},
-): vscode.Uri[] {
+): docode.Uri[] {
 	const roots = [...baseRoots];
 	if (options.includeWorkspaceResources === false) {
 		return roots;
 	}
 
-	const workspaceContext = options.workspaceContext ?? vscode.workspace;
+	const workspaceContext = options.workspaceContext ?? docode.workspace;
 	if (workspaceContext.getWorkspaceFolder(resource)) {
 		roots.push(...workspaceContext.workspaceFolders?.map(folder => folder.uri) ?? []);
 	} else {
@@ -35,7 +35,7 @@ export function getMarkdownLocalResourceRoots(
 	return roots;
 }
 
-export function areUrisEqual(uri1: vscode.Uri, uri2: vscode.Uri): boolean {
+export function areUrisEqual(uri1: docode.Uri, uri2: docode.Uri): boolean {
 	if (uri1.scheme !== uri2.scheme) {
 		return false;
 	}

@@ -59,7 +59,7 @@ Most important symbols:
 * `observableSignal(...): IObservable<void>` - use `.trigger(tx)` to trigger a change
 
 
-* Check src\vs\base\common\observableInternal\index.ts for a list of all observable utitilies
+* Check src\do\base\common\observableInternal\index.ts for a list of all observable utitilies
 
 
 * Important learnings:

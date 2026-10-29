@@ -1,6 +1,6 @@
 ---
 description: "Use when changing the Automations create/edit dialog. Keeps status messages in one notification center and loading states as spinner hovers."
-applyTo: "src/vs/sessions/contrib/automations/browser/{automationDialog.ts,automationDialogService.ts,media/automationDialog.css}"
+applyTo: "src/do/sessions/contrib/automations/browser/{automationDialog.ts,automationDialogService.ts,media/automationDialog.css}"
 ---
 
 # Automations dialog messages

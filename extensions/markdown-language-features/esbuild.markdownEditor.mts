@@ -35,8 +35,8 @@ run({
 	outdir: outDir,
 	additionalWatchPaths: [
 		editorPackage.directory ?? path.dirname(fileURLToPath(editorPackage.commandsUrl)),
-		path.dirname(fileURLToPath(import.meta.resolve('@vscode/web-editors'))),
-		path.dirname(fileURLToPath(import.meta.resolve('@vscode/hubrpc'))),
+		path.dirname(fileURLToPath(import.meta.resolve('@docode/web-editors'))),
+		path.dirname(fileURLToPath(import.meta.resolve('@docode/hubrpc'))),
 		updatePackageJsonModulePath,
 		fileURLToPath(new URL('./scripts/markdownEditorPackage.mts', import.meta.url)),
 		taskProgressBuildModulePath,

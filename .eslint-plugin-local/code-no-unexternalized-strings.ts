@@ -184,7 +184,7 @@ export default new class NoUnexternalizedStrings implements eslint.Rule.RuleModu
 			// localize2(...)
 			['CallExpression[callee.type="MemberExpression"][callee.object.name="nls"][callee.property.name="localize2"]:exit']: (node: TSESTree.CallExpression) => visitLocalizeCall(node),
 
-			// vscode.l10n.t(...)
+			// docode.l10n.t(...)
 			['CallExpression[callee.type="MemberExpression"][callee.object.property.name="l10n"][callee.property.name="t"]:exit']: (node: TSESTree.CallExpression) => visitL10NCall(node),
 
 			// l10n.t(...)

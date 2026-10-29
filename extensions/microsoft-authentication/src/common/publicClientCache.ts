@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import type { AccountInfo, AuthenticationResult, InteractiveRequest, RefreshTokenRequest, SilentFlowRequest, DeviceCodeRequest } from '@azure/msal-node';
-import type { Disposable, Event } from 'vscode';
+import type { Disposable, Event } from 'docode';
 
 export interface ICachedPublicClientApplication {
 	onDidAccountsChange: Event<{ added: AccountInfo[]; changed: AccountInfo[]; deleted: AccountInfo[] }>;

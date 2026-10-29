@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LogOutputChannel, SourceControlArtifactProvider, SourceControlArtifactGroup, SourceControlArtifact, Event, EventEmitter, l10n, workspace, Uri, Disposable, Command } from 'vscode';
+import { LogOutputChannel, SourceControlArtifactProvider, SourceControlArtifactGroup, SourceControlArtifact, Event, EventEmitter, l10n, workspace, Uri, Disposable, Command } from 'docode';
 import { coalesce, dispose, filterEvent, IDisposable, isCopilotWorktreeFolder } from './util';
 import { Repository } from './repository';
 import type { Ref, Worktree } from './api/git';

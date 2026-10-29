@@ -3,34 +3,34 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { RefType } from './typings/git.constants.js';
 import type { API as GitAPI, Repository } from './typings/git.d.ts';
 import { publishRepository } from './publish.js';
 import { DisposableStore, getRepositoryFromUrl } from './util.js';
-import { LinkContext, getCommitLink, getLink, getVscodeDevHost } from './links.js';
+import { LinkContext, getCommitLink, getLink, getDocodeDevHost } from './links.js';
 import { getOctokit } from './auth.js';
 
-async function copyVscodeDevLink(gitAPI: GitAPI, useSelection: boolean, context: LinkContext, includeRange = true) {
+async function copyDocodeDevLink(gitAPI: GitAPI, useSelection: boolean, context: LinkContext, includeRange = true) {
 	try {
-		const permalink = await getLink(gitAPI, useSelection, true, getVscodeDevHost(), 'headlink', context, includeRange);
+		const permalink = await getLink(gitAPI, useSelection, true, getDocodeDevHost(), 'headlink', context, includeRange);
 		if (permalink) {
-			return vscode.env.clipboard.writeText(permalink);
+			return docode.env.clipboard.writeText(permalink);
 		}
 	} catch (err) {
-		if (!(err instanceof vscode.CancellationError)) {
-			vscode.window.showErrorMessage(err.message);
+		if (!(err instanceof docode.CancellationError)) {
+			docode.window.showErrorMessage(err.message);
 		}
 	}
 }
 
-async function openVscodeDevLink(gitAPI: GitAPI): Promise<vscode.Uri | undefined> {
+async function openDocodeDevLink(gitAPI: GitAPI): Promise<docode.Uri | undefined> {
 	try {
-		const headlink = await getLink(gitAPI, true, false, getVscodeDevHost(), 'headlink');
-		return headlink ? vscode.Uri.parse(headlink) : undefined;
+		const headlink = await getLink(gitAPI, true, false, getDocodeDevHost(), 'headlink');
+		return headlink ? docode.Uri.parse(headlink) : undefined;
 	} catch (err) {
-		if (!(err instanceof vscode.CancellationError)) {
-			vscode.window.showErrorMessage(err.message);
+		if (!(err instanceof docode.CancellationError)) {
+			docode.window.showErrorMessage(err.message);
 		}
 		return undefined;
 	}
@@ -48,12 +48,12 @@ function resolveSessionRepo(gitAPI: GitAPI, sessionMetadata: { worktreePath?: st
 		return undefined;
 	}
 
-	const worktreeUri = vscode.Uri.file(sessionMetadata.worktreePath);
+	const worktreeUri = docode.Uri.file(sessionMetadata.worktreePath);
 	const repository = gitAPI.getRepository(worktreeUri);
 
 	if (!repository) {
 		if (showErrors) {
-			vscode.window.showErrorMessage(vscode.l10n.t('Could not find a git repository for the session worktree.'));
+			docode.window.showErrorMessage(docode.l10n.t('Could not find a git repository for the session worktree.'));
 		}
 		return undefined;
 	}
@@ -63,7 +63,7 @@ function resolveSessionRepo(gitAPI: GitAPI, sessionMetadata: { worktreePath?: st
 
 	if (remotes.length === 0) {
 		if (showErrors) {
-			vscode.window.showErrorMessage(vscode.l10n.t('Could not find a GitHub remote for this repository.'));
+			docode.window.showErrorMessage(docode.l10n.t('Could not find a GitHub remote for this repository.'));
 		}
 		return undefined;
 	}
@@ -75,7 +75,7 @@ function resolveSessionRepo(gitAPI: GitAPI, sessionMetadata: { worktreePath?: st
 	const remoteInfo = getRepositoryFromUrl(gitRemote.fetchUrl!);
 	if (!remoteInfo) {
 		if (showErrors) {
-			vscode.window.showErrorMessage(vscode.l10n.t('Could not parse GitHub remote URL.'));
+			docode.window.showErrorMessage(docode.l10n.t('Could not parse GitHub remote URL.'));
 		}
 		return undefined;
 	}
@@ -83,7 +83,7 @@ function resolveSessionRepo(gitAPI: GitAPI, sessionMetadata: { worktreePath?: st
 	const head = repository.state.HEAD;
 	if (!head?.name) {
 		if (showErrors) {
-			vscode.window.showErrorMessage(vscode.l10n.t('Could not determine the current branch.'));
+			docode.window.showErrorMessage(docode.l10n.t('Could not determine the current branch.'));
 		}
 		return undefined;
 	}
@@ -91,7 +91,7 @@ function resolveSessionRepo(gitAPI: GitAPI, sessionMetadata: { worktreePath?: st
 	return { repository, remoteInfo, gitRemote: { name: gitRemote.name, fetchUrl: gitRemote.fetchUrl! }, head: head as ResolvedSessionRepo['head'] };
 }
 
-async function createPullRequest(gitAPI: GitAPI, sessionResource: vscode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined): Promise<void> {
+async function createPullRequest(gitAPI: GitAPI, sessionResource: docode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined): Promise<void> {
 	if (!sessionResource) {
 		return;
 	}
@@ -106,14 +106,14 @@ async function createPullRequest(gitAPI: GitAPI, sessionResource: vscode.Uri | u
 	// Ensure the branch is published to the remote
 	if (!head.upstream) {
 		try {
-			await vscode.window.withProgress(
-				{ location: vscode.ProgressLocation.Notification, title: vscode.l10n.t('Publishing branch to {0}...', gitRemote.name) },
+			await docode.window.withProgress(
+				{ location: docode.ProgressLocation.Notification, title: docode.l10n.t('Publishing branch to {0}...', gitRemote.name) },
 				async () => {
 					await repository.push(gitRemote.name, head.name, true);
 				}
 			);
 		} catch (err) {
-			vscode.window.showErrorMessage(vscode.l10n.t('Failed to publish branch: {0}', err instanceof Error ? err.message : String(err)));
+			docode.window.showErrorMessage(docode.l10n.t('Failed to publish branch: {0}', err instanceof Error ? err.message : String(err)));
 			return;
 		}
 	}
@@ -122,10 +122,10 @@ async function createPullRequest(gitAPI: GitAPI, sessionResource: vscode.Uri | u
 	// Format: https://github.com/owner/repo/compare/base...head
 	const prUrl = `https://github.com/${remoteInfo.owner}/${remoteInfo.repo}/compare/${head.name}?expand=1`;
 
-	vscode.env.openExternal(vscode.Uri.parse(prUrl));
+	docode.env.openExternal(docode.Uri.parse(prUrl));
 }
 
-async function openPullRequest(gitAPI: GitAPI, _sessionResource: vscode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined): Promise<void> {
+async function openPullRequest(gitAPI: GitAPI, _sessionResource: docode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined): Promise<void> {
 	const resolved = resolveSessionRepo(gitAPI, sessionMetadata, true);
 	if (!resolved) {
 		return;
@@ -141,7 +141,7 @@ async function openPullRequest(gitAPI: GitAPI, _sessionResource: vscode.Uri | un
 		});
 
 		if (pullRequests.length > 0) {
-			vscode.env.openExternal(vscode.Uri.parse(pullRequests[0].html_url));
+			docode.env.openExternal(docode.Uri.parse(pullRequests[0].html_url));
 			return;
 		}
 	} catch {
@@ -150,7 +150,7 @@ async function openPullRequest(gitAPI: GitAPI, _sessionResource: vscode.Uri | un
 
 	// Fallback: open the repository page
 	const { remoteInfo } = resolved;
-	vscode.env.openExternal(vscode.Uri.parse(`https://github.com/${remoteInfo.owner}/${remoteInfo.repo}`));
+	docode.env.openExternal(docode.Uri.parse(`https://github.com/${remoteInfo.owner}/${remoteInfo.repo}`));
 }
 
 async function openOnGitHub(repository: Repository, commit: string): Promise<void> {
@@ -163,7 +163,7 @@ async function openOnGitHub(repository: Repository, commit: string): Promise<voi
 		.filter(r => remoteNames.has(r.name) && r.fetchUrl && getRepositoryFromUrl(r.fetchUrl));
 
 	if (remotes.length === 0) {
-		vscode.window.showInformationMessage(vscode.l10n.t('No GitHub remotes found that contain this commit.'));
+		docode.window.showInformationMessage(docode.l10n.t('No GitHub remotes found that contain this commit.'));
 		return;
 	}
 
@@ -173,38 +173,38 @@ async function openOnGitHub(repository: Repository, commit: string): Promise<voi
 		?? remotes[0];
 
 	const link = getCommitLink(remote.fetchUrl!, commit);
-	vscode.env.openExternal(vscode.Uri.parse(link));
+	docode.env.openExternal(docode.Uri.parse(link));
 }
 
-export function registerCommands(gitAPI: GitAPI): vscode.Disposable {
+export function registerCommands(gitAPI: GitAPI): docode.Disposable {
 	const disposables = new DisposableStore();
 
-	disposables.add(vscode.commands.registerCommand('github.publish', async () => {
+	disposables.add(docode.commands.registerCommand('github.publish', async () => {
 		try {
 			publishRepository(gitAPI);
 		} catch (err) {
-			vscode.window.showErrorMessage(err.message);
+			docode.window.showErrorMessage(err.message);
 		}
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.copyVscodeDevLink', async (context: LinkContext) => {
-		return copyVscodeDevLink(gitAPI, true, context);
+	disposables.add(docode.commands.registerCommand('github.copyDocodeDevLink', async (context: LinkContext) => {
+		return copyDocodeDevLink(gitAPI, true, context);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.copyVscodeDevLinkFile', async (context: LinkContext) => {
-		return copyVscodeDevLink(gitAPI, false, context);
+	disposables.add(docode.commands.registerCommand('github.copyDocodeDevLinkFile', async (context: LinkContext) => {
+		return copyDocodeDevLink(gitAPI, false, context);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.copyVscodeDevLinkWithoutRange', async (context: LinkContext) => {
-		return copyVscodeDevLink(gitAPI, true, context, false);
+	disposables.add(docode.commands.registerCommand('github.copyDocodeDevLinkWithoutRange', async (context: LinkContext) => {
+		return copyDocodeDevLink(gitAPI, true, context, false);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.openOnGitHub', async (url: string, historyItemId: string) => {
+	disposables.add(docode.commands.registerCommand('github.openOnGitHub', async (url: string, historyItemId: string) => {
 		const link = getCommitLink(url, historyItemId);
-		vscode.env.openExternal(vscode.Uri.parse(link));
+		docode.env.openExternal(docode.Uri.parse(link));
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.graph.openOnGitHub', async (repository: vscode.SourceControl, historyItem: vscode.SourceControlHistoryItem) => {
+	disposables.add(docode.commands.registerCommand('github.graph.openOnGitHub', async (repository: docode.SourceControl, historyItem: docode.SourceControlHistoryItem) => {
 		if (!repository || !historyItem) {
 			return;
 		}
@@ -217,7 +217,7 @@ export function registerCommands(gitAPI: GitAPI): vscode.Disposable {
 		await openOnGitHub(apiRepository, historyItem.id);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.timeline.openOnGitHub', async (item: vscode.TimelineItem, uri: vscode.Uri) => {
+	disposables.add(docode.commands.registerCommand('github.timeline.openOnGitHub', async (item: docode.TimelineItem, uri: docode.Uri) => {
 		if (!item.id || !uri) {
 			return;
 		}
@@ -230,15 +230,15 @@ export function registerCommands(gitAPI: GitAPI): vscode.Disposable {
 		await openOnGitHub(apiRepository, item.id);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.openOnVscodeDev', async () => {
-		return openVscodeDevLink(gitAPI);
+	disposables.add(docode.commands.registerCommand('github.openOnDocodeDev', async () => {
+		return openDocodeDevLink(gitAPI);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.createPullRequest', async (sessionResource: vscode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined) => {
+	disposables.add(docode.commands.registerCommand('github.createPullRequest', async (sessionResource: docode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined) => {
 		return createPullRequest(gitAPI, sessionResource, sessionMetadata);
 	}));
 
-	disposables.add(vscode.commands.registerCommand('github.openPullRequest', async (sessionResource: vscode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined) => {
+	disposables.add(docode.commands.registerCommand('github.openPullRequest', async (sessionResource: docode.Uri | undefined, sessionMetadata: { worktreePath?: string } | undefined) => {
 		return openPullRequest(gitAPI, sessionResource, sessionMetadata);
 	}));
 

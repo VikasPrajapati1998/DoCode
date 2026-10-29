@@ -8,10 +8,10 @@
 //! a directory of one atomic entry file per agent host instance).
 //!
 //! Mirrors the precedence and per-platform rules implemented by the
-//! TypeScript resolver in `src/vs/platform/environment/node/userDataPath.ts`
+//! TypeScript resolver in `src/do/platform/environment/node/userDataPath.ts`
 //! (which is passed `product.nameShort`), with one deliberate ordering
 //! change: an explicit `--user-data-dir` always wins here. In the Electron
-//! main process, `VSCODE_PORTABLE`/`VSCODE_APPDATA` are checked *before* the
+//! main process, `DOCODE_PORTABLE`/`DOCODE_APPDATA` are checked *before* the
 //! CLI argument only to work around Electron implicitly re-injecting
 //! `--user-data-dir` into argv; that quirk does not apply to this
 //! standalone-CLI-only flag, so we can use the simpler, more predictable
@@ -48,8 +48,8 @@ impl UserDataOs {
 /// environment variables (which would make tests order-dependent / racy).
 #[derive(Debug, Clone, Default)]
 pub struct UserDataPathEnv {
-	pub vscode_portable: Option<String>,
-	pub vscode_appdata: Option<String>,
+	pub docode_portable: Option<String>,
+	pub docode_appdata: Option<String>,
 	pub appdata: Option<String>,
 	pub userprofile: Option<String>,
 	pub xdg_config_home: Option<String>,
@@ -60,8 +60,8 @@ impl UserDataPathEnv {
 	/// Reads the real process environment / home directory.
 	pub fn from_process() -> Self {
 		Self {
-			vscode_portable: non_empty_env("VSCODE_PORTABLE"),
-			vscode_appdata: non_empty_env("VSCODE_APPDATA"),
+			docode_portable: non_empty_env("DOCODE_PORTABLE"),
+			docode_appdata: non_empty_env("DOCODE_APPDATA"),
 			appdata: non_empty_env("APPDATA"),
 			userprofile: non_empty_env("USERPROFILE"),
 			xdg_config_home: non_empty_env("XDG_CONFIG_HOME"),
@@ -90,8 +90,8 @@ pub fn resolve_user_data_path(explicit: Option<&str>) -> PathBuf {
 
 /// Core, dependency-injected resolver. Precedence:
 ///  1. Explicit `--user-data-dir`, if provided.
-///  2. `VSCODE_PORTABLE` -> `<portable>/user-data`.
-///  3. `VSCODE_APPDATA` -> `<appdata>/<productName>`.
+///  2. `DOCODE_PORTABLE` -> `<portable>/user-data`.
+///  3. `DOCODE_APPDATA` -> `<appdata>/<productName>`.
 ///  4. The platform default (see [`default_user_data_path_with`]).
 ///
 /// Relative paths (explicit or portable) are resolved against the current
@@ -107,11 +107,11 @@ pub fn resolve_user_data_path_with(
 		return resolve_relative_to_cwd(explicit, os);
 	}
 
-	if let Some(portable) = &env.vscode_portable {
+	if let Some(portable) = &env.docode_portable {
 		return join_component(resolve_relative_to_cwd(portable, os), "user-data", os);
 	}
 
-	if let Some(appdata) = &env.vscode_appdata {
+	if let Some(appdata) = &env.docode_appdata {
 		return join_component(resolve_relative_to_cwd(appdata, os), product_name, os);
 	}
 
@@ -284,17 +284,17 @@ mod tests {
 	}
 
 	#[test]
-	fn vscode_portable_overrides_default() {
+	fn docode_portable_overrides_default() {
 		let mut env = env_with_home("/home/test");
-		env.vscode_portable = Some("/mnt/portable".to_string());
+		env.docode_portable = Some("/mnt/portable".to_string());
 		let path = resolve_user_data_path_with(None, "Code - OSS", UserDataOs::Linux, &env);
 		assert_eq!(path, PathBuf::from("/mnt/portable/user-data"));
 	}
 
 	#[test]
-	fn vscode_appdata_overrides_default() {
+	fn docode_appdata_overrides_default() {
 		let mut env = env_with_home("/home/test");
-		env.vscode_appdata = Some("/mnt/appdata".to_string());
+		env.docode_appdata = Some("/mnt/appdata".to_string());
 		let path = resolve_user_data_path_with(None, "Code - OSS", UserDataOs::Linux, &env);
 		assert_eq!(path, PathBuf::from("/mnt/appdata/Code - OSS"));
 	}
@@ -302,8 +302,8 @@ mod tests {
 	#[test]
 	fn explicit_dir_takes_precedence_over_portable_and_appdata() {
 		let mut env = env_with_home("/home/test");
-		env.vscode_portable = Some("/mnt/portable".to_string());
-		env.vscode_appdata = Some("/mnt/appdata".to_string());
+		env.docode_portable = Some("/mnt/portable".to_string());
+		env.docode_appdata = Some("/mnt/appdata".to_string());
 		let path = resolve_user_data_path_with(
 			Some("/explicit/dir"),
 			"Code - OSS",

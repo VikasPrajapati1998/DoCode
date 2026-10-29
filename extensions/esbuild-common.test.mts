@@ -14,9 +14,9 @@ import { promisify } from 'node:util';
 
 const exec = promisify(execFile);
 const runner = new URL('./esbuild-common.mts', import.meta.url).href;
-const start = '{"type":"vscode.build","version":1,"event":"start"}';
-const success = '{"type":"vscode.build","version":1,"event":"finish","success":true}';
-const failure = '{"type":"vscode.build","version":1,"event":"finish","success":false}';
+const start = '{"type":"docode.build","version":1,"event":"start"}';
+const success = '{"type":"docode.build","version":1,"event":"finish","success":true}';
+const failure = '{"type":"docode.build","version":1,"event":"finish","success":false}';
 
 test('build lifecycle includes asynchronous hooks and preserves opt-out behavior', async () => {
 	const root = await mkdtemp(join(import.meta.dirname, '.build-events-test-'));
@@ -26,7 +26,7 @@ test('build lifecycle includes asynchronous hooks and preserves opt-out behavior
 		const run = (hook: string, events = '1', beforeBuild = '') => exec(process.execPath, ['--input-type=module', '-e',
 			`import { runBuild } from ${JSON.stringify(runner)};
 			await runBuild({ ...${JSON.stringify(config)}, beforeBuild: async () => { ${beforeBuild} } }, {}, [], async () => { ${hook} });`,
-		], { env: { ...process.env, VSCODE_BUILD_EVENTS: events } });
+		], { env: { ...process.env, DOCODE_BUILD_EVENTS: events } });
 		const hook = 'await new Promise(resolve => setTimeout(resolve, 20)); console.log("POSTPROCESS");';
 		assert.equal((await run(hook)).stdout, `${start}\nPOSTPROCESS\n${success}\n`);
 		assert.equal((await run(hook, '')).stdout, 'POSTPROCESS\n');
@@ -65,7 +65,7 @@ test('overlapping builds include all postprocessing and retain plugin failures',
 				runBuild(config, {}, [], async () => { await new Promise(resolve => setTimeout(resolve, 100)); console.log("SLOW_POSTPROCESS"); }),
 				runBuild({ ...config, outdir: config.outdir + "2" }, {}, [], () => console.log("FAST_POSTPROCESS")),
 			]);`,
-		], { env: { ...process.env, VSCODE_BUILD_EVENTS: '1' } });
+		], { env: { ...process.env, DOCODE_BUILD_EVENTS: '1' } });
 		assert.equal(result.stdout, `${start}\nFAST_POSTPROCESS\nSLOW_POSTPROCESS\n${success}\n`);
 		await assert.rejects(exec(process.execPath, ['--input-type=module', '-e',
 			`import { runBuild } from ${JSON.stringify(runner)};
@@ -76,7 +76,7 @@ test('overlapping builds include all postprocessing and retain plugin failures',
 					await new Promise(resolve => setTimeout(resolve, 100)); console.log("SIBLING_DONE");
 				}),
 			]);`,
-		], { env: { ...process.env, VSCODE_BUILD_EVENTS: '1' } }), (error: Error & { stdout: string; stderr: string }) => {
+		], { env: { ...process.env, DOCODE_BUILD_EVENTS: '1' } }), (error: Error & { stdout: string; stderr: string }) => {
 			assert.equal(error.stdout, `${start}\nSIBLING_DONE\n${failure}\n`);
 			assert.match(error.stderr, /plugin failed/);
 			return true;
@@ -99,7 +99,7 @@ test('native watcher reports compilation and postprocessing failure and recovery
 		})}, {}, ['--watch'], async () => {
 			if ((await readFile(${JSON.stringify(entry)}, 'utf8')).includes('postprocessError')) { throw new Error('postprocessing failed'); }
 		});`,
-	], { env: { ...process.env, VSCODE_BUILD_EVENTS: '1' }, stdio: ['ignore', 'pipe', 'pipe'] });
+	], { env: { ...process.env, DOCODE_BUILD_EVENTS: '1' }, stdio: ['ignore', 'pipe', 'pipe'] });
 	const exited = once(child, 'exit');
 	let stdout = '';
 	let stderr = '';

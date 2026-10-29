@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as typeConverters from '../typeConverters';
 import { ITypeScriptServiceClient } from '../typescriptService';
 
@@ -15,10 +15,10 @@ export default class TypeScriptDefinitionProviderBase {
 
 	protected async getSymbolLocations(
 		definitionType: 'definition' | 'implementation' | 'typeDefinition',
-		document: vscode.TextDocument,
-		position: vscode.Position,
-		token: vscode.CancellationToken
-	): Promise<vscode.Location[] | undefined> {
+		document: docode.TextDocument,
+		position: docode.Position,
+		token: docode.CancellationToken
+	): Promise<docode.Location[] | undefined> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return undefined;

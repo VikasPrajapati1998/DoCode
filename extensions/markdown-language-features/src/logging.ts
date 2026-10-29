@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Disposable } from './util/dispose';
 
 
@@ -12,10 +12,10 @@ export interface ILogger {
 }
 
 export class VsCodeOutputLogger extends Disposable implements ILogger {
-	#outputChannelValue?: vscode.LogOutputChannel;
+	#outputChannelValue?: docode.LogOutputChannel;
 
 	get #outputChannel() {
-		this.#outputChannelValue ??= this._register(vscode.window.createOutputChannel('Markdown', { log: true }));
+		this.#outputChannelValue ??= this._register(docode.window.createOutputChannel('Markdown', { log: true }));
 		return this.#outputChannelValue;
 	}
 
@@ -24,11 +24,11 @@ export class VsCodeOutputLogger extends Disposable implements ILogger {
 	}
 
 	public trace(title: string, message: string, data?: unknown): void {
-		if (!this.#outputChannelValue && vscode.env.logLevel !== vscode.LogLevel.Trace) {
+		if (!this.#outputChannelValue && docode.env.logLevel !== docode.LogLevel.Trace) {
 			return;
 		}
 		const outputChannel = this.#outputChannel;
-		if (outputChannel.logLevel === vscode.LogLevel.Trace) {
+		if (outputChannel.logLevel === docode.LogLevel.Trace) {
 			outputChannel.trace(`${title}: ${message}`, ...(data ? [JSON.stringify(data, null, 4)] : []));
 		}
 	}

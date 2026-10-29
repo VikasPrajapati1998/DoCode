@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* Alert color mappings using theme variables */
+blockquote[data-severity="note"] {
+	--docode-textBlockQuote-border: var(--docode-markdownAlert-note-foreground);
+}
+
+blockquote[data-severity="tip"] {
+	--docode-textBlockQuote-border: var(--docode-markdownAlert-tip-foreground);
+}
+
+blockquote[data-severity="important"] {
+	--docode-textBlockQuote-border: var(--docode-markdownAlert-important-foreground);
+}
+
+blockquote[data-severity="warning"] {
+	--docode-textBlockQuote-border: var(--docode-markdownAlert-warning-foreground);
+}
+
+blockquote[data-severity="caution"] {
+	--docode-textBlockQuote-border: var(--docode-markdownAlert-caution-foreground);
+}
+
+/* Alert title styling */
+blockquote[data-severity] > p > :first-child {
+	display: inline-flex;
+	align-items: center;
+	color: var(--docode-textBlockQuote-border);
+	font-weight: bolder;
+}
+
+blockquote[data-severity] > p > :first-child .codicon {
+	color: var(--docode-textBlockQuote-border);
+	padding-right: 6px;
+}

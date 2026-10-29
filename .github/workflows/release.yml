@@ -35,19 +35,19 @@ jobs:
       - name: Build app
         run: |
           npm run gulp core-ci
-          npm run gulp vscode-win32-${{ matrix.arch }}-min-ci
+          npm run gulp docode-win32-${{ matrix.arch }}-min-ci
       - name: Build installers
         run: |
-          npm run gulp vscode-win32-${{ matrix.arch }}-inno-updater
-          npm run gulp vscode-win32-${{ matrix.arch }}-user-setup
-          npm run gulp vscode-win32-${{ matrix.arch }}-system-setup
+          npm run gulp docode-win32-${{ matrix.arch }}-inno-updater
+          npm run gulp docode-win32-${{ matrix.arch }}-user-setup
+          npm run gulp docode-win32-${{ matrix.arch }}-system-setup
       - name: Collect artifacts
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
-          Copy-Item ".build/win32-${{ matrix.arch }}/user-setup/VSCodeSetup.exe" "dist/DoCode-UserSetup-${{ matrix.arch }}.exe"
-          Copy-Item ".build/win32-${{ matrix.arch }}/system-setup/VSCodeSetup.exe" "dist/DoCode-Setup-${{ matrix.arch }}.exe"
-          Compress-Archive -Path "../VSCode-win32-${{ matrix.arch }}/*" -DestinationPath "dist/DoCode-win32-${{ matrix.arch }}.zip"
+          Copy-Item ".build/win32-${{ matrix.arch }}/user-setup/DoCodeSetup.exe" "dist/DoCode-UserSetup-${{ matrix.arch }}.exe"
+          Copy-Item ".build/win32-${{ matrix.arch }}/system-setup/DoCodeSetup.exe" "dist/DoCode-Setup-${{ matrix.arch }}.exe"
+          Compress-Archive -Path "../DoCode-win32-${{ matrix.arch }}/*" -DestinationPath "dist/DoCode-win32-${{ matrix.arch }}.zip"
       - uses: actions/upload-artifact@v4
         with:
           name: docode-win32-${{ matrix.arch }}
@@ -76,19 +76,19 @@ jobs:
       - name: Build app
         run: |
           npm run gulp core-ci
-          npm run gulp vscode-linux-${{ matrix.arch }}-min-ci
+          npm run gulp docode-linux-${{ matrix.arch }}-min-ci
       - name: Build packages
         run: |
-          npm run gulp vscode-linux-${{ matrix.arch }}-prepare-deb
-          npm run gulp vscode-linux-${{ matrix.arch }}-build-deb
-          npm run gulp vscode-linux-${{ matrix.arch }}-prepare-rpm
-          npm run gulp vscode-linux-${{ matrix.arch }}-build-rpm
+          npm run gulp docode-linux-${{ matrix.arch }}-prepare-deb
+          npm run gulp docode-linux-${{ matrix.arch }}-build-deb
+          npm run gulp docode-linux-${{ matrix.arch }}-prepare-rpm
+          npm run gulp docode-linux-${{ matrix.arch }}-build-rpm
       - name: Collect artifacts
         run: |
           mkdir -p dist
           find .build/linux -name '*.deb' -exec cp {} dist/DoCode-linux-${{ matrix.arch }}.deb \;
           find .build/linux -name '*.rpm' -exec cp {} dist/DoCode-linux-${{ matrix.arch }}.rpm \;
-          tar -czf dist/DoCode-linux-${{ matrix.arch }}.tar.gz -C .. VSCode-linux-${{ matrix.arch }}
+          tar -czf dist/DoCode-linux-${{ matrix.arch }}.tar.gz -C .. DoCode-linux-${{ matrix.arch }}
       - uses: actions/upload-artifact@v4
         with:
           name: docode-linux-${{ matrix.arch }}
@@ -116,11 +116,11 @@ jobs:
       - name: Build app
         run: |
           npm run gulp core-ci
-          npm run gulp vscode-darwin-${{ matrix.arch }}-min-ci
+          npm run gulp docode-darwin-${{ matrix.arch }}-min-ci
       - name: Package dmg and zip
         run: |
           mkdir -p dist
-          APP_DIR="../VSCode-darwin-${{ matrix.arch }}"
+          APP_DIR="../DoCode-darwin-${{ matrix.arch }}"
           hdiutil create -volname "DoCode" -srcfolder "$APP_DIR/DoCode.app" -ov -format UDZO \
             "dist/DoCode-darwin-${{ matrix.arch }}.dmg"
           ditto -c -k --keepParent "$APP_DIR/DoCode.app" "dist/DoCode-darwin-${{ matrix.arch }}.zip"

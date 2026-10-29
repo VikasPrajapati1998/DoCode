@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebEditorClient } from '@vscode/web-editors';
+import { WebEditorClient } from '@docode/web-editors';
 import mermaid from 'mermaid';
 
 const container = document.querySelector('main')!;

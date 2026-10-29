@@ -56,7 +56,7 @@ Launches VS Code via Playwright Electron, opens the chat panel, sends a message 
 | `--save-baseline` | — | Save results as the new baseline (requires `--baseline <path>`). |
 | `--resume <path>` | — | Resume a previous run, adding more iterations to increase confidence. |
 | `--threshold <frac>` | `0.2` | Regression threshold (0.2 = flag if 20% slower). |
-| `--production-build` | — | Build a local bundled package via `gulp vscode` for comparison against a release baseline. |
+| `--production-build` | — | Build a local bundled package via `gulp docode` for comparison against a release baseline. |
 | `--no-cache` | — | Ignore cached baseline data, always run fresh. |
 | `--force` | — | Skip build mode mismatch confirmation prompt. |
 | `--ci` | — | CI mode: write Markdown summary to `ci-summary.md` (implies `--no-cache`, `--heap-snapshots`, `--cleanup-diagnostics`). |
@@ -88,8 +88,8 @@ npm run perf:chat -- \
 
 # Compare two production builds:
 npm run perf:chat -- \
-  --build ../VSCode-darwin-arm64-feature/Code\ -\ OSS.app/Contents/MacOS/Code\ -\ OSS \
-  --baseline-build ../VSCode-darwin-arm64-main/Code\ -\ OSS.app/Contents/MacOS/Code\ -\ OSS \
+  --build ../DoCode-darwin-arm64-feature/Code\ -\ OSS.app/Contents/MacOS/Code\ -\ OSS \
+  --baseline-build ../DoCode-darwin-arm64-main/Code\ -\ OSS.app/Contents/MacOS/Code\ -\ OSS \
   --runs 5
 ```
 
@@ -101,13 +101,13 @@ The tool classifies builds into three modes based on the executable path:
 
 | Mode | Source | Characteristics |
 |---|---|---|
-| `dev` | `.build/electron/` (local dev) | Unbundled sources, `VSCODE_DEV=1`, `NODE_ENV=development`. Higher memory and startup overhead. |
-| `production` | `../VSCode-<platform>-<arch>/` (from `gulp vscode`) | Bundled JS, no dev flags. Matches release characteristics but uses local source. |
-| `release` | `.vscode-test/` (downloaded via `@vscode/test-electron`) | Official published build. |
+| `dev` | `.build/electron/` (local dev) | Unbundled sources, `DOCODE_DEV=1`, `NODE_ENV=development`. Higher memory and startup overhead. |
+| `production` | `../DoCode-<platform>-<arch>/` (from `gulp docode`) | Bundled JS, no dev flags. Matches release characteristics but uses local source. |
+| `release` | `.docode-test/` (downloaded via `@vscode/test-electron`) | Official published build. |
 
 When test and baseline builds have different modes (e.g. dev vs release), the tool shows a warning and prompts for confirmation. Use `--force` or `--ci` to skip the prompt.
 
-Using `--production-build` builds a local bundled package via `gulp vscode` for fair comparison against a release baseline. This eliminates dev-mode overhead while still testing your local changes.
+Using `--production-build` builds a local bundled package via `gulp docode` for fair comparison against a release baseline. This eliminates dev-mode overhead while still testing your local changes.
 
 ```bash
 # Production build vs release baseline (fair comparison):
@@ -124,7 +124,7 @@ npm run perf:chat -- --test-setting chat.experimental.incrementalRendering.enabl
 
 # Compare two builds with different settings:
 npm run perf:chat -- \
-  --baseline-build "../vscode2/.build/electron/Code - OSS.app/Contents/MacOS/Code - OSS" \
+  --baseline-build "../docode2/.build/electron/Code - OSS.app/Contents/MacOS/Code - OSS" \
   --baseline-setting chat.experimental.incrementalRendering.enabled=true \
   --test-setting chat.experimental.incrementalRendering.enabled=false \
   --runs 3
@@ -303,7 +303,7 @@ The mock LLM server (`common/mock-llm-server.js`) implements the full CAPI URL s
 - `POST /chat/completions` — SSE streaming response matching the scenario
 - Agent, session, telemetry, and token endpoints
 
-The copilot extension connects to this server via `IS_SCENARIO_AUTOMATION=1` mode with `overrideCapiUrl` and `overrideProxyUrl` settings. The `vscode-api-tests` extension must be disabled (`--disable-extension=vscode.vscode-api-tests`) because it contributes a duplicate `copilot` vendor that blocks the real extension's language model provider registration.
+The copilot extension connects to this server via `IS_SCENARIO_AUTOMATION=1` mode with `overrideCapiUrl` and `overrideProxyUrl` settings. The `docode-api-tests` extension must be disabled (`--disable-extension=docode.docode-api-tests`) because it contributes a duplicate `copilot` vendor that blocks the real extension's language model provider registration.
 
 ### Adding a scenario
 

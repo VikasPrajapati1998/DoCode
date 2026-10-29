@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TextDocument, Range, Selection, Uri, TextEditor, TextEditorDiffInformation } from 'vscode';
+import { TextDocument, Range, Selection, Uri, TextEditor, TextEditorDiffInformation } from 'docode';
 import { fromGitUri, isGitUri } from './uri';
 
 export interface LineChange {

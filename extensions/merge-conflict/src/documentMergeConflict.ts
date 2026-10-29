@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as interfaces from './interfaces';
-import * as vscode from 'vscode';
-import type TelemetryReporter from '@vscode/extension-telemetry';
+import * as docode from 'docode';
+import type TelemetryReporter from '@docode/extension-telemetry';
 
 export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict {
 
-	public range: vscode.Range;
+	public range: docode.Range;
 	public current: interfaces.IMergeRegion;
 	public incoming: interfaces.IMergeRegion;
 	public commonAncestors: interfaces.IMergeRegion[];
-	public splitter: vscode.Range;
+	public splitter: docode.Range;
 	private applied = false;
 
 	constructor(descriptor: interfaces.IDocumentMergeConflictDescriptor, private readonly telemetryReporter: TelemetryReporter) {
@@ -23,7 +23,7 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 		this.splitter = descriptor.splitter;
 	}
 
-	public commitEdit(type: interfaces.CommitType, editor: vscode.TextEditor, edit?: vscode.TextEditorEdit): Thenable<boolean> {
+	public commitEdit(type: interfaces.CommitType, editor: docode.TextEditor, edit?: docode.TextEditorEdit): Thenable<boolean> {
 		function commitTypeToString(type: interfaces.CommitType): string {
 			switch (type) {
 				case interfaces.CommitType.Current:
@@ -53,7 +53,7 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 		return editor.edit((edit) => this.applyEdit(type, editor.document, edit));
 	}
 
-	public applyEdit(type: interfaces.CommitType, document: vscode.TextDocument, edit: { replace(range: vscode.Range, newText: string): void }): void {
+	public applyEdit(type: interfaces.CommitType, document: docode.TextDocument, edit: { replace(range: docode.Range, newText: string): void }): void {
 		if (this.applied) {
 			return;
 		}
@@ -87,7 +87,7 @@ export class DocumentMergeConflict implements interfaces.IDocumentMergeConflict 
 		}
 	}
 
-	private replaceRangeWithContent(content: string, edit: { replace(range: vscode.Range, newText: string): void }) {
+	private replaceRangeWithContent(content: string, edit: { replace(range: docode.Range, newText: string): void }) {
 		if (this.isNewlineOnly(content)) {
 			edit.replace(this.range, '');
 			return;

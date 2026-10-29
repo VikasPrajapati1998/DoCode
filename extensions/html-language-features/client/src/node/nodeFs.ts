@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
-import { Uri } from 'vscode';
+import { Uri } from 'docode';
 import { FileSystemProvider, FileType } from '../requests';
 
 export function getNodeFileFS(): FileSystemProvider {

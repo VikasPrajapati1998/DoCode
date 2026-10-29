@@ -23,14 +23,14 @@ import glob from 'glob';
 import { promisify } from 'util';
 import rceditCallback from 'rcedit';
 import { compileApiProposalNamesTask, copyCodiconsTask } from './lib/compilation.ts';
-import { cleanExtensionsBuildTask, compileNonNativeExtensionsBuildTask, compileNativeExtensionsBuildTask, compileExtensionMediaBuildTask, compileCopilotExtensionBuildTask } from './gulpfile.extensions.ts';
+import { cleanExtensionsBuildTask, compileNonNativeExtensionsBuildTask, compileNativeExtensionsBuildTask, compileExtensionMediaBuildTask } from './gulpfile.extensions.ts';
 import * as cp from 'child_process';
 import crypto from 'crypto';
 import log from 'fancy-log';
 import { runEsbuildBundle, getBootstrapEntryPointsForTarget } from './lib/esbuild.ts';
 import { fetchUrls } from './lib/fetch.ts';
 import { downloadFeedPackage } from './lib/azureFeed.ts';
-import { ensureCopilotPlatformPackage, getCopilotExcludeFilter, getCopilotRuntimePrebuildFiles, getCopilotTgrepExcludeFilter, getRipgrepExcludeFilter, prepareBuiltInCopilotRipgrepShim } from './lib/copilot.ts';
+import { ensureCopilotPlatformPackage, getCopilotExcludeFilter, getCopilotRuntimePrebuildFiles, getCopilotTgrepExcludeFilter, getRipgrepExcludeFilter } from './lib/copilot.ts';
 import { readAgentSdkResults } from './agent-sdk/common.ts';
 
 
@@ -195,7 +195,7 @@ function nodejs(platform: string, arch: string): NodeJS.ReadWriteStream | undefi
 
 	log(`Downloading node.js ${nodeVersion} ${platform} ${arch} from ${nodejsArtifactFeed || 'https://nodejs.org'}...`);
 
-	const glibcPrefix = process.env['VSCODE_NODE_GLIBC'] ?? '';
+	const glibcPrefix = process.env['DOCODE_NODE_GLIBC'] ?? '';
 	let expectedName: string | undefined;
 	switch (platform) {
 		case 'win32':
@@ -293,7 +293,7 @@ function packageTask(type: string, platform: string, arch: string, sourceFolderN
 				const manifest = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, extensionPath)).toString());
 				return !isUIExtension(manifest);
 			}).map((extensionPath) => path.basename(path.dirname(extensionPath)))
-			.filter(name => name !== 'vscode-api-tests' && name !== 'vscode-test-resolver'); // Do not ship the test extensions
+			.filter(name => name !== 'docode-api-tests' && name !== 'docode-test-resolver'); // Do not ship the test extensions
 		const builtInExtensions: Array<{ name: string; platforms?: string[]; clientOnly?: boolean }> = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'product.json'), 'utf8')).builtInExtensions;
 		const marketplaceExtensions = builtInExtensions
 			.filter(entry => !entry.platforms || new Set(entry.platforms).has(platform))
@@ -520,20 +520,10 @@ function patchWin32DependenciesTask(destinationFolderName: string) {
 	};
 }
 
-function prepareCopilotRipgrepShimTaskREH(platform: string, arch: string, destinationFolderName: string) {
-	return async () => {
-		const outputDir = path.join(BUILD_ROOT, destinationFolderName);
-		const nodeModulesDir = path.join(outputDir, 'node_modules');
-
-		const builtInCopilotExtensionDir = path.join(outputDir, 'extensions', 'copilot');
-		prepareBuiltInCopilotRipgrepShim(platform, arch, builtInCopilotExtensionDir, nodeModulesDir);
-	};
-}
-
 ['reh', 'reh-web'].forEach(type => {
 	const target = type === 'reh' ? 'server' : 'server-web';
-	const esbuildBundleTask = task.define(`esbuild-vscode-${type}`, () => runEsbuildBundle(`out-vscode-${type}`, false, true, target));
-	const esbuildBundleMinTask = task.define(`esbuild-vscode-${type}-min`, () => runEsbuildBundle(`out-vscode-${type}-min`, true, true, target, `https://main.vscode-cdn.net/sourcemaps/${commit}/core`));
+	const esbuildBundleTask = task.define(`esbuild-docode-${type}`, () => runEsbuildBundle(`out-docode-${type}`, false, true, target));
+	const esbuildBundleMinTask = task.define(`esbuild-docode-${type}-min`, () => runEsbuildBundle(`out-docode-${type}-min`, true, true, target, `https://main.vscode-cdn.net/sourcemaps/${commit}/core`));
 
 	BUILD_TARGETS.forEach(buildTarget => {
 		const dashed = (str: string) => (str ? `-${str}` : ``);
@@ -541,30 +531,28 @@ function prepareCopilotRipgrepShimTaskREH(platform: string, arch: string, destin
 		const arch = buildTarget.arch;
 
 		['', 'min'].forEach(minified => {
-			const sourceFolderName = `out-vscode-${type}${dashed(minified)}`;
-			const destinationFolderName = `vscode-${type}${dashed(platform)}${dashed(arch)}`;
+			const sourceFolderName = `out-docode-${type}${dashed(minified)}`;
+			const destinationFolderName = `docode-${type}${dashed(platform)}${dashed(arch)}`;
 
 			const packageTasks: task.Task[] = [
 				compileNativeExtensionsBuildTask,
 				task.task(`node-${platform}-${arch}`) as task.Task,
 				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
-				packageTask(type, platform, arch, sourceFolderName, destinationFolderName),
-				prepareCopilotRipgrepShimTaskREH(platform, arch, destinationFolderName)
+				packageTask(type, platform, arch, sourceFolderName, destinationFolderName)
 			];
 
 			if (platform === 'win32') {
 				packageTasks.push(patchWin32DependenciesTask(destinationFolderName));
 			}
 
-			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(...packageTasks));
+			const serverTaskCI = task.define(`docode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(...packageTasks));
 			task.task(serverTaskCI);
 
-			const serverTask = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+			const serverTask = task.define(`docode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
 				copyCodiconsTask,
 				compileApiProposalNamesTask,
 				cleanExtensionsBuildTask,
 				compileNonNativeExtensionsBuildTask,
-				compileCopilotExtensionBuildTask,
 				compileExtensionMediaBuildTask,
 				writeISODate('out-build'),
 				minified ? esbuildBundleMinTask : esbuildBundleTask,

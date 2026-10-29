@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { IframeEmbeddedEditorProvider, VirtualizedIframeEmbeddedEditorFactory, VirtualizedIframeEmbeddedEditorOptions } from '@vscode/markdown-editor/web-editors';
+import type { IframeEmbeddedEditorProvider, VirtualizedIframeEmbeddedEditorFactory, VirtualizedIframeEmbeddedEditorOptions } from '@docode/markdown-editor/web-editors';
 
 export class LazyCodeBlockEditorFactory implements CodeBlockEditorFactory {
 	#providers: readonly IframeEmbeddedEditorProvider[];

@@ -17,7 +17,7 @@
       "alternativeSignatures": [
         "46ad210995b2ff199f3bee5f271938a4251ed7a60058041ace1beaa53e36b51c"
       ],
-      "target": "file:///D:/a/_work/1/vscode-server-win32-x64/node.exe",
+      "target": "file:///D:/a/_work/1/docode-server-win32-x64/node.exe",
       "memberOf": [
         "default"
       ],
@@ -30,7 +30,7 @@
       "alternativeSignatures": [
         "52d986be88f1c5696fc87d7794279d02f5084c645440e2dd2c3b5a2176b6bf52"
       ],
-      "target": "file:///D:/a/_work/1/vscode-server-win32-x64-web/node.exe",
+      "target": "file:///D:/a/_work/1/docode-server-win32-x64-web/node.exe",
       "memberOf": [
         "default"
       ],
@@ -43,7 +43,7 @@
       "alternativeSignatures": [
         "b6bab85ba5e97bc4e6ff2e8a7913cb9f4f3346f7bda435d176e0b1e3cfb883cf"
       ],
-      "target": "file:///D:/a/_work/1/vscode-server-win32-arm64/node.exe",
+      "target": "file:///D:/a/_work/1/docode-server-win32-arm64/node.exe",
       "memberOf": [
         "default"
       ],
@@ -56,7 +56,7 @@
       "alternativeSignatures": [
         "b46b7d6ed331f3e62eff23c57d3a074f76ef618f108929851065904200f5a572"
       ],
-      "target": "file:///D:/a/_work/1/vscode-server-win32-arm64-web/node.exe",
+      "target": "file:///D:/a/_work/1/docode-server-win32-arm64-web/node.exe",
       "memberOf": [
         "default"
       ],

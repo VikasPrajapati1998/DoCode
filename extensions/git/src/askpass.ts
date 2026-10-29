@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { window, InputBoxOptions, Uri, Disposable, workspace, QuickPickOptions, l10n, LogOutputChannel } from 'vscode';
+import { window, InputBoxOptions, Uri, Disposable, workspace, QuickPickOptions, l10n, LogOutputChannel } from 'docode';
 import { IDisposable, EmptyDisposable, toDisposable, extractFilePathFromArgs } from './util';
 import { IIPCHandler, IIPCServer } from './ipc/ipcServer';
 import type { CredentialsProvider, Credentials } from './api/git';
@@ -36,10 +36,10 @@ export class Askpass implements IIPCHandler, ITerminalEnvironmentProvider {
 		this.env = {
 			// GIT_ASKPASS
 			GIT_ASKPASS: askpassScript,
-			// VSCODE_GIT_ASKPASS
-			VSCODE_GIT_ASKPASS_NODE: process.execPath,
-			VSCODE_GIT_ASKPASS_EXTRA_ARGS: '',
-			VSCODE_GIT_ASKPASS_MAIN: askpassPaths.askpassMain
+			// DOCODE_GIT_ASKPASS
+			DOCODE_GIT_ASKPASS_NODE: process.execPath,
+			DOCODE_GIT_ASKPASS_EXTRA_ARGS: '',
+			DOCODE_GIT_ASKPASS_MAIN: askpassPaths.askpassMain
 		};
 
 		this.sshEnv = {

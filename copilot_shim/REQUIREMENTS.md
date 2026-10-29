@@ -44,7 +44,7 @@ The implementation includes:
 - Interactive installation, using GitHub's per-user MSI on Windows.
 - Post-install discovery.
 - Argument, terminal I/O, and exit-status forwarding.
-- The `--vscode-shim` option namespace, including the setup commands that the
+- The `--docode-shim` option namespace, including the setup commands that the
   Windows installer runs.
 - Builds for the complete VS Code CLI target matrix, inside the VS Code CLI
   build jobs.
@@ -83,7 +83,7 @@ the reverse.
 When the build doesn't ship the shim, the extension copies a local Rust build to
 `<globalStorageUri>/copilotCli/copilot` (`copilot.exe` on Windows). Fill in the
 absolute, extension-host-local build path in `LOCAL_SHIM_SOURCE_PATHS` in
-[`copilotCLINativeShim.ts`](../extensions/copilot/src/extension/chatSessions/vscode-node/copilotCLINativeShim.ts).
+[`copilotCLINativeShim.ts`](../extensions/copilot/src/extension/chatSessions/docode-node/copilotCLINativeShim.ts).
 The entries are intentionally unset. WSL/SSH requires a build on the remote
 host matching its OS, architecture, and libc. This development integration
 does not discover or download production artifacts.
@@ -153,7 +153,7 @@ The shared link is not an ordinary package payload file or an RPM `%ghost` entry
 
 Every installation and upgrade, and every final removal, applies the [`CopilotCliCommand` policy](#enterprise-policy) and the edition's choice, in this order:
 
-1. The scripts run [`copilot --vscode-shim policy`](#policy) with the edition's own shim; removal uses the other edition's shim because its own is already gone. When it reports the policy disabled, they remove a link to either edition's shim, so no `copilot` command remains. On Linux both editions read the same `/etc/vscode/policy.json`.
+1. The scripts run [`copilot --docode-shim policy`](#policy) with the edition's own shim; removal uses the other edition's shim because its own is already gone. When it reports the policy disabled, they remove a link to either edition's shim, so no `copilot` command remains. On Linux both editions read the same `/etc/docode/policy.json`.
 2. A DEB edition whose `<package>/add-copilot-command` debconf answer is `false` doesn't create or take over the link and gives up a link to its own shim. The question defaults to `true` and is asked at medium priority, so the default applies unless an administrator preseeds the answer, for example with `echo "code code/add-copilot-command boolean false" | sudo debconf-set-selections`, or `dpkg-reconfigure` asks it. RPM has no equivalent choice.
 3. Otherwise installation creates or takes over the link as above. When the policy can't be read, for example because the shim can't run, installation warns and leaves the entry unchanged rather than create a link.
 
@@ -245,15 +245,15 @@ an extensionless `copilot`.
   - the standalone code CLI, such as `code tunnel`:
     `<cli data>/servers/<Quality>-<commit>/server`.
 
-  `<server data>` is `VSCODE_AGENT_FOLDER`, or else
-  `~/<serverDataFolderName>`. `<cli data>` is `VSCODE_CLI_DATA_DIR`, or else
+  `<server data>` is `DOCODE_AGENT_FOLDER`, or else
+  `~/<serverDataFolderName>`. `<cli data>` is `DOCODE_CLI_DATA_DIR`, or else
   `~/<dataFolderName>/cli`. Otherwise it runs the most recently built shim of
-  any installed server, including those in the `~/.vscode*` folders of other
+  any installed server, including those in the `~/.docode*` folders of other
   qualities, because every shim version works the same way. It doesn't
   download or install a server. Without one, it explains that opening a folder
   from WSL in VS Code installs it, and exits with `127`.
 - Before running the shim, the launcher removes from `PATH` every folder whose
-  `copilot` is such a launcher, recognized by the `vscode-copilot-launcher`
+  `copilot` is such a launcher, recognized by the `docode-copilot-launcher`
   marker in its first 512 bytes. It reads only those bytes, so a Copilot CLI
   executable on `PATH` isn't read in full on every run. The shim's search for
   Copilot CLI then finds neither this launcher nor that of another quality. A
@@ -278,7 +278,7 @@ The implementation does not:
 - modify the existing `cli/` Cargo package.
 - add the shim to `PATH` outside integrated terminals on macOS.
 - add Snap command aliases, change archive command exposure/layout, or manage third-party and image-based Linux packaging.
-- ship the shim in the web server builds (`vscode-server-*-web`).
+- ship the shim in the web server builds (`docode-server-*-web`).
 
 ## Normative language
 
@@ -288,7 +288,7 @@ The implementation does not:
 
 One invocation follows this sequence:
 
-1. Parse the leading `--vscode-shim` options. A setup command runs and exits
+1. Parse the leading `--docode-shim` options. A setup command runs and exits
    without the rest of this flow; `clear` and `verbose` modifiers are consumed.
 2. Resolve and identify the running shim executable.
 3. Discover eligible Copilot CLI candidates from the current `PATH`.
@@ -315,18 +315,18 @@ version, and it runs PowerShell only to find a host for a `.ps1` candidate.
 
 ## Argument handling
 
-### `--vscode-shim` options
+### `--docode-shim` options
 
 VS Code passes options to the shim through a reserved prefix, so the shim never
 consumes an argument meant for the Copilot CLI:
 
 ```text
-copilot [--vscode-shim <modifier>]... [--] [copilot arguments...]
-copilot [--vscode-shim verbose]... --vscode-shim <probe|install|policy> [command options...]
+copilot [--docode-shim <modifier>]... [--] [copilot arguments...]
+copilot [--docode-shim verbose]... --docode-shim <probe|install|policy> [command options...]
 ```
 
-- Only leading `--vscode-shim <name>` pairs are options. Parsing stops at the
-  first other argument, and a later `--vscode-shim` is forwarded.
+- Only leading `--docode-shim <name>` pairs are options. Parsing stops at the
+  first other argument, and a later `--docode-shim` is forwarded.
 - Modifiers are removed and the remaining arguments are forwarded. A `--`
   directly after one or more modifiers ends the prefix and is removed; a `--`
   that is the first argument belongs to the Copilot CLI.
@@ -335,7 +335,7 @@ copilot [--vscode-shim verbose]... --vscode-shim <probe|install|policy> [command
 - A missing or unknown option name, a command combined with `clear`, or
   malformed command options exit with code `2` without launching the Copilot
   CLI. They print a diagnostic only in verbose mode, when `verbose` preceded
-  the error or `VSCODE_COPILOT_SHIM_VERBOSE` is set.
+  the error or `DOCODE_COPILOT_SHIM_VERBOSE` is set.
 
 The modifiers are:
 
@@ -348,7 +348,7 @@ The modifiers are:
   capture, or alter prompts, installer status, installer subprocess output, the
   real Copilot CLI's stdout and stderr, or the messages described under
   [Messages and diagnostics](#messages-and-diagnostics). Setting the
-  environment variable `VSCODE_COPILOT_SHIM_VERBOSE` to a value other than
+  environment variable `DOCODE_COPILOT_SHIM_VERBOSE` to a value other than
   empty or `0` has the same effect, for scripts and other places where the
   arguments can't be changed.
 
@@ -559,7 +559,7 @@ of the shim. Every Rust shim build MUST therefore contain a stable binary
 marker reserved for this component, for example:
 
 ```text
-VSCODE_COPILOT_RUST_SHIM_V1
+DOCODE_COPILOT_RUST_SHIM_V1
 ```
 
 Native candidates whose size is at most 16 MiB MUST be inspected for this
@@ -730,7 +730,7 @@ The shim installs only where there is no Copilot CLI and never runs the MSI to
 update one. Copilot CLI updates itself (`copilot update` and automatic
 updates), so the version in Installed apps can lag behind the running version.
 
-The shim runs `<shim> --vscode-shim install --interactive` as a child attached
+The shim runs `<shim> --docode-shim install --interactive` as a child attached
 to the current terminal. That command, which also backs the installer's
 install option, MUST:
 
@@ -752,7 +752,7 @@ install option, MUST:
    verification. When the revocation server can't be reached, the Windows
    Authenticode policy decides; by default it accepts the signature.
 6. Run `%SystemRoot%\System32\msiexec.exe /i <msi> /qn /norestart /l*v
-   %TEMP%\vscode-copilot-cli-install.log` without elevation. Exit codes `0` and
+   %TEMP%\docode-copilot-cli-install.log` without elevation. Exit codes `0` and
    `3010` mean success, and `1602` means the install was canceled.
 7. Confirm that `%LOCALAPPDATA%\GitHubCopilotCLI\copilot.exe` exists.
 
@@ -770,7 +770,7 @@ Progress goes to stderr. The MSI's `PATH` change isn't visible to processes
 that are already running, so after a successful install the shim launches
 `%LOCALAPPDATA%\GitHubCopilotCLI\copilot.exe` by its full path, and Windows
 discovery searches that folder after the `PATH` entries.
-`VSCODE_COPILOT_SHIM_RELEASES_URL` replaces the releases URL for tests; the
+`DOCODE_COPILOT_SHIM_RELEASES_URL` replaces the releases URL for tests; the
 signer requirement still applies. Installation does not use PowerShell or
 winget.
 
@@ -932,7 +932,7 @@ directly; a tool that ends `copilot` by its process ID ends the CLI.
 | User declines installation | Exit `0` without launching. |
 | Prompt receives EOF | Treat as No and exit `0`. |
 | No terminal (stdin or stderr isn't a terminal) and no usable CLI | Print a message with the documentation URL; exit `127` without prompting. |
-| A `--vscode-shim` option is unknown or malformed | Exit `2` without launching; print a diagnostic only in verbose mode. |
+| A `--docode-shim` option is unknown or malformed | Exit `2` without launching; print a diagnostic only in verbose mode. |
 | Installation is needed, but the `CopilotCliCommand` policy is disabled | Print a message that names the policy; exit `10` without launching. |
 
 ### Messages and diagnostics
@@ -941,7 +941,7 @@ Shim output on stderr is either a message or a diagnostic:
 
 - A **message** explains why `copilot` stopped without running the Copilot
   CLI, in one line, and is always printed. Every outcome above that ends the
-  command with a nonzero exit prints one, except a malformed `--vscode-shim`
+  command with a nonzero exit prints one, except a malformed `--docode-shim`
   option: only VS Code passes those options, and VS Code setup reads the
   result files instead.
 - A **diagnostic** is detail for troubleshooting, printed only in verbose mode:
@@ -968,16 +968,16 @@ The VS Code policy `CopilotCliCommand` controls the core setting `chat.copilotCl
 On Windows the shim reads the policy from the registry: a `REG_DWORD`
 `CopilotCliCommand` value of `0` under
 `SOFTWARE\Policies\Microsoft\<quality key>` disables it. Quality keys are
-`VSCode`, `VSCodeInsiders`, `VSCodeExploration`, and `CodeOSS`. For each
+`DoCode`, `DoCodeInsiders`, `DoCodeExploration`, and `CodeOSS`. For each
 quality, the `HKLM` value takes precedence over the `HKCU` value, as in VS Code.
 A disabled policy in any quality wins, because the shim of any installed quality
 can be the one on `PATH`; VS Code setup applies the same rule.
 
-On Linux the native shim reads `/etc/vscode/policy.json`. Only an object member named `CopilotCliCommand` with the JSON boolean value `false` disables installation. Missing or unreadable files, invalid JSON, non-object roots, missing members, `true`, and other value types are non-disabling. The reader is used on each fresh invocation that needs an installation decision, with no cache or production policy-path override. The setup `probe`, `install`, and `policy` commands consume the same result.
+On Linux the native shim reads `/etc/docode/policy.json`. Only an object member named `CopilotCliCommand` with the JSON boolean value `false` disables installation. Missing or unreadable files, invalid JSON, non-object roots, missing members, `true`, and other value types are non-disabling. The reader is used on each fresh invocation that needs an installation decision, with no cache or production policy-path override. The setup `probe`, `install`, and `policy` commands consume the same result.
 
 The Linux shim doesn't read an ordinary per-user VS Code setting. The DEB/RPM scripts use its `policy` command to manage the system link; a link that predates the policy remains until the next upgrade or reconfiguration, and the shim then still refuses installation. The Copilot extension still controls integrated-terminal exposure through the setting.
 
-On macOS the native shim reads the effective `CopilotCliCommand` preference with `CFPreferencesCopyAppValue` in the `com.microsoft.VSCode`, `com.microsoft.VSCodeInsiders`, `com.microsoft.VSCodeExploration`, and `com.visualstudio.code.oss` domains, which configuration profiles manage. Only a `CFBoolean` `false` disables installation; missing values and other types are non-disabling. As on Windows, a disabled policy in any quality wins. The reader matches VS Code's scalar policy semantics and doesn't require `CFPreferencesAppValueIsForced`. The Copilot extension also applies the policy through the effective setting for integrated terminals, and the macOS workbench Shell Command action applies that setting before advertising or invoking its install-only shim route; the shim enforces the policy again when that route runs.
+On macOS the native shim reads the effective `CopilotCliCommand` preference with `CFPreferencesCopyAppValue` in the `com.microsoft.DoCode`, `com.microsoft.DoCodeInsiders`, `com.microsoft.DoCodeExploration`, and `com.visualstudio.code.oss` domains, which configuration profiles manage. Only a `CFBoolean` `false` disables installation; missing values and other types are non-disabling. As on Windows, a disabled policy in any quality wins. The reader matches VS Code's scalar policy semantics and doesn't require `CFPreferencesAppValueIsForced`. The Copilot extension also applies the policy through the effective setting for integrated terminals, and the macOS workbench Shell Command action applies that setting before advertising or invoking its install-only shim route; the shim enforces the policy again when that route runs.
 
 `CopilotCliCommand` is the only local control over the shim and installation.
 It doesn't turn Copilot CLI itself on or off: that's a GitHub organization or
@@ -994,7 +994,7 @@ single-line, and each file is replaced atomically.
 ### `probe`
 
 ```text
-copilot --vscode-shim probe --result-file <ini> [--scope user|machine]
+copilot --docode-shim probe --result-file <ini> [--scope user|machine]
     [--no-network] [--timeout-ms <milliseconds>]
 ```
 
@@ -1017,14 +1017,14 @@ was written.
 ### `install`
 
 ```text
-copilot --vscode-shim install --interactive
-copilot --vscode-shim install --non-interactive --consent=installer
+copilot --docode-shim install --interactive
+copilot --docode-shim install --non-interactive --consent=installer
     --result-file <ini> [--progress-file <ini>] [--cancel-file <path>]
     [--running-mutex <name>]
 ```
 
 `install` runs the Windows installation described under
-[Installation commands](#installation-commands), including its result-file status contract. On macOS x64/arm64 only, `copilot --vscode-shim install --interactive` is an install-only route for the workbench action after it has collected consent: it discovers an existing CLI first without executing, probing, updating, or reinstalling it; otherwise it uses the normal Homebrew-then-temporary-file official-script routes, rediscovery, and installer-owned prompts. It never launches the discovered CLI. Linux and macOS noninteractive setup semantics are unchanged, including their existing-CLI reporting; only macOS interactive mode gains this route.
+[Installation commands](#installation-commands), including its result-file status contract. On macOS x64/arm64 only, `copilot --docode-shim install --interactive` is an install-only route for the workbench action after it has collected consent: it discovers an existing CLI first without executing, probing, updating, or reinstalling it; otherwise it uses the normal Homebrew-then-temporary-file official-script routes, rediscovery, and installer-owned prompts. It never launches the discovered CLI. Linux and macOS noninteractive setup semantics are unchanged, including their existing-CLI reporting; only macOS interactive mode gains this route.
 
 The macOS interactive install-only route exits `0` after an initial discovery finds an existing usable CLI or post-install rediscovery finds a newly installed one. The existing discovery checks require an eligible executable file and exclude the running, copied, aliased, and legacy shims; they do not execute, version-probe, or canonicalize the discovered `candidate.path`. On stderr, initial discovery prints `GitHub Copilot CLI is already installed.` and post-install rediscovery prints `GitHub Copilot CLI installed successfully.`, each followed by `Location: <discovered absolute candidate.path>`. It exits immediately without launching the CLI. It exits `1` for discovery or installer failures, `10` when a missing CLI can't be installed because the `CopilotCliCommand` policy is disabled, `127` when a missing CLI cannot be installed without an interactive terminal, and `130` for handled cancellation. These are not Windows setup result-file statuses. On macOS, the [workbench action](#macos-shell-command-installation) checks the effective Copilot CLI setting/policy before starting the shim, and the shim reads the policy again before installing.
 
@@ -1053,7 +1053,7 @@ collected on its page or command line. In that mode the command:
 ### `policy`
 
 ```text
-copilot --vscode-shim policy
+copilot --docode-shim policy
 ```
 
 `policy` reads the [`CopilotCliCommand` policy](#enterprise-policy) with the
@@ -1157,7 +1157,7 @@ and server builds before it signs and packages them:
 ## Artifact names and contents
 
 Shim artifacts are intermediate pipeline artifacts. Their names MUST NOT start
-with `vscode_`, which the product release publisher consumes:
+with `docode_`, which the product release publisher consumes:
 
 ```text
 unsigned_copilot_shim_<platform>_<arch>
@@ -1260,11 +1260,11 @@ fixtures.
 
 ### Options and setup commands
 
-- Leading `--vscode-shim clear` and `--vscode-shim verbose` modifiers are
+- Leading `--docode-shim clear` and `--docode-shim verbose` modifiers are
   removed, an optional `--` after them ends the prefix, and everything else,
-  including a later `--vscode-shim` or a bare `--clear`, is forwarded.
-- Diagnostics are absent by default and present when `--vscode-shim verbose`
-  precedes the operation or `VSCODE_COPILOT_SHIM_VERBOSE` is set. Verbose mode
+  including a later `--docode-shim` or a bare `--clear`, is forwarded.
+- Diagnostics are absent by default and present when `--docode-shim verbose`
+  precedes the operation or `DOCODE_COPILOT_SHIM_VERBOSE` is set. Verbose mode
   is propagated to a nested shim that runs the interactive MSI installation.
 - Messages for the outcomes that end `copilot` without running the CLI are
   printed without verbose mode.
@@ -1304,7 +1304,7 @@ fixtures.
   fallback otherwise.
 - Explicit legacy-host fixtures document the accepted empty-argument and
   embedded-quote differences instead of claiming lossless forwarding.
-- Leading `--vscode-shim clear` and `--vscode-shim verbose` modifiers consumed
+- Leading `--docode-shim clear` and `--docode-shim verbose` modifiers consumed
   and later occurrences after the prefix forwarded.
 - No terminal-clear bytes in redirected output.
 - Inherited stdin, stdout, stderr, environment, and working directory,
@@ -1327,14 +1327,14 @@ fixtures.
 - Each archive has the expected name and one root executable.
 - Unix executable mode is set.
 - Shim artifact names do not reuse CLI artifact names and do not begin with
-  `vscode_`, so they remain outside the product release publisher.
+  `docode_`, so they remain outside the product release publisher.
 - Client and server builds contain the shim at `bin/copilot-shim/`, signed
   where the build is signed.
 - The rendered Windows launcher, run under `sh` and `bash`, must:
   - prefer the server shim for its commit in each of the three layouts, and
     otherwise use the newest shim of any quality;
-  - skip files that aren't executable, and honor `VSCODE_AGENT_FOLDER` and
-    `VSCODE_CLI_DATA_DIR`;
+  - skip files that aren't executable, and honor `DOCODE_AGENT_FOLDER` and
+    `DOCODE_CLI_DATA_DIR`;
   - remove launcher folders from `PATH` while preserving other entries,
     including empty ones and a `copilot` that contains the marker only beyond
     its first 512 bytes, and pass arguments through;
@@ -1379,7 +1379,7 @@ The work is complete only when:
 ## Source references
 
 - Terminal integration:
-  [`copilotCLITerminalIntegration.ts`](../extensions/copilot/src/extension/chatSessions/vscode-node/copilotCLITerminalIntegration.ts)
+  [`copilotCLITerminalIntegration.ts`](../extensions/copilot/src/extension/chatSessions/docode-node/copilotCLITerminalIntegration.ts)
 - Windows installer integration: [`copilot.iss`](../build/win32/copilot.iss)
 - Existing Rust CLI package: [`cli/`](../cli/)
 - Shim compilation and quality checks:

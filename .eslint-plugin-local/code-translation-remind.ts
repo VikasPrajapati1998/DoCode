@@ -11,7 +11,7 @@ import { createImportRuleListener } from './utils.ts';
 
 export default new class TranslationRemind implements eslint.Rule.RuleModule {
 
-	private static NLS_MODULE = 'vs/nls';
+	private static NLS_MODULE = 'do/nls';
 
 	readonly meta: eslint.Rule.RuleMetaData = {
 		messages: {
@@ -31,9 +31,9 @@ export default new class TranslationRemind implements eslint.Rule.RuleModule {
 		}
 
 		const currentFile = context.filename;
-		const matchService = currentFile.match(/vs\/workbench\/services\/\w+/);
-		const matchPart = currentFile.match(/vs\/workbench\/contrib\/\w+/);
-		const matchSessionsPart = currentFile.match(/vs\/sessions\/contrib\/\w+/);
+		const matchService = currentFile.match(/do\/workbench\/services\/\w+/);
+		const matchPart = currentFile.match(/do\/workbench\/contrib\/\w+/);
+		const matchSessionsPart = currentFile.match(/do\/sessions\/contrib\/\w+/);
 		if (!matchService && !matchPart && !matchSessionsPart) {
 			return;
 		}

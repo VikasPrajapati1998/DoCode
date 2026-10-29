@@ -11,11 +11,11 @@ ROOT="$(dirname "$(dirname "$(readlink -f "$0")")")"
 
 # Set rpath before changing the interpreter path
 # Refs https://github.com/NixOS/patchelf/issues/524
-if [ -n "$VSCODE_SERVER_CUSTOM_GLIBC_LINKER" ] && [ -n "$VSCODE_SERVER_CUSTOM_GLIBC_PATH" ] && [ -n "$VSCODE_SERVER_PATCHELF_PATH" ]; then
-	echo "Patching glibc from $VSCODE_SERVER_CUSTOM_GLIBC_PATH with $VSCODE_SERVER_PATCHELF_PATH..."
-	"$VSCODE_SERVER_PATCHELF_PATH" --set-rpath "$VSCODE_SERVER_CUSTOM_GLIBC_PATH" "$ROOT/node"
-	echo "Patching linker from $VSCODE_SERVER_CUSTOM_GLIBC_LINKER with $VSCODE_SERVER_PATCHELF_PATH..."
-	"$VSCODE_SERVER_PATCHELF_PATH" --set-interpreter "$VSCODE_SERVER_CUSTOM_GLIBC_LINKER" "$ROOT/node"
+if [ -n "$DOCODE_SERVER_CUSTOM_GLIBC_LINKER" ] && [ -n "$DOCODE_SERVER_CUSTOM_GLIBC_PATH" ] && [ -n "$DOCODE_SERVER_PATCHELF_PATH" ]; then
+	echo "Patching glibc from $DOCODE_SERVER_CUSTOM_GLIBC_PATH with $DOCODE_SERVER_PATCHELF_PATH..."
+	"$DOCODE_SERVER_PATCHELF_PATH" --set-rpath "$DOCODE_SERVER_CUSTOM_GLIBC_PATH" "$ROOT/node"
+	echo "Patching linker from $DOCODE_SERVER_CUSTOM_GLIBC_LINKER with $DOCODE_SERVER_PATCHELF_PATH..."
+	"$DOCODE_SERVER_PATCHELF_PATH" --set-interpreter "$DOCODE_SERVER_CUSTOM_GLIBC_LINKER" "$ROOT/node"
 	echo "Patching complete."
 fi
 

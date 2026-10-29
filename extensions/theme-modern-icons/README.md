@@ -4,7 +4,7 @@ This built-in file icon theme provides a monochrome icon set. Image icons are re
 
 ## Design source
 
-The A group comes from [Ticket 1862 - VSCode 3rd Party Seti](https://www.figma.com/design/CnjK8irotB7IEUIgXdbS6M/Ticket-1862---VSCode-3rd-Party-Seti?node-id=4584-939):
+The A group comes from [Ticket 1862 - DoCode 3rd Party Seti](https://www.figma.com/design/CnjK8irotB7IEUIgXdbS6M/Ticket-1862---VSCode-3rd-Party-Seti?node-id=4584-939):
 
 - `apple` (`4584:939`)
 - `argdown` (`4584:941`)
@@ -22,7 +22,7 @@ The A group comes from [Ticket 1862 - VSCode 3rd Party Seti](https://www.figma.c
 
 ## Theme mappings
 
-Add each asset to `iconDefinitions` in `fileicons/vscode-modern-icons-icon-theme.json`, then reference it using one or more of:
+Add each asset to `iconDefinitions` in `fileicons/docode-modern-icons-icon-theme.json`, then reference it using one or more of:
 
 - `fileExtensions`
 - `fileNames`

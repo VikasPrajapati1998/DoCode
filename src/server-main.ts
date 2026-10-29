@@ -14,14 +14,14 @@ import { performance } from 'node:perf_hooks';
 import minimist from 'minimist';
 import { devInjectNodeModuleLookupPath, removeGlobalNodeJsModuleLookupPaths } from './bootstrap-node.js';
 import { bootstrapESM } from './bootstrap-esm.js';
-import { resolveNLSConfiguration } from './vs/base/node/nls.js';
+import { resolveNLSConfiguration } from './do/base/node/nls.js';
 import { product } from './bootstrap-meta.js';
-import * as perf from './vs/base/common/performance.js';
-import { INLSConfiguration } from './vs/nls.js';
-import { IServerAPI } from './vs/server/node/remoteExtensionHostAgentServer.js';
+import * as perf from './do/base/common/performance.js';
+import { INLSConfiguration } from './do/nls.js';
+import { IServerAPI } from './do/server/node/remoteExtensionHostAgentServer.js';
 
 perf.mark('code/server/start');
-(globalThis as { vscodeServerStartTime?: number }).vscodeServerStartTime = performance.now();
+(globalThis as { docodeServerStartTime?: number }).docodeServerStartTime = performance.now();
 
 // Do a quick parse to determine if a server or the cli needs to be started
 const parsedArgs = minimist(process.argv.slice(2), {
@@ -31,7 +31,7 @@ const parsedArgs = minimist(process.argv.slice(2), {
 });
 ['host', 'port', 'accept-server-license-terms'].forEach(e => {
 	if (!parsedArgs[e]) {
-		const envValue = process.env[`VSCODE_SERVER_${e.toUpperCase().replace('-', '_')}`];
+		const envValue = process.env[`DOCODE_SERVER_${e.toUpperCase().replace('-', '_')}`];
 		if (envValue) {
 			parsedArgs[e] = envValue;
 		}
@@ -141,7 +141,7 @@ if (shouldSpawnCli) {
 		console.log(output);
 
 		perf.mark('code/server/started');
-		(globalThis as { vscodeServerListenTime?: number }).vscodeServerListenTime = performance.now();
+		(globalThis as { docodeServerListenTime?: number }).docodeServerListenTime = performance.now();
 
 		await getRemoteExtensionHostAgentServer();
 	});
@@ -166,7 +166,7 @@ function sanitizeStringArg(val: unknown): string | undefined {
  * server exits in the remote smoke tests (which surface to the client as
  * `Unknown reconnection token` reconnection failures). The handlers tell apart a
  * self-exit (`beforeExit`), an external kill (`signal`) and a crash
- * (`uncaughtExceptionMonitor`). Gated behind the `VSCODE_SERVER_EXIT_DIAGNOSTICS`
+ * (`uncaughtExceptionMonitor`). Gated behind the `DOCODE_SERVER_EXIT_DIAGNOSTICS`
  * env var (set by the smoke tests) so it adds no product noise. Lines are
  * appended synchronously to a `server-exit-diagnostics.log` file in the server's
  * `--logsPath` directory (falling back to `os.tmpdir()` when `--logsPath` is not
@@ -174,7 +174,7 @@ function sanitizeStringArg(val: unknown): string | undefined {
  * `exit` handler does not).
  */
 function installServerProcessExitDiagnostics(): void {
-	if (!process.env['VSCODE_SERVER_EXIT_DIAGNOSTICS']) {
+	if (!process.env['DOCODE_SERVER_EXIT_DIAGNOSTICS']) {
 		return;
 	}
 
@@ -350,21 +350,21 @@ async function findFreePort(host: string | undefined, start: number, end: number
 async function loadCode(nlsConfiguration: INLSConfiguration) {
 
 	// required for `bootstrap-esm` to pick up NLS messages
-	process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfiguration);
+	process.env['DOCODE_NLS_CONFIG'] = JSON.stringify(nlsConfiguration);
 
 	// See https://github.com/microsoft/vscode-remote-release/issues/6543
 	// We would normally install a SIGPIPE listener in bootstrap-node.js
 	// But in certain situations, the console itself can be in a broken pipe state
 	// so logging SIGPIPE to the console will cause an infinite async loop
-	process.env['VSCODE_HANDLES_SIGPIPE'] = 'true';
+	process.env['DOCODE_HANDLES_SIGPIPE'] = 'true';
 
-	if (process.env['VSCODE_DEV']) {
+	if (process.env['DOCODE_DEV']) {
 		// When running out of sources, we need to load node modules from remote/node_modules,
 		// which are compiled against nodejs, not electron
-		process.env['VSCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH'] = process.env['VSCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH'] || path.join(import.meta.dirname, '..', 'remote', 'node_modules');
-		devInjectNodeModuleLookupPath(process.env['VSCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH']);
+		process.env['DOCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH'] = process.env['DOCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH'] || path.join(import.meta.dirname, '..', 'remote', 'node_modules');
+		devInjectNodeModuleLookupPath(process.env['DOCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH']);
 	} else {
-		delete process.env['VSCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH'];
+		delete process.env['DOCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH'];
 	}
 
 	// Remove global paths from the node module lookup (node.js only)
@@ -374,7 +374,7 @@ async function loadCode(nlsConfiguration: INLSConfiguration) {
 	await bootstrapESM();
 
 	// Load Server
-	return import('./vs/server/node/server.main.js');
+	return import('./do/server/node/server.main.js');
 }
 
 function hasStdinWithoutTty(): boolean {

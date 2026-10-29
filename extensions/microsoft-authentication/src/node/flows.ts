@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AuthenticationResult } from '@azure/msal-node';
-import { Uri, LogOutputChannel, env } from 'vscode';
+import { Uri, LogOutputChannel, env } from 'docode';
 import { ICachedPublicClientApplication } from '../common/publicClientCache';
 import { UriHandlerLoopbackClient } from '../common/loopbackClientAndOpener';
 import { UriEventHandler } from '../UriEventHandler';

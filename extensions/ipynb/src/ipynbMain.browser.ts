@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as main from './ipynbMain';
 import { NotebookSerializer } from './notebookSerializer.web';
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 	return main.activate(context, new NotebookSerializer(context));
 }
 

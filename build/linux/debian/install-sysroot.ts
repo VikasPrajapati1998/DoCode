@@ -20,7 +20,7 @@ const REPO_ROOT = path.dirname(path.dirname(path.dirname(import.meta.dirname)));
 
 const ghApiHeaders: Record<string, string> = {
 	Accept: 'application/vnd.github.v3+json',
-	'User-Agent': 'VSCode Build',
+	'User-Agent': 'DoCode Build',
 };
 
 if (process.env.GITHUB_TOKEN) {
@@ -53,8 +53,8 @@ function getSha(filename: fs.PathLike): string {
 	return hash.digest('hex');
 }
 
-function getVSCodeSysrootChecksum(expectedName: string) {
-	const checksums = fs.readFileSync(path.join(REPO_ROOT, 'build', 'checksums', 'vscode-sysroot.txt'), 'utf8');
+function getDoCodeSysrootChecksum(expectedName: string) {
+	const checksums = fs.readFileSync(path.join(REPO_ROOT, 'build', 'checksums', 'docode-sysroot.txt'), 'utf8');
 	for (const line of checksums.split('\n')) {
 		const [checksum, name] = line.split(/\s+/);
 		if (name === expectedName) {
@@ -79,7 +79,7 @@ async function fetchUrl(options: IFetchOptions): Promise<void> {
 	const releaseContents = await download(releaseUrl, { ...downloadOptions, headers: ghApiHeaders });
 	const asset = JSON.parse(Buffer.from(releaseContents).toString()).assets.find((a: { name: string }) => a.name === options.assetName);
 	if (!asset) {
-		throw new Error(`Could not find asset in release of Microsoft/vscode-linux-build-agent @ ${version}`);
+		throw new Error(`Could not find asset in release of Microsoft/docode-linux-build-agent @ ${version}`);
 	}
 
 	console.log(`Found asset ${options.assetName} @ ${asset.url}.`);
@@ -100,10 +100,10 @@ type SysrootDictEntry = {
 	Tarball: string;
 };
 
-export async function getVSCodeSysroot(arch: DebianArchString, isMusl: boolean = false): Promise<string> {
+export async function getDoCodeSysroot(arch: DebianArchString, isMusl: boolean = false): Promise<string> {
 	let expectedName: string;
 	let triple: string;
-	const prefix = process.env['VSCODE_SYSROOT_PREFIX'] ?? '-glibc-2.28-gcc-10.5.0';
+	const prefix = process.env['DOCODE_SYSROOT_PREFIX'] ?? '-glibc-2.28-gcc-10.5.0';
 	switch (arch) {
 		case 'amd64':
 			expectedName = `x86_64-linux-gnu${prefix}.tar.gz`;
@@ -124,11 +124,11 @@ export async function getVSCodeSysroot(arch: DebianArchString, isMusl: boolean =
 			break;
 	}
 	console.log(`Fetching ${expectedName} for ${triple}`);
-	const checksumSha256 = getVSCodeSysrootChecksum(expectedName);
+	const checksumSha256 = getDoCodeSysrootChecksum(expectedName);
 	if (!checksumSha256) {
 		throw new Error(`Could not find checksum for ${expectedName}`);
 	}
-	const sysroot = process.env['VSCODE_SYSROOT_DIR'] ?? path.join(tmpdir(), `vscode-${arch}-sysroot`);
+	const sysroot = process.env['DOCODE_SYSROOT_DIR'] ?? path.join(tmpdir(), `docode-${arch}-sysroot`);
 	const stamp = path.join(sysroot, '.stamp');
 	let result = `${sysroot}/${triple}/${triple}/sysroot`;
 	if (isMusl) {

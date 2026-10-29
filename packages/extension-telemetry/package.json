@@ -1,0 +1,22 @@
+{
+	"name": "@docode/extension-telemetry",
+	"description": "A module for DoCode extensions to report consistent telemetry.",
+	"version": "0.9.9",
+	"author": {
+		"name": "Microsoft Corporation"
+	},
+	"main": "./dist/node/node/telemetryReporter.js",
+	"browser": "./dist/browser/browser/telemetryReporter.js",
+	"module": "./dist/node-esm/node/telemetryReporter.js",
+	"types": "./dist/telemetryReporter.d.ts",
+	"sideEffects": false,
+	"license": "MIT",
+	"engines": {
+		"docode": "^1.75.0"
+	},
+	"dependencies": {
+		"@microsoft/1ds-core-js": "^4.3.4",
+		"@microsoft/1ds-post-js": "^4.3.4",
+		"@microsoft/applicationinsights-web-basic": "^3.3.4"
+	}
+}

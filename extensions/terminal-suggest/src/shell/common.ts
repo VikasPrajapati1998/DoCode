@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { exec, spawn, type ExecOptionsWithStringEncoding, type SpawnOptionsWithoutStdio } from 'node:child_process';
 import type { ICompletionResource } from '../types';
 
@@ -88,7 +88,7 @@ export async function getAliasesHelper(command: string, args: string[], regex: R
 		result.push({
 			label: { label: match.groups.alias, description: match.groups.resolved },
 			detail: match.groups.resolved,
-			kind: vscode.TerminalCompletionItemKind.Alias,
+			kind: docode.TerminalCompletionItemKind.Alias,
 			definitionCommand,
 		});
 	}

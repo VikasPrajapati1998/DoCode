@@ -19,24 +19,24 @@
 	"include": [
 		"typings/css.d.ts",
 		"typings/thenable.d.ts",
-		"typings/vscode-globals-product.d.ts",
-		"typings/vscode-globals-nls.d.ts",
+		"typings/docode-globals-product.d.ts",
+		"typings/docode-globals-nls.d.ts",
 		"typings/editContext.d.ts",
 		"typings/base-common.d.ts",
-		"vs/monaco.d.ts",
-		"vs/editor/*",
-		"vs/base/common/*",
-		"vs/base/browser/*",
-		"vs/platform/*/common/*",
-		"vs/platform/*/browser/*"
+		"do/monaco.d.ts",
+		"do/editor/*",
+		"do/base/common/*",
+		"do/base/browser/*",
+		"do/platform/*/common/*",
+		"do/platform/*/browser/*"
 	],
 	"exclude": [
 		"node_modules/*",
-		"vs/platform/files/browser/htmlFileSystemProvider.ts",
-		"vs/platform/files/browser/webFileSystemAccess.ts",
-		"vs/platform/telemetry/*",
-		"vs/platform/assignment/*",
-		"vs/platform/terminal/*",
-		"vs/platform/externalTerminal/*"
+		"do/platform/files/browser/htmlFileSystemProvider.ts",
+		"do/platform/files/browser/webFileSystemAccess.ts",
+		"do/platform/telemetry/*",
+		"do/platform/assignment/*",
+		"do/platform/terminal/*",
+		"do/platform/externalTerminal/*"
 	]
 }

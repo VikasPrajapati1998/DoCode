@@ -1,0 +1,87 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* A small status banner shown flush below the tab bar (within the same centered
+ * band) when the session's active chat is read-only. Stands in for the composer,
+ * which is hidden for read-only chats. Kept within the centered band (aligned
+ * with the header/tab bar and the centered transcript) with a subtle distinct
+ * background so it reads as a banner. */
+.session-readonly-banner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--docode-spacing-size40, 4px);
+	box-sizing: border-box;
+	/* Match the VS Code editor read-only banner: 26px tall, 12px text. */
+	height: 26px;
+	/* Match the tab strip's insets so the banner starts and ends flush with the
+		tabs; the extra left inset accounts for the header's status-icon column. */
+	margin: calc(-1 * var(--docode-spacing-size20, 2px)) var(--docode-spacing-size100, 10px) 0 calc(var(--docode-spacing-size100, 10px) + var(--docode-codiconFontSize, 16px) + var(--docode-spacing-size60, 6px));
+	padding: 0 var(--docode-spacing-size100, 10px);
+	background-color: color-mix(in srgb, var(--docode-focusBorder) 4%, var(--docode-editorWidget-background));
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-label1, 12px);
+	font-family: var(--docode-chat-font-family, inherit);
+}
+
+.session-readonly-banner.hidden {
+	display: none;
+}
+
+/* Match the editor read-only lock: standard codicon size, muted icon color. */
+.session-readonly-banner .session-readonly-banner-icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	color: var(--docode-icon-foreground);
+}
+
+.session-readonly-banner .session-readonly-banner-icon .codicon {
+	font-size: var(--docode-codiconFontSize, 16px);
+}
+
+.session-readonly-banner .session-readonly-banner-text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Inline action (e.g. "Restore" for an archived session), styled as a link. */
+.session-readonly-banner .session-readonly-banner-action {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+}
+
+.session-readonly-banner-action .monaco-link {
+	color: var(--docode-textLink-foreground);
+	cursor: pointer;
+}
+
+.session-readonly-banner-action .monaco-link:hover {
+	color: var(--docode-textLink-activeForeground);
+	text-decoration: underline;
+}
+
+.session-readonly-banner-action .monaco-link:focus-visible {
+	outline: 1px solid var(--docode-focusBorder);
+	outline-offset: 2px;
+	border-radius: var(--docode-cornerRadius-small, 2px);
+}
+
+
+/*
+ * Announced by the banner's live region; the visible text is aria-hidden so a
+ * ticking countdown does not queue an utterance per update.
+ */
+.session-readonly-banner .session-readonly-banner-announcement {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}

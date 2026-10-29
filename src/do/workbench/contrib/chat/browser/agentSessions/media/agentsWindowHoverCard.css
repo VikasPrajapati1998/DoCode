@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.agents-window-hover-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size120);
+	box-sizing: border-box;
+	width: 304px;
+	padding: var(--docode-spacing-size120);
+	color: var(--docode-editorHoverWidget-foreground);
+	font-size: var(--docode-fontSize-body1);
+	line-height: 18px;
+	white-space: normal;
+}
+
+.agents-window-hover-card-text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size40);
+}
+
+.agents-window-hover-card-title {
+	font-weight: var(--docode-fontWeight-semiBold);
+	text-wrap: balance;
+}
+
+.agents-window-hover-card-description {
+	color: var(--docode-descriptionForeground);
+	text-wrap: pretty;
+}
+
+.agents-window-hover-card-actions {
+	display: flex;
+}
+
+.agents-window-hover-card-actions > .monaco-button {
+	width: auto;
+	padding: var(--docode-spacing-size40) var(--docode-spacing-size120);
+}

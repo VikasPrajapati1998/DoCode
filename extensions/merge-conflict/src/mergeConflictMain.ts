@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import MergeConflictServices from './services';
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 	// Register disposables
 	const services = new MergeConflictServices(context);
 	services.begin();

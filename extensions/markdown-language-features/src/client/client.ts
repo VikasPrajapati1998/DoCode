@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as lsp from 'vscode-languageclient';
 import { IMdParser } from '../markdownEngine';
 import { IDisposable } from '../util/dispose';
@@ -15,7 +15,7 @@ import { VsCodeMdWorkspace } from './workspace';
 
 export type LanguageClientConstructor = (name: string, description: string, clientOptions: lsp.LanguageClientOptions) => lsp.BaseLanguageClient;
 
-function toLspRange(range: vscode.Range): lsp.Range {
+function toLspRange(range: docode.Range): lsp.Range {
 	return lsp.Range.create(range.start.line, range.start.character, range.end.line, range.end.character);
 }
 
@@ -37,26 +37,26 @@ export class MdLanguageClient implements IDisposable {
 		this.#workspace.dispose();
 	}
 
-	resolveLinkTarget(linkText: string, uri: vscode.Uri): Promise<proto.ResolvedDocumentLinkTarget | undefined> {
+	resolveLinkTarget(linkText: string, uri: docode.Uri): Promise<proto.ResolvedDocumentLinkTarget | undefined> {
 		return this.#client.sendRequest(proto.resolveLinkTarget, { linkText, uri: uri.toString() });
 	}
 
-	getEditForFileRenames(files: ReadonlyArray<{ oldUri: string; newUri: string }>, token: vscode.CancellationToken) {
+	getEditForFileRenames(files: ReadonlyArray<{ oldUri: string; newUri: string }>, token: docode.CancellationToken) {
 		return this.#client.sendRequest(proto.getEditForFileRenames, files, token);
 	}
 
-	getReferencesToFileInWorkspace(resource: vscode.Uri, token: vscode.CancellationToken) {
+	getReferencesToFileInWorkspace(resource: docode.Uri, token: docode.CancellationToken) {
 		return this.#client.sendRequest(proto.getReferencesToFileInWorkspace, { uri: resource.toString() }, token);
 	}
 
-	prepareUpdatePastedLinks(doc: vscode.Uri, ranges: readonly vscode.Range[], token: vscode.CancellationToken) {
+	prepareUpdatePastedLinks(doc: docode.Uri, ranges: readonly docode.Range[], token: docode.CancellationToken) {
 		return this.#client.sendRequest(proto.prepareUpdatePastedLinks, {
 			uri: doc.toString(),
 			ranges: ranges.map(toLspRange),
 		}, token);
 	}
 
-	getUpdatePastedLinksEdit(pastingIntoDoc: vscode.Uri, edits: readonly vscode.TextEdit[], metadata: string, token: vscode.CancellationToken) {
+	getUpdatePastedLinksEdit(pastingIntoDoc: docode.Uri, edits: readonly docode.TextEdit[], metadata: string, token: docode.CancellationToken) {
 		return this.#client.sendRequest(proto.getUpdatePastedLinksEdit, {
 			metadata,
 			pasteIntoDoc: pastingIntoDoc.toString(),
@@ -73,11 +73,11 @@ export async function startClient(factory: LanguageClientConstructor, parser: IM
 		documentSelector: markdownLanguageIds,
 		synchronize: {
 			configurationSection: ['markdown'],
-			fileEvents: vscode.workspace.createFileSystemWatcher(mdFileGlob),
+			fileEvents: docode.workspace.createFileSystemWatcher(mdFileGlob),
 		},
 		initializationOptions: {
 			markdownFileExtensions,
-			i10lLocation: vscode.l10n.uri?.toJSON(),
+			i10lLocation: docode.l10n.uri?.toJSON(),
 		},
 		diagnosticPullOptions: {
 			onChange: true,
@@ -91,7 +91,7 @@ export async function startClient(factory: LanguageClientConstructor, parser: IM
 		}
 	};
 
-	const client = factory('markdown', vscode.l10n.t("Markdown Language Server"), clientOptions);
+	const client = factory('markdown', docode.l10n.t("Markdown Language Server"), clientOptions);
 
 	client.registerProposedFeatures();
 
@@ -111,7 +111,7 @@ export async function startClient(factory: LanguageClientConstructor, parser: IM
 	const workspace = new VsCodeMdWorkspace();
 
 	client.onRequest(proto.parse, async (e) => {
-		const uri = vscode.Uri.parse(e.uri);
+		const uri = docode.Uri.parse(e.uri);
 		if (typeof e.text === 'string') {
 			return parser.tokenize(new InMemoryDocument(uri, e.text, -1));
 		} else {
@@ -125,35 +125,35 @@ export async function startClient(factory: LanguageClientConstructor, parser: IM
 	});
 
 	client.onRequest(proto.fs_readFile, async (e): Promise<number[]> => {
-		const uri = vscode.Uri.parse(e.uri);
-		return Array.from(await vscode.workspace.fs.readFile(uri));
+		const uri = docode.Uri.parse(e.uri);
+		return Array.from(await docode.workspace.fs.readFile(uri));
 	});
 
 	client.onRequest(proto.fs_stat, async (e): Promise<{ isDirectory: boolean } | undefined> => {
-		const uri = vscode.Uri.parse(e.uri);
+		const uri = docode.Uri.parse(e.uri);
 		try {
-			const stat = await vscode.workspace.fs.stat(uri);
-			return { isDirectory: stat.type === vscode.FileType.Directory };
+			const stat = await docode.workspace.fs.stat(uri);
+			return { isDirectory: stat.type === docode.FileType.Directory };
 		} catch {
 			return undefined;
 		}
 	});
 
 	client.onRequest(proto.fs_readDirectory, async (e): Promise<[string, { isDirectory: boolean }][]> => {
-		const uri = vscode.Uri.parse(e.uri);
-		const result = await vscode.workspace.fs.readDirectory(uri);
-		return result.map(([name, type]) => [name, { isDirectory: type === vscode.FileType.Directory }]);
+		const uri = docode.Uri.parse(e.uri);
+		const result = await docode.workspace.fs.readDirectory(uri);
+		return result.map(([name, type]) => [name, { isDirectory: type === docode.FileType.Directory }]);
 	});
 
 	client.onRequest(proto.findMarkdownFilesInWorkspace, async (): Promise<string[]> => {
-		return (await vscode.workspace.findFiles(mdFileGlob, '**/node_modules/**')).map(x => x.toString());
+		return (await docode.workspace.findFiles(mdFileGlob, '**/node_modules/**')).map(x => x.toString());
 	});
 
 	const watchers = new FileWatcherManager();
 
 	client.onRequest(proto.fs_watcher_create, async (params): Promise<void> => {
 		const id = params.id;
-		const uri = vscode.Uri.parse(params.uri);
+		const uri = docode.Uri.parse(params.uri);
 
 		const sendWatcherChange = (kind: 'create' | 'change' | 'delete') => {
 			client.sendRequest(proto.fs_watcher_onChange, { id, uri: params.uri, kind });
@@ -170,12 +170,12 @@ export async function startClient(factory: LanguageClientConstructor, parser: IM
 		watchers.delete(params.id);
 	});
 
-	vscode.commands.registerCommand('vscodeMarkdownLanguageservice.open', (uri, args) => {
-		return vscode.commands.executeCommand('vscode.open', uri, args);
+	docode.commands.registerCommand('docodeMarkdownLanguageservice.open', (uri, args) => {
+		return docode.commands.executeCommand('docode.open', uri, args);
 	});
 
-	vscode.commands.registerCommand('vscodeMarkdownLanguageservice.rename', (uri, pos) => {
-		return vscode.commands.executeCommand('editor.action.rename', [vscode.Uri.from(uri), new vscode.Position(pos.line, pos.character)]);
+	docode.commands.registerCommand('docodeMarkdownLanguageservice.rename', (uri, pos) => {
+		return docode.commands.executeCommand('editor.action.rename', [docode.Uri.from(uri), new docode.Position(pos.line, pos.character)]);
 	});
 
 	await client.start();

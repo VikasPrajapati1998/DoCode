@@ -15,22 +15,22 @@
 	"privileged": true,
 	"mounts": [
 		{
-			"source": "vscode-dev",
-			"target": "/vscode-dev",
+			"source": "docode-dev",
+			"target": "/docode-dev",
 			"type": "volume"
 		}
 	],
 	"postCreateCommand": "./.devcontainer/post-create.sh",
 	"customizations": {
-		"vscode": {
+		"docode": {
 			"settings": {
 				"resmon.show.battery": false,
 				"resmon.show.cpufreq": false
 			},
 			"extensions": [
-				"dbaeumer.vscode-eslint",
+				"dbaeumer.docode-eslint",
 				"EditorConfig.EditorConfig",
-				"GitHub.vscode-pull-request-github",
+				"GitHub.docode-pull-request-github",
 				"ms-vscode.vscode-github-issue-notebooks",
 				"ms-vscode.vscode-selfhost-test-provider",
 				"mutantdino.resourcemonitor"

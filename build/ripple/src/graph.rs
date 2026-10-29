@@ -316,7 +316,7 @@ impl<'s> Linker<'s> {
 
 	/// The data files that a computed path can name: those under the folder it starts in whose path
 	/// in that folder has its static start and end. The folder must be specific enough: not a
-	/// top-level folder such as `src/vs`.
+	/// top-level folder such as `src/do`.
 	fn data_dir(&mut self, from: &str, spec: &str, root: bool, start: &str, end: &str) -> Res {
 		let relative =
 			spec == "." || spec == ".." || spec.starts_with("./") || spec.starts_with("../");

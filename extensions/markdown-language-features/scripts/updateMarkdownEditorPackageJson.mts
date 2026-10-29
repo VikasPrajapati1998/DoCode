@@ -11,13 +11,13 @@ import type {
 	EditorCommandDefinition,
 	EditorCommandKeybinding,
 	KeyboardPlatform,
-} from '@vscode/markdown-editor/commands';
+} from '@docode/markdown-editor/commands';
 
 const GENERATED_MARKER = '$generated';
 const MARKDOWN_EDITOR_COMMAND_ID_PREFIX = 'markdown.editor.';
 const GENERATED_COMMAND_TITLE_SUFFIX = '.title';
-const GENERATED_COMMAND_TITLE_COMMENT = 'Generated from @vscode/markdown-editor/commands. Do not edit manually.';
-const MARKDOWN_EDITOR_ACTIVE = `activeCustomEditorId == 'vscode.markdown.editor'`;
+const GENERATED_COMMAND_TITLE_COMMENT = 'Generated from @docode/markdown-editor/commands. Do not edit manually.';
+const MARKDOWN_EDITOR_ACTIVE = `activeCustomEditorId == 'docode.markdown.editor'`;
 const MARKDOWN_EDITOR_KEYBINDING = `${MARKDOWN_EDITOR_ACTIVE} && markdownEditorFocus`;
 const PACKAGE_JSON_UPDATE_DEBOUNCE_MS = 2_000;
 

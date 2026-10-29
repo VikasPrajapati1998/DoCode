@@ -4,21 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 /**
- * Per-(vscode-platform, arch) agent-SDK producer. Builds the tarballs needed
+ * Per-(docode-platform, arch) agent-SDK producer. Builds the tarballs needed
  * by ONE VS Code build, optionally uploads them to the CDN, and writes a
  * small JSON results file that the gulpfile-side `packageTask` reads to
  * stamp `product.json`'s `agentSdks` field.
  *
- * Run as a pipeline step BEFORE the gulp packaging step on the same agent
- * (via `build/azure-pipelines/common/agent-sdk-produce.yml`).
+ * Run as a CI step BEFORE the gulp packaging step on the same agent.
  *
- * Behavior split by VSCODE_PUBLISH:
+ * Behavior split by DOCODE_PUBLISH:
  *
- *   - VSCODE_PUBLISH=true (real release builds): build → upload (HEAD-then-
+ *   - DOCODE_PUBLISH=true (real release builds): build → upload (HEAD-then-
  *     decide idempotent) → write results JSON → emit task.setvariable so
  *     the gulp step stamps product.agentSdks.
  *
- *   - VSCODE_PUBLISH unset / not 'true' (PR / CI / test runs): build only.
+ *   - DOCODE_PUBLISH unset / not 'true' (PR / CI / test runs): build only.
  *     Tarballs stay on disk at `.build/agent-sdk/tarballs/` so the pipeline
  *     can publish them as artifacts for inspection, but no CDN upload
  *     happens and no results file is written — so product.json ships
@@ -33,7 +32,7 @@
  *
  * For VS Code builds where no SDK applies (e.g. armhf), exits with an
  * empty result set. product.json ships without `agentSdks` regardless of
- * VSCODE_PUBLISH.
+ * DOCODE_PUBLISH.
  */
 
 import * as fs from 'fs';
@@ -43,10 +42,10 @@ import {
 	getSdks,
 	getSdkTargetForBuild,
 	type IAgentSdkResults,
-	KNOWN_VSCODE_PLATFORMS,
+	KNOWN_DOCODE_PLATFORMS,
 	parseFlags,
 	type Sdk,
-	type VscodeBuildPlatform,
+	type DocodeBuildPlatform,
 } from './common.ts';
 import { type IBuildResult, buildOne } from './package.ts';
 import { uploadOne } from './upload.ts';
@@ -54,7 +53,7 @@ import { uploadOne } from './upload.ts';
 const SCRIPT = 'produce.ts';
 
 interface ICliArgs {
-	readonly vscodePlatform: VscodeBuildPlatform;
+	readonly docodePlatform: DocodeBuildPlatform;
 	readonly arch: string;
 	readonly resultsFile: string;
 	readonly tarballsDir: string;
@@ -63,37 +62,37 @@ interface ICliArgs {
 
 function parseCliArgs(): ICliArgs {
 	const flags = parseFlags(process.argv.slice(2));
-	const vscodePlatform = flags.get('vscode-platform');
-	if (!vscodePlatform || !KNOWN_VSCODE_PLATFORMS.has(vscodePlatform as VscodeBuildPlatform)) {
-		const known = [...KNOWN_VSCODE_PLATFORMS].join('|');
-		throw new Error(`--vscode-platform=<${known}> is required (got '${vscodePlatform ?? ''}')`);
+	const docodePlatform = flags.get('docode-platform');
+	if (!docodePlatform || !KNOWN_DOCODE_PLATFORMS.has(docodePlatform as DocodeBuildPlatform)) {
+		const known = [...KNOWN_DOCODE_PLATFORMS].join('|');
+		throw new Error(`--docode-platform=<${known}> is required (got '${docodePlatform ?? ''}')`);
 	}
 	const arch = flags.get('arch');
 	if (!arch) {
 		throw new Error('--arch=<x64|arm64|armhf|...> is required');
 	}
-	// Upload only on real publish builds. VSCODE_PUBLISH is a pipeline
+	// Upload only on real publish builds. DOCODE_PUBLISH is a pipeline
 	// variable set to 'True' on publish runs and 'False' otherwise; Azure
 	// Pipelines auto-injects it into every script step's env.
-	const upload = (process.env.VSCODE_PUBLISH ?? '').toLowerCase() === 'true';
+	const upload = (process.env.DOCODE_PUBLISH ?? '').toLowerCase() === 'true';
 	// Stable, well-known paths so the pipeline can pick the tarballs up as
 	// an artifact and the gulp step can find the results JSON via env.
 	const tarballsDir = path.resolve(process.cwd(), '.build/agent-sdk/tarballs');
 	const resultsFile = process.env.AGENT_SDK_RESULTS_FILE
-		?? path.resolve(process.cwd(), `.build/agent-sdk/${vscodePlatform}-${arch}.json`);
-	return { vscodePlatform: vscodePlatform as VscodeBuildPlatform, arch, resultsFile, tarballsDir, upload };
+		?? path.resolve(process.cwd(), `.build/agent-sdk/${docodePlatform}-${arch}.json`);
+	return { docodePlatform: docodePlatform as DocodeBuildPlatform, arch, resultsFile, tarballsDir, upload };
 }
 
 async function main(): Promise<void> {
 	const args = parseCliArgs();
-	console.log(`[${SCRIPT}] VSCODE_PUBLISH=${process.env.VSCODE_PUBLISH ?? '<unset>'} → upload=${args.upload}`);
+	console.log(`[${SCRIPT}] DOCODE_PUBLISH=${process.env.DOCODE_PUBLISH ?? '<unset>'} → upload=${args.upload}`);
 
 	fs.mkdirSync(args.tarballsDir, { recursive: true });
 
 	const results: IAgentSdkResults = {};
 	const sdks = getSdks();
 	const produced = await Promise.all(
-		sdks.map(sdk => produceOne(sdk, args.vscodePlatform, args.arch, args.tarballsDir, args.upload)),
+		sdks.map(sdk => produceOne(sdk, args.docodePlatform, args.arch, args.tarballsDir, args.upload)),
 	);
 	for (let i = 0; i < sdks.length; i++) {
 		const entry = produced[i];
@@ -127,17 +126,17 @@ async function main(): Promise<void> {
 
 async function produceOne(
 	sdk: Sdk,
-	vscodePlatform: VscodeBuildPlatform,
+	docodePlatform: DocodeBuildPlatform,
 	arch: string,
 	tarballsDir: string,
 	upload: boolean,
 ): Promise<IAgentSdkResults[string] | undefined> {
-	const sdkTarget = getSdkTargetForBuild(vscodePlatform, arch, sdk);
+	const sdkTarget = getSdkTargetForBuild(docodePlatform, arch, sdk);
 	if (!sdkTarget) {
-		console.log(`[${SCRIPT}] ${sdk}: no target for ${vscodePlatform}/${arch} — skipping`);
+		console.log(`[${SCRIPT}] ${sdk}: no target for ${docodePlatform}/${arch} — skipping`);
 		return undefined;
 	}
-	console.log(`[${SCRIPT}] ${sdk}: producing for ${vscodePlatform}/${arch} → ${sdkTarget}`);
+	console.log(`[${SCRIPT}] ${sdk}: producing for ${docodePlatform}/${arch} → ${sdkTarget}`);
 	const built: IBuildResult = await buildOne({ sdk, sdkTarget, outDir: tarballsDir });
 	if (!upload) {
 		return undefined;

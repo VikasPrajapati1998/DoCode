@@ -1,0 +1,17 @@
+{
+	"extends": "../../../extensions/tsconfig.base.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./out",
+		"types": [
+			"node",
+			"mocha",
+		]
+	},
+	"include": [
+		"src/**/*",
+		"../../../src/docode-dts/docode.d.ts",
+		"../../../src/docode-dts/docode.proposed.testObserver.d.ts",
+		"../../../src/docode-dts/docode.proposed.testRelatedCode.d.ts"
+	]
+}

@@ -1,6 +1,6 @@
 ---
 description: VS Code coding guidelines — naming, style, types, strings, and code quality rules. Reference when writing or reviewing code.
-applyTo: src/vs/**
+applyTo: src/do/**
 ---
 
 # Coding Guidelines

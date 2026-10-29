@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 import type MarkdownIt from 'markdown-it';
 
@@ -16,9 +16,9 @@ const enum ShowControlsMode {
 	OnHoverOrFocus = 'onHoverOrFocus'
 }
 
-const defaultMermaidTheme = 'vscode';
+const defaultMermaidTheme = 'docode';
 const validMermaidThemes = [
-	'vscode',
+	'docode',
 	'base',
 	'forest',
 	'dark',
@@ -31,7 +31,7 @@ function sanitizeMermaidTheme(theme: string | undefined): string {
 }
 
 export function buildMermaidConfigData() {
-	const config = vscode.workspace.getConfiguration(configSection);
+	const config = docode.workspace.getConfiguration(configSection);
 	return {
 		darkModeTheme: sanitizeMermaidTheme(config.get('darkModeTheme')),
 		lightModeTheme: sanitizeMermaidTheme(config.get('lightModeTheme')),

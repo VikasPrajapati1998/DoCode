@@ -5,7 +5,7 @@
 
 import 'mocha';
 import * as assert from 'assert';
-import { Selection } from 'vscode';
+import { Selection } from 'docode';
 import { withRandomFileEditor, closeAllEditors } from './testUtils';
 import { reflectCssValue as reflectCssValueImpl } from '../reflectCssValue';
 

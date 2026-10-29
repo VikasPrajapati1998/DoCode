@@ -432,7 +432,7 @@ mod tests {
 	}
 
 	fn shim_marker() -> Vec<u8> {
-		["VSCODE_COPILOT_", "RUST_SHIM_V1"].concat().into_bytes()
+		["DOCODE_COPILOT_", "RUST_SHIM_V1"].concat().into_bytes()
 	}
 
 	/// The file name discovery looks for in each PATH directory on this platform.

@@ -37,13 +37,13 @@ export const RULES: IRule[] = [
 
 	// Tests: skip
 	{
-		target: '**/vs/**/test/**',
+		target: '**/do/**/test/**',
 		skip: true // -> skip all test files
 	},
 
-	// Common: vs/platform services that can access native types
+	// Common: do/platform services that can access native types
 	{
-		target: `**/vs/platform/{${[
+		target: `**/do/platform/{${[
 			'environment/common/*.ts',
 			'window/common/window.ts',
 			'native/common/native.ts',
@@ -53,45 +53,45 @@ export const RULES: IRule[] = [
 		disallowedTypes: [/* Ignore native types that are defined from here */],
 	},
 
-	// Common: vs/base/parts/sandbox/electron-browser/preload{,-aux}.ts
+	// Common: do/base/parts/sandbox/electron-browser/preload{,-aux}.ts
 	{
-		target: '**/vs/base/parts/sandbox/electron-browser/preload{,-aux}.ts',
+		target: '**/do/base/parts/sandbox/electron-browser/preload{,-aux}.ts',
 		disallowedTypes: NATIVE_TYPES,
 	},
 
 	// Browser view preload script
 	{
-		target: '**/vs/platform/browserView/electron-browser/preload-browserView.ts',
+		target: '**/do/platform/browserView/electron-browser/preload-browserView.ts',
 		disallowedTypes: NATIVE_TYPES,
 	},
 
 	// Validated IPC wrapper
 	{
-		target: '**/vs/base/parts/ipc/electron-main/ipcMain.ts',
+		target: '**/do/base/parts/ipc/electron-main/ipcMain.ts',
 		disallowedTypes: [],
 	},
 
 	// Common
 	{
-		target: '**/vs/**/common/**',
+		target: '**/do/**/common/**',
 		disallowedTypes: NATIVE_TYPES,
 	},
 
 	// Common
 	{
-		target: '**/vs/**/worker/**',
+		target: '**/do/**/worker/**',
 		disallowedTypes: NATIVE_TYPES,
 	},
 
 	// Browser
 	{
-		target: '**/vs/**/browser/**',
+		target: '**/do/**/browser/**',
 		disallowedTypes: NATIVE_TYPES,
 	},
 
 	// Electron (main, utility)
 	{
-		target: '**/vs/**/{electron-main,electron-utility}/**',
+		target: '**/do/**/{electron-main,electron-utility}/**',
 		disallowedTypes: [
 			'ipcMain' // not allowed, use validatedIpcMain instead
 		]

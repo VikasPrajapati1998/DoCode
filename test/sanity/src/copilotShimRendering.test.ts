@@ -22,7 +22,7 @@ test('Copilot link templates use callback rendering and preserve RPM percent esc
 	const postinst = fs.readFileSync(path.join(repositoryRoot, 'resources/linux/debian/postinst.template'), 'utf8');
 	const postrm = fs.readFileSync(path.join(repositoryRoot, 'resources/linux/debian/postrm.template'), 'utf8');
 	const rpmSpec = fs.readFileSync(path.join(repositoryRoot, 'resources/linux/rpm/code.spec.template'), 'utf8');
-	const gulpfile = fs.readFileSync(path.join(repositoryRoot, 'build/gulpfile.vscode.linux.ts'), 'utf8');
+	const gulpfile = fs.readFileSync(path.join(repositoryRoot, 'build/gulpfile.docode.linux.ts'), 'utf8');
 
 	for (const [name, template, expectedMarkers] of [
 		['DEB postinst', postinst, 1],

@@ -12,13 +12,13 @@ import { bootstrapESM } from './bootstrap-esm.js';
 import { app, protocol, crashReporter, Menu, contentTracing } from 'electron';
 import minimist from 'minimist';
 import { product } from './bootstrap-meta.js';
-import { parse } from './vs/base/common/jsonc.js';
-import { getUserDataPath } from './vs/platform/environment/node/userDataPath.js';
-import * as perf from './vs/base/common/performance.js';
-import { resolveNLSConfiguration } from './vs/base/node/nls.js';
-import { getUNCHost, addUNCHostToAllowlist } from './vs/base/node/unc.js';
-import { INLSConfiguration } from './vs/nls.js';
-import { NativeParsedArgs } from './vs/platform/environment/common/argv.js';
+import { parse } from './do/base/common/jsonc.js';
+import { getUserDataPath } from './do/platform/environment/node/userDataPath.js';
+import * as perf from './do/base/common/performance.js';
+import { resolveNLSConfiguration } from './do/base/node/nls.js';
+import { getUNCHost, addUNCHostToAllowlist } from './do/base/node/unc.js';
+import { INLSConfiguration } from './do/nls.js';
+import { NativeParsedArgs } from './do/platform/environment/common/argv.js';
 
 perf.mark('code/didStartMain');
 
@@ -110,19 +110,19 @@ if (portable.isPortable) {
 perf.mark('code/willRegisterSchemesAsPrivileged');
 protocol.registerSchemesAsPrivileged([
 	{
-		scheme: 'vscode-webview',
+		scheme: 'docode-webview',
 		privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, allowServiceWorkers: true, codeCache: true }
 	},
 	{
-		scheme: 'vscode-file',
+		scheme: 'docode-file',
 		privileges: { secure: true, standard: true, supportFetchAPI: true, corsEnabled: true, codeCache: true }
 	},
 	{
-		scheme: 'vscode-remote-resource',
+		scheme: 'docode-remote-resource',
 		privileges: { secure: true, supportFetchAPI: true, corsEnabled: true }
 	},
 	{
-		scheme: 'vscode-managed-remote-resource',
+		scheme: 'docode-managed-remote-resource',
 		privileges: { secure: true, supportFetchAPI: true, corsEnabled: true }
 	}
 ]);
@@ -233,8 +233,8 @@ async function onReady() {
  * Main startup routine
  */
 async function startup(codeCachePath: string | undefined, nlsConfig: INLSConfiguration): Promise<void> {
-	process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
-	process.env['VSCODE_CODE_CACHE_PATH'] = codeCachePath || '';
+	process.env['DOCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
+	process.env['DOCODE_CODE_CACHE_PATH'] = codeCachePath || '';
 
 	// Bootstrap ESM
 	perf.mark('code/willBootstrapESM');
@@ -244,7 +244,7 @@ async function startup(codeCachePath: string | undefined, nlsConfig: INLSConfigu
 	// Load Main
 	// Note: `out/main.js` is already compiled here, so this only executes the electron-main module graph.
 	perf.mark('code/willRunMainBundle');
-	await import('./vs/code/electron-main/main.js');
+	await import('./do/code/electron-main/main.js');
 	perf.mark('code/didRunMainBundle');
 }
 
@@ -471,13 +471,13 @@ function createDefaultArgvConfigSync(argvConfigPath: string): void {
 }
 
 function getArgvConfigPath(): string {
-	const vscodePortable = process.env['VSCODE_PORTABLE'];
-	if (vscodePortable) {
-		return path.join(vscodePortable, 'argv.json');
+	const docodePortable = process.env['DOCODE_PORTABLE'];
+	if (docodePortable) {
+		return path.join(docodePortable, 'argv.json');
 	}
 
 	let dataFolderName = product.dataFolderName;
-	if (process.env['VSCODE_DEV']) {
+	if (process.env['DOCODE_DEV']) {
 		dataFolderName = `${dataFolderName}-dev`;
 	}
 
@@ -547,7 +547,7 @@ function configureCrashReporter(): void {
 				}
 				submitURL = submitURL.concat('&uid=', crashReporterId, '&iid=', crashReporterId, '&sid=', crashReporterId);
 				// Send the id for child node process that are explicitly starting crash reporter.
-				// For vscode this is ExtensionHost process currently.
+				// For docode this is ExtensionHost process currently.
 				const argv = process.argv;
 				const endOfArgsMarkerIndex = argv.indexOf('--');
 				if (endOfArgsMarkerIndex === -1) {
@@ -565,10 +565,10 @@ function configureCrashReporter(): void {
 	// Start crash reporter for all processes
 	const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
 	const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
-	const uploadToServer = Boolean(!process.env['VSCODE_DEV'] && submitURL && !crashReporterDirectory);
+	const uploadToServer = Boolean(!process.env['DOCODE_DEV'] && submitURL && !crashReporterDirectory);
 	crashReporter.start({
 		companyName,
-		productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
+		productName: process.env['DOCODE_DEV'] ? `${productName} Dev` : productName,
 		submitURL,
 		uploadToServer,
 		compress: true,
@@ -615,7 +615,7 @@ function parseCLIArgs(): NativeParsedArgs {
 function registerListeners(): void {
 
 	/**
-	 * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
+	 * macOS: when someone drops a file to the not-yet running DoCode, the open-file event fires even before
 	 * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
 	 */
 	const macOpenFiles: string[] = [];
@@ -654,7 +654,7 @@ function getCodeCachePath(): string | undefined {
 	}
 
 	// running out of sources
-	if (process.env['VSCODE_DEV']) {
+	if (process.env['DOCODE_DEV']) {
 		return undefined;
 	}
 

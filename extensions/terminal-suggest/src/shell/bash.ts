@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type { ICompletionResource } from '../types';
 import { type ExecOptionsWithStringEncoding } from 'node:child_process';
 import { execHelper, getAliasesHelper } from './common';
@@ -33,7 +33,7 @@ export async function getBuiltins(
 		completions.push({
 			label: '.',
 			detail: 'Source a file in the current shell',
-			kind: vscode.TerminalCompletionItemKind.Method
+			kind: docode.TerminalCompletionItemKind.Method
 		});
 	}
 
@@ -49,8 +49,8 @@ export async function getBuiltins(
 				completions.push({
 					label: { label: cmd, description },
 					detail,
-					documentation: new vscode.MarkdownString(documentation),
-					kind: vscode.TerminalCompletionItemKind.Method
+					documentation: new docode.MarkdownString(documentation),
+					kind: docode.TerminalCompletionItemKind.Method
 				});
 
 			} catch (e) {
@@ -58,7 +58,7 @@ export async function getBuiltins(
 				console.log(`Error getting info for ${e}`);
 				completions.push({
 					label: cmd,
-					kind: vscode.TerminalCompletionItemKind.Method
+					kind: docode.TerminalCompletionItemKind.Method
 				});
 			}
 		}

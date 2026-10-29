@@ -8,7 +8,7 @@ for /f "delims=" %%i in ('node -p "require('fs').realpathSync.native(require('os
 set "TEMP=%TMP%"
 
 IF "%~1" == "" (
-	set AUTHORITY=vscode-remote://test+test/
+	set AUTHORITY=docode-remote://test+test/
 	:: backward to forward slashed
 	set EXT_PATH=%CD:\=/%/extensions
 
@@ -19,14 +19,14 @@ IF "%~1" == "" (
 	set EXT_PATH=%2
 )
 
-set REMOTE_VSCODE=%AUTHORITY%%EXT_PATH%
+set REMOTE_DOCODE=%AUTHORITY%%EXT_PATH%
 
-if "%VSCODE_REMOTE_SERVER_PATH%"=="" (
+if "%DOCODE_REMOTE_SERVER_PATH%"=="" (
 	chcp 65001
 
 	echo Using remote server out of sources for integration web tests
 ) else (
-	echo Using '%VSCODE_REMOTE_SERVER_PATH%' as server path for web integration tests
+	echo Using '%DOCODE_REMOTE_SERVER_PATH%' as server path for web integration tests
 )
 
 if not exist ".\test\integration\browser\out\index.js" (
@@ -41,12 +41,12 @@ if not exist ".\test\integration\browser\out\index.js" (
 
 echo.
 echo ### API tests (folder)
-call node .\test\integration\browser\out\index.js --workspacePath=.\extensions\vscode-api-tests\testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=.\extensions\vscode-api-tests --extensionTestsPath=.\extensions\vscode-api-tests\out\singlefolder-tests %*
+call node .\test\integration\browser\out\index.js --workspacePath=.\extensions\docode-api-tests\testWorkspace --enable-proposed-api=docode.docode-api-tests --extensionDevelopmentPath=.\extensions\docode-api-tests --extensionTestsPath=.\extensions\docode-api-tests\out\singlefolder-tests %*
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo.
 echo ### API tests (workspace)
-call node .\test\integration\browser\out\index.js --workspacePath=.\extensions\vscode-api-tests\testworkspace.code-workspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=.\extensions\vscode-api-tests --extensionTestsPath=.\extensions\vscode-api-tests\out\workspace-tests %*
+call node .\test\integration\browser\out\index.js --workspacePath=.\extensions\docode-api-tests\testworkspace.code-workspace --enable-proposed-api=docode.docode-api-tests --extensionDevelopmentPath=.\extensions\docode-api-tests --extensionTestsPath=.\extensions\docode-api-tests\out\workspace-tests %*
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 echo.

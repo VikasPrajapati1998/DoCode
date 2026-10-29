@@ -18,7 +18,7 @@ import * as task from '../gulp/task.ts';
 
 suite('extension transpilation pipeline', () => {
 	test('watcher recompiles source edits and recovers from compiler errors', async () => {
-		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-extension-watch-'));
+		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-extension-watch-'));
 		try {
 			const extension = path.join(root, 'extensions', 'watch-fixture');
 			const source = path.join(extension, 'src', 'entry.ts');
@@ -78,7 +78,7 @@ suite('extension transpilation pipeline', () => {
 	});
 
 	test('emits loadable modules for ts, mts and cts without copying sources or declarations', async () => {
-		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-extension-pipeline-'));
+		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-extension-pipeline-'));
 		try {
 			const extension = path.join(root, 'extensions', 'pipeline-fixture');
 			const source = path.join(extension, 'src');

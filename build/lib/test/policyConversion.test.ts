@@ -529,7 +529,7 @@ suite('Policy E2E conversion', () => {
 			.filter(policy => !policy.agentHost || !statuses.has(policy.agentHost.status))
 			.map(policy => policy.name);
 
-		// Add the policy to `agentHostPolicySupport` in src/vs/platform/agentHost/common/agentHostPolicySupport.ts
+		// Add the policy to `agentHostPolicySupport` in src/do/platform/agentHost/common/agentHostPolicySupport.ts
 		// and run `npm run export-policy-data`.
 		assert.deepStrictEqual(invalid, []);
 	});

@@ -24,4 +24,4 @@ If the runtime lacks an exact capability, add it first and retain existing edito
 Follow both:
 
 - [SDK/runtime managed setting](./sdk-runtime-policy.md)
-- [VS Code configuration policy](./vscode-policy.md)
+- [VS Code configuration policy](./docode-policy.md)

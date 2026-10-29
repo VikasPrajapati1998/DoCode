@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command, CommandManager } from '../commands/commandManager';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { TelemetryReporter } from '../logging/telemetry';
@@ -21,30 +21,30 @@ interface OrganizeImportsCommandMetadata {
 	readonly commandIds: readonly string[];
 	readonly title: string;
 	readonly minVersion?: API;
-	readonly kind: vscode.CodeActionKind;
+	readonly kind: docode.CodeActionKind;
 	readonly mode: OrganizeImportsMode;
 }
 
 const organizeImportsCommand: OrganizeImportsCommandMetadata = {
 	commandIds: [], // We use the generic 'Organize imports' command
-	title: vscode.l10n.t("Organize Imports"),
-	kind: vscode.CodeActionKind.SourceOrganizeImports,
+	title: docode.l10n.t("Organize Imports"),
+	kind: docode.CodeActionKind.SourceOrganizeImports,
 	mode: OrganizeImportsMode.All,
 };
 
 const sortImportsCommand: OrganizeImportsCommandMetadata = {
 	commandIds: ['typescript.sortImports', 'javascript.sortImports'],
 	minVersion: API.v430,
-	title: vscode.l10n.t("Sort Imports"),
-	kind: vscode.CodeActionKind.Source.append('sortImports'),
+	title: docode.l10n.t("Sort Imports"),
+	kind: docode.CodeActionKind.Source.append('sortImports'),
 	mode: OrganizeImportsMode.SortAndCombine,
 };
 
 const removeUnusedImportsCommand: OrganizeImportsCommandMetadata = {
 	commandIds: ['typescript.removeUnusedImports', 'javascript.removeUnusedImports'],
 	minVersion: API.v490,
-	title: vscode.l10n.t("Remove Unused Imports"),
-	kind: vscode.CodeActionKind.Source.append('removeUnusedImports'),
+	title: docode.l10n.t("Remove Unused Imports"),
+	kind: docode.CodeActionKind.Source.append('removeUnusedImports'),
 	mode: OrganizeImportsMode.RemoveUnused,
 };
 
@@ -70,17 +70,17 @@ class DidOrganizeImportsCommand implements Command {
 	}
 }
 
-class ImportCodeAction extends vscode.CodeAction {
+class ImportCodeAction extends docode.CodeAction {
 	constructor(
 		title: string,
-		kind: vscode.CodeActionKind,
-		public readonly document: vscode.TextDocument,
+		kind: docode.CodeActionKind,
+		public readonly document: docode.TextDocument,
 	) {
 		super(title, kind);
 	}
 }
 
-class ImportsCodeActionProvider implements vscode.CodeActionProvider<ImportCodeAction> {
+class ImportsCodeActionProvider implements docode.CodeActionProvider<ImportCodeAction> {
 
 	constructor(
 		private readonly client: ITypeScriptServiceClient,
@@ -93,10 +93,10 @@ class ImportsCodeActionProvider implements vscode.CodeActionProvider<ImportCodeA
 	}
 
 	public provideCodeActions(
-		document: vscode.TextDocument,
-		_range: vscode.Range,
-		context: vscode.CodeActionContext,
-		_token: vscode.CancellationToken
+		document: docode.TextDocument,
+		_range: docode.Range,
+		context: docode.CodeActionContext,
+		_token: docode.CancellationToken
 	): ImportCodeAction[] {
 		if (!context.only?.contains(this.commandMetadata.kind)) {
 			return [];
@@ -110,7 +110,7 @@ class ImportsCodeActionProvider implements vscode.CodeActionProvider<ImportCodeA
 		return [new ImportCodeAction(this.commandMetadata.title, this.commandMetadata.kind, document)];
 	}
 
-	async resolveCodeAction(codeAction: ImportCodeAction, token: vscode.CancellationToken): Promise<ImportCodeAction | undefined> {
+	async resolveCodeAction(codeAction: ImportCodeAction, token: docode.CancellationToken): Promise<ImportCodeAction | undefined> {
 		const response = await this.client.interruptGetErr(async () => {
 			await this.fileConfigManager.ensureConfigurationForDocument(codeAction.document, token);
 			if (token.isCancellationRequested) {
@@ -154,8 +154,8 @@ export function register(
 	commandManager: CommandManager,
 	fileConfigurationManager: FileConfigurationManager,
 	telemetryReporter: TelemetryReporter,
-): vscode.Disposable {
-	const disposables: vscode.Disposable[] = [];
+): docode.Disposable {
+	const disposables: docode.Disposable[] = [];
 
 	for (const command of [organizeImportsCommand, sortImportsCommand, removeUnusedImportsCommand]) {
 		disposables.push(
@@ -164,8 +164,8 @@ export function register(
 				requireSomeCapability(client, ClientCapability.Semantic),
 			], () => {
 				const provider = new ImportsCodeActionProvider(client, command, commandManager, fileConfigurationManager, telemetryReporter);
-				return vscode.Disposable.from(
-					vscode.languages.registerCodeActionsProvider(selector.semantic, provider, {
+				return docode.Disposable.from(
+					docode.languages.registerCodeActionsProvider(selector.semantic, provider, {
 						providedCodeActionKinds: [command.kind]
 					}));
 			}),
@@ -174,7 +174,7 @@ export function register(
 				commandManager.register({
 					id,
 					execute() {
-						return vscode.commands.executeCommand('editor.action.sourceAction', {
+						return docode.commands.executeCommand('editor.action.sourceAction', {
 							kind: command.kind.value,
 							apply: 'first',
 						});
@@ -183,5 +183,5 @@ export function register(
 		);
 	}
 
-	return vscode.Disposable.from(...disposables);
+	return docode.Disposable.from(...disposables);
 }

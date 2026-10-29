@@ -76,15 +76,15 @@ const compilations = [
 	'extensions/tunnel-forwarding/tsconfig.json',
 	'extensions/typescript-language-features/web/tsconfig.json',
 	'extensions/typescript-language-features/tsconfig.json',
-	'extensions/vscode-api-tests/tsconfig.json',
-	'extensions/vscode-colorize-tests/tsconfig.json',
-	'extensions/vscode-colorize-perf-tests/tsconfig.json',
-	'extensions/vscode-test-resolver/tsconfig.json',
+	'extensions/docode-api-tests/tsconfig.json',
+	'extensions/docode-colorize-tests/tsconfig.json',
+	'extensions/docode-colorize-perf-tests/tsconfig.json',
+	'extensions/docode-test-resolver/tsconfig.json',
 
-	'.vscode/extensions/vscode-selfhost-test-provider/tsconfig.json',
-	'.vscode/extensions/vscode-selfhost-import-aid/tsconfig.json',
-	'.vscode/extensions/vscode-extras/tsconfig.json',
-	'.vscode/extensions/vscode-pr-pinger/tsconfig.json',
+	'.docode/extensions/docode-selfhost-test-provider/tsconfig.json',
+	'.docode/extensions/docode-selfhost-import-aid/tsconfig.json',
+	'.docode/extensions/docode-extras/tsconfig.json',
+	'.docode/extensions/docode-pr-pinger/tsconfig.json',
 ];
 
 const getBaseUrl = (out: string) => `https://main.vscode-cdn.net/sourcemaps/${commit}/${out}`;
@@ -274,13 +274,6 @@ task.task(compileNonNativeExtensionsBuildTask);
  */
 export const compileNativeExtensionsBuildTask = task.define('compile-native-extensions-build', () => ext.packageNativeLocalExtensionsStream(false).pipe(gulp.dest('.build')));
 task.task(compileNativeExtensionsBuildTask);
-
-/**
- * Compiles the built-in copilot extension for the build.
- * Used by non-CI local builds where copilot is not downloaded as a VSIX.
- */
-export const compileCopilotExtensionBuildTask = task.define('compile-copilot-extension-build', () => ext.packageCopilotExtensionStream().pipe(gulp.dest('.build')));
-task.task(compileCopilotExtensionBuildTask);
 
 /**
  * Compiles the extensions for the build.

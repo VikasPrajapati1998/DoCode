@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import { ErrorCode, type InterfaceHandlers, type JsonRpcMessage } from '@vscode/hubrpc';
+import { ErrorCode, type InterfaceHandlers, type JsonRpcMessage } from '@docode/hubrpc';
 import { markdownEditorHost, markdownEditorRenderer, type MarkdownEditorRenderer } from '../preview/markdownEditorProtocol';
 import { createMarkdownEditorRpcConnection, MarkdownEditorRpcTransport } from '../preview/markdownEditorRpc';
 import { RecoveringTaskQueue } from '../preview/recoveringTaskQueue';

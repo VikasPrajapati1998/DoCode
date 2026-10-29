@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { WebEditorClient } from '../node_modules/@vscode/web-editors/dist/index.js';
+import { WebEditorClient } from '../node_modules/@docode/web-editors/dist/index.js';
 
 interface TaskProgressMessage {
 	readonly type: 'taskProgress';

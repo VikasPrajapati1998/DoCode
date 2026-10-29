@@ -13,7 +13,7 @@
 // The locally installed binary's --version must match build/codex/codex-version.txt
 // unless --no-version-check is passed.
 //
-// Generated files land in src/vs/platform/agentHost/node/codex/protocol/generated/
+// Generated files land in src/do/platform/agentHost/node/codex/protocol/generated/
 
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readdirSync, readFileSync, writeFileSync, statSync, rmSync, mkdirSync } from 'node:fs';
@@ -26,7 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const VERSION_FILE = path.join(REPO_ROOT, 'build', 'codex', 'codex-version.txt');
-const OUT_DIR = path.join(REPO_ROOT, 'src', 'vs', 'platform', 'agentHost', 'node', 'codex', 'protocol', 'generated');
+const OUT_DIR = path.join(REPO_ROOT, 'src', 'do', 'platform', 'agentHost', 'node', 'codex', 'protocol', 'generated');
 const FORMATTER = path.join(REPO_ROOT, 'build', 'lib', 'formatter.ts');
 
 function resolveCodexBinary() {

@@ -22,7 +22,7 @@ const packageJson = JSON.parse(fs.readFileSync(path.join(import.meta.dirname, '.
 async function getSpecificNLS(resourceUrlTemplate: string, languageId: string, version: Version): Promise<LanguageTranslations> {
 	const resource = {
 		publisher: 'ms-ceintl',
-		name: `vscode-language-pack-${languageId}`,
+		name: `docode-language-pack-${languageId}`,
 		version: `${version[0]}.${version[1]}.${version[2]}`,
 		path: 'extension/translations/main.i18n.json'
 	};
@@ -68,7 +68,7 @@ async function queryVersions(serviceUrl: string, languageId: string): Promise<Ve
 			'User-Agent': 'VS Code Build',
 		},
 		body: JSON.stringify({
-			filters: [{ criteria: [{ filterType: 7, value: `ms-ceintl.vscode-language-pack-${languageId}` }] }],
+			filters: [{ criteria: [{ filterType: 7, value: `ms-ceintl.docode-language-pack-${languageId}` }] }],
 			flags: 0x1
 		})
 	});

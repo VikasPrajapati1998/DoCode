@@ -1,5 +1,5 @@
 {
-  "name": "vscode-scenario-runner",
+  "name": "docode-scenario-runner",
   "version": "0.1.0",
   "description": "Runs UI validation scenarios against VS Code and records evidence",
   "license": "MIT",

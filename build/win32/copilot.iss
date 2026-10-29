@@ -5,10 +5,10 @@
 // Included from the [Code] section of code.iss when the build contains bin\copilot-shim\copilot.exe (CopilotShim).
 //
 // Shim contract used by setup (all files are UTF-16LE INI files written atomically by the shim):
-//   copilot.exe --vscode-shim probe --scope user|machine [--no-network] --timeout-ms N --result-file <ini>
+//   copilot.exe --docode-shim probe --scope user|machine [--no-network] --timeout-ms N --result-file <ini>
 //     [probe] protocol=1, policy=allowed|disabled, cliFound=0|1, cliPath=<path>, downloadAvailable=0|1,
 //             downloadSize=<bytes>, pwshFound=0|1, reason=<text>
-//   copilot.exe --vscode-shim install --non-interactive --consent=installer --progress-file <ini>
+//   copilot.exe --docode-shim install --non-interactive --consent=installer --progress-file <ini>
 //               --result-file <ini> --cancel-file <path> --running-mutex <name>
 //     [progress] phase=resolving|downloading|verifying|installing, current=<bytes>, total=<bytes>, heartbeat=<n>
 //     [result] status=installed|alreadyInstalled|unsupported|policy|network|verification|msiexec|cancelled|error,
@@ -290,8 +290,8 @@ function CopilotPolicyDisabled(): Boolean;
 begin
   // A disabled policy in any quality wins, because the shim of any installed quality can be the one on PATH. The shim
   // applies the same rule.
-  Result := CopilotProductPolicyDisabled('{#RegValueName}') or CopilotProductPolicyDisabled('VSCode')
-    or CopilotProductPolicyDisabled('VSCodeInsiders') or CopilotProductPolicyDisabled('VSCodeExploration')
+  Result := CopilotProductPolicyDisabled('{#RegValueName}') or CopilotProductPolicyDisabled('DoCode')
+    or CopilotProductPolicyDisabled('DoCodeInsiders') or CopilotProductPolicyDisabled('DoCodeExploration')
     or CopilotProductPolicyDisabled('CodeOSS');
 end;
 
@@ -484,10 +484,10 @@ begin
     exit;
 
 #if "user" == InstallTarget
-  Params := '--vscode-shim probe --scope user';
+  Params := '--docode-shim probe --scope user';
 #else
   // The system installer never offers the download, so it only needs local detection.
-  Params := '--vscode-shim probe --scope machine --no-network';
+  Params := '--docode-shim probe --scope machine --no-network';
 #endif
   Params := Params + ' --timeout-ms ' + IntToStr(CopilotProbeTimeoutMs) + ' --result-file ' + AddQuotes(CopilotProbeResultFile());
 
@@ -783,7 +783,7 @@ begin
   DeleteFile(ResultFile);
   DeleteFile(CancelFile);
 
-  Params := '--vscode-shim install --non-interactive --consent=installer'
+  Params := '--docode-shim install --non-interactive --consent=installer'
     + ' --progress-file ' + AddQuotes(ProgressFile)
     + ' --result-file ' + AddQuotes(ResultFile)
     + ' --cancel-file ' + AddQuotes(CancelFile)

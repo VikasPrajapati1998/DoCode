@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 set ROOT=%~dp0..
 set CONTAINER=
 set ARCH=amd64
-set REGISTRY=vscodehub.azurecr.io/vscode-linux-build-agent/sanity-tests
+set REGISTRY=docodehub.azurecr.io/docode-linux-build-agent/sanity-tests
 set ARGS=
 
 :parse_args

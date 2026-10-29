@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { serializeNotebookToString } from './serializers';
-import type { NotebookData } from 'vscode';
+import type { NotebookData } from 'docode';
 
 onmessage = (e) => {
 	const data = e.data as { id: string; data: NotebookData };

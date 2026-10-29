@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as assert from 'assert';
 import { promises as fs } from 'fs';
 import * as path from 'path';
@@ -274,7 +274,7 @@ suite('Completions in settings.json', () => {
 				'\t}',
 				'}',
 			].join('\n');
-			const expected = { label: 'vscode.npm' };
+			const expected = { label: 'docode.npm' };
 			await testCompletion(testFile, 'jsonc', content, expected);
 		}
 	});
@@ -547,14 +547,14 @@ async function testCompletion(testFileName: string, languageId: string, content:
 	const offset = content.indexOf('|');
 	content = content.substring(0, offset) + content.substring(offset + 1);
 
-	const docUri = vscode.Uri.file(path.join(await testFolder, testFileName));
+	const docUri = docode.Uri.file(path.join(await testFolder, testFileName));
 	await fs.writeFile(docUri.fsPath, content);
 
 	const editor = await setTestContent(docUri, languageId, content);
 	const position = editor.document.positionAt(offset);
 
-	// Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
-	const actualCompletions = (await vscode.commands.executeCommand('vscode.executeCompletionItemProvider', docUri, position)) as vscode.CompletionList;
+	// Executing the command `docode.executeCompletionItemProvider` to simulate triggering completion
+	const actualCompletions = (await docode.commands.executeCommand('docode.executeCompletionItemProvider', docUri, position)) as docode.CompletionList;
 
 	const matches = actualCompletions.items.filter(completion => {
 		return completion.label === expected.label;
@@ -567,7 +567,7 @@ async function testCompletion(testFileName: string, languageId: string, content:
 		if (expected.resultText) {
 			const match = matches[0];
 			if (match.range && match.insertText) {
-				const range = match.range instanceof vscode.Range ? match.range : match.range.replacing;
+				const range = match.range instanceof docode.Range ? match.range : match.range.replacing;
 				const text = typeof match.insertText === 'string' ? match.insertText : match.insertText.value;
 
 				await editor.edit(eb => eb.replace(range, text));
@@ -579,15 +579,15 @@ async function testCompletion(testFileName: string, languageId: string, content:
 	}
 }
 
-async function setTestContent(docUri: vscode.Uri, languageId: string, content: string): Promise<vscode.TextEditor> {
-	const ext = vscode.extensions.getExtension('vscode.configuration-editing')!;
+async function setTestContent(docUri: docode.Uri, languageId: string, content: string): Promise<docode.TextEditor> {
+	const ext = docode.extensions.getExtension('docode.configuration-editing')!;
 	await ext.activate();
 
-	const doc = await vscode.workspace.openTextDocument(docUri);
-	await vscode.languages.setTextDocumentLanguage(doc, languageId);
-	const editor = await vscode.window.showTextDocument(doc);
+	const doc = await docode.workspace.openTextDocument(docUri);
+	await docode.languages.setTextDocumentLanguage(doc, languageId);
+	const editor = await docode.window.showTextDocument(doc);
 
-	const fullRange = new vscode.Range(new vscode.Position(0, 0), doc.positionAt(doc.getText().length));
+	const fullRange = new docode.Range(new docode.Position(0, 0), doc.positionAt(doc.getText().length));
 	await editor.edit(eb => eb.replace(fullRange, content));
 	return editor;
 

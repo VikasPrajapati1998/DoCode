@@ -5,7 +5,7 @@
 
 import type { ILoopbackClient, AuthorizeResponse } from '@azure/msal-node';
 import type { UriEventHandler } from '../UriEventHandler';
-import { env, LogOutputChannel, Uri } from 'vscode';
+import { env, LogOutputChannel, Uri } from 'docode';
 import { toPromise } from './async';
 
 export interface ILoopbackClientAndOpener extends ILoopbackClient {

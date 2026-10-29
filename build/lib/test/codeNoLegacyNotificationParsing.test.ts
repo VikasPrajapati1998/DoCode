@@ -15,11 +15,11 @@ RuleTester.it = test;
 
 const root = path.resolve(import.meta.dirname, '../../..');
 const allowedFiles = [
-	'src/vs/workbench/api/browser/mainThreadMessageService.ts',
-	'src/vs/workbench/api/browser/mainThreadProgress.ts',
-	'src/vs/workbench/test/common/notifications.test.ts',
+	'src/do/workbench/api/browser/mainThreadMessageService.ts',
+	'src/do/workbench/api/browser/mainThreadProgress.ts',
+	'src/do/workbench/test/common/notifications.test.ts',
 ];
-const coreFile = path.join(root, 'src/vs/workbench/contrib/example/browser/example.ts');
+const coreFile = path.join(root, 'src/do/workbench/contrib/example/browser/example.ts');
 const source = '../../../../platform/notification/common/notificationLegacy.js';
 const bridgeSource = '../../../platform/notification/common/notificationLegacy.js';
 const options = [{ allowedFiles }];
@@ -57,12 +57,12 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-le
 		...[
 			`import { legacyExtensionLinkParsing } from '${source}';`,
 			`import { legacyExtensionLinkParsing as harmless } from '${source}';`,
-			`import { legacyExtensionLinkParsing } from 'vs/platform/notification/common/notificationLegacy.js';`,
+			`import { legacyExtensionLinkParsing } from 'do/platform/notification/common/notificationLegacy.js';`,
 			`import { legacyExtensionLinkParsing } from '${source.replace('.js', '.ts')}';`,
 		].map(code => ({ filename: coreFile, options, code, errors: [{ messageId: 'restrictedCapability' }] })),
 		{
 			name: 'does not exempt arbitrary core tests',
-			filename: path.join(root, 'src/vs/workbench/test/common/another.test.ts'),
+			filename: path.join(root, 'src/do/workbench/test/common/another.test.ts'),
 			options,
 			code: `import { legacyExtensionLinkParsing } from '${bridgeSource}';`,
 			errors: [{ messageId: 'restrictedCapability' }],
@@ -116,8 +116,8 @@ test('notification capability restriction is enabled for core in the repository 
 	const filenames = [
 		allowedFiles[0],
 		allowedFiles[1],
-		'src/vs/workbench/api/browser/mainThreadSomethingElse.ts',
-		'src/vs/workbench/test/common/another.test.ts',
+		'src/do/workbench/api/browser/mainThreadSomethingElse.ts',
+		'src/do/workbench/test/common/another.test.ts',
 	];
 	const results = await Promise.all(filenames.map(filePath => linter.lintText(code, { filePath: path.join(root, filePath) })));
 	assert.deepStrictEqual(results.map(result => result.flatMap(file => file.messages

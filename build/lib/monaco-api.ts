@@ -16,7 +16,7 @@ const dtsv = '3';
 
 const SRC = path.join(import.meta.dirname, '../../src');
 export const RECIPE_PATH = path.join(import.meta.dirname, '../monaco/monaco.d.ts.recipe');
-const DECLARATION_PATH = path.join(import.meta.dirname, '../../src/vs/monaco.d.ts');
+const DECLARATION_PATH = path.join(import.meta.dirname, '../../src/do/monaco.d.ts');
 
 function logErr(message: any, ...rest: unknown[]): void {
 	fancyLog(ansiColors.yellow(`[monaco.d.ts]`), message, ...rest);

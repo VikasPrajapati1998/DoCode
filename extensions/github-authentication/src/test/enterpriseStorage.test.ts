@@ -5,15 +5,15 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getEnterpriseStorageKey, getEnterpriseUriKey, migrateEnterpriseStorage } from '../common/enterpriseStorage';
 import { createTestExtensionContext } from './testExtensionContext';
 import { TestMemento } from './testMemento';
 import { TestSecretStorage } from './testSecretStorage';
 
 suite('GitHub Enterprise storage migration', () => {
-	const original = vscode.Uri.parse('https://TENANT.example/Team/');
-	const canonical = vscode.Uri.parse('https://tenant.example/Team');
+	const original = docode.Uri.parse('https://TENANT.example/Team/');
+	const canonical = docode.Uri.parse('https://tenant.example/Team');
 	const legacyKey = 'TENANT.example/Team/.ghes.auth';
 	const aliasKey = 'tenant.example/Team/.ghes.auth';
 	const canonicalKey = 'https://tenant.example/Team.ghes.auth';
@@ -25,10 +25,10 @@ suite('GitHub Enterprise storage migration', () => {
 		scopes: ['repo']
 	}]);
 	const links = [{ gitHubAccountId: '42', gitHubAccountLabel: 'octocat', microsoftAccountLabel: 'mona@example.com' }];
-	const disposables: vscode.Disposable[] = [];
+	const disposables: docode.Disposable[] = [];
 	let secrets: TestSecretStorage;
 	let state: TestMemento;
-	let context: vscode.ExtensionContext;
+	let context: docode.ExtensionContext;
 
 	setup(() => {
 		secrets = new TestSecretStorage();
@@ -57,13 +57,13 @@ suite('GitHub Enterprise storage migration', () => {
 	test('canonical keys normalize equivalent spellings but retain scheme, port and path case', () => {
 		assert.deepStrictEqual([
 			original, canonical,
-			vscode.Uri.parse('http://tenant.example/Team'),
-			vscode.Uri.parse('https://tenant.example:8443/Team'),
-			vscode.Uri.parse('https://tenant.example/team'),
-			vscode.Uri.parse('HTTPS://TENANT.example:443/Team/'),
-			vscode.Uri.parse('HTTPS://TENANT.example/'),
-			vscode.Uri.parse('https://TENANT.example/Team///'),
-			vscode.Uri.parse('https://TENANT.example/Team%20One%25/'),
+			docode.Uri.parse('http://tenant.example/Team'),
+			docode.Uri.parse('https://tenant.example:8443/Team'),
+			docode.Uri.parse('https://tenant.example/team'),
+			docode.Uri.parse('HTTPS://TENANT.example:443/Team/'),
+			docode.Uri.parse('HTTPS://TENANT.example/'),
+			docode.Uri.parse('https://TENANT.example/Team///'),
+			docode.Uri.parse('https://TENANT.example/Team%20One%25/'),
 		].map(getEnterpriseStorageKey), [
 			canonicalKey, canonicalKey,
 			'http://tenant.example/Team.ghes.auth',
@@ -77,8 +77,8 @@ suite('GitHub Enterprise storage migration', () => {
 	});
 
 	test('normalizing and reparsing an instance preserves case-sensitive user-info', () => {
-		const uri = vscode.Uri.parse('HTTPS://MixedUser:MixedPassword@TENANT.example:443/Team/');
-		const normalized = vscode.Uri.parse(getEnterpriseUriKey(uri));
+		const uri = docode.Uri.parse('HTTPS://MixedUser:MixedPassword@TENANT.example:443/Team/');
+		const normalized = docode.Uri.parse(getEnterpriseUriKey(uri));
 		assert.deepStrictEqual({
 			normalized: normalized.toString(),
 			authority: normalized.authority,
@@ -131,7 +131,7 @@ suite('GitHub Enterprise storage migration', () => {
 	});
 
 	test('legacy storage paths are decoded components, not URI strings', async () => {
-		const uri = vscode.Uri.parse('https://tenant.example/Team%20One%25%3F%23');
+		const uri = docode.Uri.parse('https://tenant.example/Team%20One%25%3F%23');
 		await secrets.store('TENANT.example/Team One%?#.ghes.auth', tokens);
 		await migrateEnterpriseStorage(context, uri);
 		assert.deepStrictEqual(await snapshot(), { secrets: { [getEnterpriseStorageKey(uri)]: tokens }, state: {} });
@@ -334,7 +334,7 @@ suite('GitHub Enterprise storage migration', () => {
 	for (const reverse of [false, true]) {
 		test(`an explicit legacy owner disambiguates schemes regardless of host order (${reverse})`, async () => {
 			await seed();
-			const http = vscode.Uri.parse('http://tenant.example/Team');
+			const http = docode.Uri.parse('http://tenant.example/Team');
 			const uris = reverse ? [canonical, http] : [http, canonical];
 			for (const uri of uris) {
 				await migrateEnterpriseStorage(context, uri, uris, original);
@@ -349,7 +349,7 @@ suite('GitHub Enterprise storage migration', () => {
 	test('ambiguous legacy schemes require the original instance instead of choosing the first host', async () => {
 		await seed();
 		const before = await snapshot();
-		const http = vscode.Uri.parse('http://tenant.example/Team');
+		const http = docode.Uri.parse('http://tenant.example/Team');
 		await assert.rejects(migrateEnterpriseStorage(context, http, [http, canonical]), /Set github-enterprise.uri to the original instance/);
 		assert.deepStrictEqual(await snapshot(), before);
 	});
@@ -359,7 +359,7 @@ suite('GitHub Enterprise storage migration', () => {
 		await secrets.store(canonicalKey, tokens);
 		await state.update(`${canonicalKey}${linksSuffix}`, links);
 		const before = await snapshot();
-		const http = vscode.Uri.parse('http://tenant.example/Team');
+		const http = docode.Uri.parse('http://tenant.example/Team');
 		await migrateEnterpriseStorage(context, canonical, [http, canonical]);
 		assert.deepStrictEqual(await snapshot(), before);
 	});
@@ -374,7 +374,7 @@ suite('GitHub Enterprise storage migration', () => {
 				await state.update(`${canonicalKey}${linksSuffix}`, links);
 			}
 			const before = await snapshot();
-			const http = vscode.Uri.parse('http://tenant.example/Team');
+			const http = docode.Uri.parse('http://tenant.example/Team');
 			await migrateEnterpriseStorage(context, canonical, [http, canonical]);
 			assert.deepStrictEqual(await snapshot(), before);
 		});
@@ -383,7 +383,7 @@ suite('GitHub Enterprise storage migration', () => {
 	test('an unconfigured legacy owner cannot donate its credentials to another scheme', async () => {
 		await seed();
 		const before = await snapshot();
-		const http = vscode.Uri.parse('http://tenant.example/Team');
+		const http = docode.Uri.parse('http://tenant.example/Team');
 		await migrateEnterpriseStorage(context, http, [http], original);
 		assert.deepStrictEqual(await snapshot(), before);
 	});

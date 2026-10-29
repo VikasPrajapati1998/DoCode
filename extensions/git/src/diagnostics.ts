@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CodeAction, CodeActionKind, CodeActionProvider, Diagnostic, DiagnosticCollection, DiagnosticSeverity, Disposable, Range, Selection, TextDocument, Uri, WorkspaceEdit, l10n, languages, workspace } from 'vscode';
+import { CodeAction, CodeActionKind, CodeActionProvider, Diagnostic, DiagnosticCollection, DiagnosticSeverity, Disposable, Range, Selection, TextDocument, Uri, WorkspaceEdit, l10n, languages, workspace } from 'docode';
 import { mapEvent, filterEvent, dispose } from './util';
 import { Model } from './model';
 
@@ -23,7 +23,7 @@ export class GitCommitInputBoxDiagnosticsManager {
 
 		this.migrateInputValidationSettings()
 			.then(() => {
-				mapEvent(filterEvent(workspace.onDidChangeTextDocument, e => e.document.uri.scheme === 'vscode-scm'), e => e.document)(this.onDidChangeTextDocument, this, this.disposables);
+				mapEvent(filterEvent(workspace.onDidChangeTextDocument, e => e.document.uri.scheme === 'docode-scm'), e => e.document)(this.onDidChangeTextDocument, this, this.disposables);
 				filterEvent(workspace.onDidChangeConfiguration, e => e.affectsConfiguration('git.inputValidation') || e.affectsConfiguration('git.inputValidationLength') || e.affectsConfiguration('git.inputValidationSubjectLength'))(this.onDidChangeConfiguration, this, this.disposables);
 			});
 	}
@@ -109,7 +109,7 @@ export class GitCommitInputBoxCodeActionsProvider implements CodeActionProvider 
 	private readonly disposables: Disposable[] = [];
 
 	constructor(private readonly diagnosticsManager: GitCommitInputBoxDiagnosticsManager) {
-		this.disposables.push(languages.registerCodeActionsProvider({ scheme: 'vscode-scm' }, this));
+		this.disposables.push(languages.registerCodeActionsProvider({ scheme: 'docode-scm' }, this));
 	}
 
 	provideCodeActions(document: TextDocument, range: Range | Selection): CodeAction[] {

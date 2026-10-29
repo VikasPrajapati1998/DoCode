@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionContext, languages } from 'vscode';
+import { ExtensionContext, languages } from 'docode';
 import { registerAPICommands } from './api/api1';
 import { GitBaseExtensionImpl } from './api/extension';
 import { Model } from './model';

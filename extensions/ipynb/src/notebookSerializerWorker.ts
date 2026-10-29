@@ -5,7 +5,7 @@
 
 import { parentPort } from 'worker_threads';
 import { serializeNotebookToString } from './serializers';
-import type { NotebookData } from 'vscode';
+import type { NotebookData } from 'docode';
 
 
 if (parentPort) {

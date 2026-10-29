@@ -12,8 +12,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.resolvers.d.ts",
-		"../../src/vscode-dts/vscode.proposed.tunnelFactory.d.ts"
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.resolvers.d.ts",
+		"../../src/docode-dts/docode.proposed.tunnelFactory.d.ts"
 	]
 }

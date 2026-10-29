@@ -26,7 +26,7 @@ use tokio::{pin, time};
 use crate::async_pipe::{
 	get_socket_name, get_socket_rw_stream, listen_socket_rw_stream, AsyncPipe,
 };
-use crate::constants::VSCODE_CLI_QUALITY;
+use crate::constants::DOCODE_CLI_QUALITY;
 use crate::download_cache::DownloadCache;
 use crate::log;
 use crate::options::Quality;
@@ -61,13 +61,13 @@ const RELEASE_CHECK_INTERVAL: u64 = 60 * 60;
 /// Number of bytes for the secret keys. See workbench.ts for their usage.
 const SECRET_KEY_BYTES: usize = 32;
 /// Path to mint the key combining server and client parts.
-const SECRET_KEY_MINT_PATH: &str = "_vscode-cli/mint-key";
+const SECRET_KEY_MINT_PATH: &str = "_docode-cli/mint-key";
 /// Cookie set to the `SECRET_KEY_MINT_PATH`
-const PATH_COOKIE_NAME: &str = "vscode-secret-key-path";
+const PATH_COOKIE_NAME: &str = "docode-secret-key-path";
 /// HTTP-only cookie where the client's secret half is stored.
-const SECRET_KEY_COOKIE_NAME: &str = "vscode-cli-secret-half";
+const SECRET_KEY_COOKIE_NAME: &str = "docode-cli-secret-half";
 
-/// Implements the vscode "server of servers". Clients who go to the URI get
+/// Implements the docode "server of servers". Clients who go to the URI get
 /// served the latest version of the VS Code server whenever they load the
 /// page. The VS Code server prefixes all assets and connections it loads with
 /// its version string, so existing clients can continue to get served even
@@ -609,7 +609,7 @@ impl ConnectionManager {
 		let cache = DownloadCache::new(ctx.paths.web_server_storage());
 		let target_kind = TargetKind::Web;
 
-		let quality = VSCODE_CLI_QUALITY.map_or(Quality::Stable, |q| match Quality::try_from(q) {
+		let quality = DOCODE_CLI_QUALITY.map_or(Quality::Stable, |q| match Quality::try_from(q) {
 			Ok(q) => q,
 			Err(_) => Quality::Stable,
 		});
@@ -690,7 +690,7 @@ impl ConnectionManager {
 		let now = Instant::now();
 		let target_kind = TargetKind::Web;
 
-		let quality = VSCODE_CLI_QUALITY
+		let quality = DOCODE_CLI_QUALITY
 			.ok_or(CodeError::UpdatesNotConfigured("no configured quality"))
 			.and_then(|q| {
 				Quality::try_from(q).map_err(|_| CodeError::UpdatesNotConfigured("unknown quality"))
@@ -887,7 +887,7 @@ impl ConnectionManager {
 		}
 
 		// removed, otherwise the workbench will not be usable when running the CLI from sources.
-		cmd.env_remove("VSCODE_DEV");
+		cmd.env_remove("DOCODE_DEV");
 
 		let mut child = match cmd.spawn() {
 			Ok(c) => c,

@@ -27,15 +27,15 @@ suite('stylelint', () => {
 		assert.deepStrictEqual(resolveStylelintSources([
 			'node',
 			'build/stylelint.ts',
-			'src/vs/base',
-			'--path=src/vs/editor/**/*.css',
+			'src/do/base',
+			'--path=src/do/editor/**/*.css',
 			'-p',
-			'src/vs/platform/example.css',
+			'src/do/platform/example.css',
 		]), {
 			sources: [
-				'src/vs/base/**/*.css',
-				'src/vs/editor/**/*.css',
-				'src/vs/platform/example.css',
+				'src/do/base/**/*.css',
+				'src/do/editor/**/*.css',
+				'src/do/platform/example.css',
 			],
 			explicit: true,
 		});
@@ -43,10 +43,10 @@ suite('stylelint', () => {
 
 	test('excludes test CSS from production selector checks', async () => {
 		const [source, sourceTest, sourceTestData, windowsSourceTest, extension, extensionTest] = await Promise.all([
-			hasClassAttributeSubstringError('src/vs/workbench/browser/example.css'),
-			hasClassAttributeSubstringError('src/vs/workbench/test/browser/componentFixtures/example.css'),
-			hasClassAttributeSubstringError('src/vs/workbench/test-data/example.css'),
-			hasClassAttributeSubstringError('src\\vs\\workbench\\test\\browser\\componentFixtures\\example.css'),
+			hasClassAttributeSubstringError('src/do/workbench/browser/example.css'),
+			hasClassAttributeSubstringError('src/do/workbench/test/browser/componentFixtures/example.css'),
+			hasClassAttributeSubstringError('src/do/workbench/test-data/example.css'),
+			hasClassAttributeSubstringError('src\\do\\workbench\\test\\browser\\componentFixtures\\example.css'),
 			hasClassAttributeSubstringError('extensions/example/browser/example.css'),
 			hasClassAttributeSubstringError('extensions/example/test/example.css'),
 		]);

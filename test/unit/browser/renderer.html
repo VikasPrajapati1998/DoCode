@@ -2,7 +2,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>VSCode Tests</title>
+	<title>DoCode Tests</title>
 	<link href="../../../node_modules/mocha/mocha.css" rel="stylesheet" />
 </head>
 
@@ -48,10 +48,10 @@
 				const pending = [];
 
 				$globalThis.addEventListener('message', (e) => {
-					if (e.data && e.data.vscodeScheduleAsyncWork) {
+					if (e.data && e.data.docodeScheduleAsyncWork) {
 						for (let i = 0, len = pending.length; i < len; i++) {
 							const candidate = pending[i];
-							if (candidate.id === e.data.vscodeScheduleAsyncWork) {
+							if (candidate.id === e.data.docodeScheduleAsyncWork) {
 								pending.splice(i, 1);
 								candidate.callback();
 								return;
@@ -66,7 +66,7 @@
 						id: myId,
 						callback: callback
 					});
-					$globalThis.postMessage({ vscodeScheduleAsyncWork: myId }, '*');
+					$globalThis.postMessage({ docodeScheduleAsyncWork: myId }, '*');
 				};
 			}
 			return (callback) => setTimeout(callback);
@@ -92,17 +92,17 @@
 		const importMapParent = document.currentScript.parentNode;
 		const importMap = {
 			imports: {
-				vs: new URL(`../../../${out}/vs`, baseUrl).href,
+				vs: new URL(`../../../${out}/do`, baseUrl).href,
 				assert: new URL('../assert.js', baseUrl).href,
 				sinon: new URL('../../../node_modules/sinon/pkg/sinon-esm.js', baseUrl).href,
 				'sinon-test': new URL('../../../node_modules/sinon-test/dist/sinon-test-es.js', baseUrl).href,
 				'@xterm/xterm': new URL('../../../node_modules/@xterm/xterm/lib/xterm.js', baseUrl).href,
-				'@vscode/iconv-lite-umd': new URL('../../../node_modules/@vscode/iconv-lite-umd/lib/iconv-lite-umd.js', baseUrl).href,
+				'@docode/iconv-lite-umd': new URL('../../../node_modules/@docode/iconv-lite-umd/lib/iconv-lite-umd.js', baseUrl).href,
 				jschardet: new URL('../../../node_modules/jschardet/dist/jschardet.min.js', baseUrl).href
 			}
 		}
 		// FileAccess resolves test assets from src, but generated crypto is emitted only to the output tree.
-		const agentHostCryptoPath = 'vs/platform/agentHost/browser/agentHostCryptoModule.js';
+		const agentHostCryptoPath = 'do/platform/agentHost/browser/agentHostCryptoModule.js';
 		importMap.imports[new URL(`../../../src/${agentHostCryptoPath}`, baseUrl).href] = new URL(`../../../${out}/${agentHostCryptoPath}`, baseUrl).href;
 
 		// ---- CSS tricks
@@ -114,7 +114,7 @@
 			style.type = 'text/css';
 			document.head.appendChild(style);
 
-			globalThis._VSCODE_CSS_LOAD = function (url) {
+			globalThis._DOCODE_CSS_LOAD = function (url) {
 				// debugger;
 				style.sheet.insertRule(`@import url(${url});`);
 			};
@@ -124,7 +124,7 @@
 				const cssModules = value.split(',');
 				for (const cssModule of cssModules) {
 					const cssUrl = new URL(`../../../${out}/${cssModule}`, baseUrl).href;
-					const jsSrc = `globalThis._VSCODE_CSS_LOAD('${cssUrl}');\n`;
+					const jsSrc = `globalThis._DOCODE_CSS_LOAD('${cssUrl}');\n`;
 					const blob = new Blob([jsSrc], { type: 'application/javascript' });
 					importMap.imports[cssUrl] = URL.createObjectURL(blob);
 				}
@@ -151,11 +151,11 @@
 
 		// set up require
 
-		globalThis._VSCODE_FILE_ROOT = new URL('../../../src', baseUrl).href;
+		globalThis._DOCODE_FILE_ROOT = new URL('../../../src', baseUrl).href;
 		globalThis.require = {
 			paths: {
 				xterm: new URL('../../../node_modules/xterm', baseUrl).href,
-				'@vscode/iconv-lite-umd': new URL('../../../node_modules/@vscode/iconv-lite-umd', baseUrl).href,
+				'@docode/iconv-lite-umd': new URL('../../../node_modules/@docode/iconv-lite-umd', baseUrl).href,
 				jschardet: new URL('../../../node_modules/jschardet', baseUrl).href
 			}
 		}
@@ -296,7 +296,7 @@
 		let _resolveTestData;
 		let _resolveTestRun;
 		let _rejectTestRun;
-		globalThis._VSCODE_TEST_RUN = new Promise(resolve => _resolveTestData = resolve)
+		globalThis._DOCODE_TEST_RUN = new Promise(resolve => _resolveTestData = resolve)
 
 		window.loadAndRun = async function loadAndRun(data, manual = false) {
 			return new Promise((resolve, reject) => {
@@ -315,7 +315,7 @@
 	</script>
 
 	<script type="text" id="bootstrap">
-		const {data: {modules, grep, rerunTargets}, manual} = await globalThis._VSCODE_TEST_RUN
+		const {data: {modules, grep, rerunTargets}, manual} = await globalThis._DOCODE_TEST_RUN
 
 		try {
 			// load

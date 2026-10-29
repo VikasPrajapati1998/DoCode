@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command } from '../commandManager';
 import { MarkdownPreviewManager } from '../preview/previewManager';
 
@@ -19,7 +19,7 @@ export class OpenImageCommand implements Command {
 	}
 
 	public execute(args: { resource: string; imageSource: string }) {
-		const source = vscode.Uri.parse(args.resource);
+		const source = docode.Uri.parse(args.resource);
 		this.#webviewManager.openDocumentLink(args.imageSource, source);
 	}
 }

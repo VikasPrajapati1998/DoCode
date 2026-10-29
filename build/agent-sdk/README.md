@@ -2,37 +2,37 @@
 
 Per-platform agent SDK production. Each VS Code build (`darwin-arm64`, `linux-x64`, Alpine REH, etc.) uploads its own platform's SDK tarballs to `main.vscode-cdn.net` and stamps `agentSdks` into the shipped `product.json` with a `{version, urlTemplate}` per SDK. Every platform job emits the same `urlTemplate` per SDK — the runtime substitutes `{sdkTarget}` per launch via `resolveSdkTarget()`, which is what lets macOS Universal bundles share one `product.json` across arm64 + x64.
 
-The runtime side (`src/vs/platform/agentHost/`) downloads and caches the SDK tarball at first use. See `IAgentSdkProductConfig` in `src/vs/base/common/product.ts` for the contract.
+The runtime side (`src/do/platform/agentHost/`) downloads and caches the SDK tarball at first use. See `IAgentSdkProductConfig` in `src/do/base/common/product.ts` for the contract.
 
 ## How the pipeline uses this
 
-The platform packaging jobs (Linux, macOS, Windows, Alpine) each include the shared template `build/azure-pipelines/common/agent-sdk-produce.yml` before the existing `gulp vscode-<platform>-<arch>-min-ci` step:
+The platform packaging jobs (Linux, macOS, Windows, Alpine) each include the shared template `build/azure-pipelines/common/agent-sdk-produce.yml` before the existing `gulp docode-<platform>-<arch>-min-ci` step:
 
 ```yaml
 - template: ../../common/agent-sdk-produce.yml@self
   parameters:
-    vscodePlatform: linux
+    docodePlatform: linux
 ```
 
-The template runs `node build/agent-sdk/produce.ts --vscode-platform=<x>
---arch=$(VSCODE_ARCH)`, which iterates the SDKs (`SDKS = ['claude',
-'codex']`), figures out the matching `sdkTarget` for `(vscode-platform,
+The template runs `node build/agent-sdk/produce.ts --docode-platform=<x>
+--arch=$(DOCODE_ARCH)`, which iterates the SDKs (`SDKS = ['claude',
+'codex']`), figures out the matching `sdkTarget` for `(docode-platform,
 arch, sdk)` via `getSdkTargetForBuild`, runs `buildOne` for each in parallel, and drops the tarballs in `$(Build.SourcesDirectory)/.build/agent-sdk/tarballs/`.
 
 ### Publish vs test runs
 
-`produce.ts` reads the pipeline variable `VSCODE_PUBLISH` from env (Azure auto-injects all non-secret pipeline variables) to decide whether to hit the CDN:
+`produce.ts` reads the pipeline variable `DOCODE_PUBLISH` from env (Azure auto-injects all non-secret pipeline variables) to decide whether to hit the CDN:
 
-- **`VSCODE_PUBLISH=true` (real release builds)** — the AzureCLI@2 step inside the template fetches CDN credentials, `produce.ts` calls `uploadOne` for every tarball (HEAD-then-decide idempotent), writes the results JSON, and emits `##vso[task.setvariable
+- **`DOCODE_PUBLISH=true` (real release builds)** — the AzureCLI@2 step inside the template fetches CDN credentials, `produce.ts` calls `uploadOne` for every tarball (HEAD-then-decide idempotent), writes the results JSON, and emits `##vso[task.setvariable
   variable=AGENT_SDK_RESULTS_FILE]<path>`. The downstream gulp packaging step then stamps `product.agentSdks` via `readAgentSdkResults()`.
 
-- **`VSCODE_PUBLISH` unset or not `'true'`** (PR runs, CI runs, manual test runs with the publish toggle off) — the AzureCLI credential step is skipped, the upload is skipped, no results file is written, and `task.setvariable` is not emitted. The tarballs are still produced and published as a pipeline artifact named `agent_sdk_<vscodePlatform>_<arch>_tarballs` so you can download and inspect them. product.json ships without `agentSdks` — same shape as a local dev build, so the runtime falls back to the per-provider env-var override.
+- **`DOCODE_PUBLISH` unset or not `'true'`** (PR runs, CI runs, manual test runs with the publish toggle off) — the AzureCLI credential step is skipped, the upload is skipped, no results file is written, and `task.setvariable` is not emitted. The tarballs are still produced and published as a pipeline artifact named `agent_sdk_<docodePlatform>_<arch>_tarballs` so you can download and inspect them. product.json ships without `agentSdks` — same shape as a local dev build, so the runtime falls back to the per-provider env-var override.
 
 ### Where the agentSdks gating lives
 
 Inside `packageTask`'s `jsonEditor` callback (the same one that injects `commit` / `date` / `checksums` / `version`), `readAgentSdkResults()` loads the results file (returns `{}` when the env var is unset) and merges `agentSdks` into `product.json`. The REH gulpfile only writes `agentSdks` for `type === 'reh'`; the REH-web variant skips it because the agent host is node-only and the SDK config has no consumer in a browser-served server.
 
-Local `gulp vscode-darwin-arm64` invocations don't set `AGENT_SDK_RESULTS_FILE` and don't have `VSCODE_PUBLISH=true`, so `readAgentSdkResults()` returns `{}` and product.json ships without `agentSdks` — same UX as today's no-config build.
+Local `gulp docode-darwin-arm64` invocations don't set `AGENT_SDK_RESULTS_FILE` and don't have `DOCODE_PUBLISH=true`, so `readAgentSdkResults()` returns `{}` and product.json ships without `agentSdks` — same UX as today's no-config build.
 
 ## Why two steps, not inline-in-gulp
 
@@ -46,11 +46,11 @@ The agent SDK work is a distinct concern from the VS Code packaging gulp graph. 
 ## Files
 
 - `agents/<sdk>/` — one folder per SDK we ship. Each contains a `package.json` (single dependency: the SDK's own npm package, pinned to an exact version) and a `package-lock.json` (full transitive graph). Folder name = SDK id = key under `product.agentSdks` = path segment in the CDN URL. The set of folders IS the SDK list — no parallel array to keep in sync.
-- `common.ts` — types, `getSdks()` (discovers SDKs from `agents/`), `getAgentMeta()` / `getSdkVersion()` (reads from `agents/<sdk>/package.json`, rejects `^`/`~` ranges), `getSdkTargetForBuild()` (`(vscodePlatform,
+- `common.ts` — types, `getSdks()` (discovers SDKs from `agents/`), `getAgentMeta()` / `getSdkVersion()` (reads from `agents/<sdk>/package.json`, rejects `^`/`~` ranges), `getSdkTargetForBuild()` (`(docodePlatform,
   arch, sdk) → npm-suffix`), `buildCdnUrl()` / `buildCdnUrlTemplate()`, `sha256OfFile()`, `parseFlags()` for CLI flag parsing, and `readAgentSdkResults()` for the gulpfile-side reader.
 - `package.ts` — `buildOne({ sdk, sdkTarget, outDir })`. Runs on any OS: copies `agents/<sdk>/{package.json,package-lock.json}` into a scratch dir, `npm ci` with `npm_config_libc/os/cpu` fetches the foreign platform binary verbatim from the locked graph, then node-tar+gzip with reproducible flags. Has a thin CLI at bottom.
 - `upload.ts` — `uploadOne(...)`. HEAD-then-decide: absent → upload; matching sha → skip (idempotent re-runs); different / no-metadata sha → fail loud, refusing to overwrite content-addressed history. Thin CLI.
-- `produce.ts` — pipeline-step entry. For one `(vscode-platform, arch)`, iterates the SDKs in parallel, calls `buildOne` + `uploadOne` for each that applies, writes results to `AGENT_SDK_RESULTS_FILE`, and emits `##vso[task.setvariable]` so downstream pipeline steps see the path.
+- `produce.ts` — pipeline-step entry. For one `(docode-platform, arch)`, iterates the SDKs in parallel, calls `buildOne` + `uploadOne` for each that applies, writes results to `AGENT_SDK_RESULTS_FILE`, and emits `##vso[task.setvariable]` so downstream pipeline steps see the path.
 
 ## What ends up in a tarball
 
@@ -98,7 +98,7 @@ test` in PR CI) enforces step 3: it fails if an SDK's `agents/<sdk>` `package.js
 
 The next pipeline run rebuilds + uploads each platform tarball at the new content-addressed CDN path and re-stamps each `product.json` with the new `urlTemplate` pointing at the bumped version.
 
-No human-paste step into vscode-distro. No coordination between jobs.
+No human-paste step into docode-distro. No coordination between jobs.
 
 ## Local dev
 
@@ -111,8 +111,8 @@ node build/agent-sdk/package.ts --sdk=claude --target=darwin-arm64 --out=/tmp/ou
 For OSS contributors who want to drive the agent host without going through the CDN, point the dev override env vars at a local SDK install:
 
 ```sh
-VSCODE_AGENT_HOST_CLAUDE_SDK_ROOT=/path/to/anthropic-claude-sdk-install \
+DOCODE_AGENT_HOST_CLAUDE_SDK_ROOT=/path/to/anthropic-claude-sdk-install \
   ./scripts/code.sh
 ```
 
-(See `src/vs/platform/agentHost/common/agentService.ts` for env var names.)
+(See `src/do/platform/agentHost/common/agentService.ts` for env var names.)

@@ -1,12 +1,12 @@
 @echo off
 setlocal
 
-title VSCode Dev
+title DoCode Dev
 
 pushd %~dp0\..
 
 :: Get electron, compile, built-in extensions
-if "%VSCODE_SKIP_PRELAUNCH%"=="" (
+if "%DOCODE_SKIP_PRELAUNCH%"=="" (
 	node build/lib/preLaunch.ts || (
 		echo Failed to prepare VS Code for launch ^(build/lib/preLaunch.ts^). 1>&2
 		goto :failed
@@ -32,12 +32,12 @@ if "%~1"=="--builtin" goto builtin
 
 :: Configuration
 set NODE_ENV=development
-set VSCODE_DEV=1
-set VSCODE_CLI=1
+set DOCODE_DEV=1
+set DOCODE_CLI=1
 set ELECTRON_ENABLE_LOGGING=1
 set ELECTRON_ENABLE_STACK_DUMPING=1
 
-set DISABLE_TEST_EXTENSION="--disable-extension=vscode.vscode-api-tests"
+set DISABLE_TEST_EXTENSION="--disable-extension=docode.docode-api-tests"
 for %%A in (%*) do (
 	if "%%~A"=="--extensionTestsPath" (
 		set DISABLE_TEST_EXTENSION=""

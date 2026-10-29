@@ -11,16 +11,16 @@ Split-view management pane for AI customization items across workspace, user, ex
 
 ## Spec
 
-**`src/vs/sessions/AI_CUSTOMIZATIONS.md`** — read for ownership and interface contracts. Update it only when those contracts change; behavior and regressions belong in focused tests.
+**`src/do/sessions/AI_CUSTOMIZATIONS.md`** — read for ownership and interface contracts. Update it only when those contracts change; behavior and regressions belong in focused tests.
 
 ## Key Folders
 
 | Folder | What |
 |--------|------|
-| `src/vs/workbench/contrib/chat/common/` | `ICustomizationHarnessService`, `ISectionOverride`, `ICustomizationItemProvider` — shared interfaces |
-| `src/vs/workbench/contrib/chat/browser/aiCustomization/` | Management editor, list widgets (prompts, MCP, plugins), harness service registration |
-| `src/vs/sessions/contrib/chat/browser/` | Sessions-window overrides (harness service, workspace service) |
-| `src/vs/sessions/contrib/sessions/browser/` | Sessions tree view counts and toolbar |
+| `src/do/workbench/contrib/chat/common/` | `ICustomizationHarnessService`, `ISectionOverride`, `ICustomizationItemProvider` — shared interfaces |
+| `src/do/workbench/contrib/chat/browser/aiCustomization/` | Management editor, list widgets (prompts, MCP, plugins), harness service registration |
+| `src/do/sessions/contrib/chat/browser/` | Sessions-window overrides (harness service, workspace service) |
+| `src/do/sessions/contrib/sessions/browser/` | Sessions tree view counts and toolbar |
 
 When changing harness descriptor interfaces or factory functions, verify both core and sessions registrations compile.
 
@@ -34,11 +34,11 @@ Principle: the UI widgets read everything from the descriptor — no harness-spe
 
 ## Extension API (`chatSessionCustomizationProvider`)
 
-The proposed API in `src/vscode-dts/vscode.proposed.chatSessionCustomizationProvider.d.ts` lets extensions register customization providers. Changes to `ICustomizationItem` or `ICustomizationItemProvider` must be kept in sync across the full chain:
+The proposed API in `src/docode-dts/docode.proposed.chatSessionCustomizationProvider.d.ts` lets extensions register customization providers. Changes to `ICustomizationItem` or `ICustomizationItemProvider` must be kept in sync across the full chain:
 
 | Layer | File | Type |
 |-------|------|------|
-| Extension API | `vscode.proposed.chatSessionCustomizationProvider.d.ts` | `ChatSessionCustomizationItem` |
+| Extension API | `docode.proposed.chatSessionCustomizationProvider.d.ts` | `ChatSessionCustomizationItem` |
 | IPC DTO | `extHost.protocol.ts` | `IChatSessionCustomizationItemDto` |
 | ExtHost mapping | `extHostChatAgents2.ts` | `$provideChatSessionCustomizations()` |
 | MainThread mapping | `mainThreadChatAgents2.ts` | `provideChatSessionCustomizations` callback |
@@ -48,7 +48,7 @@ When adding fields to `ICustomizationItem`, update all five layers. The proposed
 
 ## Testing
 
-Component explorer fixtures (see `component-fixtures` skill): `aiCustomizationListWidget.fixture.ts`, `aiCustomizationManagementEditor.fixture.ts` under `src/vs/workbench/test/browser/componentFixtures/`.
+Component explorer fixtures (see `component-fixtures` skill): `aiCustomizationListWidget.fixture.ts`, `aiCustomizationManagementEditor.fixture.ts` under `src/do/workbench/test/browser/componentFixtures/`.
 
 Management sections must reuse the editor's shared content-panel surface and common tree/list primitives. A registry-contributed section should match neighboring sections' background, border, inset, title/search alignment, row states, and group headers rather than introducing section-specific approximations.
 
@@ -78,7 +78,7 @@ The management editor fixture supports a `selectedSection` option to render any 
 MyNewTab: defineComponentFixture({
     labels: { kind: 'screenshot' },
     render: ctx => renderEditor(ctx, {
-        harness: CustomizationHarness.VSCode,
+        harness: CustomizationHarness.DoCode,
         selectedSection: AICustomizationManagementSection.MySection,
     }),
 }),
@@ -115,7 +115,7 @@ The management editor embeds a `CodeEditorWidget`. Electron-side editor contribu
 - `IChatEditingService` — needs `editingSessionsObs` as empty observable
 - `IAgentSessionsService` — needs `model.sessions` as empty array
 
-These are cross-layer imports from `vs/sessions/` — use `// eslint-disable-next-line local/code-import-patterns` on the import lines.
+These are cross-layer imports from `do/sessions/` — use `// eslint-disable-next-line local/code-import-patterns` on the import lines.
 
 ### CI regression gates
 

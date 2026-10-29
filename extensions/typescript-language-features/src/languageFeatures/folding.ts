@@ -3,24 +3,24 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import type * as Proto from '../tsServer/protocol/protocol';
 import * as typeConverters from '../typeConverters';
 import { ITypeScriptServiceClient } from '../typescriptService';
 import { coalesce } from '../utils/arrays';
 
-class TypeScriptFoldingProvider implements vscode.FoldingRangeProvider {
+class TypeScriptFoldingProvider implements docode.FoldingRangeProvider {
 
 	public constructor(
 		private readonly client: ITypeScriptServiceClient
 	) { }
 
 	async provideFoldingRanges(
-		document: vscode.TextDocument,
-		_context: vscode.FoldingContext,
-		token: vscode.CancellationToken
-	): Promise<vscode.FoldingRange[] | undefined> {
+		document: docode.TextDocument,
+		_context: docode.FoldingContext,
+		token: docode.CancellationToken
+	): Promise<docode.FoldingRange[] | undefined> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return;
@@ -37,8 +37,8 @@ class TypeScriptFoldingProvider implements vscode.FoldingRangeProvider {
 
 	private convertOutliningSpan(
 		span: Proto.OutliningSpan,
-		document: vscode.TextDocument
-	): vscode.FoldingRange | undefined {
+		document: docode.TextDocument
+	): docode.FoldingRange | undefined {
 		const range = typeConverters.Range.fromTextSpan(span.textSpan);
 		const kind = TypeScriptFoldingProvider.getFoldingRangeKind(span);
 
@@ -52,15 +52,15 @@ class TypeScriptFoldingProvider implements vscode.FoldingRangeProvider {
 
 		const start = range.start.line;
 		const end = this.adjustFoldingEnd(range, document);
-		return new vscode.FoldingRange(start, end, kind);
+		return new docode.FoldingRange(start, end, kind);
 	}
 
 	private static readonly foldEndPairCharacters = ['}', ']', ')', '`', '>'];
 
-	private adjustFoldingEnd(range: vscode.Range, document: vscode.TextDocument) {
+	private adjustFoldingEnd(range: docode.Range, document: docode.TextDocument) {
 		// workaround for #47240
 		if (range.end.character > 0) {
-			const foldEndCharacter = document.getText(new vscode.Range(range.end.translate(0, -1), range.end));
+			const foldEndCharacter = document.getText(new docode.Range(range.end.translate(0, -1), range.end));
 			if (TypeScriptFoldingProvider.foldEndPairCharacters.includes(foldEndCharacter)) {
 				return Math.max(range.end.line - 1, range.start.line);
 			}
@@ -69,11 +69,11 @@ class TypeScriptFoldingProvider implements vscode.FoldingRangeProvider {
 		return range.end.line;
 	}
 
-	private static getFoldingRangeKind(span: Proto.OutliningSpan): vscode.FoldingRangeKind | undefined {
+	private static getFoldingRangeKind(span: Proto.OutliningSpan): docode.FoldingRangeKind | undefined {
 		switch (span.kind) {
-			case 'comment': return vscode.FoldingRangeKind.Comment;
-			case 'region': return vscode.FoldingRangeKind.Region;
-			case 'imports': return vscode.FoldingRangeKind.Imports;
+			case 'comment': return docode.FoldingRangeKind.Comment;
+			case 'region': return docode.FoldingRangeKind.Region;
+			case 'imports': return docode.FoldingRangeKind.Imports;
 			case 'code':
 			default: return undefined;
 		}
@@ -83,7 +83,7 @@ class TypeScriptFoldingProvider implements vscode.FoldingRangeProvider {
 export function register(
 	selector: DocumentSelector,
 	client: ITypeScriptServiceClient,
-): vscode.Disposable {
-	return vscode.languages.registerFoldingRangeProvider(selector.syntax,
+): docode.Disposable {
+	return docode.languages.registerFoldingRangeProvider(selector.syntax,
 		new TypeScriptFoldingProvider(client));
 }

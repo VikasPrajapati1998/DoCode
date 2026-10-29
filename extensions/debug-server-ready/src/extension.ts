@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as util from 'util';
 import { randomUUID } from 'crypto';
 
@@ -18,11 +18,11 @@ interface ServerReadyAction {
 	uriFormat?: string;
 	webRoot?: string;
 	name?: string;
-	config?: vscode.DebugConfiguration;
+	config?: docode.DebugConfiguration;
 	killOnServerStop?: boolean;
 }
 
-// From src/vs/base/common/strings.ts
+// From src/do/base/common/strings.ts
 const CSI_SEQUENCE = /(?:\x1b\[|\x9b)[=?>!]?[\d;:]*["$#'* ]?[a-zA-Z@^`{}|~]/;
 const OSC_SEQUENCE = /(?:\x1b\]|\x9d).*?(?:\x1b\\|\x07|\x9c)/;
 const ESC_SEQUENCE = /\x1b(?:[ #%\(\)\*\+\-\.\/]?[a-zA-Z0-9\|}~@])/;
@@ -33,7 +33,7 @@ const CONTROL_SEQUENCES = new RegExp('(?:' + [
 ].join('|') + ')', 'g');
 
 /**
- * Froms vs/base/common/strings.ts in core
+ * Froms do/base/common/strings.ts in core
  * @see https://github.com/microsoft/vscode/blob/22a2a0e833175c32a2005b977d7fbd355582e416/src/vs/base/common/strings.ts#L736
  */
 function removeAnsiEscapeCodes(str: string): string {
@@ -56,19 +56,19 @@ class Trigger {
 	}
 }
 
-class ServerReadyDetector extends vscode.Disposable {
+class ServerReadyDetector extends docode.Disposable {
 
-	private static detectors = new Map<vscode.DebugSession, ServerReadyDetector>();
-	private static terminalDataListener: vscode.Disposable | undefined;
+	private static detectors = new Map<docode.DebugSession, ServerReadyDetector>();
+	private static terminalDataListener: docode.Disposable | undefined;
 
-	private readonly stoppedEmitter = new vscode.EventEmitter<void>();
+	private readonly stoppedEmitter = new docode.EventEmitter<void>();
 	private readonly onDidSessionStop = this.stoppedEmitter.event;
-	private readonly disposables = new Set<vscode.Disposable>([]);
+	private readonly disposables = new Set<docode.Disposable>([]);
 	private trigger: Trigger;
 	private shellPid?: number;
 	private regexp: RegExp;
 
-	static start(session: vscode.DebugSession): ServerReadyDetector | undefined {
+	static start(session: docode.DebugSession): ServerReadyDetector | undefined {
 		if (session.configuration.serverReadyAction) {
 			let detector = ServerReadyDetector.detectors.get(session);
 			if (!detector) {
@@ -80,7 +80,7 @@ class ServerReadyDetector extends vscode.Disposable {
 		return undefined;
 	}
 
-	static stop(session: vscode.DebugSession): void {
+	static stop(session: docode.DebugSession): void {
 		const detector = ServerReadyDetector.detectors.get(session);
 		if (detector) {
 			ServerReadyDetector.detectors.delete(session);
@@ -89,7 +89,7 @@ class ServerReadyDetector extends vscode.Disposable {
 		}
 	}
 
-	static rememberShellPid(session: vscode.DebugSession, pid: number) {
+	static rememberShellPid(session: docode.DebugSession, pid: number) {
 		const detector = ServerReadyDetector.detectors.get(session);
 		if (detector) {
 			detector.shellPid = pid;
@@ -98,7 +98,7 @@ class ServerReadyDetector extends vscode.Disposable {
 
 	static async startListeningTerminalData() {
 		if (!this.terminalDataListener) {
-			this.terminalDataListener = vscode.window.onDidWriteTerminalData(async e => {
+			this.terminalDataListener = docode.window.onDidWriteTerminalData(async e => {
 
 				// first find the detector with a matching pid
 				const pid = await e.terminal.processId;
@@ -120,7 +120,7 @@ class ServerReadyDetector extends vscode.Disposable {
 		}
 	}
 
-	private constructor(private session: vscode.DebugSession) {
+	private constructor(private session: docode.DebugSession) {
 		super(() => this.internalDispose());
 
 		// Re-used the triggered of the parent session, if one exists
@@ -154,7 +154,7 @@ class ServerReadyDetector extends vscode.Disposable {
 		return false;
 	}
 
-	private openExternalWithString(session: vscode.DebugSession, captureString: string) {
+	private openExternalWithString(session: docode.DebugSession, captureString: string) {
 		const args: ServerReadyAction = session.configuration.serverReadyAction;
 
 		let uri;
@@ -163,8 +163,8 @@ class ServerReadyDetector extends vscode.Disposable {
 			// verify that format does not contain '%s'
 			const format = args.uriFormat || '';
 			if (format.indexOf('%s') >= 0) {
-				const errMsg = vscode.l10n.t("Format uri ('{0}') uses a substitution placeholder but pattern did not capture anything.", format);
-				vscode.window.showErrorMessage(errMsg, { modal: true }).then(_ => undefined);
+				const errMsg = docode.l10n.t("Format uri ('{0}') uses a substitution placeholder but pattern did not capture anything.", format);
+				docode.window.showErrorMessage(errMsg, { modal: true }).then(_ => undefined);
 				return;
 			}
 			uri = format;
@@ -174,8 +174,8 @@ class ServerReadyDetector extends vscode.Disposable {
 			// verify that format only contains a single '%s'
 			const s = format.split('%s');
 			if (s.length !== 2) {
-				const errMsg = vscode.l10n.t("Format uri ('{0}') must contain exactly one substitution placeholder.", format);
-				vscode.window.showErrorMessage(errMsg, { modal: true }).then(_ => undefined);
+				const errMsg = docode.l10n.t("Format uri ('{0}') must contain exactly one substitution placeholder.", format);
+				docode.window.showErrorMessage(errMsg, { modal: true }).then(_ => undefined);
 				return;
 			}
 			uri = util.format(format, captureString);
@@ -184,17 +184,17 @@ class ServerReadyDetector extends vscode.Disposable {
 		this.openExternalWithUri(session, uri);
 	}
 
-	private async openExternalWithUri(session: vscode.DebugSession, uri: string) {
+	private async openExternalWithUri(session: docode.DebugSession, uri: string) {
 
 		const args: ServerReadyAction = session.configuration.serverReadyAction;
 		switch (args.action || 'openExternally') {
 
 			case 'openExternally':
-				await vscode.env.openExternal(vscode.Uri.parse(uri));
+				await docode.env.openExternal(docode.Uri.parse(uri));
 				break;
 
 			case 'openIntegratedBrowser':
-				vscode.commands.executeCommand('workbench.action.browser.open', uri);
+				docode.commands.executeCommand('workbench.action.browser.open', uri);
 				break;
 
 			case 'debugWithChrome':
@@ -219,7 +219,7 @@ class ServerReadyDetector extends vscode.Disposable {
 		}
 	}
 
-	private async debugWithBrowser(type: string, session: vscode.DebugSession, uri: string) {
+	private async debugWithBrowser(type: string, session: docode.DebugSession, uri: string) {
 		const args = session.configuration.serverReadyAction as ServerReadyAction;
 		if (!args.killOnServerStop) {
 			await this.startBrowserDebugSession(type, session, uri);
@@ -227,7 +227,7 @@ class ServerReadyDetector extends vscode.Disposable {
 		}
 
 		const trackerId = randomUUID();
-		const cts = new vscode.CancellationTokenSource();
+		const cts = new docode.CancellationTokenSource();
 		const newSessionPromise = this.catchStartedDebugSession(session => session.configuration._debugServerReadySessionId === trackerId, cts.token);
 
 		if (!await this.startBrowserDebugSession(type, session, uri, trackerId)) {
@@ -246,13 +246,13 @@ class ServerReadyDetector extends vscode.Disposable {
 		const stopListener = this.onDidSessionStop(async () => {
 			stopListener.dispose();
 			this.disposables.delete(stopListener);
-			await vscode.debug.stopDebugging(createdSession);
+			await docode.debug.stopDebugging(createdSession);
 		});
 		this.disposables.add(stopListener);
 	}
 
-	private startBrowserDebugSession(type: string, session: vscode.DebugSession, uri: string, trackerId?: string) {
-		return vscode.debug.startDebugging(session.workspaceFolder, {
+	private startBrowserDebugSession(type: string, session: docode.DebugSession, uri: string, trackerId?: string) {
+		return docode.debug.startDebugging(session.workspaceFolder, {
 			type,
 			name: 'Browser Debug',
 			request: 'launch',
@@ -269,17 +269,17 @@ class ServerReadyDetector extends vscode.Disposable {
 	 * @param name The name of the configuration to launch. If config it set, it assumes it is the same as config.name.
 	 * @param config [Optional] Instead of starting a debug session by debug configuration name, use a debug configuration object instead.
 	 */
-	private async startDebugSession(session: vscode.DebugSession, name: string, config?: vscode.DebugConfiguration) {
+	private async startDebugSession(session: docode.DebugSession, name: string, config?: docode.DebugConfiguration) {
 		const args = session.configuration.serverReadyAction as ServerReadyAction;
 		if (!args.killOnServerStop) {
-			await vscode.debug.startDebugging(session.workspaceFolder, config ?? name);
+			await docode.debug.startDebugging(session.workspaceFolder, config ?? name);
 			return;
 		}
 
-		const cts = new vscode.CancellationTokenSource();
+		const cts = new docode.CancellationTokenSource();
 		const newSessionPromise = this.catchStartedDebugSession(x => x.name === name, cts.token);
 
-		if (!await vscode.debug.startDebugging(session.workspaceFolder, config ?? name)) {
+		if (!await docode.debug.startDebugging(session.workspaceFolder, config ?? name)) {
 			cts.cancel();
 			cts.dispose();
 			return;
@@ -295,14 +295,14 @@ class ServerReadyDetector extends vscode.Disposable {
 		const stopListener = this.onDidSessionStop(async () => {
 			stopListener.dispose();
 			this.disposables.delete(stopListener);
-			await vscode.debug.stopDebugging(createdSession);
+			await docode.debug.stopDebugging(createdSession);
 		});
 		this.disposables.add(stopListener);
 	}
 
-	private catchStartedDebugSession(predicate: (session: vscode.DebugSession) => boolean, cancellationToken: vscode.CancellationToken): Promise<vscode.DebugSession | undefined> {
-		return new Promise<vscode.DebugSession | undefined>(_resolve => {
-			const done = (value?: vscode.DebugSession) => {
+	private catchStartedDebugSession(predicate: (session: docode.DebugSession) => boolean, cancellationToken: docode.CancellationToken): Promise<docode.DebugSession | undefined> {
+		return new Promise<docode.DebugSession | undefined>(_resolve => {
+			const done = (value?: docode.DebugSession) => {
 				listener.dispose();
 				cancellationListener.dispose();
 				this.disposables.delete(listener);
@@ -311,7 +311,7 @@ class ServerReadyDetector extends vscode.Disposable {
 			};
 
 			const cancellationListener = cancellationToken.onCancellationRequested(done);
-			const listener = vscode.debug.onDidStartDebugSession(session => {
+			const listener = docode.debug.onDidStartDebugSession(session => {
 				if (predicate(session)) {
 					done(session);
 				}
@@ -324,9 +324,9 @@ class ServerReadyDetector extends vscode.Disposable {
 	}
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 
-	context.subscriptions.push(vscode.debug.onDidStartDebugSession(session => {
+	context.subscriptions.push(docode.debug.onDidStartDebugSession(session => {
 		if (session.configuration.serverReadyAction) {
 			const detector = ServerReadyDetector.start(session);
 			if (detector) {
@@ -335,14 +335,14 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.debug.onDidTerminateDebugSession(session => {
+	context.subscriptions.push(docode.debug.onDidTerminateDebugSession(session => {
 		ServerReadyDetector.stop(session);
 	}));
 
 	const trackers = new Set<string>();
 
-	context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('*', {
-		resolveDebugConfigurationWithSubstitutedVariables(_folder: vscode.WorkspaceFolder | undefined, debugConfiguration: vscode.DebugConfiguration) {
+	context.subscriptions.push(docode.debug.registerDebugConfigurationProvider('*', {
+		resolveDebugConfigurationWithSubstitutedVariables(_folder: docode.WorkspaceFolder | undefined, debugConfiguration: docode.DebugConfiguration) {
 			if (debugConfiguration.type && debugConfiguration.serverReadyAction) {
 				if (!trackers.has(debugConfiguration.type)) {
 					trackers.add(debugConfiguration.type);
@@ -354,11 +354,11 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 }
 
-function startTrackerForType(context: vscode.ExtensionContext, type: string) {
+function startTrackerForType(context: docode.ExtensionContext, type: string) {
 
 	// scan debug console output for a PORT message
-	context.subscriptions.push(vscode.debug.registerDebugAdapterTrackerFactory(type, {
-		createDebugAdapterTracker(session: vscode.DebugSession) {
+	context.subscriptions.push(docode.debug.registerDebugAdapterTrackerFactory(type, {
+		createDebugAdapterTracker(session: docode.DebugSession) {
 			const detector = ServerReadyDetector.start(session);
 			if (detector) {
 				let runInTerminalRequestSeq: number | undefined;

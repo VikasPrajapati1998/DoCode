@@ -1,10 +1,10 @@
 {
 	"displayName": "GitHub",
 	"description": "GitHub features for DoCode",
-	"command.copyVscodeDevLink": "Copy vscode.dev Link",
+	"command.copyDocodeDevLink": "Copy vscode.dev Link",
 	"command.publish": "Publish to GitHub",
 	"command.openOnGitHub": "Open on GitHub",
-	"command.openOnVscodeDev": "Open in vscode.dev",
+	"command.openOnDocodeDev": "Open in vscode.dev",
 	"command.createPullRequest": "Create PR",
 	"command.openPullRequest": "Open PR",
 	"config.branchProtection": "Controls whether to query repository rules for GitHub repositories",

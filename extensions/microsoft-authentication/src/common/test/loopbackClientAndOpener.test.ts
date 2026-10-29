@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { env, Uri, window } from 'vscode';
+import { env, Uri, window } from 'docode';
 import * as sinon from 'sinon';
 import { UriHandlerLoopbackClient } from '../loopbackClientAndOpener';
 import { UriEventHandler } from '../../UriEventHandler';
@@ -17,7 +17,7 @@ suite('UriHandlerLoopbackClient', () => {
 	let callbackUri: Uri;
 
 	setup(async () => {
-		callbackUri = await env.asExternalUri(Uri.parse(`${env.uriScheme}://vscode.microsoft-authentication`));
+		callbackUri = await env.asExternalUri(Uri.parse(`${env.uriScheme}://docode.microsoft-authentication`));
 		envStub = sinon.stub(env);
 		envStub.openExternal.resolves(true);
 		envStub.asExternalUri.callThrough();

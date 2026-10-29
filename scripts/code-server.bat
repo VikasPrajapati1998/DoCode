@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-title VSCode Server
+title DoCode Server
 
 set ROOT_DIR=%~dp0..
 
@@ -9,10 +9,10 @@ pushd %ROOT_DIR%
 
 :: Configuration
 set NODE_ENV=development
-set VSCODE_DEV=1
+set DOCODE_DEV=1
 
 :: Get electron, compile, built-in extensions
-if "%VSCODE_SKIP_PRELAUNCH%"=="" (
+if "%DOCODE_SKIP_PRELAUNCH%"=="" (
 	node build/lib/preLaunch.ts
 )
 

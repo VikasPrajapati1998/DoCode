@@ -1,6 +1,6 @@
 {
   "name": "grunt",
-  "publisher": "vscode",
+  "publisher": "docode",
   "description": "Extension to add Grunt capabilities to DoCode.",
   "displayName": "Grunt support for DoCode",
   "version": "10.0.0",
@@ -8,7 +8,7 @@
   "icon": "images/grunt.png",
   "license": "MIT",
   "engines": {
-    "vscode": "*"
+    "docode": "*"
   },
   "categories": [
     "Other"

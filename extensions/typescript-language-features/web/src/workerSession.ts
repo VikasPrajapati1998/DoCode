@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { FileSystem } from '@vscode/sync-api-client';
+import { FileSystem } from '@docode/sync-api-client';
 import type * as ts from 'typescript/lib/tsserverlibrary';
 import { Logger } from './logging';
 import { WebTypingsInstallerClient } from './typingsInstaller/typingsInstaller';
@@ -46,7 +46,7 @@ export function startWorkerSession(
 
 		constructor() {
 			const cancellationToken = new WasmCancellationToken();
-			const typingsInstaller = options.disableAutomaticTypingAcquisition || !fs ? ts.server.nullTypingsInstaller : new WebTypingsInstallerClient(host, '/vscode-global-typings/ts-nul-authority/projects');
+			const typingsInstaller = options.disableAutomaticTypingAcquisition || !fs ? ts.server.nullTypingsInstaller : new WebTypingsInstallerClient(host, '/docode-global-typings/ts-nul-authority/projects');
 
 			super({
 				host,

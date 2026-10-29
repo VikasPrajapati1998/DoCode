@@ -4,7 +4,7 @@ Start with [policy ownership](./SKILL.md). Classifications describe enforcement;
 
 ## Establish the scope and evidence
 
-The [support inventory](../../../src/vs/platform/agentHost/common/agentHostPolicySupport.ts) describes Copilot Agent Host on this machine, conservatively across delivery channels. Do not claim coverage for remote hosts, Claude, or Codex based on it. Do not downgrade this inventory solely because a different provider lacks support.
+The [support inventory](../../../src/do/platform/agentHost/common/agentHostPolicySupport.ts) describes Copilot Agent Host on this machine, conservatively across delivery channels. Do not claim coverage for remote hosts, Claude, or Codex based on it. Do not downgrade this inventory solely because a different provider lacks support.
 
 For each changed control, trace:
 
@@ -26,7 +26,7 @@ If evidence is insufficient, explicitly report an unverified classification. Do 
 
 ## Keep all consumers aligned
 
-The [readiness detector](../../../src/vs/platform/agentHost/common/agentHostPolicyReadiness.ts) uses applied `policyValue`, not personal values or mere policy registration. Maintain its requirement predicates and user-visible impacts whenever support changes. Evaluate composed controls together.
+The [readiness detector](../../../src/do/platform/agentHost/common/agentHostPolicyReadiness.ts) uses applied `policyValue`, not personal values or mere policy registration. Maintain its requirement predicates and user-visible impacts whenever support changes. Evaluate composed controls together.
 
 Examples:
 
@@ -65,4 +65,4 @@ The readiness summary reports policy names, configuration keys, source labels, a
 - For bridge changes, exercise the bundled runtime with isolated temporary homes and a synthetic local model. Check create, cold resume, removal, managed asks under Allow All/assisted modes, and unaffected requests. No real Copilot sign-in or device-policy changes should be needed for these fixtures.
 - Run focused suites, client type checking, and lint as appropriate. Run the canonical `npm run export-policy-data` after inventory, DTO, or policy changes; never hand-edit the generated catalog. The catalog test must cover every exported policy, and both product entrypoints must agree.
 
-For setting registration and policy-export details, see [VS Code configuration policy](./vscode-policy.md).
+For setting registration and policy-export details, see [VS Code configuration policy](./docode-policy.md).

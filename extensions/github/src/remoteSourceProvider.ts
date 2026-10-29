@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, env, l10n, workspace } from 'vscode';
+import { Uri, env, l10n, workspace } from 'docode';
 import { RemoteSourceProvider, RemoteSource, RemoteSourceAction } from './typings/git-base.js';
 import { getOctokit } from './auth.js';
 import { Octokit } from '@octokit/rest';
 import { getRepositoryFromQuery, getRepositoryFromUrl } from './util.js';
-import { getBranchLink, getVscodeDevHost } from './links.js';
+import { getBranchLink, getDocodeDevHost } from './links.js';
 
 type RemoteSourceResponse = {
 	readonly full_name: string;
@@ -139,7 +139,7 @@ export class GithubRemoteSourceProvider implements RemoteSourceProvider {
 			label: l10n.t('Checkout on vscode.dev'),
 			icon: 'globe',
 			run(branch: string) {
-				const link = getBranchLink(url, branch, getVscodeDevHost());
+				const link = getBranchLink(url, branch, getDocodeDevHost());
 				env.openExternal(Uri.parse(link));
 			}
 		}];

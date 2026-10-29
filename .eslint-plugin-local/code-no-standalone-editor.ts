@@ -21,8 +21,8 @@ export default new class NoNlsInStandaloneEditorRule implements eslint.Rule.Rule
 
 	create(context: eslint.Rule.RuleContext): eslint.Rule.RuleListener {
 
-		if (/vs(\/|\\)editor/.test(context.filename)) {
-			// the vs/editor folder is allowed to use the standalone editor
+		if (/do(\/|\\)editor/.test(context.filename)) {
+			// the do/editor folder is allowed to use the standalone editor
 			return {};
 		}
 
@@ -34,11 +34,11 @@ export default new class NoNlsInStandaloneEditorRule implements eslint.Rule.Rule
 			}
 
 			if (
-				/vs(\/|\\)editor(\/|\\)standalone(\/|\\)/.test(path)
-				|| /vs(\/|\\)editor(\/|\\)common(\/|\\)standalone(\/|\\)/.test(path)
-				|| /vs(\/|\\)editor(\/|\\)editor.api/.test(path)
-				|| /vs(\/|\\)editor(\/|\\)editor.main/.test(path)
-				|| /vs(\/|\\)editor(\/|\\)editor.worker.start/.test(path)
+				/do(\/|\\)editor(\/|\\)standalone(\/|\\)/.test(path)
+				|| /do(\/|\\)editor(\/|\\)common(\/|\\)standalone(\/|\\)/.test(path)
+				|| /do(\/|\\)editor(\/|\\)editor.api/.test(path)
+				|| /do(\/|\\)editor(\/|\\)editor.main/.test(path)
+				|| /do(\/|\\)editor(\/|\\)editor.worker.start/.test(path)
 			) {
 				context.report({
 					loc: node.loc,

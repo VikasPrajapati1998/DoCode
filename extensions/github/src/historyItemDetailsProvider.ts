@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, l10n, LogOutputChannel, workspace } from 'vscode';
+import { Command, l10n, LogOutputChannel, workspace } from 'docode';
 import { Commit, Repository as GitHubRepository, Maybe } from '@octokit/graphql-schema';
 import type { API, AvatarQuery, AvatarQueryCommit, Repository, SourceControlHistoryItemDetailsProvider } from './typings/git.d.ts';
 import { DisposableStore, getRepositoryDefaultRemote, getRepositoryDefaultRemoteUrl, getRepositoryFromUrl, groupBy, sequentialize } from './util.js';

@@ -75,7 +75,7 @@ const compileFromSources = (callback: (err?: string) => void) => {
 };
 
 const acquireBuiltOpenSSL = (callback: (err?: unknown) => void) => {
-	const dir = path.join(tmpdir(), 'vscode-openssl-download');
+	const dir = path.join(tmpdir(), 'docode-openssl-download');
 	mkdirSync(dir, { recursive: true });
 
 	cp.spawnSync(

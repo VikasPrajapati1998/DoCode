@@ -2,14 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { generateUuid } from './util/uuid';
 import { MermaidWebviewManager } from './webviewManager';
 import { escapeHtmlText } from './util/html';
 import { Disposable } from './util/dispose';
 import { renderMermaidConfigSpan } from './markdownMermaid/config';
 
-export const mermaidEditorViewType = 'vscode.mermaid-markdown-features.preview';
+export const mermaidEditorViewType = 'docode.mermaid-markdown-features.preview';
 
 interface MermaidPreviewState {
 	readonly webviewId: string;
@@ -19,17 +19,17 @@ interface MermaidPreviewState {
 /**
  * Manages mermaid diagram editor panels, ensuring only one editor per diagram.
  */
-export class MermaidEditorManager extends Disposable implements vscode.WebviewPanelSerializer {
+export class MermaidEditorManager extends Disposable implements docode.WebviewPanelSerializer {
 
 	private readonly _previews = new Map<string, MermaidPreview>();
 
 	constructor(
-		private readonly _extensionUri: vscode.Uri,
+		private readonly _extensionUri: docode.Uri,
 		private readonly _webviewManager: MermaidWebviewManager
 	) {
 		super();
 
-		this._register(vscode.window.registerWebviewPanelSerializer(mermaidEditorViewType, this));
+		this._register(docode.window.registerWebviewPanelSerializer(mermaidEditorViewType, this));
 	}
 
 	/**
@@ -51,13 +51,13 @@ export class MermaidEditorManager extends Disposable implements vscode.WebviewPa
 			title,
 			this._extensionUri,
 			this._webviewManager,
-			vscode.ViewColumn.Active);
+			docode.ViewColumn.Active);
 
 		this._registerPreview(preview);
 	}
 
 	public async deserializeWebviewPanel(
-		webviewPanel: vscode.WebviewPanel,
+		webviewPanel: docode.WebviewPanel,
 		state: MermaidPreviewState
 	): Promise<void> {
 		if (!state?.mermaidSource) {
@@ -122,20 +122,20 @@ export class MermaidEditorManager extends Disposable implements vscode.WebviewPa
 
 class MermaidPreview extends Disposable {
 
-	private readonly _onDisposeEmitter = this._register(new vscode.EventEmitter<void>());
+	private readonly _onDisposeEmitter = this._register(new docode.EventEmitter<void>());
 	public readonly onDispose = this._onDisposeEmitter.event;
 
 	public static create(
 		diagramId: string,
 		mermaidSource: string,
 		title: string | undefined,
-		extensionUri: vscode.Uri,
+		extensionUri: docode.Uri,
 		webviewManager: MermaidWebviewManager,
-		viewColumn: vscode.ViewColumn
+		viewColumn: docode.ViewColumn
 	): MermaidPreview {
-		const webviewPanel = vscode.window.createWebviewPanel(
+		const webviewPanel = docode.window.createWebviewPanel(
 			mermaidEditorViewType,
-			title ?? vscode.l10n.t('Mermaid Diagram'),
+			title ?? docode.l10n.t('Mermaid Diagram'),
 			viewColumn,
 			{
 				retainContextWhenHidden: false,
@@ -146,30 +146,30 @@ class MermaidPreview extends Disposable {
 	}
 
 	public static revive(
-		webviewPanel: vscode.WebviewPanel,
+		webviewPanel: docode.WebviewPanel,
 		diagramId: string,
 		mermaidSource: string,
-		extensionUri: vscode.Uri,
+		extensionUri: docode.Uri,
 		webviewManager: MermaidWebviewManager
 	): MermaidPreview {
 		return new MermaidPreview(webviewPanel, diagramId, mermaidSource, extensionUri, webviewManager);
 	}
 
 	private constructor(
-		private readonly _webviewPanel: vscode.WebviewPanel,
+		private readonly _webviewPanel: docode.WebviewPanel,
 		public readonly diagramId: string,
 		private readonly _mermaidSource: string,
-		private readonly _extensionUri: vscode.Uri,
+		private readonly _extensionUri: docode.Uri,
 		private readonly _webviewManager: MermaidWebviewManager
 	) {
 		super();
 
-		this._webviewPanel.iconPath = new vscode.ThemeIcon('graph');
+		this._webviewPanel.iconPath = new docode.ThemeIcon('graph');
 
 		this._webviewPanel.webview.options = {
 			enableScripts: true,
 			localResourceRoots: [
-				vscode.Uri.joinPath(this._extensionUri, 'chat-webview-out')
+				docode.Uri.joinPath(this._extensionUri, 'chat-webview-out')
 			],
 		};
 
@@ -205,17 +205,17 @@ class MermaidPreview extends Disposable {
 	private _getHtml(): string {
 		const nonce = generateUuid();
 
-		const mediaRoot = vscode.Uri.joinPath(this._extensionUri, 'chat-webview-out');
+		const mediaRoot = docode.Uri.joinPath(this._extensionUri, 'chat-webview-out');
 		const scriptUri = this._webviewPanel.webview.asWebviewUri(
-			vscode.Uri.joinPath(mediaRoot, 'index-editor.js')
+			docode.Uri.joinPath(mediaRoot, 'index-editor.js')
 		);
 		const codiconsUri = this._webviewPanel.webview.asWebviewUri(
-			vscode.Uri.joinPath(mediaRoot, 'codicon.css')
+			docode.Uri.joinPath(mediaRoot, 'codicon.css')
 		);
-		const togglePanModeLabel = vscode.l10n.t('Toggle Pan Mode');
-		const zoomOutLabel = vscode.l10n.t('Zoom Out');
-		const zoomInLabel = vscode.l10n.t('Zoom In');
-		const resetPanZoomLabel = vscode.l10n.t('Reset Pan and Zoom');
+		const togglePanModeLabel = docode.l10n.t('Toggle Pan Mode');
+		const zoomOutLabel = docode.l10n.t('Zoom Out');
+		const zoomInLabel = docode.l10n.t('Zoom In');
+		const resetPanZoomLabel = docode.l10n.t('Reset Pan and Zoom');
 
 		return /* html */`<!DOCTYPE html>
 			<html lang="en">
@@ -250,8 +250,8 @@ class MermaidPreview extends Disposable {
 						display: flex;
 						gap: 2px;
 						z-index: 100;
-						background: var(--vscode-editorWidget-background);
-						border: 1px solid var(--vscode-editorWidget-border);
+						background: var(--docode-editorWidget-background);
+						border: 1px solid var(--docode-editorWidget-border);
 						border-radius: 6px;
 						padding: 3px;
 					}
@@ -262,21 +262,21 @@ class MermaidPreview extends Disposable {
 						width: 26px;
 						height: 26px;
 						background: transparent;
-						color: var(--vscode-icon-foreground);
+						color: var(--docode-icon-foreground);
 						border: none;
 						border-radius: 4px;
 						cursor: pointer;
 					}
 					.zoom-controls button:hover {
-						background: var(--vscode-toolbar-hoverBackground);
+						background: var(--docode-toolbar-hoverBackground);
 					}
 					.zoom-controls button.active {
-						background: var(--vscode-toolbar-activeBackground);
-						color: var(--vscode-focusBorder);
+						background: var(--docode-toolbar-activeBackground);
+						color: var(--docode-focusBorder);
 					}
 				</style>
 			</head>
-			<body data-vscode-context='${JSON.stringify({ preventDefaultContextMenuItems: true, mermaidWebviewId: this.diagramId })}' data-vscode-mermaid-webview-id="${this.diagramId}">
+			<body data-docode-context='${JSON.stringify({ preventDefaultContextMenuItems: true, mermaidWebviewId: this.diagramId })}' data-docode-mermaid-webview-id="${this.diagramId}">
 				${renderMermaidConfigSpan()}
 				<div class="zoom-controls">
 					<button class="pan-mode-btn" title="${togglePanModeLabel}" aria-label="${togglePanModeLabel}" aria-pressed="false"><i class="codicon codicon-move" aria-hidden="true"></i></button>

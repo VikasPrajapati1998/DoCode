@@ -13,7 +13,7 @@
 			"properties": {
 				"sourcePath": { "type": "string", "minLength": 1 },
 				"sha256": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
-				"functionName": { "const": "vscode_copilot_link" },
+				"functionName": { "const": "docode_copilot_link" },
 				"templateMarker": { "const": "@@COPILOT_LINK_HELPER@@" }
 			}
 		},

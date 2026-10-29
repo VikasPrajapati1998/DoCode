@@ -26,7 +26,7 @@ suite('worktreeSymlink', () => {
 	let worktreeRoot: string;
 
 	setup(async () => {
-		testRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'vscode-git-worktree-symlink-'));
+		testRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'docode-git-worktree-symlink-'));
 		repositoryRoot = path.join(testRoot, 'repository');
 		worktreeRoot = path.join(testRoot, 'worktree');
 		await Promise.all([

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { enableNodeCompileCache } from './vs/base/node/nodeCompileCache.js';
+import { enableNodeCompileCache } from './do/base/node/nodeCompileCache.js';
 
 enableNodeCompileCache('main');
 

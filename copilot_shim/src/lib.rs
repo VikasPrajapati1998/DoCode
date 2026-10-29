@@ -24,7 +24,7 @@ use install::HostTarget;
 pub(crate) use runtime::platform;
 use runtime::NativeRuntime;
 
-const SHIM_MARKER: &[u8] = b"VSCODE_COPILOT_RUST_SHIM_V1";
+const SHIM_MARKER: &[u8] = b"DOCODE_COPILOT_RUST_SHIM_V1";
 
 pub fn run(arguments: impl IntoIterator<Item = OsString>) -> i32 {
 	retain_binary_marker();
@@ -47,7 +47,7 @@ mod tests {
 	fn marker_is_stable() {
 		retain_binary_marker();
 
-		let expected = ["VSCODE_COPILOT_", "RUST_SHIM_V1"].concat();
+		let expected = ["DOCODE_COPILOT_", "RUST_SHIM_V1"].concat();
 		assert_eq!(SHIM_MARKER, expected.as_bytes());
 	}
 }

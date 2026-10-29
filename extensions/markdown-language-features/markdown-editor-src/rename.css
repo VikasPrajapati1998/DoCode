@@ -8,11 +8,11 @@
 	z-index: 100;
 	max-width: 360px;
 	padding: 6px 10px;
-	color: var(--vscode-editorWidget-foreground);
-	background: var(--vscode-editorWidget-background);
-	border: 1px solid var(--vscode-editorWidget-border);
-	box-shadow: 0 2px 8px var(--vscode-widget-shadow);
-	font: 13px var(--vscode-font-family);
+	color: var(--docode-editorWidget-foreground);
+	background: var(--docode-editorWidget-background);
+	border: 1px solid var(--docode-editorWidget-border);
+	box-shadow: 0 2px 8px var(--docode-widget-shadow);
+	font: 13px var(--docode-font-family);
 }
 
 .md-rename-status[hidden] {
@@ -28,8 +28,8 @@
 .md-rename-target {
 	position: absolute;
 	border-radius: 2px;
-	background: color-mix(in srgb, var(--vscode-editor-symbolHighlightBackground) 35%, transparent);
-	box-shadow: inset 0 0 0 1px var(--vscode-contrastActiveBorder, color-mix(in srgb, var(--vscode-editor-symbolHighlightBorder, var(--vscode-focusBorder)) 40%, transparent));
+	background: color-mix(in srgb, var(--docode-editor-symbolHighlightBackground) 35%, transparent);
+	box-shadow: inset 0 0 0 1px var(--docode-contrastActiveBorder, color-mix(in srgb, var(--docode-editor-symbolHighlightBorder, var(--docode-focusBorder)) 40%, transparent));
 }
 
 .md-editor.md-rename-active .md-cursor {

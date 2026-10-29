@@ -1,0 +1,21 @@
+{
+	"name": "@docode/sync-api-client",
+	"version": "0.7.2",
+	"description": "A client that calls DoCode API from a non extension host worker in sync fashion.",
+	"engines": {
+		"node": ">=16.15.1"
+	},
+	"main": "./lib/main.js",
+	"typings": "./lib/main.d.ts",
+	"keywords": [
+		"DoCode",
+		"API",
+		"sync"
+	],
+	"author": "Visual Studio Code Team",
+	"license": "MIT",
+	"dependencies": {
+		"vscode-uri": "3.0.3",
+		"@docode/sync-api-common": "file:../sync-api-common"
+	}
+}

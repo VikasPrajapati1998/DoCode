@@ -1,0 +1,201 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.connection-diagnostics-overlay {
+	box-sizing: border-box;
+	align-items: center;
+}
+
+.connection-diagnostics-overlay.desktop-layout {
+	justify-content: center;
+	padding: var(--docode-spacing-size240);
+}
+
+.connection-diagnostics-overlay .mobile-picker-sheet {
+	box-sizing: border-box;
+	width: min(100%, 720px);
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-widget-border));
+	border-radius: var(--docode-cornerRadius-large) var(--docode-cornerRadius-large) 0 0;
+	box-shadow: 0 0 var(--docode-spacing-size240) var(--docode-widget-shadow);
+}
+
+.connection-diagnostics-overlay.desktop-layout .mobile-picker-sheet {
+	max-height: min(760px, calc(100% - var(--docode-spacing-size400) - var(--docode-spacing-size80)));
+	border-radius: var(--docode-cornerRadius-large);
+}
+
+.connection-diagnostics-overlay.phone-layout .mobile-picker-sheet {
+	border-radius: var(--docode-cornerRadius-large) var(--docode-cornerRadius-large) 0 0;
+}
+
+.connection-diagnostics-overlay .mobile-content-sheet-body {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.connection-diagnostics-overlay .connection-diagnostics {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: hidden;
+	padding: 0;
+	font-size: var(--docode-fontSize-body1);
+	line-height: 1.5;
+}
+
+.connection-diagnostics-scrollable {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.connection-diagnostics-content {
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
+	padding: var(--docode-spacing-size80) var(--docode-spacing-size160) var(--docode-spacing-size160);
+	overflow-x: hidden;
+	overflow-y: auto;
+	scrollbar-width: none;
+	touch-action: pan-y;
+	overscroll-behavior-y: contain;
+	overflow-wrap: anywhere;
+	user-select: text;
+	-webkit-user-select: text;
+}
+
+.connection-diagnostics-caption {
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-label1);
+	margin: 0 0 var(--docode-spacing-size160);
+}
+
+.connection-diagnostics-section {
+	position: relative;
+	margin-top: var(--docode-spacing-size160);
+}
+
+.connection-diagnostics-section h2,
+.connection-diagnostics-section summary {
+	margin: 0 0 var(--docode-spacing-size80);
+	font-size: var(--docode-fontSize-heading3);
+	font-weight: var(--docode-fontWeight-semiBold);
+}
+
+.connection-diagnostics-section summary {
+	box-sizing: border-box;
+	min-height: 44px;
+	padding: var(--docode-spacing-size120) 0;
+	margin: 0;
+	cursor: pointer;
+}
+
+.connection-diagnostics-hosts h2 {
+	font-size: var(--docode-fontSize-heading3);
+	font-weight: var(--docode-fontWeight-semiBold);
+	margin: var(--docode-spacing-size160) 0 var(--docode-spacing-size80);
+}
+
+.connection-diagnostics-host-heading {
+	display: inline-flex;
+	align-items: center;
+	vertical-align: middle;
+	width: calc(100% - var(--docode-spacing-size200));
+	gap: var(--docode-spacing-size80);
+}
+
+.connection-diagnostics-host-name,
+.connection-diagnostics-host-heading .connection-diagnostics-host-status {
+	display: block;
+}
+
+.connection-diagnostics-host-row {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--docode-spacing-size80);
+	margin-bottom: var(--docode-spacing-size120);
+}
+
+.connection-diagnostics-host-label {
+	flex: 1 1 160px;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.connection-diagnostics-host-status {
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-label1);
+	font-weight: var(--docode-fontWeight-regular);
+}
+
+.connection-diagnostics-host-actions {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--docode-spacing-size40);
+}
+
+.connection-diagnostics-host-actions .monaco-button {
+	width: auto;
+	min-height: 32px;
+	gap: var(--docode-spacing-size60);
+	padding: var(--docode-spacing-size40) var(--docode-spacing-size120);
+}
+
+.connection-diagnostics-overlay.phone-layout .connection-diagnostics-host-actions .monaco-button {
+	min-height: 44px;
+}
+
+.connection-diagnostics-host-error {
+	display: block;
+	max-width: 240px;
+	margin-top: var(--docode-spacing-size40);
+	color: var(--docode-errorForeground);
+	font-size: var(--docode-fontSize-label1);
+	overflow-wrap: anywhere;
+}
+
+.connection-diagnostics-section p,
+.connection-diagnostics-section dl {
+	margin: var(--docode-spacing-size80) 0 0;
+}
+
+.connection-diagnostics-section dt {
+	margin: 0;
+	color: var(--docode-descriptionForeground);
+}
+
+.connection-diagnostics-section dd {
+	margin: 0;
+	white-space: pre-wrap;
+}
+
+.connection-diagnostics-section dl {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+	gap: var(--docode-spacing-size60) var(--docode-spacing-size120);
+}
+
+.connection-diagnostics-message {
+	flex-shrink: 0;
+	padding: 0 var(--docode-spacing-size160) var(--docode-spacing-size80);
+	font-size: var(--docode-fontSize-label1);
+	color: var(--docode-descriptionForeground);
+	overflow-wrap: anywhere;
+}
+
+.connection-diagnostics-content:focus-visible,
+.connection-diagnostics-section summary:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: -1px;
+}
+
+.hc-black .connection-diagnostics-overlay .mobile-picker-sheet,
+.hc-light .connection-diagnostics-overlay .mobile-picker-sheet {
+	box-shadow: none;
+}

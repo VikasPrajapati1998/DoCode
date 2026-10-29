@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
-import { CancellationToken, DocumentLink, DocumentLinkProvider, l10n, Range, TabInputText, TextDocument, Uri, window, workspace } from 'vscode';
+import { CancellationToken, DocumentLink, DocumentLinkProvider, l10n, Range, TabInputText, TextDocument, Uri, window, workspace } from 'docode';
 import { IIPCHandler, IIPCServer } from './ipc/ipcServer';
 import { ITerminalEnvironmentProvider } from './terminal';
 import { EmptyDisposable, IDisposable } from './util';
@@ -28,9 +28,9 @@ export class GitEditor implements IIPCHandler, ITerminalEnvironmentProvider {
 
 		this.env = {
 			GIT_EDITOR: `"${path.join(__dirname, ipc ? 'git-editor.sh' : 'git-editor-empty.sh')}"`,
-			VSCODE_GIT_EDITOR_NODE: process.execPath,
-			VSCODE_GIT_EDITOR_EXTRA_ARGS: '',
-			VSCODE_GIT_EDITOR_MAIN: path.join(__dirname, 'git-editor-main.js')
+			DOCODE_GIT_EDITOR_NODE: process.execPath,
+			DOCODE_GIT_EDITOR_EXTRA_ARGS: '',
+			DOCODE_GIT_EDITOR_MAIN: path.join(__dirname, 'git-editor-main.js')
 		};
 	}
 

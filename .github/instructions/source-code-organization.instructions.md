@@ -1,6 +1,6 @@
 ---
 description: VS Code source code organization — layers, target environments, dependency injection, and folder structure conventions. Reference when adding new modules, services, or contributions.
-applyTo: src/vs/**
+applyTo: src/do/**
 ---
 
 # Source Code Organization
@@ -9,7 +9,7 @@ Canonical reference: https://github.com/microsoft/vscode/wiki/Source-Code-Organi
 
 ## Layers
 
-The `src/vs/` core is partitioned into ordered layers — each may only import from layers below it:
+The `src/do/` core is partitioned into ordered layers — each may only import from layers below it:
 
 1. **`base`** — General utilities and UI building blocks (no service dependencies)
 2. **`platform`** — Service injection support and base services shared across layers
@@ -34,10 +34,10 @@ Within each layer, code is organized by runtime environment:
 
 ## Workbench Organization
 
-- `vs/workbench/{common|browser|electron-browser}` — minimal workbench core
-- `vs/workbench/api` — `vscode.d.ts` API provider
-- `vs/workbench/services` — core services (not contrib-specific)
-- `vs/workbench/contrib` — feature contributions
+- `do/workbench/{common|browser|electron-browser}` — minimal workbench core
+- `do/workbench/api` — `docode.d.ts` API provider
+- `do/workbench/services` — core services (not contrib-specific)
+- `do/workbench/contrib` — feature contributions
 
 ### Contribution Rules
 

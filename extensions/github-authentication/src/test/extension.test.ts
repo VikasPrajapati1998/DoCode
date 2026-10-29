@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { enterpriseUrisSetting } from '../common/enterpriseConfiguration';
 import { enterpriseUriSetting } from '../common/enterpriseStorage';
 import { activate } from '../extension';
@@ -17,37 +17,37 @@ import { TestSecretStorage } from './testSecretStorage';
 import { createTestExtensionContext } from './testExtensionContext';
 
 suite('GitHub authentication activation', () => {
-	const disposables: vscode.Disposable[] = [];
-	const providers = new Map<string, vscode.AuthenticationProvider>();
+	const disposables: docode.Disposable[] = [];
+	const providers = new Map<string, docode.AuthenticationProvider>();
 	let registration: sinon.SinonStub;
 	let errors: sinon.SinonStub;
-	let configurationChanged: vscode.EventEmitter<vscode.ConfigurationChangeEvent>;
-	let trustGranted: vscode.EventEmitter<void>;
+	let configurationChanged: docode.EventEmitter<docode.ConfigurationChangeEvent>;
+	let trustGranted: docode.EventEmitter<void>;
 
 	setup(() => {
 		const clock = sinon.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
-		disposables.push(new vscode.Disposable(() => clock.restore()));
-		configurationChanged = new vscode.EventEmitter<vscode.ConfigurationChangeEvent>();
-		trustGranted = new vscode.EventEmitter<void>();
-		const logLevels = new vscode.EventEmitter<vscode.LogLevel>();
+		disposables.push(new docode.Disposable(() => clock.restore()));
+		configurationChanged = new docode.EventEmitter<docode.ConfigurationChangeEvent>();
+		trustGranted = new docode.EventEmitter<void>();
+		const logLevels = new docode.EventEmitter<docode.LogLevel>();
 		disposables.push(configurationChanged, trustGranted, logLevels);
-		sinon.stub(vscode.workspace, 'onDidChangeConfiguration').callsFake(configurationChanged.event);
-		sinon.stub(vscode.workspace, 'onDidGrantWorkspaceTrust').callsFake(trustGranted.event);
-		sinon.stub(vscode.window, 'registerUriHandler').returns(new vscode.Disposable(() => { }));
-		sinon.stub(vscode.window, 'createOutputChannel').returns({
+		sinon.stub(docode.workspace, 'onDidChangeConfiguration').callsFake(configurationChanged.event);
+		sinon.stub(docode.workspace, 'onDidGrantWorkspaceTrust').callsFake(trustGranted.event);
+		sinon.stub(docode.window, 'registerUriHandler').returns(new docode.Disposable(() => { }));
+		sinon.stub(docode.window, 'createOutputChannel').returns({
 			name: 'Test',
-			logLevel: vscode.LogLevel.Info,
+			logLevel: docode.LogLevel.Info,
 			onDidChangeLogLevel: logLevels.event,
 			trace: sinon.stub(), debug: sinon.stub(), info: sinon.stub(), warn: sinon.stub(), error: sinon.stub(),
 			append: sinon.stub(), appendLine: sinon.stub(), replace: sinon.stub(), clear: sinon.stub(),
 			show: () => { }, hide: sinon.stub(), dispose: sinon.stub()
 		});
 		sinon.stub(GitHubServer.prototype, 'sendAdditionalTelemetryInfo').resolves();
-		errors = sinon.stub(vscode.window, 'showErrorMessage').resolves(undefined);
-		registration = sinon.stub(vscode.authentication, 'registerAuthenticationProvider').callsFake((id, _label, provider) => {
+		errors = sinon.stub(docode.window, 'showErrorMessage').resolves(undefined);
+		registration = sinon.stub(docode.authentication, 'registerAuthenticationProvider').callsFake((id, _label, provider) => {
 			providers.set(id, provider);
 			const listener = provider.onDidChangeSessions(() => { });
-			return new vscode.Disposable(() => {
+			return new docode.Disposable(() => {
 				listener.dispose();
 				providers.delete(id);
 			});
@@ -60,29 +60,29 @@ suite('GitHub authentication activation', () => {
 		sinon.restore();
 	});
 
-	function context(secrets: TestSecretStorage, state: TestMemento): vscode.ExtensionContext {
+	function context(secrets: TestSecretStorage, state: TestMemento): docode.ExtensionContext {
 		return createTestExtensionContext(disposables, secrets, state);
 	}
 
 	function configure(uris: string[], legacy?: string, scope: 'globalValue' | 'workspaceValue' = 'globalValue') {
-		const config: vscode.WorkspaceConfiguration = {
+		const config: docode.WorkspaceConfiguration = {
 			get: sinon.stub().callsFake(key => key === enterpriseUrisSetting ? uris : key === enterpriseUriSetting ? legacy : true),
 			inspect: sinon.stub().callsFake(() => ({ key: enterpriseUrisSetting, defaultValue: [], [scope]: uris })),
 			has: sinon.stub(),
 			update: sinon.stub()
 		};
-		sinon.stub(vscode.workspace, 'getConfiguration').returns(config);
+		sinon.stub(docode.workspace, 'getConfiguration').returns(config);
 		return {
 			setUri(value: string): void { uris = [value]; }
 		};
 	}
 
-	const publicSession: vscode.AuthenticationSession = {
+	const publicSession: docode.AuthenticationSession = {
 		id: 'public-session',
 		account: { id: '42', label: 'octocat' },
 		accessToken: 'fake-public-token',
 		scopes: ['repo'],
-		authorizationServer: vscode.Uri.parse('https://github.com/login/oauth')
+		authorizationServer: docode.Uri.parse('https://github.com/login/oauth')
 	};
 
 	test('enterprise account-menu labels always include the host and stay stable across configuration changes', async () => {
@@ -90,10 +90,10 @@ suite('GitHub authentication activation', () => {
 		disposables.push(secrets);
 		await secrets.store('github.auth', JSON.stringify([publicSession]));
 		await secrets.store('https://tenant.ghe.com/.ghes.auth', JSON.stringify([{
-			...publicSession, id: 'tenant-session', authorizationServer: vscode.Uri.parse('https://tenant.ghe.com/login/oauth')
+			...publicSession, id: 'tenant-session', authorizationServer: docode.Uri.parse('https://tenant.ghe.com/login/oauth')
 		}]));
 		await secrets.store('https://server.example:8443/Team.ghes.auth', JSON.stringify([{
-			...publicSession, id: 'server-session', authorizationServer: vscode.Uri.parse('https://server.example:8443/Team/login/oauth')
+			...publicSession, id: 'server-session', authorizationServer: docode.Uri.parse('https://server.example:8443/Team/login/oauth')
 		}]));
 		const hosts = ['https://tenant.ghe.com'];
 		configure(hosts);
@@ -168,7 +168,7 @@ suite('GitHub authentication activation', () => {
 
 		assert.deepStrictEqual({
 			samePublicProvider: providers.get('github') === publicProvider,
-			issuers: registration.lastCall.args[3].supportedAuthorizationServers.map((uri: vscode.Uri) => uri.toString()),
+			issuers: registration.lastCall.args[3].supportedAuthorizationServers.map((uri: docode.Uri) => uri.toString()),
 			errorCount: errors.callCount,
 			attempts: read.callCount
 		}, { samePublicProvider: true, issuers: ['https://tenant.example/Team/login/oauth'], errorCount: 1, attempts: 2 });
@@ -225,7 +225,7 @@ suite('GitHub authentication activation', () => {
 
 		assert.deepStrictEqual({
 			samePublicProvider: providers.get('github') === publicProvider,
-			issuers: registration.lastCall.args[3].supportedAuthorizationServers.map((uri: vscode.Uri) => uri.toString()),
+			issuers: registration.lastCall.args[3].supportedAuthorizationServers.map((uri: docode.Uri) => uri.toString()),
 			errorCount: errors.callCount
 		}, { samePublicProvider: true, issuers: ['https://tenant.example/Team/login/oauth'], errorCount: 1 });
 	});
@@ -239,14 +239,14 @@ suite('GitHub authentication activation', () => {
 			const secrets = new TestSecretStorage();
 			disposables.push(secrets);
 			const config = configure(['https://initial.example']);
-			const initialRead = Promise.withResolvers<vscode.AuthenticationSession[]>();
+			const initialRead = Promise.withResolvers<docode.AuthenticationSession[]>();
 			const initialStarted = Promise.withResolvers<void>();
 			for (const uri of new Set(['https://initial.example', ...changes])) {
-				const parsed = vscode.Uri.parse(uri);
+				const parsed = docode.Uri.parse(uri);
 				await secrets.store(`${parsed.authority}${parsed.path}.ghes.auth`, JSON.stringify([{
 					...publicSession,
 					accessToken: 'fake-enterprise-token',
-					authorizationServer: vscode.Uri.joinPath(parsed, '/login/oauth')
+					authorizationServer: docode.Uri.joinPath(parsed, '/login/oauth')
 				}]));
 			}
 			const read = sinon.stub(GitHubSessionEngine.prototype, 'getSessions').callThrough();
@@ -296,11 +296,11 @@ suite('GitHub authentication activation', () => {
 		const secrets = new TestSecretStorage();
 		disposables.push(secrets);
 		let trusted = false;
-		sinon.stub(vscode.workspace, 'isTrusted').get(() => trusted);
+		sinon.stub(docode.workspace, 'isTrusted').get(() => trusted);
 		configure([], 'https://legacy.example', 'workspaceValue');
 		const update = sinon.spy(GitHubEnterpriseAuthenticationProvider.prototype, 'update');
 		await activate(context(secrets, new TestMemento()));
-		const before = registration.lastCall.args[3].supportedAuthorizationServers.map((uri: vscode.Uri) => uri.toString());
+		const before = registration.lastCall.args[3].supportedAuthorizationServers.map((uri: docode.Uri) => uri.toString());
 
 		trusted = true;
 		trustGranted.fire();

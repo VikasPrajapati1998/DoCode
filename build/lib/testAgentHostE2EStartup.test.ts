@@ -30,7 +30,7 @@ async function createRunnerRepository(repoRoot: string): Promise<IRunnerReposito
 		'test/integration/agentHost/runner.ts',
 		'test/integration/agentHost/child.ps1',
 		'build/lib/electronVersion.ts',
-		'src/vs/platform/agentHost/test/node/agentHostTestProfile.ts',
+		'src/do/platform/agentHost/test/node/agentHostTestProfile.ts',
 	]) {
 		await fs.mkdir(path.dirname(path.join(repoRoot, file)), { recursive: true });
 		await fs.copyFile(path.join(sourceRoot, file), path.join(repoRoot, file));
@@ -67,8 +67,8 @@ async function createRunnerRepository(repoRoot: string): Promise<IRunnerReposito
 		AGENT_HOST_PROTOCOL_SURFACE_OUT: '',
 		AGENT_HOST_TEST_PROFILE: undefined,
 		AGENT_HOST_TEST_PROFILE_REASON: undefined,
-		VSCODE_SKIP_PRELAUNCH: '',
-		VSCODE_FORCE_PRELAUNCH: '',
+		DOCODE_SKIP_PRELAUNCH: '',
+		DOCODE_FORCE_PRELAUNCH: '',
 		ELECTRON_RUN_AS_NODE: '',
 	};
 	return {
@@ -92,16 +92,16 @@ async function exists(file: string): Promise<boolean> {
 }
 
 test('Agent Host E2E startup reuses, repairs, forces and explicitly skips Electron preparation', async () => {
-	const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-e2e-startup-'));
+	const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-e2e-startup-'));
 	try {
 		const { executable, run } = await createRunnerRepository(repoRoot);
 		const firstRun = run();
 		const firstPreparationMissing = !await exists(path.join(repoRoot, '.build/preparations'));
 		await fs.rm(path.join(repoRoot, executable));
 		run();
-		run({ VSCODE_FORCE_PRELAUNCH: '1' });
-		run({ VSCODE_SKIP_PRELAUNCH: '1', VSCODE_FORCE_PRELAUNCH: '1' });
-		const prRun = run({ AGENT_HOST_TEST_PROFILE: 'pr', VSCODE_SKIP_PRELAUNCH: '1' });
+		run({ DOCODE_FORCE_PRELAUNCH: '1' });
+		run({ DOCODE_SKIP_PRELAUNCH: '1', DOCODE_FORCE_PRELAUNCH: '1' });
+		const prRun = run({ AGENT_HOST_TEST_PROFILE: 'pr', DOCODE_SKIP_PRELAUNCH: '1' });
 		assert.deepStrictEqual({
 			reused: firstPreparationMissing,
 			suitesPassed: (firstRun.match(/PASS /g) ?? []).length,
@@ -115,18 +115,18 @@ test('Agent Host E2E startup reuses, repairs, forces and explicitly skips Electr
 });
 
 test('Agent Host E2E runs only the suites that a --runList file lists, and prepares nothing when it lists none', async () => {
-	const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-e2e-run-list-'));
+	const repoRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-e2e-run-list-'));
 	try {
 		const { executable, run } = await createRunnerRepository(repoRoot);
 		// The test plan lists the files as `src/` paths; also with Windows line endings and separators, empty lines
 		// and unit test files.
 		await fs.writeFile(path.join(repoRoot, 'two.txt'), [
-			'src/vs/platform/agentHost/test/node/e2e/providers/claudeAgentHostE2E.integrationTest.ts',
-			'src\\vs\\platform\\agentHost\\test\\node\\e2e\\conformance\\agentHostConformance.integrationTest.ts',
+			'src/do/platform/agentHost/test/node/e2e/providers/claudeAgentHostE2E.integrationTest.ts',
+			'src\\do\\platform\\agentHost\\test\\node\\e2e\\conformance\\agentHostConformance.integrationTest.ts',
 			'',
-			'src/vs/base/test/common/strings.test.ts',
+			'src/do/base/test/common/strings.test.ts',
 		].join('\r\n'));
-		await fs.writeFile(path.join(repoRoot, 'none.txt'), 'src/vs/platform/agentHost/test/node/protocol/handshake.integrationTest.ts\n');
+		await fs.writeFile(path.join(repoRoot, 'none.txt'), 'src/do/platform/agentHost/test/node/protocol/handshake.integrationTest.ts\n');
 		const twoListed = run({}, ['--runList', 'two.txt']);
 		// Without the runtime, a run that prepares it records a preparation.
 		await fs.rm(path.join(repoRoot, executable));

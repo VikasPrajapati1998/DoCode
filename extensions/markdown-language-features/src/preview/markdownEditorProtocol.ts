@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { defineInterface, notificationType, requestType, type InterfaceClient } from '@vscode/hubrpc';
+import { defineInterface, notificationType, requestType, type InterfaceClient } from '@docode/hubrpc';
 import * as z from 'zod/mini';
 
 const offset = z.int().check(z.nonnegative());

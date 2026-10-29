@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { commands, extensions, LogOutputChannel, Uri, window } from 'vscode';
+import { commands, extensions, LogOutputChannel, Uri, window } from 'docode';
 import type { API, GitExtension, Repository } from '../api/git';
 import { ForcePushMode, GitErrorCodes, RefType } from '../api/git.constants';
 import { findGit, Git, GitError, Repository as GitRepository } from '../git';
@@ -26,7 +26,7 @@ suite('git stack operations', () => {
 		const foundGit = await findGit(['git'], () => true, logger);
 		git = new Git({ gitPath: foundGit.path, userAgent: 'git-stack-operations-test', version: foundGit.version });
 
-		const extension = extensions.getExtension<GitExtension>('vscode.git');
+		const extension = extensions.getExtension<GitExtension>('docode.git');
 		assert.ok(extension);
 		await extension.activate();
 		api = extension.exports.getAPI(1);
@@ -158,7 +158,7 @@ suite('git stack operations', () => {
 		}
 
 		setup(async () => {
-			directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-git-stack-'));
+			directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-git-stack-'));
 			root = path.join(directory, 'repository');
 			await fs.promises.mkdir(root);
 			await git.init(root, { defaultBranch: 'main' });

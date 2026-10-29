@@ -5,12 +5,12 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { enterpriseUrisSetting, getEnterpriseUris } from '../common/enterpriseConfiguration';
 import { enterpriseUriSetting, getEnterpriseUriKey } from '../common/enterpriseStorage';
 
 suite('GitHub Enterprise configuration', () => {
-	function configuration(legacy?: string, plural?: unknown, scope: 'globalValue' | 'workspaceValue' | 'workspaceFolderValue' = 'globalValue'): vscode.WorkspaceConfiguration {
+	function configuration(legacy?: string, plural?: unknown, scope: 'globalValue' | 'workspaceValue' | 'workspaceFolderValue' = 'globalValue'): docode.WorkspaceConfiguration {
 		const get = sinon.stub();
 		get.withArgs(enterpriseUriSetting).returns(legacy);
 		get.withArgs(enterpriseUrisSetting).returns(plural === undefined ? [] : plural);
@@ -28,7 +28,7 @@ suite('GitHub Enterprise configuration', () => {
 		{ name: 'invalid legacy is ignored when plural is configured', legacy: 'not a URL', plural: ['https://a.example'], expected: ['https://a.example'] },
 	]) {
 		test(name, () => {
-			assert.deepStrictEqual(getEnterpriseUris(configuration(legacy, plural), true).map(uri => uri.toString()), expected.map(value => vscode.Uri.parse(value).toString()));
+			assert.deepStrictEqual(getEnterpriseUris(configuration(legacy, plural), true).map(uri => uri.toString()), expected.map(value => docode.Uri.parse(value).toString()));
 		});
 	}
 
@@ -51,7 +51,7 @@ suite('GitHub Enterprise configuration', () => {
 			test(`a user list wins over raw untrusted ${scope} (${JSON.stringify(uris)})`, () => {
 				const config = configuration('https://legacy.example', uris);
 				config.inspect = sinon.stub().returns({ key: enterpriseUrisSetting, globalValue: uris, [scope]: [] });
-				assert.deepStrictEqual(getEnterpriseUris(config, false).map(uri => uri.toString()), uris.map(value => vscode.Uri.parse(value).toString()));
+				assert.deepStrictEqual(getEnterpriseUris(config, false).map(uri => uri.toString()), uris.map(value => docode.Uri.parse(value).toString()));
 			});
 		}
 	}

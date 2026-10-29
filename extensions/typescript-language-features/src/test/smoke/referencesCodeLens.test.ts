@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { createTestEditor, wait } from '../../test/testUtils';
 import { disposeAll } from '../../utils/dispose';
 
@@ -14,11 +14,11 @@ export type VsCodeConfiguration = { [key: string]: any };
 
 export async function updateConfig(newConfig: VsCodeConfiguration): Promise<VsCodeConfiguration> {
 	const oldConfig: VsCodeConfiguration = {};
-	const config = vscode.workspace.getConfiguration(undefined);
+	const config = docode.workspace.getConfiguration(undefined);
 	for (const configKey of Object.keys(newConfig)) {
 		oldConfig[configKey] = config.get(configKey);
 		await new Promise<void>((resolve, reject) =>
-			config.update(configKey, newConfig[configKey], vscode.ConfigurationTarget.Global)
+			config.update(configKey, newConfig[configKey], docode.ConfigurationTarget.Global)
 				.then(() => resolve(), reject));
 	}
 	return oldConfig;
@@ -33,12 +33,12 @@ suite('TypeScript References', () => {
 		[Config.referencesCodeLens]: true,
 	});
 
-	const _disposables: vscode.Disposable[] = [];
+	const _disposables: docode.Disposable[] = [];
 	let oldConfig: { [key: string]: any } = {};
 
 	setup(async () => {
 		// the tests assume that typescript features are registered
-		await vscode.extensions.getExtension('vscode.typescript-language-features')!.activate();
+		await docode.extensions.getExtension('docode.typescript-language-features')!.activate();
 
 		// Save off config and apply defaults
 		oldConfig = await updateConfig(configDefaults);
@@ -50,11 +50,11 @@ suite('TypeScript References', () => {
 		// Restore config
 		await updateConfig(oldConfig);
 
-		return vscode.commands.executeCommand('workbench.action.closeAllEditors');
+		return docode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	test('Should show on basic class', async () => {
-		const testDocumentUri = vscode.Uri.parse('untitled:test1.ts');
+		const testDocumentUri = docode.Uri.parse('untitled:test1.ts');
 		await createTestEditor(testDocumentUri,
 			`class Foo {}`
 		);
@@ -65,7 +65,7 @@ suite('TypeScript References', () => {
 	});
 
 	test('Should show on basic class properties', async () => {
-		const testDocumentUri = vscode.Uri.parse('untitled:test2.ts');
+		const testDocumentUri = docode.Uri.parse('untitled:test2.ts');
 		await createTestEditor(testDocumentUri,
 			`class Foo {`,
 			`	prop: number;`,
@@ -81,7 +81,7 @@ suite('TypeScript References', () => {
 	});
 
 	test('Should not show on const property', async () => {
-		const testDocumentUri = vscode.Uri.parse('untitled:test3.ts');
+		const testDocumentUri = docode.Uri.parse('untitled:test3.ts');
 		await createTestEditor(testDocumentUri,
 			`const foo = {`,
 			`	prop: 1;`,
@@ -94,7 +94,7 @@ suite('TypeScript References', () => {
 	});
 
 	test.skip('Should not show duplicate references on ES5 class (https://github.com/microsoft/vscode/issues/90396)', async () => {
-		const testDocumentUri = vscode.Uri.parse('untitled:test3.js');
+		const testDocumentUri = docode.Uri.parse('untitled:test3.js');
 		await createTestEditor(testDocumentUri,
 			`function A() {`,
 			`    console.log("hi");`,
@@ -108,7 +108,7 @@ suite('TypeScript References', () => {
 	});
 });
 
-function getCodeLenses(document: vscode.Uri): Thenable<readonly vscode.CodeLens[] | undefined> {
-	return vscode.commands.executeCommand<readonly vscode.CodeLens[]>('vscode.executeCodeLensProvider', document, 100);
+function getCodeLenses(document: docode.Uri): Thenable<readonly docode.CodeLens[] | undefined> {
+	return docode.commands.executeCommand<readonly docode.CodeLens[]>('docode.executeCodeLensProvider', document, 100);
 }
 

@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 /**
  * A `Memento` backed by a plain map, so tests exercise the real storage-backed classes rather than
  * a stand-in for them.
  */
-export class TestMemento implements vscode.Memento {
+export class TestMemento implements docode.Memento {
 
 	private readonly _values = new Map<string, unknown>();
 

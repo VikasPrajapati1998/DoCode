@@ -19,7 +19,7 @@ type CryptoModule = Pick<typeof import('@hpke/core'), 'CipherSuite' | 'DhkemX255
 suite('Agent host browser crypto bundle', () => {
 	for (const minify of [false, true]) {
 		test(`runs without Node globals and preserves ${minify ? 'CDN' : 'local'} source maps`, { timeout: 30_000 }, async t => {
-			const outDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-agent-crypto-'));
+			const outDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-agent-crypto-'));
 			t.after(() => fs.promises.rm(outDir, { recursive: true, force: true }));
 			const neighbor = path.join(outDir, 'neighbor.js');
 			await fs.promises.writeFile(neighbor, 'unchanged');

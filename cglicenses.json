@@ -103,7 +103,7 @@
 	},
 	{
 		// Reason: The license cannot be found by the tool due to access controls on the repository
-		"name": "vscode-tas-client",
+		"name": "@docode/tas-client",
 		"fullLicenseText": [
 			"MIT License",
 			"Copyright (c) 2020 - present Microsoft Corporation",
@@ -506,7 +506,7 @@
 		]
 	},
 	{
-		"name": "@vscode/ts-package-manager",
+		"name": "@docode/ts-package-manager",
 		"fullLicenseText": [
 			"MIT License",
 			"",
@@ -1069,9 +1069,9 @@
 		]
 	},
 	{
-		// Reason: @vscode/l10n does not include a LICENSE file in its npm tarball.
+		// Reason: @docode/l10n does not include a LICENSE file in its npm tarball.
 		// Source: https://github.com/microsoft/vscode-l10n/blob/main/LICENSE
-		"name": "@vscode/l10n",
+		"name": "@docode/l10n",
 		"fullLicenseTextUri": "https://raw.githubusercontent.com/microsoft/vscode-l10n/main/LICENSE"
 	},
 	{
@@ -1138,9 +1138,9 @@
 		]
 	},
 	{
-		// Reason: @vscode/hubrpc does not ship a LICENSE file and is not covered by ClearlyDefined.
+		// Reason: @docode/hubrpc does not ship a LICENSE file and is not covered by ClearlyDefined.
 		// Source: microsoft/vscode-packages LICENSE at published gitHead 54166a879912b979a8b1511d6f6e392be59caa0d (private repo).
-		"name": "@vscode/hubrpc",
+		"name": "@docode/hubrpc",
 		"fullLicenseText": [
 			"MIT License",
 			"",
@@ -1228,9 +1228,9 @@
 		]
 	},
 	{
-		// Reason: @vscode/web-editors declares MIT in its package.json, but its npm
+		// Reason: @docode/web-editors declares MIT in its package.json, but its npm
 		// tarball does not include a LICENSE file and ClearlyDefined does not cover it.
-		"name": "@vscode/web-editors",
+		"name": "@docode/web-editors",
 		"fullLicenseText": [
 			"MIT License",
 			"",

@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as arrays from './util/arrays';
 import { Disposable } from './util/dispose';
 
-function resolveExtensionResource(extension: vscode.Extension<any>, resourcePath: string): vscode.Uri {
-	return vscode.Uri.joinPath(extension.extensionUri, resourcePath);
+function resolveExtensionResource(extension: docode.Extension<any>, resourcePath: string): docode.Uri {
+	return docode.Uri.joinPath(extension.extensionUri, resourcePath);
 }
 
-function* resolveExtensionResources(extension: vscode.Extension<any>, resourcePaths: unknown): Iterable<vscode.Uri> {
+function* resolveExtensionResources(extension: docode.Extension<any>, resourcePaths: unknown): Iterable<docode.Uri> {
 	if (Array.isArray(resourcePaths)) {
 		for (const resource of resourcePaths) {
 			try {
@@ -31,7 +31,7 @@ export function codeBlockEditorPresentationEqual(a: ResolvedCodeBlockEditor['pre
 }
 
 export interface MarkdownPreviewScript {
-	readonly resource: vscode.Uri;
+	readonly resource: docode.Uri;
 	readonly type?: 'module';
 }
 
@@ -47,13 +47,13 @@ export interface MarkdownCodeBlockEditorSandbox {
 }
 
 export type MarkdownCodeBlockEditorSource =
-	| { readonly kind: 'static'; readonly resource: vscode.Uri }
+	| { readonly kind: 'static'; readonly resource: docode.Uri }
 	| { readonly kind: 'exportApi'; readonly apiVersion: number };
 
 export interface MarkdownCodeBlockEditorProvider {
 	readonly id: string;
 	readonly providerId: string;
-	readonly extension: vscode.Extension<unknown>;
+	readonly extension: docode.Extension<unknown>;
 	readonly extensionVersion: string;
 	readonly runtimeKey?: string;
 	readonly selector: MarkdownCodeBlockEditorSelector;
@@ -66,8 +66,8 @@ export interface MarkdownCodeBlockEditorProvider {
 
 export interface MarkdownContributions {
 	readonly previewScripts: readonly MarkdownPreviewScript[];
-	readonly previewStyles: readonly vscode.Uri[];
-	readonly previewResourceRoots: readonly vscode.Uri[];
+	readonly previewStyles: readonly docode.Uri[];
+	readonly previewResourceRoots: readonly docode.Uri[];
 	readonly markdownItPlugins: ReadonlyMap<string, Thenable<(md: any) => any>>;
 	readonly codeBlockEditorProviders: readonly MarkdownCodeBlockEditorProvider[];
 }
@@ -91,7 +91,7 @@ export namespace MarkdownContributions {
 		};
 	}
 
-	function uriEqual(a: vscode.Uri, b: vscode.Uri): boolean {
+	function uriEqual(a: docode.Uri, b: docode.Uri): boolean {
 		return a.toString() === b.toString();
 	}
 
@@ -118,7 +118,7 @@ export namespace MarkdownContributions {
 				&& sandboxEqual(x.sandbox, y.sandbox));
 	}
 
-	export function fromExtension(extension: vscode.Extension<any>): MarkdownContributions {
+	export function fromExtension(extension: docode.Extension<any>): MarkdownContributions {
 		const contributions = extension.packageJSON?.contributes;
 		if (!contributions) {
 			return MarkdownContributions.Empty;
@@ -141,7 +141,7 @@ export namespace MarkdownContributions {
 
 	function getContributedMarkdownItPlugins(
 		contributes: any,
-		extension: vscode.Extension<any>
+		extension: docode.Extension<any>
 	): Map<string, Thenable<(md: any) => any>> {
 		const map = new Map<string, Thenable<(md: any) => any>>();
 		if (contributes['markdown.markdownItPlugins']) {
@@ -157,21 +157,21 @@ export namespace MarkdownContributions {
 
 	function getContributedScripts(
 		contributes: any,
-		extension: vscode.Extension<any>
+		extension: docode.Extension<any>
 	): Iterable<MarkdownPreviewScript> {
 		return resolvePreviewScripts(extension, contributes['markdown.previewScripts']);
 	}
 
 	function getContributedStyles(
 		contributes: any,
-		extension: vscode.Extension<any>
+		extension: docode.Extension<any>
 	) {
 		return resolveExtensionResources(extension, contributes['markdown.previewStyles']);
 	}
 
 	function* getContributedCodeBlockEditorProviders(
 		contributes: any,
-		extension: vscode.Extension<unknown>
+		extension: docode.Extension<unknown>
 	): Iterable<MarkdownCodeBlockEditorProvider> {
 		yield* getLegacyCodeBlockEditors(contributes, extension);
 
@@ -215,7 +215,7 @@ export namespace MarkdownContributions {
 
 	function* getLegacyCodeBlockEditors(
 		contributes: any,
-		extension: vscode.Extension<unknown>
+		extension: docode.Extension<unknown>
 	): Iterable<MarkdownCodeBlockEditorProvider> {
 		const editors = contributes['markdown.codeBlockEditors'];
 		if (!Array.isArray(editors)) {
@@ -265,7 +265,7 @@ export namespace MarkdownContributions {
 		return languagePrefix !== undefined ? { languagePrefix } : undefined;
 	}
 
-	function readCodeBlockEditorSource(value: unknown, extension: vscode.Extension<unknown>): MarkdownCodeBlockEditorSource | undefined {
+	function readCodeBlockEditorSource(value: unknown, extension: docode.Extension<unknown>): MarkdownCodeBlockEditorSource | undefined {
 		if (!value || typeof value !== 'object') {
 			return undefined;
 		}
@@ -320,7 +320,7 @@ export namespace MarkdownContributions {
 			&& a?.clipboardWrite === b?.clipboardWrite;
 	}
 
-	function* resolvePreviewScripts(extension: vscode.Extension<any>, scripts: unknown): Iterable<MarkdownPreviewScript> {
+	function* resolvePreviewScripts(extension: docode.Extension<any>, scripts: unknown): Iterable<MarkdownPreviewScript> {
 		if (!Array.isArray(scripts)) {
 			return;
 		}
@@ -364,26 +364,26 @@ export namespace MarkdownContributions {
 }
 
 export interface MarkdownContributionProvider {
-	readonly extensionUri: vscode.Uri;
+	readonly extensionUri: docode.Uri;
 
 	readonly contributions: MarkdownContributions;
-	readonly onContributionsChanged: vscode.Event<this>;
+	readonly onContributionsChanged: docode.Event<this>;
 
 	dispose(): void;
 }
 
-class VSCodeExtensionMarkdownContributionProvider extends Disposable implements MarkdownContributionProvider {
+class DoCodeExtensionMarkdownContributionProvider extends Disposable implements MarkdownContributionProvider {
 
 	#contributions?: MarkdownContributions;
-	readonly #extensionContext: vscode.ExtensionContext;
+	readonly #extensionContext: docode.ExtensionContext;
 
 	public constructor(
-		extensionContext: vscode.ExtensionContext,
+		extensionContext: docode.ExtensionContext,
 	) {
 		super();
 		this.#extensionContext = extensionContext;
 
-		this._register(vscode.extensions.onDidChange(() => {
+		this._register(docode.extensions.onDidChange(() => {
 			const currentContributions = this.#getCurrentContributions();
 			const existingContributions = this.#contributions || MarkdownContributions.Empty;
 			if (!MarkdownContributions.equal(existingContributions, currentContributions)) {
@@ -397,7 +397,7 @@ class VSCodeExtensionMarkdownContributionProvider extends Disposable implements 
 		return this.#extensionContext.extensionUri;
 	}
 
-	readonly #onContributionsChanged = this._register(new vscode.EventEmitter<this>());
+	readonly #onContributionsChanged = this._register(new docode.EventEmitter<this>());
 	public readonly onContributionsChanged = this.#onContributionsChanged.event;
 
 	public get contributions(): MarkdownContributions {
@@ -406,12 +406,12 @@ class VSCodeExtensionMarkdownContributionProvider extends Disposable implements 
 	}
 
 	#getCurrentContributions(): MarkdownContributions {
-		return vscode.extensions.all
+		return docode.extensions.all
 			.map(MarkdownContributions.fromExtension)
 			.reduce(MarkdownContributions.merge, MarkdownContributions.Empty);
 	}
 }
 
-export function getMarkdownExtensionContributions(context: vscode.ExtensionContext): MarkdownContributionProvider {
-	return new VSCodeExtensionMarkdownContributionProvider(context);
+export function getMarkdownExtensionContributions(context: docode.ExtensionContext): MarkdownContributionProvider {
+	return new DoCodeExtensionMarkdownContributionProvider(context);
 }

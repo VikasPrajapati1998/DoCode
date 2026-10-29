@@ -117,7 +117,7 @@ async function getCopilotCliDiagnostics(app: Application, mockServer?: MockLlmSe
 		details: [
 			'Copilot CLI diagnostics:',
 			`mockServer=${mockServer?.url ?? '(not started)'} requestCount=${mockServer?.requestCount() ?? '(unknown)'}`,
-			'appExtraEnv=GITHUB_PAT:true IS_SCENARIO_AUTOMATION:true VSCODE_COPILOT_CHAT_TOKEN:true',
+			'appExtraEnv=GITHUB_PAT:true IS_SCENARIO_AUTOMATION:true DOCODE_COPILOT_CHAT_TOKEN:true',
 			`copilotChatLog=${copilotChatLog?.relativePath ?? '(not found)'}`,
 			`extensionHostLog=${extensionHostLog?.relativePath ?? '(not found)'}`,
 			`relevantLogTail:\n${relevantLogTail || '(empty; see attached smoke test logs for full output)'}`,

@@ -31,7 +31,7 @@ export function setup(logger: Logger) {
 			this.timeout(60_000);
 
 			const app = this.app as Application;
-			const pidFile = path.join(os.tmpdir(), 'vscode-ext-host-pid.txt');
+			const pidFile = path.join(os.tmpdir(), 'docode-ext-host-pid.txt');
 
 			if (fs.existsSync(pidFile)) {
 				fs.unlinkSync(pidFile);
@@ -78,8 +78,8 @@ export function setup(logger: Logger) {
 			this.timeout(60_000);
 
 			const app = this.app as Application;
-			const pidFile = path.join(os.tmpdir(), 'vscode-ext-host-pid-graceful.txt');
-			const markerFile = path.join(os.tmpdir(), 'vscode-ext-host-deactivated.txt');
+			const pidFile = path.join(os.tmpdir(), 'docode-ext-host-pid-graceful.txt');
+			const markerFile = path.join(os.tmpdir(), 'docode-ext-host-deactivated.txt');
 
 			// Clean up any existing files
 			if (fs.existsSync(pidFile)) {
@@ -143,8 +143,8 @@ export function setup(logger: Logger) {
 			this.timeout(90_000);
 
 			const app = this.app as Application;
-			const pidFile = path.join(os.tmpdir(), 'vscode-ext-host-pid.txt');
-			const activationPidFile = path.join(os.tmpdir(), 'vscode-ext-host-pid-on-activate.txt');
+			const pidFile = path.join(os.tmpdir(), 'docode-ext-host-pid.txt');
+			const activationPidFile = path.join(os.tmpdir(), 'docode-ext-host-pid-on-activate.txt');
 
 			if (fs.existsSync(pidFile)) {
 				fs.unlinkSync(pidFile);

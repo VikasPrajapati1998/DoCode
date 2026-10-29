@@ -1,6 +1,6 @@
 ---
 name: chat-pet-sprite-creation
-description: Use when creating or changing VS Code chat pet sprite art, sprite sheets, state animations, eye treatments, Stable/Insiders variants, or pet transitions under src/vs/workbench/contrib/chat/browser/widget/media/chatPet.
+description: Use when creating or changing VS Code chat pet sprite art, sprite sheets, state animations, eye treatments, Stable/Insiders variants, or pet transitions under src/do/workbench/contrib/chat/browser/widget/media/chatPet.
 ---
 
 # Chat Pet Sprite Creation
@@ -9,10 +9,10 @@ Create pet sprites that feel like one continuous character rather than separate 
 
 ## Source of truth
 
-- Sprite art: `src/vs/workbench/contrib/chat/browser/widget/media/chatPet/`
-- Runtime states, dimensions, timing, and transitions: `src/vs/workbench/contrib/chat/browser/widget/chatPetWidget.ts`
-- Eye geometry, facing, clipping, and motion CSS: `src/vs/workbench/contrib/chat/browser/widget/media/chatPet.css`
-- Unit tests: `src/vs/workbench/contrib/chat/test/browser/widget/chatPetWidget.test.ts`
+- Sprite art: `src/do/workbench/contrib/chat/browser/widget/media/chatPet/`
+- Runtime states, dimensions, timing, and transitions: `src/do/workbench/contrib/chat/browser/widget/chatPetWidget.ts`
+- Eye geometry, facing, clipping, and motion CSS: `src/do/workbench/contrib/chat/browser/widget/media/chatPet.css`
+- Unit tests: `src/do/workbench/contrib/chat/test/browser/widget/chatPetWidget.test.ts`
 
 Read the current implementation before drawing. Existing dimensions and timings may have changed since this skill was written.
 
@@ -379,6 +379,6 @@ Prefer exporting pure helpers for timing, geometry, random selection, and state 
 
 ## Optional public-preview update
 
-The public showcase lives in the sibling `vscode-chat-pet` repository. Use its `update-pet-previews` skill after production sprites are final.
+The public showcase lives in the sibling `docode-chat-pet` repository. Use its `update-pet-previews` skill after production sprites are final.
 
 When replacing an existing APNG, prefer a new versioned filename in the README so GitHub and browser caches cannot keep showing the previous animation.

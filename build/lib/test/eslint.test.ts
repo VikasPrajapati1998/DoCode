@@ -16,7 +16,7 @@ suite('eslint', () => {
 	});
 
 	test('uses positional arguments without the full filter', () => {
-		const files = ['src/vs/base/common/arrays.ts', 'src/vs/base/common/async.ts'];
+		const files = ['src/do/base/common/arrays.ts', 'src/do/base/common/async.ts'];
 
 		assert.deepStrictEqual(getEslintFilePatterns(files), files);
 	});
@@ -24,7 +24,7 @@ suite('eslint', () => {
 	test('errors on unmatched positional arguments only', () => {
 		assert.deepStrictEqual([
 			shouldErrorOnUnmatchedPattern([]),
-			shouldErrorOnUnmatchedPattern(['src/vs/base/common/arrays.ts']),
+			shouldErrorOnUnmatchedPattern(['src/do/base/common/arrays.ts']),
 		], [false, true]);
 	});
 
@@ -37,7 +37,7 @@ suite('eslint', () => {
 
 		assert.deepStrictEqual({
 			runs: [
-				run(['--changed-since', 'abc123'], { kind: 'files', files: ['src/vs/base/common/arrays.ts'], reason: 'changed files' }),
+				run(['--changed-since', 'abc123'], { kind: 'files', files: ['src/do/base/common/arrays.ts'], reason: 'changed files' }),
 				run(['--changed-since=abc123'], { kind: 'files', files: [], reason: 'changed files' }),
 				run(['--changed-since', 'abc123'], { kind: 'full', reason: 'eslint.config.js changed' }),
 			],
@@ -45,7 +45,7 @@ suite('eslint', () => {
 		}, {
 			runs: [{
 				description: '1 file (changed files)',
-				patterns: ['src/vs/base/common/arrays.ts'],
+				patterns: ['src/do/base/common/arrays.ts'],
 				options: { errorOnUnmatchedPattern: false, globInputPaths: false, warnIgnored: false },
 			}, {
 				description: '0 files (changed files)',
@@ -63,7 +63,7 @@ suite('eslint', () => {
 	test('rejects files combined with --changed-since, and an empty revision', () => {
 		const unexpectedScope = () => assert.fail('Unexpected scope computation');
 		assert.deepStrictEqual([
-			['--changed-since', 'abc123', 'src/vs/base/common/arrays.ts'],
+			['--changed-since', 'abc123', 'src/do/base/common/arrays.ts'],
 			['--changed-since='],
 		].map(args => {
 			try {

@@ -119,7 +119,7 @@ declare const MOCK_POLICY_ENDPOINTS: EndpointDef[];
 	const editorStatus = $('editor-status');
 	const saveStateEl = $('save-state');
 	const setupDialog = $('setup-dialog') as HTMLDialogElement;
-	const vscodeProxySetting = '"http.proxy": "http://localhost:9090"';
+	const docodeProxySetting = '"http.proxy": "http://localhost:9090"';
 	const macOsCacheClearCommand = 'rm -rf -- "${COPILOT_CACHE_HOME:-$HOME/Library/Caches/copilot}/managed-settings"';
 	const windowsCacheClearCommand = '$root = if ($env:COPILOT_CACHE_HOME) { $env:COPILOT_CACHE_HOME } elseif ($env:LOCALAPPDATA) { Join-Path $env:LOCALAPPDATA \'copilot\' } else { Join-Path $HOME \'.cache\\copilot\' }; $path = Join-Path $root \'managed-settings\'; if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Recurse -Force }';
 	const draftStoragePrefix = 'mock-policy-server.response-body.';
@@ -1536,7 +1536,7 @@ declare const MOCK_POLICY_ENDPOINTS: EndpointDef[];
 	}
 
 	async function init(): Promise<void> {
-		$('proxy-settings').textContent = vscodeProxySetting;
+		$('proxy-settings').textContent = docodeProxySetting;
 		$('macos-cache-command').textContent = macOsCacheClearCommand;
 		$('windows-cache-command').textContent = windowsCacheClearCommand;
 		restoreTheme();
@@ -1584,7 +1584,7 @@ declare const MOCK_POLICY_ENDPOINTS: EndpointDef[];
 			copy(`${$('map-from').textContent}\n${$('map-to').textContent}`, e.currentTarget as HTMLElement);
 		});
 		$('copy-proxy-settings').addEventListener('click', e => {
-			copy(vscodeProxySetting, e.currentTarget as HTMLElement);
+			copy(docodeProxySetting, e.currentTarget as HTMLElement);
 		});
 		$('copy-macos-cache-command').addEventListener('click', e => {
 			copy(macOsCacheClearCommand, e.currentTarget as HTMLElement);

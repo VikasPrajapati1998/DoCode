@@ -5,7 +5,7 @@
 
 /* eslint-disable local/code-no-unexternalized-strings */
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { filepaths } from '../helpers/filepaths';
 import { keyValue } from '../helpers/keyvalue';
 
@@ -50,7 +50,7 @@ const postProcessRemoteBranches: Fig.Generator["postProcess"] = (out) => {
 		return {
 			name,
 			description: "Branch",
-			icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmBranch}`,
+			icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmBranch}`,
 			priority: 75,
 		};
 	});
@@ -190,7 +190,7 @@ const ghGenerators: Record<string, Fig.Generator> = {
 					name: number.toString(),
 					displayName: title,
 					description: `#${number} | ${headRefName}`,
-					icon: `vscode://icon?type=${state === "OPEN" ? vscode.TerminalCompletionItemKind.PullRequest : vscode.TerminalCompletionItemKind.PullRequestDone}`,
+					icon: `docode://icon?type=${state === "OPEN" ? docode.TerminalCompletionItemKind.PullRequest : docode.TerminalCompletionItemKind.PullRequestDone}`,
 				};
 			});
 		},

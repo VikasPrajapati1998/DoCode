@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import { ensureAskpassScripts } from '../askpassManager';
-import { Event, EventEmitter, LogLevel, LogOutputChannel } from 'vscode';
+import { Event, EventEmitter, LogLevel, LogOutputChannel } from 'docode';
 
 class MockLogOutputChannel implements LogOutputChannel {
 	logLevel: LogLevel = LogLevel.Info;

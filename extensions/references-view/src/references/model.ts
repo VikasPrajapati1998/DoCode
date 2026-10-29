@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { SymbolItemDragAndDrop, SymbolItemEditorHighlights, SymbolItemNavigation, SymbolTreeInput, SymbolTreeModel } from '../references-view';
 import { asResourceUrl, del, getPreviewChunks, tail } from '../utils';
 
@@ -13,9 +13,9 @@ export class ReferencesTreeInput implements SymbolTreeInput<FileItem | Reference
 
 	constructor(
 		readonly title: string,
-		readonly location: vscode.Location,
+		readonly location: docode.Location,
 		private readonly _command: string,
-		private readonly _result?: vscode.Location[] | vscode.LocationLink[]
+		private readonly _result?: docode.Location[] | docode.LocationLink[]
 	) {
 		this.contextValue = _command;
 	}
@@ -26,7 +26,7 @@ export class ReferencesTreeInput implements SymbolTreeInput<FileItem | Reference
 		if (this._result) {
 			model = new ReferencesModel(this._result);
 		} else {
-			const resut = await Promise.resolve(vscode.commands.executeCommand<vscode.Location[] | vscode.LocationLink[]>(this._command, this.location.uri, this.location.range.start));
+			const resut = await Promise.resolve(docode.commands.executeCommand<docode.Location[] | docode.LocationLink[]>(this._command, this.location.uri, this.location.range.start));
 			model = new ReferencesModel(resut ?? []);
 		}
 
@@ -47,24 +47,24 @@ export class ReferencesTreeInput implements SymbolTreeInput<FileItem | Reference
 		};
 	}
 
-	with(location: vscode.Location): ReferencesTreeInput {
+	with(location: docode.Location): ReferencesTreeInput {
 		return new ReferencesTreeInput(this.title, location, this._command);
 	}
 }
 
 export class ReferencesModel implements SymbolItemNavigation<FileItem | ReferenceItem>, SymbolItemEditorHighlights<FileItem | ReferenceItem>, SymbolItemDragAndDrop<FileItem | ReferenceItem> {
 
-	private _onDidChange = new vscode.EventEmitter<FileItem | ReferenceItem | undefined>();
+	private _onDidChange = new docode.EventEmitter<FileItem | ReferenceItem | undefined>();
 	readonly onDidChangeTreeData = this._onDidChange.event;
 
 	readonly items: FileItem[] = [];
 
-	constructor(locations: vscode.Location[] | vscode.LocationLink[]) {
+	constructor(locations: docode.Location[] | docode.LocationLink[]) {
 		let last: FileItem | undefined;
 		for (const item of locations.sort(ReferencesModel._compareLocations)) {
-			const loc = item instanceof vscode.Location
+			const loc = item instanceof docode.Location
 				? item
-				: new vscode.Location(item.targetUri, item.targetRange);
+				: new docode.Location(item.targetUri, item.targetRange);
 
 			if (!last || ReferencesModel._compareUriIgnoreFragment(last.uri, loc.uri) !== 0) {
 				last = new FileItem(loc.uri.with({ fragment: '' }), [], this);
@@ -74,7 +74,7 @@ export class ReferencesModel implements SymbolItemNavigation<FileItem | Referenc
 		}
 	}
 
-	private static _compareUriIgnoreFragment(a: vscode.Uri, b: vscode.Uri): number {
+	private static _compareUriIgnoreFragment(a: docode.Uri, b: docode.Uri): number {
 		const aStr = a.with({ fragment: '' }).toString();
 		const bStr = b.with({ fragment: '' }).toString();
 		if (aStr < bStr) {
@@ -85,17 +85,17 @@ export class ReferencesModel implements SymbolItemNavigation<FileItem | Referenc
 		return 0;
 	}
 
-	private static _compareLocations(a: vscode.Location | vscode.LocationLink, b: vscode.Location | vscode.LocationLink): number {
-		const aUri = a instanceof vscode.Location ? a.uri : a.targetUri;
-		const bUri = b instanceof vscode.Location ? b.uri : b.targetUri;
+	private static _compareLocations(a: docode.Location | docode.LocationLink, b: docode.Location | docode.LocationLink): number {
+		const aUri = a instanceof docode.Location ? a.uri : a.targetUri;
+		const bUri = b instanceof docode.Location ? b.uri : b.targetUri;
 		if (aUri.toString() < bUri.toString()) {
 			return -1;
 		} else if (aUri.toString() > bUri.toString()) {
 			return 1;
 		}
 
-		const aRange = a instanceof vscode.Location ? a.range : a.targetRange;
-		const bRange = b instanceof vscode.Location ? b.range : b.targetRange;
+		const aRange = a instanceof docode.Location ? a.range : a.targetRange;
+		const bRange = b instanceof docode.Location ? b.range : b.targetRange;
 		if (aRange.start.isBefore(bRange.start)) {
 			return -1;
 		} else if (aRange.start.isAfter(bRange.start)) {
@@ -109,28 +109,28 @@ export class ReferencesModel implements SymbolItemNavigation<FileItem | Referenc
 
 	get message() {
 		if (this.items.length === 0) {
-			return vscode.l10n.t('No results.');
+			return docode.l10n.t('No results.');
 		}
 		const total = this.items.reduce((prev, cur) => prev + cur.references.length, 0);
 		const files = this.items.length;
 		if (total === 1 && files === 1) {
-			return vscode.l10n.t('{0} result in {1} file', total, files);
+			return docode.l10n.t('{0} result in {1} file', total, files);
 		} else if (total === 1) {
-			return vscode.l10n.t('{0} result in {1} files', total, files);
+			return docode.l10n.t('{0} result in {1} files', total, files);
 		} else if (files === 1) {
-			return vscode.l10n.t('{0} results in {1} file', total, files);
+			return docode.l10n.t('{0} results in {1} file', total, files);
 		} else {
-			return vscode.l10n.t('{0} results in {1} files', total, files);
+			return docode.l10n.t('{0} results in {1} files', total, files);
 		}
 	}
 
 	location(item: FileItem | ReferenceItem) {
 		return item instanceof ReferenceItem
 			? item.location
-			: new vscode.Location(item.uri, item.references[0]?.location.range ?? new vscode.Position(0, 0));
+			: new docode.Location(item.uri, item.references[0]?.location.range ?? new docode.Position(0, 0));
 	}
 
-	nearest(uri: vscode.Uri, position: vscode.Position): FileItem | ReferenceItem | undefined {
+	nearest(uri: docode.Uri, position: docode.Position): FileItem | ReferenceItem | undefined {
 
 		if (this.items.length === 0) {
 			return;
@@ -219,7 +219,7 @@ export class ReferencesModel implements SymbolItemNavigation<FileItem | Referenc
 		}
 	}
 
-	getEditorHighlights(_item: FileItem | ReferenceItem, uri: vscode.Uri): vscode.Range[] | undefined {
+	getEditorHighlights(_item: FileItem | ReferenceItem, uri: docode.Uri): docode.Range[] | undefined {
 		const file = this.items.find(file => file.uri.toString() === uri.toString());
 		return file?.references.map(ref => ref.location.range);
 	}
@@ -247,7 +247,7 @@ export class ReferencesModel implements SymbolItemNavigation<FileItem | Referenc
 		return result;
 	}
 
-	getDragUri(item: FileItem | ReferenceItem): vscode.Uri | undefined {
+	getDragUri(item: FileItem | ReferenceItem): docode.Uri | undefined {
 		if (item instanceof FileItem) {
 			return item.uri;
 		} else {
@@ -256,10 +256,10 @@ export class ReferencesModel implements SymbolItemNavigation<FileItem | Referenc
 	}
 }
 
-class ReferencesTreeDataProvider implements vscode.TreeDataProvider<FileItem | ReferenceItem> {
+class ReferencesTreeDataProvider implements docode.TreeDataProvider<FileItem | ReferenceItem> {
 
-	private readonly _listener: vscode.Disposable;
-	private readonly _onDidChange = new vscode.EventEmitter<FileItem | ReferenceItem | undefined>();
+	private readonly _listener: docode.Disposable;
+	private readonly _onDidChange = new docode.EventEmitter<FileItem | ReferenceItem | undefined>();
 
 	readonly onDidChangeTreeData = this._onDidChange.event;
 
@@ -275,11 +275,11 @@ class ReferencesTreeDataProvider implements vscode.TreeDataProvider<FileItem | R
 	async getTreeItem(element: FileItem | ReferenceItem) {
 		if (element instanceof FileItem) {
 			// files
-			const result = new vscode.TreeItem(element.uri);
+			const result = new docode.TreeItem(element.uri);
 			result.contextValue = 'file-item';
 			result.description = true;
-			result.iconPath = vscode.ThemeIcon.File;
-			result.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+			result.iconPath = docode.ThemeIcon.File;
+			result.collapsibleState = docode.TreeItemCollapsibleState.Collapsed;
 			return result;
 
 		} else {
@@ -288,20 +288,20 @@ class ReferencesTreeDataProvider implements vscode.TreeDataProvider<FileItem | R
 			const doc = await element.getDocument(true);
 			const { before, inside, after } = getPreviewChunks(doc, range);
 
-			const label: vscode.TreeItemLabel = {
+			const label: docode.TreeItemLabel = {
 				label: before + inside + after,
 				highlights: [[before.length, before.length + inside.length]]
 			};
 
-			const result = new vscode.TreeItem(label);
-			result.collapsibleState = vscode.TreeItemCollapsibleState.None;
+			const result = new docode.TreeItem(label);
+			result.collapsibleState = docode.TreeItemCollapsibleState.None;
 			result.contextValue = 'reference-item';
 			result.command = {
-				command: 'vscode.open',
-				title: vscode.l10n.t('Open Reference'),
+				command: 'docode.open',
+				title: docode.l10n.t('Open Reference'),
 				arguments: [
 					element.location.uri,
-					{ selection: range.with({ end: range.start }) } satisfies vscode.TextDocumentShowOptions
+					{ selection: range.with({ end: range.start }) } satisfies docode.TextDocumentShowOptions
 				]
 			};
 			return result;
@@ -326,7 +326,7 @@ class ReferencesTreeDataProvider implements vscode.TreeDataProvider<FileItem | R
 export class FileItem {
 
 	constructor(
-		readonly uri: vscode.Uri,
+		readonly uri: docode.Uri,
 		readonly references: Array<ReferenceItem>,
 		readonly model: ReferencesModel
 	) { }
@@ -338,7 +338,7 @@ export class FileItem {
 	}
 
 	async asCopyText() {
-		let result = `${vscode.workspace.asRelativePath(this.uri)}\n`;
+		let result = `${docode.workspace.asRelativePath(this.uri)}\n`;
 		for (const ref of this.references) {
 			result += `  ${await ref.asCopyText()}\n`;
 		}
@@ -348,24 +348,24 @@ export class FileItem {
 
 export class ReferenceItem {
 
-	private _document: Thenable<vscode.TextDocument> | undefined;
+	private _document: Thenable<docode.TextDocument> | undefined;
 
 	constructor(
-		readonly location: vscode.Location,
+		readonly location: docode.Location,
 		readonly file: FileItem,
 	) { }
 
 	async getDocument(warmUpNext?: boolean) {
 		if (!this._document) {
-			this._document = vscode.workspace.openTextDocument(this.location.uri);
+			this._document = docode.workspace.openTextDocument(this.location.uri);
 		}
 		if (warmUpNext) {
 			// load next document once this document has been loaded
 			const next = this.file.model.next(this.file);
 			if (next instanceof FileItem && next !== this.file) {
-				vscode.workspace.openTextDocument(next.uri);
+				docode.workspace.openTextDocument(next.uri);
 			} else if (next instanceof ReferenceItem) {
-				vscode.workspace.openTextDocument(next.location.uri);
+				docode.workspace.openTextDocument(next.location.uri);
 			}
 		}
 		return this._document;

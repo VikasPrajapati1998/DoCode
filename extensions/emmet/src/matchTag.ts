@@ -3,24 +3,24 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { validate, getHtmlFlatNode, offsetRangeToSelection } from './util';
 import { getRootNode } from './parseDocument';
 import { HtmlNode as HtmlFlatNode } from 'EmmetFlatNode';
 
 export function matchTag() {
-	if (!validate(false) || !vscode.window.activeTextEditor) {
+	if (!validate(false) || !docode.window.activeTextEditor) {
 		return;
 	}
 
-	const editor = vscode.window.activeTextEditor;
+	const editor = docode.window.activeTextEditor;
 	const document = editor.document;
 	const rootNode = <HtmlFlatNode>getRootNode(document, true);
 	if (!rootNode) {
 		return;
 	}
 
-	const updatedSelections: vscode.Selection[] = [];
+	const updatedSelections: docode.Selection[] = [];
 	editor.selections.forEach(selection => {
 		const updatedSelection = getUpdatedSelections(document, rootNode, selection.start);
 		if (updatedSelection) {
@@ -33,7 +33,7 @@ export function matchTag() {
 	}
 }
 
-function getUpdatedSelections(document: vscode.TextDocument, rootNode: HtmlFlatNode, position: vscode.Position): vscode.Selection | undefined {
+function getUpdatedSelections(document: docode.TextDocument, rootNode: HtmlFlatNode, position: docode.Position): docode.Selection | undefined {
 	const offset = document.offsetAt(position);
 	const currentNode = getHtmlFlatNode(document.getText(), rootNode, offset, true);
 	if (!currentNode) {

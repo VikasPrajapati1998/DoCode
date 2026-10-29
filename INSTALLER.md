@@ -49,14 +49,14 @@ The same thing step by step:
 
 ```cmd
 npm run gulp core-ci
-npm run gulp vscode-win32-x64-min-ci
-npm run gulp vscode-win32-x64-inno-updater
-npm run gulp vscode-win32-x64-user-setup
-npm run gulp vscode-win32-x64-system-setup
+npm run gulp docode-win32-x64-min-ci
+npm run gulp docode-win32-x64-inno-updater
+npm run gulp docode-win32-x64-user-setup
+npm run gulp docode-win32-x64-system-setup
 ```
 
-Raw outputs are `.build\win32-x64\user-setup\VSCodeSetup.exe` and `.build\win32-x64\system-setup\VSCodeSetup.exe`;
-the unpacked app is in `..\VSCode-win32-x64`.
+Raw outputs are `.build\win32-x64\user-setup\DoCodeSetup.exe` and `.build\win32-x64\system-setup\DoCodeSetup.exe`;
+the unpacked app is in `..\DoCode-win32-x64`.
 
 ## 2. Build all platforms (GitHub Actions)
 
@@ -81,12 +81,12 @@ Linux (needs `libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev fakeroot rpm
 ```bash
 npm ci
 npm run gulp core-ci
-npm run gulp vscode-linux-x64-min-ci
-npm run gulp vscode-linux-x64-prepare-deb
-npm run gulp vscode-linux-x64-build-deb
-npm run gulp vscode-linux-x64-prepare-rpm
-npm run gulp vscode-linux-x64-build-rpm
-tar -czf DoCode-linux-x64.tar.gz -C .. VSCode-linux-x64
+npm run gulp docode-linux-x64-min-ci
+npm run gulp docode-linux-x64-prepare-deb
+npm run gulp docode-linux-x64-build-deb
+npm run gulp docode-linux-x64-prepare-rpm
+npm run gulp docode-linux-x64-build-rpm
+tar -czf DoCode-linux-x64.tar.gz -C .. DoCode-linux-x64
 ```
 
 macOS (use `arm64` or `x64` to match the machine):
@@ -94,8 +94,8 @@ macOS (use `arm64` or `x64` to match the machine):
 ```bash
 npm ci
 npm run gulp core-ci
-npm run gulp vscode-darwin-arm64-min-ci
-hdiutil create -volname "DoCode" -srcfolder ../VSCode-darwin-arm64/DoCode.app -ov -format UDZO DoCode-darwin-arm64.dmg
+npm run gulp docode-darwin-arm64-min-ci
+hdiutil create -volname "DoCode" -srcfolder ../DoCode-darwin-arm64/DoCode.app -ov -format UDZO DoCode-darwin-arm64.dmg
 ```
 
 ## 4. Installing DoCode (for users)
@@ -106,7 +106,7 @@ hdiutil create -volname "DoCode" -srcfolder ../VSCode-darwin-arm64/DoCode.app -o
 | macOS | Open the `.dmg`, drag **DoCode** to Applications; first launch: right-click, **Open** |
 | Debian/Ubuntu | `sudo apt install ./DoCode-linux-x64.deb` |
 | Fedora/RHEL | `sudo rpm -i DoCode-linux-x64.rpm` (or `sudo dnf install ./DoCode-linux-x64.rpm`) |
-| Any Linux | `tar -xzf DoCode-linux-x64.tar.gz` then run `VSCode-linux-x64/docode` |
+| Any Linux | `tar -xzf DoCode-linux-x64.tar.gz` then run `DoCode-linux-x64/docode` |
 
 The installers are unsigned, so Windows SmartScreen ("More info", "Run anyway") and macOS Gatekeeper will warn on
 first run.

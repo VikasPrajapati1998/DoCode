@@ -1,0 +1,75 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* stylelint-disable layer-checker */
+
+.monaco-editor .codicon.codicon-symbol-array,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-array { color: var(--docode-symbolIcon-arrayForeground); }
+.monaco-editor .codicon.codicon-symbol-boolean,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-boolean { color: var(--docode-symbolIcon-booleanForeground); }
+.monaco-editor .codicon.codicon-symbol-class,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-class { color: var(--docode-symbolIcon-classForeground); }
+.monaco-editor .codicon.codicon-symbol-method,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-method { color: var(--docode-symbolIcon-methodForeground); }
+.monaco-editor .codicon.codicon-symbol-color,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-color { color: var(--docode-symbolIcon-colorForeground); }
+.monaco-editor .codicon.codicon-symbol-constant,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-constant { color: var(--docode-symbolIcon-constantForeground); }
+.monaco-editor .codicon.codicon-symbol-constructor,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-constructor { color: var(--docode-symbolIcon-constructorForeground); }
+.monaco-editor .codicon.codicon-symbol-value,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-value,
+.monaco-editor .codicon.codicon-symbol-enum,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-enum { color: var(--docode-symbolIcon-enumeratorForeground); }
+.monaco-editor .codicon.codicon-symbol-enum-member,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-enum-member { color: var(--docode-symbolIcon-enumeratorMemberForeground); }
+.monaco-editor .codicon.codicon-symbol-event,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-event { color: var(--docode-symbolIcon-eventForeground); }
+.monaco-editor .codicon.codicon-symbol-field,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-field { color: var(--docode-symbolIcon-fieldForeground); }
+.monaco-editor .codicon.codicon-symbol-file,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-file { color: var(--docode-symbolIcon-fileForeground); }
+.monaco-editor .codicon.codicon-symbol-folder,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-folder { color: var(--docode-symbolIcon-folderForeground); }
+.monaco-editor .codicon.codicon-symbol-function,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-function { color: var(--docode-symbolIcon-functionForeground); }
+.monaco-editor .codicon.codicon-symbol-interface,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-interface { color: var(--docode-symbolIcon-interfaceForeground); }
+.monaco-editor .codicon.codicon-symbol-key,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-key { color: var(--docode-symbolIcon-keyForeground); }
+.monaco-editor .codicon.codicon-symbol-keyword,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-keyword { color: var(--docode-symbolIcon-keywordForeground); }
+.monaco-editor .codicon.codicon-symbol-module,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-module { color: var(--docode-symbolIcon-moduleForeground); }
+.monaco-editor .codicon.codicon-symbol-namespace,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-namespace { color: var(--docode-symbolIcon-namespaceForeground); }
+.monaco-editor .codicon.codicon-symbol-null,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-null { color: var(--docode-symbolIcon-nullForeground); }
+.monaco-editor .codicon.codicon-symbol-number,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-number { color: var(--docode-symbolIcon-numberForeground); }
+.monaco-editor .codicon.codicon-symbol-object,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-object { color: var(--docode-symbolIcon-objectForeground); }
+.monaco-editor .codicon.codicon-symbol-operator,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-operator { color: var(--docode-symbolIcon-operatorForeground); }
+.monaco-editor .codicon.codicon-symbol-package,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-package { color: var(--docode-symbolIcon-packageForeground); }
+.monaco-editor .codicon.codicon-symbol-property,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-property { color: var(--docode-symbolIcon-propertyForeground); }
+.monaco-editor .codicon.codicon-symbol-reference,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-reference { color: var(--docode-symbolIcon-referenceForeground); }
+.monaco-editor .codicon.codicon-symbol-snippet,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-snippet { color: var(--docode-symbolIcon-snippetForeground); }
+.monaco-editor .codicon.codicon-symbol-string,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-string { color: var(--docode-symbolIcon-stringForeground); }
+.monaco-editor .codicon.codicon-symbol-struct,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-struct { color: var(--docode-symbolIcon-structForeground); }
+.monaco-editor .codicon.codicon-symbol-text,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-text { color: var(--docode-symbolIcon-textForeground); }
+.monaco-editor .codicon.codicon-symbol-type-parameter,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-type-parameter { color: var(--docode-symbolIcon-typeParameterForeground); }
+.monaco-editor .codicon.codicon-symbol-unit,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-unit { color: var(--docode-symbolIcon-unitForeground); }
+.monaco-editor .codicon.codicon-symbol-variable,
+.monaco-workbench .codicon-colored.codicon.codicon-symbol-variable { color: var(--docode-symbolIcon-variableForeground); }

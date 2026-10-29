@@ -3,10 +3,10 @@
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "10.0.0",
-  "publisher": "vscode",
+  "publisher": "docode",
   "license": "MIT",
   "engines": {
-    "vscode": "*"
+    "docode": "*"
   },
   "scripts": {
     "update-grammar": "node ../node_modules/vscode-grammar-updater/bin sumneko/lua.tmbundle Syntaxes/Lua.plist ./syntaxes/lua.tmLanguage.json"

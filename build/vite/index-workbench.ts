@@ -3,6 +3,6 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import '../../src/vs/code/browser/workbench/workbench';
+import '../../src/do/code/browser/workbench/workbench';
 import './setup-dev';
 

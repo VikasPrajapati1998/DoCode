@@ -9,7 +9,7 @@ import { TSESTree } from '@typescript-eslint/utils';
 import * as path from 'path';
 
 const root = path.resolve(import.meta.dirname, '..');
-const legacyModule = path.join(root, 'src/vs/platform/notification/common/notificationLegacy');
+const legacyModule = path.join(root, 'src/do/platform/notification/common/notificationLegacy');
 const capabilityName = 'legacyExtensionLinkParsing';
 
 export default new class implements eslint.Rule.RuleModule {
@@ -43,7 +43,7 @@ export default new class implements eslint.Rule.RuleModule {
 				return false;
 			}
 			const resolved = value.startsWith('.') ? path.resolve(path.dirname(context.filename), value)
-				: value.startsWith('vs/') ? path.resolve(root, 'src', value) : path.resolve(value);
+				: value.startsWith('do/') ? path.resolve(root, 'src', value) : path.resolve(value);
 			return resolved.replace(/\.(?:js|ts)$/, '') === legacyModule;
 		}
 

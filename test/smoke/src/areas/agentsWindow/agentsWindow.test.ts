@@ -17,21 +17,21 @@ import { createRemoteDevContainerFixture, getDevContainerCliInstallCommand, getT
 // Kept in sync with `SEND_BUTTON_ENABLED` in `test/automation/src/agentsWindow.ts`
 // (without the `:not(.disabled)` filter so we can observe the disabled state).
 const AGENTS_SEND_BUTTON_SELECTOR = '.sessions-chat-widget .new-chat-widget-container .sessions-shared-chat-input .chat-execute-toolbar .action-item.chat-submit-button';
-const NETWORK_PROXY_HEADER_NAME = 'X-VSCode-Smoke-Proxy';
+const NETWORK_PROXY_HEADER_NAME = 'X-DoCode-Smoke-Proxy';
 
 function mockServerStartOptions(logger: (message: string) => void, captureRequests = false) {
-	const requiredRequestHeaderValue = process.env.VSCODE_SMOKE_TEST_PROXY_HEADER;
-	const certificatePath = process.env.VSCODE_SMOKE_TEST_MOCK_CERT;
-	const keyPath = process.env.VSCODE_SMOKE_TEST_MOCK_KEY;
+	const requiredRequestHeaderValue = process.env.DOCODE_SMOKE_TEST_PROXY_HEADER;
+	const certificatePath = process.env.DOCODE_SMOKE_TEST_MOCK_CERT;
+	const keyPath = process.env.DOCODE_SMOKE_TEST_MOCK_KEY;
 	if (!!certificatePath !== !!keyPath) {
-		throw new Error('Mock HTTPS requires both VSCODE_SMOKE_TEST_MOCK_CERT and VSCODE_SMOKE_TEST_MOCK_KEY');
+		throw new Error('Mock HTTPS requires both DOCODE_SMOKE_TEST_MOCK_CERT and DOCODE_SMOKE_TEST_MOCK_KEY');
 	}
 	return {
 		logger,
 		verbose: true,
 		captureRequests,
 		requiredRequestHeader: requiredRequestHeaderValue ? { name: NETWORK_PROXY_HEADER_NAME, value: requiredRequestHeaderValue } : undefined,
-		trustedRequestHost: requiredRequestHeaderValue ? process.env.VSCODE_SMOKE_TEST_MOCK_HOST : undefined,
+		trustedRequestHost: requiredRequestHeaderValue ? process.env.DOCODE_SMOKE_TEST_MOCK_HOST : undefined,
 		tls: certificatePath && keyPath ? {
 			cert: fs.readFileSync(certificatePath, 'utf8'),
 			key: fs.readFileSync(keyPath, 'utf8'),
@@ -62,14 +62,14 @@ function prepareDevContainerWorkspace(workspacePath: string, port: number, optio
 	fs.writeFileSync(path.join(configDirectory, 'devcontainer.json'), JSON.stringify({
 		name: 'Agents Window Smoke',
 		image: 'mcr.microsoft.com/devcontainers/base:ubuntu-24.04',
-		remoteUser: 'vscode',
-		runArgs: ['--add-host=vscode-smoke.test:host-gateway'],
+		remoteUser: 'docode',
+		runArgs: ['--add-host=docode-smoke.test:host-gateway'],
 		containerEnv: {
 			COPILOT_API_URL: mockServerUrl,
 			COPILOT_DEBUG_GITHUB_API_URL: mockServerUrl,
 			GITHUB_COPILOT_API_TOKEN: 'smoketest-fake-agent-host-token',
-			VSCODE_AGENT_HOST_CAPI_URL_OVERRIDE: mockServerUrl,
-			VSCODE_SMOKE_TEST_PROXY_HEADER: process.env.VSCODE_SMOKE_TEST_PROXY_HEADER ?? 'dev-container',
+			DOCODE_AGENT_HOST_CAPI_URL_OVERRIDE: mockServerUrl,
+			DOCODE_SMOKE_TEST_PROXY_HEADER: process.env.DOCODE_SMOKE_TEST_PROXY_HEADER ?? 'dev-container',
 		},
 		postCreateCommand: getDevContainerCliInstallCommand(options.codePath),
 	}, null, 2));
@@ -158,7 +158,7 @@ export function setup(logger: Logger, quality: Quality) {
 			try {
 				const requestsBefore = agentHost.mockServer.getRequests().length;
 				const requestTag = `[proxy-request:${randomUUID()}]`;
-				const worktreesBefore = process.env.VSCODE_SMOKE_TEST_PROXY_HEADER
+				const worktreesBefore = process.env.DOCODE_SMOKE_TEST_PROXY_HEADER
 					? cp.execFileSync('git', ['worktree', 'list', '--porcelain'], { cwd: app.workspacePathOrFolder, encoding: 'utf8' })
 					: undefined;
 				await app.workbench.agentsWindow.waitForNewSessionView();
@@ -166,7 +166,7 @@ export function setup(logger: Logger, quality: Quality) {
 				await app.workbench.agentsWindow.submitNewSessionPrompt(`replace the new session UI [scenario:${AGENT_HOST_REPLACEMENT_SCENARIO_ID}] ${requestTag}`);
 				await app.workbench.agentsWindow.waitForActiveSessionView();
 				await app.workbench.agentsWindow.waitForAssistantText(AGENT_HOST_REPLACEMENT_REPLY);
-				if (process.env.VSCODE_SMOKE_TEST_PROXY_HEADER) {
+				if (process.env.DOCODE_SMOKE_TEST_PROXY_HEADER) {
 					await waitForPromptRequest(agentHost.mockServer, requestsBefore, requestTag);
 					assert.strictEqual(
 						cp.execFileSync('git', ['worktree', 'list', '--porcelain'], { cwd: app.workspacePathOrFolder, encoding: 'utf8' }),
@@ -276,7 +276,7 @@ export function setup(logger: Logger, quality: Quality) {
 					/"transport":"devcontainer"/,
 					30_000,
 				);
-				assert.match(ahpFrames, /"vscode\.clientConnectionKind":"dev_container"/);
+				assert.match(ahpFrames, /"docode\.clientConnectionKind":"dev_container"/);
 				assert.match(ahpFrames, /"transport":"devcontainer"/);
 
 				const rendererLogs = await waitForLogContent(
@@ -312,12 +312,12 @@ export function setup(logger: Logger, quality: Quality) {
 	for (const transport of ['ssh', 'tunnel', 'wsl'] as const) {
 		const label = transport === 'ssh' ? 'SSH' : transport === 'wsl' ? 'WSL' : 'Tunnel';
 		const isCI = !!process.env.CI || !!process.env.TF_BUILD;
-		const required = transport === 'wsl' && process.env.VSCODE_SMOKE_TEST_WSL_REQUIRED === '1';
+		const required = transport === 'wsl' && process.env.DOCODE_SMOKE_TEST_WSL_REQUIRED === '1';
 		const supportedPlatform = transport === 'wsl' ? process.platform === 'win32' : process.platform !== 'win32' && (!isCI || process.platform === 'linux');
-		const requested = transport === 'ssh' || (transport === 'wsl' ? !!process.env.VSCODE_SMOKE_TEST_WSL_DISTRO : !!process.env.VSCODE_SMOKE_TEST_TUNNEL_TOKEN);
+		const requested = transport === 'ssh' || (transport === 'wsl' ? !!process.env.DOCODE_SMOKE_TEST_WSL_DISTRO : !!process.env.DOCODE_SMOKE_TEST_TUNNEL_TOKEN);
 		const enabled = runDevContainerSuite && (required || (supportedPlatform && requested));
 		if (!enabled) {
-			logger.log(`Skipping Agents Window (${label} Dev Container AgentHost): ${!runDevContainerSuite ? 'not supported on Exploration builds' : !supportedPlatform ? 'unsupported platform' : transport === 'wsl' ? 'set VSCODE_SMOKE_TEST_WSL_DISTRO to enable the WSL fixture' : 'set VSCODE_SMOKE_TEST_TUNNEL_TOKEN to enable the real tunnel fixture'}`);
+			logger.log(`Skipping Agents Window (${label} Dev Container AgentHost): ${!runDevContainerSuite ? 'not supported on Exploration builds' : !supportedPlatform ? 'unsupported platform' : transport === 'wsl' ? 'set DOCODE_SMOKE_TEST_WSL_DISTRO to enable the WSL fixture' : 'set DOCODE_SMOKE_TEST_TUNNEL_TOKEN to enable the real tunnel fixture'}`);
 		}
 		(enabled ? describe : describe.skip)(`Agents Window (${label} Dev Container AgentHost)`, () => {
 			if (transport !== 'wsl') {
@@ -326,8 +326,8 @@ export function setup(logger: Logger, quality: Quality) {
 			before(() => {
 				if (required) {
 					assert.ok(supportedPlatform, 'Required WSL smoke tests need Windows.');
-					assert.ok(process.env.VSCODE_SMOKE_TEST_WSL_DISTRO, 'Required WSL smoke tests need VSCODE_SMOKE_TEST_WSL_DISTRO from successful provisioning.');
-					assert.ok(process.env.VSCODE_SMOKE_TEST_WSL_SERVER_PATH, 'Required WSL smoke tests need VSCODE_SMOKE_TEST_WSL_SERVER_PATH from successful provisioning.');
+					assert.ok(process.env.DOCODE_SMOKE_TEST_WSL_DISTRO, 'Required WSL smoke tests need DOCODE_SMOKE_TEST_WSL_DISTRO from successful provisioning.');
+					assert.ok(process.env.DOCODE_SMOKE_TEST_WSL_SERVER_PATH, 'Required WSL smoke tests need DOCODE_SMOKE_TEST_WSL_SERVER_PATH from successful provisioning.');
 				}
 				if (transport === 'tunnel') {
 					const availability = getTunnelSmokeTestAvailability();
@@ -512,7 +512,7 @@ export function setup(logger: Logger, quality: Quality) {
 				// Register the Codex provider in the agent host process (it is
 				// off by default). The provider resolves the codex SDK from the
 				// repo's `node_modules` in dev, or `product.agentSdks.codex` in
-				// packaged builds (or the VSCODE_AGENT_HOST_CODEX_SDK_ROOT
+				// packaged builds (or the DOCODE_AGENT_HOST_CODEX_SDK_ROOT
 				// override) — so the test below is a hard requirement in dev and
 				// skips only in built products where the SDK is genuinely absent.
 				'chat.agentHost.codexAgent.enabled': true,
@@ -565,25 +565,24 @@ export function setup(logger: Logger, quality: Quality) {
 				// Codex must be available — and so this test must run rather than
 				// skip — whenever the build under test is supposed to be able to
 				// resolve the SDK:
-				//   - Running from source (VSCODE_DEV=1, set by the smoke runner
+				//   - Running from source (DOCODE_DEV=1, set by the smoke runner
 				//     when no `--build` is passed): the agent host is not built, so
 				//     it resolves the SDK from the repo's `node_modules`
 				//     (`@openai/codex` is a devDependency).
 				//   - Publish builds: `product.agentSdks.codex` is stamped (only
-				//     when VSCODE_PUBLISH=true, see build/azure-pipelines/common/
-				//     agent-sdk-produce.yml) so the SDK is fetched from the CDN.
+				//     when DOCODE_PUBLISH=true) so the SDK is fetched from the CDN.
 				// In both cases an unavailable Codex is a regression — fail loudly.
 				// Otherwise (built non-publish CI, where the SDK is neither shipped
 				// nor stamped) Codex is legitimately absent, so skip gracefully.
 				//
-				// VSCODE_DEV (not app.quality === Quality.Dev) is the precise
+				// DOCODE_DEV (not app.quality === Quality.Dev) is the precise
 				// "from source" signal: parseQuality() also returns Quality.Dev for
-				// a `--build` product when VSCODE_QUALITY is unset, which would
+				// a `--build` product when DOCODE_QUALITY is unset, which would
 				// wrongly hard-fail a packaged build that legitimately lacks Codex.
-				const isFromSource = process.env.VSCODE_DEV === '1';
-				const isPublishBuild = (process.env.VSCODE_PUBLISH ?? '').toLowerCase() === 'true';
+				const isFromSource = process.env.DOCODE_DEV === '1';
+				const isPublishBuild = (process.env.DOCODE_PUBLISH ?? '').toLowerCase() === 'true';
 				if (isFromSource || isPublishBuild) {
-					throw new Error(`[Agents Window/Codex] Codex session type unexpectedly unavailable (VSCODE_DEV=${process.env.VSCODE_DEV ?? '<unset>'}, VSCODE_PUBLISH=${process.env.VSCODE_PUBLISH ?? '<unset>'}) — the SDK should be resolvable from node_modules (from source) or product.agentSdks.codex (publish build)`);
+					throw new Error(`[Agents Window/Codex] Codex session type unexpectedly unavailable (DOCODE_DEV=${process.env.DOCODE_DEV ?? '<unset>'}, DOCODE_PUBLISH=${process.env.DOCODE_PUBLISH ?? '<unset>'}) — the SDK should be resolvable from node_modules (from source) or product.agentSdks.codex (publish build)`);
 				}
 				logger.log('[Agents Window/Codex] Codex session type not available in this built product (no product.agentSdks.codex); skipping');
 				this.skip();
@@ -594,7 +593,7 @@ export function setup(logger: Logger, quality: Quality) {
 			// optional dependency that npm silently skips when its install fails.
 			// A stale `node_modules` cache can thus have the shim but no binary, so
 			// fail fast here (from source) instead of timing out at spawn time.
-			if (process.env.VSCODE_DEV === '1') {
+			if (process.env.DOCODE_DEV === '1') {
 				const repoRoot = path.resolve(process.cwd(), '..', '..');
 				const platformPkgDir = path.join(repoRoot, 'node_modules', `@openai/codex-${process.platform}-${process.arch}`);
 				const binaryName = process.platform === 'win32' ? 'codex.exe' : 'codex';
@@ -751,7 +750,7 @@ function setupAgentHostSuite(logger: Logger, config: {
 		config.registerScenarios({ ScenarioBuilder, registerScenario });
 
 		mockServer = await startServer(0, {
-			...mockServerStartOptions((msg: string) => logger.log(msg), !!process.env.VSCODE_SMOKE_TEST_PROXY_HEADER),
+			...mockServerStartOptions((msg: string) => logger.log(msg), !!process.env.DOCODE_SMOKE_TEST_PROXY_HEADER),
 			host: config.mockServerHost,
 		});
 		logger.log(`Mock LLM server (${config.serverLabel}) started at ${getMockLlmServerUrl(mockServer)}`);
@@ -802,8 +801,8 @@ function setupAgentHostSuite(logger: Logger, config: {
 				// Route the agent host's shared CAPI client (used by the Codex /
 				// agent-host harnesses for model discovery + requests) at the mock
 				// instead of api.github.com, which would 401 with the fake token.
-				VSCODE_AGENT_HOST_CAPI_URL_OVERRIDE: getMockLlmServerUrl(mockServer),
-				VSCODE_SMOKE_TEST_TUNNEL_TOKEN: undefined,
+				DOCODE_AGENT_HOST_CAPI_URL_OVERRIDE: getMockLlmServerUrl(mockServer),
+				DOCODE_SMOKE_TEST_TUNNEL_TOKEN: undefined,
 				...remoteFixture?.extraEnv,
 			},
 		}));
@@ -819,7 +818,7 @@ function setupAgentHostSuite(logger: Logger, config: {
 				// scratch, so set the production default explicitly rather than
 				// relying on configuration registration timing.
 				'http.proxySupport': 'override',
-				...(process.env.VSCODE_SMOKE_TEST_PROXY_HEADER ? {
+				...(process.env.DOCODE_SMOKE_TEST_PROXY_HEADER ? {
 					'sessions.useWorktree': false,
 				} : {}),
 				'chat.allowAnonymousAccess': true,
@@ -918,7 +917,7 @@ async function assertRemoteDevContainerRouting(logsPath: string, transport: Remo
 	const frames = parseFrames(content);
 	assert.ok(frames.some(frame =>
 		frame._ahpLog?.transport === transport
-		&& frame.method === 'vscode/devContainers/connect'
+		&& frame.method === 'docode/devContainers/connect'
 		&& frame.params?.workspaceFolder === workspacePath
 	), `Expected container startup for the selected workspace on the ${transport} connection`);
 	const containerFrames = frames.filter(frame => frame._ahpLog?.transport === 'devcontainer');

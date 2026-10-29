@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
-export class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.UriHandler {
-	private _disposable = vscode.window.registerUriHandler(this);
+export class UriEventHandler extends docode.EventEmitter<docode.Uri> implements docode.UriHandler {
+	private _disposable = docode.window.registerUriHandler(this);
 
-	handleUri(uri: vscode.Uri) {
+	handleUri(uri: docode.Uri) {
 		this.fire(uri);
 	}
 

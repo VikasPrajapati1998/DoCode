@@ -7,10 +7,10 @@ description: Build and review cross-cutting agent-host chat behavior through lif
 
 Use the contribution model for a self-contained behavior that crosses an agent-host chat lifecycle boundary. Read these files before changing the model:
 
-- `src/vs/platform/agentHost/common/agentHostChatContributionsService.ts`
-- `src/vs/platform/agentHost/node/agentHostChatContributionsService.ts`
-- `src/vs/platform/agentHost/node/chatContributions/TODO.md`
-- `src/vs/platform/agentHost/node/chatContributions/builtInChatContributions.ts`
+- `src/do/platform/agentHost/common/agentHostChatContributionsService.ts`
+- `src/do/platform/agentHost/node/agentHostChatContributionsService.ts`
+- `src/do/platform/agentHost/node/chatContributions/TODO.md`
+- `src/do/platform/agentHost/node/chatContributions/builtInChatContributions.ts`
 
 ## The rule that prevents the old failure mode
 

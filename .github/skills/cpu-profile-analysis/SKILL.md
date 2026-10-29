@@ -39,7 +39,7 @@ A `.cpuprofile` is JSON with these top-level keys:
 - `samples`: Array of node IDs -- one per profiler tick, referencing the leaf (innermost) frame
 - `timeDeltas`: Array of microsecond deltas between consecutive samples
 - `startTime` / `endTime`: Absolute timestamps in microseconds
-- `$vscode`: Optional VS Code metadata
+- `$docode`: Optional VS Code metadata
 
 ### Procedure
 
@@ -513,5 +513,5 @@ function parseTraceFromBuffer(buf) {
 - Clean up any analysis scripts you create when done.
 - Trace files are large (50-200MB). Always filter to the relevant process/thread before analysis to reduce memory and noise.
 - When a trace file contains embedded `ProfileChunk` events, prefer analyzing those over asking for a separate `.cpuprofile` -- the data is equivalent but already correlated with other trace events.
-- Use `args.data.url` in `FunctionCall` and `EvaluateScript` events to map back to VS Code source files (paths like `vscode-file://vscode-app/Users/.../out/vs/...`).
+- Use `args.data.url` in `FunctionCall` and `EvaluateScript` events to map back to VS Code source files (paths like `docode-file://docode-app/Users/.../out/do/...`).
 - The `dur` field is wall-clock duration; `tdur` is thread-time duration. The difference reveals time the thread was suspended (e.g. waiting for I/O or preempted).

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as Proto from './tsServer/protocol/protocol';
 import BufferSyncSupport from './tsServer/bufferSyncSupport';
 import { ExecutionTarget } from './tsServer/server';
@@ -101,7 +101,7 @@ export type TypeScriptRequests = StandardTsServerRequests & NoResponseTsServerRe
 export type ExecConfig = {
 	readonly lowPriority?: boolean;
 	readonly nonRecoverable?: boolean;
-	readonly cancelOnResourceChange?: vscode.Uri;
+	readonly cancelOnResourceChange?: docode.Uri;
 	readonly executionTarget?: ExecutionTarget;
 };
 
@@ -139,37 +139,37 @@ export interface ITypeScriptServiceClient {
 	/**
 	 * Convert a (VS Code) resource to a path that TypeScript server understands.
 	 */
-	toTsFilePath(resource: vscode.Uri): string | undefined;
+	toTsFilePath(resource: docode.Uri): string | undefined;
 
 	/**
 	 * Convert a path to a resource.
 	 */
-	toResource(filepath: string): vscode.Uri;
+	toResource(filepath: string): docode.Uri;
 
 	/**
-	 * Tries to ensure that a vscode document is open on the TS server.
+	 * Tries to ensure that a docode document is open on the TS server.
 	 *
 	 * @return The normalized path or `undefined` if the document is not open on the server.
 	 */
-	toOpenTsFilePath(document: vscode.TextDocument | vscode.Uri, options?: {
+	toOpenTsFilePath(document: docode.TextDocument | docode.Uri, options?: {
 		suppressAlertOnFailure?: boolean;
 	}): string | undefined;
 
 	/**
 	 * Checks if `resource` has a given capability.
 	 */
-	hasCapabilityForResource(resource: vscode.Uri, capability: ClientCapability): boolean;
+	hasCapabilityForResource(resource: docode.Uri, capability: ClientCapability): boolean;
 
-	getWorkspaceRootForResource(resource: vscode.Uri): vscode.Uri | undefined;
+	getWorkspaceRootForResource(resource: docode.Uri): docode.Uri | undefined;
 
-	readonly onTsServerStarted: vscode.Event<{ version: TypeScriptVersion; usedApiVersion: API }>;
-	readonly onProjectLanguageServiceStateChanged: vscode.Event<Proto.ProjectLanguageServiceStateEventBody>;
-	readonly onDidBeginInstallTypings: vscode.Event<Proto.BeginInstallTypesEventBody>;
-	readonly onDidEndInstallTypings: vscode.Event<Proto.EndInstallTypesEventBody>;
-	readonly onTypesInstallerInitializationFailed: vscode.Event<Proto.TypesInstallerInitializationFailedEventBody>;
+	readonly onTsServerStarted: docode.Event<{ version: TypeScriptVersion; usedApiVersion: API }>;
+	readonly onProjectLanguageServiceStateChanged: docode.Event<Proto.ProjectLanguageServiceStateEventBody>;
+	readonly onDidBeginInstallTypings: docode.Event<Proto.BeginInstallTypesEventBody>;
+	readonly onDidEndInstallTypings: docode.Event<Proto.EndInstallTypesEventBody>;
+	readonly onTypesInstallerInitializationFailed: docode.Event<Proto.TypesInstallerInitializationFailedEventBody>;
 
 	readonly capabilities: ClientCapabilities;
-	readonly onDidChangeCapabilities: vscode.Event<void>;
+	readonly onDidChangeCapabilities: docode.Event<void>;
 
 	onReady(f: () => void): Promise<void>;
 
@@ -185,7 +185,7 @@ export interface ITypeScriptServiceClient {
 	execute<K extends keyof StandardTsServerRequests>(
 		command: K,
 		args: StandardTsServerRequests[K][0],
-		token: vscode.CancellationToken,
+		token: docode.CancellationToken,
 		config?: ExecConfig
 	): Promise<ServerResponse.Response<StandardTsServerRequests[K][1]>>;
 
@@ -197,7 +197,7 @@ export interface ITypeScriptServiceClient {
 	executeAsync<K extends keyof AsyncTsServerRequests>(
 		command: K,
 		args: AsyncTsServerRequests[K][0],
-		token: vscode.CancellationToken
+		token: docode.CancellationToken
 	): Promise<ServerResponse.Response<Proto.Response>>;
 
 	/**

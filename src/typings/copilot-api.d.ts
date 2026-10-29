@@ -42,7 +42,7 @@ declare module '@vscode/copilot-api' {
 		sessionId: string;
 		machineId: string;
 		deviceId: string;
-		vscodeVersion: string;
+		docodeVersion: string;
 		version: string;
 		buildType: 'dev' | 'prod';
 	}

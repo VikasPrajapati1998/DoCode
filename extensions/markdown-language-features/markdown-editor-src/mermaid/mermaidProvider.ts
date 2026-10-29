@@ -3,14 +3,14 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { IframeEmbeddedEditorProvider } from '@vscode/markdown-editor/web-editors';
+import type { IframeEmbeddedEditorProvider } from '@docode/markdown-editor/web-editors';
 
 export const mermaidProvider: IframeEmbeddedEditorProvider = {
-	id: 'vscode.markdown.mermaid',
+	id: 'docode.markdown.mermaid',
 	selector: { language: 'mermaid' },
 	resolve: async () => ({
 		html: (await import('./mermaid.html')).default,
-		runtimeKey: 'vscode.markdown.mermaid',
+		runtimeKey: 'docode.markdown.mermaid',
 		contentType: 'text',
 		initialHeight: 200,
 		presentation: { resizable: true, fullWidth: true, fullView: true, minHeight: 120 },

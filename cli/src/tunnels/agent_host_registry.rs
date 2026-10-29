@@ -11,8 +11,8 @@
 //! temp-file + rename, so publishers never need a lock. Readers enumerate
 //! `entries/`, merge a read-only legacy `metadata.json` array from older builds,
 //! prune dead PIDs, and dedupe by identity. The protocol is documented in
-//! `src/vs/platform/agentHost/LOCAL_ENDPOINT.md` and MUST stay in lock-step with
-//! the TypeScript implementation under `src/vs/platform/agentHost/`.
+//! `src/do/platform/agentHost/LOCAL_ENDPOINT.md` and MUST stay in lock-step with
+//! the TypeScript implementation under `src/do/platform/agentHost/`.
 //!
 //! The standalone `code agent host` CLI only publishes a `standalone`/`tcp`
 //! entry; it must never publish or select an `editor` entry (owned by running

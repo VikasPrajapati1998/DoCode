@@ -5,7 +5,7 @@
 
 // Test file to verify the code-no-reader-after-await ESLint rule works correctly
 
-import { observableValue, derived, autorun } from '../../src/vs/base/common/observable.js';
+import { observableValue, derived, autorun } from '../../src/do/base/common/observable.js';
 
 export function testValidUsage() {
 	const obs = observableValue('test', 0);

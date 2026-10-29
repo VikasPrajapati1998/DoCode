@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../../configuration/documentSelector';
 import { LanguageDescription } from '../../configuration/languageDescription';
 import { CachedResponse } from '../../tsServer/cachedResponse';
@@ -44,7 +44,7 @@ export default class TypeScriptImplementationsCodeLensProvider extends TypeScrip
 		this._register(this._showOnAllClassMethods.onDidChange(() => this.changeEmitter.fire()));
 	}
 
-	override async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<ReferencesCodeLens[]> {
+	override async provideCodeLenses(document: docode.TextDocument, token: docode.CancellationToken): Promise<ReferencesCodeLens[]> {
 		const enabled = this._enabled.getValue(document);
 		if (!enabled) {
 			return [];
@@ -55,8 +55,8 @@ export default class TypeScriptImplementationsCodeLensProvider extends TypeScrip
 
 	public async resolveCodeLens(
 		codeLens: ReferencesCodeLens,
-		token: vscode.CancellationToken,
-	): Promise<vscode.CodeLens> {
+		token: docode.CancellationToken,
+	): Promise<docode.CodeLens> {
 		const args = typeConverters.Position.toFileLocationRequestArgs(codeLens.file, codeLens.range.start);
 		const response = await this.client.execute('implementation', args, token, {
 			lowPriority: true,
@@ -73,12 +73,12 @@ export default class TypeScriptImplementationsCodeLensProvider extends TypeScrip
 		const locations = response.body
 			.map(reference =>
 				// Only take first line on implementation: https://github.com/microsoft/vscode/issues/23924
-				new vscode.Location(this.client.toResource(reference.file),
+				new docode.Location(this.client.toResource(reference.file),
 					reference.start.line === reference.end.line
 						? typeConverters.Range.fromTextSpan(reference)
-						: new vscode.Range(
+						: new docode.Range(
 							typeConverters.Position.fromLocation(reference.start),
-							new vscode.Position(reference.start.line, 0))))
+							new docode.Position(reference.start.line, 0))))
 			// Exclude original from implementations
 			.filter(location =>
 				!(location.uri.toString() === codeLens.document.toString() &&
@@ -89,7 +89,7 @@ export default class TypeScriptImplementationsCodeLensProvider extends TypeScrip
 		return codeLens;
 	}
 
-	private getCommand(locations: vscode.Location[], codeLens: ReferencesCodeLens): vscode.Command | undefined {
+	private getCommand(locations: docode.Location[], codeLens: ReferencesCodeLens): docode.Command | undefined {
 		return {
 			title: this.getTitle(locations),
 			command: locations.length ? 'editor.action.showReferences' : '',
@@ -97,17 +97,17 @@ export default class TypeScriptImplementationsCodeLensProvider extends TypeScrip
 		};
 	}
 
-	private getTitle(locations: vscode.Location[]): string {
+	private getTitle(locations: docode.Location[]): string {
 		return locations.length === 1
-			? vscode.l10n.t("1 implementation")
-			: vscode.l10n.t("{0} implementations", locations.length);
+			? docode.l10n.t("1 implementation")
+			: docode.l10n.t("{0} implementations", locations.length);
 	}
 
 	protected extractSymbol(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		item: Proto.NavigationTree,
 		parent: Proto.NavigationTree | undefined
-	): vscode.Range | undefined {
+	): docode.Range | undefined {
 		// Always show on interfaces
 		if (item.kind === PConst.Kind.interface) {
 			return getSymbolRange(document, item);
@@ -162,7 +162,7 @@ export function register(
 		requireHasModifiedUnifiedConfig(Config.enabled, language.id),
 		requireSomeCapability(client, ClientCapability.Semantic),
 	], () => {
-		return vscode.languages.registerCodeLensProvider(selector.semantic,
+		return docode.languages.registerCodeLensProvider(selector.semantic,
 			new TypeScriptImplementationsCodeLensProvider(client, cachedResponse));
 	});
 }

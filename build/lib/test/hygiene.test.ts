@@ -15,7 +15,7 @@ suite('hygiene', () => {
 		const result = spawnSync(process.execPath, [
 			'--experimental-strip-types',
 			'build/hygiene.ts',
-			'src/vs/editor/contrib/colorPicker/browser/images/opacity-background.png',
+			'src/do/editor/contrib/colorPicker/browser/images/opacity-background.png',
 		], {
 			cwd: repositoryRoot,
 			encoding: 'utf8',

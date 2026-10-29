@@ -10,9 +10,9 @@ case "$(uname -m)" in
 esac
 
 npm run gulp core-ci
-npm run gulp "vscode-darwin-${ARCH}-min-ci"
+npm run gulp "docode-darwin-${ARCH}-min-ci"
 
-APP_DIR="../VSCode-darwin-${ARCH}"
+APP_DIR="../DoCode-darwin-${ARCH}"
 mkdir -p installer/macos
 hdiutil create -volname "DoCode" -srcfolder "${APP_DIR}/DoCode.app" -ov -format UDZO \
   "installer/macos/DoCode-darwin-${ARCH}.dmg"

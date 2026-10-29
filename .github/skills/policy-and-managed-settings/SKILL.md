@@ -22,7 +22,7 @@ flowchart TD
 Follow the matching guide:
 
 - [SDK/runtime managed setting](./sdk-runtime-policy.md)
-- [VS Code configuration policy](./vscode-policy.md)
+- [VS Code configuration policy](./docode-policy.md)
 - [Extension-provided setting](./extension-policy.md)
 - [Split runtime/editor control](./mixed-policy.md)
 - [Pre-1.133 permission-policy migration](./legacy-permission-policy.md)

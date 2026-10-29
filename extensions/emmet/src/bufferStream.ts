@@ -5,10 +5,10 @@
 
 /* Based on @sergeche's work in his emmet plugin */
 
-import { TextDocument } from 'vscode';
+import { TextDocument } from 'docode';
 
 /**
- * A stream reader for VSCode's `TextDocument`
+ * A stream reader for DoCode's `TextDocument`
  * Based on @emmetio/stream-reader and @emmetio/atom-plugin
  */
 export class DocumentStreamReader {

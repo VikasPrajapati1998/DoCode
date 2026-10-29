@@ -5,12 +5,12 @@
 
 import 'mocha';
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { GitCommitFoldingProvider } from '../foldingProvider';
 
 suite('GitCommitFoldingProvider', () => {
 
-	function createMockDocument(content: string): vscode.TextDocument {
+	function createMockDocument(content: string): docode.TextDocument {
 		const lines = content.split('\n');
 		return {
 			lineCount: lines.length,
@@ -18,11 +18,11 @@ suite('GitCommitFoldingProvider', () => {
 				text: lines[index] || '',
 				lineNumber: index
 			}),
-		} as vscode.TextDocument;
+		} as docode.TextDocument;
 	}
 
-	const mockContext: vscode.FoldingContext = {} as vscode.FoldingContext;
-	const mockToken: vscode.CancellationToken = { isCancellationRequested: false } as vscode.CancellationToken;
+	const mockContext: docode.FoldingContext = {} as docode.FoldingContext;
+	const mockToken: docode.CancellationToken = { isCancellationRequested: false } as docode.CancellationToken;
 
 	test('empty document returns no folding ranges', () => {
 		const provider = new GitCommitFoldingProvider();
@@ -52,63 +52,63 @@ suite('GitCommitFoldingProvider', () => {
 		const provider = new GitCommitFoldingProvider();
 		const content = '# Comment 1\n# Comment 2';
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 1);
 		assert.strictEqual(ranges[0].start, 0);
 		assert.strictEqual(ranges[0].end, 1);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 	});
 
 	test('multiple comment lines create one folding range', () => {
 		const provider = new GitCommitFoldingProvider();
 		const content = '# Comment 1\n# Comment 2\n# Comment 3\n# Comment 4';
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 1);
 		assert.strictEqual(ranges[0].start, 0);
 		assert.strictEqual(ranges[0].end, 3);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 	});
 
 	test('comment block followed by content', () => {
 		const provider = new GitCommitFoldingProvider();
 		const content = '# Comment 1\n# Comment 2\nCommit message';
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 1);
 		assert.strictEqual(ranges[0].start, 0);
 		assert.strictEqual(ranges[0].end, 1);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 	});
 
 	test('comment block at end of document', () => {
 		const provider = new GitCommitFoldingProvider();
 		const content = 'Commit message\n\n# Comment 1\n# Comment 2';
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 1);
 		assert.strictEqual(ranges[0].start, 2);
 		assert.strictEqual(ranges[0].end, 3);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 	});
 
 	test('multiple separated comment blocks', () => {
 		const provider = new GitCommitFoldingProvider();
 		const content = '# Comment 1\n# Comment 2\n\nCommit message\n\n# Comment 3\n# Comment 4';
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 2);
 		assert.strictEqual(ranges[0].start, 0);
 		assert.strictEqual(ranges[0].end, 1);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 		assert.strictEqual(ranges[1].start, 5);
 		assert.strictEqual(ranges[1].end, 6);
-		assert.strictEqual(ranges[1].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[1].kind, docode.FoldingRangeKind.Comment);
 	});
 
 	test('single diff line returns no folding ranges', () => {
@@ -123,7 +123,7 @@ suite('GitCommitFoldingProvider', () => {
 		const provider = new GitCommitFoldingProvider();
 		const content = 'diff --git a/file.txt b/file.txt\nindex 1234..5678\n--- a/file.txt\n+++ b/file.txt';
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 1);
 		assert.strictEqual(ranges[0].start, 0);
@@ -142,7 +142,7 @@ suite('GitCommitFoldingProvider', () => {
 			'+++ b/file2.txt'
 		].join('\n');
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 2);
 		assert.strictEqual(ranges[0].start, 0);
@@ -161,7 +161,7 @@ suite('GitCommitFoldingProvider', () => {
 			'+++ b/file.txt'
 		].join('\n');
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 1);
 		assert.strictEqual(ranges[0].start, 2);
@@ -190,8 +190,8 @@ suite('GitCommitFoldingProvider', () => {
 			'+++ b/extensions/git-base/src/extension.ts',
 			'@@ -3,14 +3,20 @@',
 			' *  Licensed under the MIT License.',
-			'-import { ExtensionContext } from \'vscode\';',
-			'+import { ExtensionContext, languages } from \'vscode\';',
+			'-import { ExtensionContext } from \'docode\';',
+			'+import { ExtensionContext, languages } from \'docode\';',
 			'diff --git a/extensions/git-base/src/foldingProvider.ts b/extensions/git-base/src/foldingProvider.ts',
 			'new file mode 100644',
 			'index 0000000..2c4a9c3',
@@ -199,7 +199,7 @@ suite('GitCommitFoldingProvider', () => {
 			'+++ b/extensions/git-base/src/foldingProvider.ts'
 		].join('\n');
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		// Should have one comment block and two diff blocks
 		assert.strictEqual(ranges.length, 3);
@@ -207,7 +207,7 @@ suite('GitCommitFoldingProvider', () => {
 		// Comment block (lines 2-12)
 		assert.strictEqual(ranges[0].start, 2);
 		assert.strictEqual(ranges[0].end, 12);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 
 		// First diff block (lines 13-20)
 		assert.strictEqual(ranges[1].start, 13);
@@ -236,14 +236,14 @@ suite('GitCommitFoldingProvider', () => {
 			'# Comment 4'
 		].join('\n');
 		const doc = createMockDocument(content);
-		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as vscode.FoldingRange[];
+		const ranges = provider.provideFoldingRanges(doc, mockContext, mockToken) as docode.FoldingRange[];
 
 		assert.strictEqual(ranges.length, 3);
 
 		// First comment block
 		assert.strictEqual(ranges[0].start, 2);
 		assert.strictEqual(ranges[0].end, 3);
-		assert.strictEqual(ranges[0].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[0].kind, docode.FoldingRangeKind.Comment);
 
 		// Diff block
 		assert.strictEqual(ranges[1].start, 5);
@@ -253,6 +253,6 @@ suite('GitCommitFoldingProvider', () => {
 		// Second comment block
 		assert.strictEqual(ranges[2].start, 9);
 		assert.strictEqual(ranges[2].end, 10);
-		assert.strictEqual(ranges[2].kind, vscode.FoldingRangeKind.Comment);
+		assert.strictEqual(ranges[2].kind, docode.FoldingRangeKind.Comment);
 	});
 });

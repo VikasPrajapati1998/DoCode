@@ -4,7 +4,7 @@ We use a set of custom [ESLint](http://eslint.org) to enforce repo specific codi
 
 - Enforcing proper code layering
 - Preventing checking in of `test.only(...)`
-- Enforcing conventions in `vscode.d.ts`
+- Enforcing conventions in `docode.d.ts`
 
 Custom rules are mostly used for enforcing or banning certain coding patterns. We tend to leave stylistic choices up to area owners unless there's a good reason to enforce something project wide.
 
@@ -22,7 +22,7 @@ This doc provides a brief overview of how these rules are setup and how you can 
 Custom rules are defined in the `.eslint-plugin-local` folder. Each rule is defined in its own TypeScript file. These follow the naming convention:
 
 - `code-RULE-NAME.ts` — General rules that apply to the entire repo.
-- `vscode-dts-RULE-NAME.ts` — Rules that apply just to `vscode.d.ts`.
+- `docode-dts-RULE-NAME.ts` — Rules that apply just to `docode.d.ts`.
 
 These rules are then enabled in the `eslint.config.js` file. This is the main eslint configuration for our repo. It defines a set of file scopes which rules should apply to files in those scopes.
 
@@ -112,9 +112,9 @@ In these cases make sure to update the `meta.schema` property on your rule with 
 
 ## Agent host metadata boundary
 
-`local/code-no-private-agent-host-meta-import` keeps `src/vs/platform/agentHost/common/meta/copilotd/` and `meta/vscode/` private. Feature code must import domain helpers and portable types from top-level `meta/*.ts` modules, even for type-only imports. Top-level modules can adapt either private implementation; each private implementation can import only its own private folder. Files under `test/` directories may import raw metadata for parsing/vector tests, and `build/agentHost/generateCopilotMetadata.ts` may access the generated schema.
+`local/code-no-private-agent-host-meta-import` keeps `src/do/platform/agentHost/common/meta/copilotd/` and `meta/docode/` private. Feature code must import domain helpers and portable types from top-level `meta/*.ts` modules, even for type-only imports. Top-level modules can adapt either private implementation; each private implementation can import only its own private folder. Files under `test/` directories may import raw metadata for parsing/vector tests, and `build/agentHost/generateCopilotMetadata.ts` may access the generated schema.
 
-The rule checks static imports, re-exports, import types, literal dynamic imports, and literal `require` calls, resolving relative paths and `vs/` aliases. Run its tests with `node --test .eslint-plugin-local/tests/code-no-private-agent-host-meta-import.test.ts`.
+The rule checks static imports, re-exports, import types, literal dynamic imports, and literal `require` calls, resolving relative paths and `do/` aliases. Run its tests with `node --test .eslint-plugin-local/tests/code-no-private-agent-host-meta-import.test.ts`.
 
 
 ## Asynchronous production filesystem operations
@@ -154,4 +154,4 @@ The fixes can be run using `npx eslint --fix` in the VS Code repo.
 
 `local/code-no-timeout-polling-loop` reports loops in unit tests that wait for a state change by sleeping on a timer, for example `for (let i = 0; i < 100 && !done; i++) { await timeout(1); }`, `while (!done) { await new Promise(r => setTimeout(r, 5)); }`, or a fixed number of `await timeout(0)` ticks. Such a loop's time budget depends on timer clamping (about 4ms for nested timers in Electron) and machine load, so it is flaky on slow or oversubscribed machines. A bounded loop that runs out also continues silently with stale state, so the test fails later at an unrelated assertion. Await a signal for the state change instead: a `DeferredPromise`, `Event.toPromise(...)`, `waitForState(...)`, or the promise of the operation itself. For code driven by timers, use `runWithFakedTimers`.
 
-Only loops that do nothing but wait are reported: the body consists solely of awaited sleeps (`timeout`, `sleep`, `delay`, `wait`, the awaited `setTimeout` of `timers/promises`, or a `new Promise` whose executor only resolves on a `setTimeout`), exit guards such as `if (done) { break; }`, and declarations or assignments of reads such as `const state = await db.read();`. Calls count as reads only by name (`get…`, `is…`, `has…`, `find`, `filter` and similar); any other call counts as work. Loops that do work between sleeps or before a `continue`, such as streaming mock data or a parameterized test, are not reported. Loops within a `runWithFakedTimers` callback, where time is virtual, are not reported either, unless the callback passes `useFakeTimers: false`. The rule is enabled for `src/vs/**/*.test.ts`. Files that already polled when it was introduced are listed in its `exclude` option and should be removed from the list once they are fixed. Run its tests with `node --test .eslint-plugin-local/tests/code-no-timeout-polling-loop.test.ts`.
+Only loops that do nothing but wait are reported: the body consists solely of awaited sleeps (`timeout`, `sleep`, `delay`, `wait`, the awaited `setTimeout` of `timers/promises`, or a `new Promise` whose executor only resolves on a `setTimeout`), exit guards such as `if (done) { break; }`, and declarations or assignments of reads such as `const state = await db.read();`. Calls count as reads only by name (`get…`, `is…`, `has…`, `find`, `filter` and similar); any other call counts as work. Loops that do work between sleeps or before a `continue`, such as streaming mock data or a parameterized test, are not reported. Loops within a `runWithFakedTimers` callback, where time is virtual, are not reported either, unless the callback passes `useFakeTimers: false`. The rule is enabled for `src/do/**/*.test.ts`. Files that already polled when it was introduced are listed in its `exclude` option and should be removed from the list once they are fixed. Run its tests with `node --test .eslint-plugin-local/tests/code-no-timeout-polling-loop.test.ts`.

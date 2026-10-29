@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, Disposable } from 'vscode';
+import { Command, Disposable } from 'docode';
 import type { AvatarQuery, SourceControlHistoryItemDetailsProvider } from './api/git';
 import { Repository } from './repository';
 import { ApiRepository } from './api/api1';

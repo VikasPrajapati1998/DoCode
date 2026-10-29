@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type { CredentialsProvider, Credentials, API as GitAPI } from './typings/git.d.ts';
-import { workspace, Uri, Disposable } from 'vscode';
+import { workspace, Uri, Disposable } from 'docode';
 import { getSession } from './auth.js';
 
 const EmptyDisposable: Disposable = { dispose() { } };

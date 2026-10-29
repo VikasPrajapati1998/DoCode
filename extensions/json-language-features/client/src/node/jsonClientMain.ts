@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, ExtensionContext, LogOutputChannel, window, l10n, env, LogLevel } from 'vscode';
+import { Disposable, ExtensionContext, LogOutputChannel, window, l10n, env, LogLevel } from 'docode';
 import { startClient, LanguageClientConstructor, SchemaRequestService, languageServerDescription, AsyncDisposable } from '../jsonClient';
 import { ServerOptions, TransportKind, LanguageClientOptions, LanguageClient } from 'vscode-languageclient/node';
 
@@ -11,7 +11,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { xhr, XHRResponse, getErrorStatusDescription, Headers } from 'request-light';
 
-import TelemetryReporter from '@vscode/extension-telemetry';
+import TelemetryReporter from '@docode/extension-telemetry';
 import { JSONSchemaCache } from './schemaCache';
 
 let client: AsyncDisposable | undefined;
@@ -50,7 +50,7 @@ export async function activate(context: ExtensionContext) {
 	};
 
 	// pass the location of the localization bundle to the server
-	process.env['VSCODE_L10N_BUNDLE_LOCATION'] = l10n.uri?.toString() ?? '';
+	process.env['DOCODE_L10N_BUNDLE_LOCATION'] = l10n.uri?.toString() ?? '';
 
 	const schemaRequests = await getSchemaRequestService(context, logOutputChannel);
 

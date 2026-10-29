@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { rewriteSourceMappingURL } from './source-map-url.ts';
 
-export const agentHostCryptoOutDir = 'vs/platform/agentHost/browser';
+export const agentHostCryptoOutDir = 'do/platform/agentHost/browser';
 const repoRoot = path.dirname(path.dirname(import.meta.dirname));
 
 /** Emits the lazily loaded credential-encryption dependencies for browser and desktop clients. */

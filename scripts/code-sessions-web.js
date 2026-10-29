@@ -36,7 +36,7 @@ async function main() {
 
 	// Collect CSS module paths from the compiled output (same as @vscode/test-web does).
 	// These are turned into an import map so the browser can load `import './foo.css'`
-	// statements as JavaScript shims that inject the CSS via `_VSCODE_CSS_LOAD`.
+	// statements as JavaScript shims that inject the CSS via `_DOCODE_CSS_LOAD`.
 	let cssModules = [];
 	try {
 		const { glob } = require('tinyglobby');
@@ -108,7 +108,7 @@ function getSessionsHTML(host, port, cssModules, useMock) {
 	const imports = {};
 	for (const cssModule of cssModules) {
 		const cssUrl = `${fileRoot}/${cssModule}`;
-		const jsSrc = `globalThis._VSCODE_CSS_LOAD('${cssUrl}');\n`;
+		const jsSrc = `globalThis._DOCODE_CSS_LOAD('${cssUrl}');\n`;
 		const encoded = Buffer.from(jsSrc).toString('base64');
 		imports[cssUrl] = `data:application/javascript;base64,${encoded}`;
 	}
@@ -116,7 +116,7 @@ function getSessionsHTML(host, port, cssModules, useMock) {
 
 	// When --mock is passed, load the E2E mock extension
 	const additionalBuiltinExtensions = useMock
-		? `additionalBuiltinExtensions: [{ scheme: 'http', authority: '${host}:${port}', path: '/src/vs/sessions/test/e2e/extensions/sessions-e2e-mock' }],`
+		? `additionalBuiltinExtensions: [{ scheme: 'http', authority: '${host}:${port}', path: '/src/do/sessions/test/e2e/extensions/sessions-e2e-mock' }],`
 		: '';
 
 	return `<!DOCTYPE html>
@@ -125,11 +125,11 @@ function getSessionsHTML(host, port, cssModules, useMock) {
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Sessions</title>
-	<style id="vscode-css-modules"></style>
+	<style id="docode-css-modules"></style>
 	<script>
-		globalThis._VSCODE_FILE_ROOT = '${fileRoot}';
-		const sheet = document.getElementById('vscode-css-modules').sheet;
-		globalThis._VSCODE_CSS_LOAD = function (url) { sheet.insertRule(\`@import url(\${url});\`); };
+		globalThis._DOCODE_FILE_ROOT = '${fileRoot}';
+		const sheet = document.getElementById('docode-css-modules').sheet;
+		globalThis._DOCODE_CSS_LOAD = function (url) { sheet.insertRule(\`@import url(\${url});\`); };
 	</script>
 	<script type="importmap">
 ${importMapJson}
@@ -137,7 +137,7 @@ ${importMapJson}
 </head>
 <body aria-label="">
 	<script type="module">
-		import { create, URI } from '${fileRoot}/vs/sessions/${useMock ? 'test/sessions.web.test.internal' : 'sessions.web.main.internal'}.js';
+		import { create, URI } from '${fileRoot}/do/sessions/${useMock ? 'test/sessions.web.test.internal' : 'sessions.web.main.internal'}.js';
 		create(document.body, {
 			productConfiguration: {
 				nameShort: 'Sessions (Web)',

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event, EventEmitter, extensions } from 'vscode';
+import { Event, EventEmitter, extensions } from 'docode';
 
 /**
  * JSON language participant contribution.

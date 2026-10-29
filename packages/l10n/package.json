@@ -1,0 +1,17 @@
+{
+	"name": "@docode/l10n",
+	"version": "0.0.18",
+	"description": "A helper library to assist in localizing subprocesses spun up by DoCode extensions",
+	"author": "Microsoft Corporation",
+	"license": "MIT",
+	"main": "./dist/main.js",
+	"sideEffects": false,
+	"browser": {
+		"./dist/main.js": "./dist/browser.js",
+		"./src/node/reader": "./src/browser/reader"
+	},
+	"types": "dist/main.d.ts",
+	"files": [
+		"dist/*"
+	]
+}

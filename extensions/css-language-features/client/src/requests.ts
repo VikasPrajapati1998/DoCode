@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri, workspace } from 'vscode';
+import { Uri, workspace } from 'docode';
 import { RequestType, BaseLanguageClient } from 'vscode-languageclient';
 import { Runtime } from './cssClient';
 

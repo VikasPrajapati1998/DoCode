@@ -5,14 +5,14 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import type * as vscode from 'vscode';
+import type * as docode from 'docode';
 import { SignatureHelpState } from '../../languageFeatures/signatureHelpState';
 
-function createSignatures(...labels: string[]): vscode.SignatureInformation[] {
+function createSignatures(...labels: string[]): docode.SignatureInformation[] {
 	return labels.map(label => ({ label, parameters: [] }));
 }
 
-function createContext(signatures?: vscode.SignatureInformation[], activeSignature = 0): vscode.SignatureHelpContext {
+function createContext(signatures?: docode.SignatureInformation[], activeSignature = 0): docode.SignatureHelpContext {
 	return {
 		triggerKind: 2,
 		triggerCharacter: ',',
@@ -27,17 +27,17 @@ function createContext(signatures?: vscode.SignatureInformation[], activeSignatu
 
 function getActiveSignature(
 	state: SignatureHelpState,
-	document: vscode.TextDocument,
-	context: vscode.SignatureHelpContext,
+	document: docode.TextDocument,
+	context: docode.SignatureHelpContext,
 	typeScriptSelectedSignatureIndex: number,
-	signatures: readonly vscode.SignatureInformation[],
+	signatures: readonly docode.SignatureInformation[],
 ): number {
 	const requestId = state.startRequest(document);
 	return state.getActiveSignature(document, requestId, context, typeScriptSelectedSignatureIndex, signatures);
 }
 
 suite('SignatureHelpState', () => {
-	const document = {} as vscode.TextDocument;
+	const document = {} as docode.TextDocument;
 
 	test('updates the active signature when TypeScript changes its recommendation (#268728)', () => {
 		const state = new SignatureHelpState();

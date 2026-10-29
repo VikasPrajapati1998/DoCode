@@ -189,13 +189,13 @@ export default new class implements eslint.Rule.RuleModule {
 				continue;
 			}
 			const target = option.target;
-			const targetIsVS = /^src\/vs\//.test(target);
+			const targetIsVS = /^src\/do\//.test(target);
 			const restrictions = (typeof option.restrictions === 'string' ? [option.restrictions] : option.restrictions).slice(0);
 
 			if (targetIsVS) {
-				// Always add "vs/nls" and "vs/amdX"
-				restrictions.push('vs/nls.js');
-				restrictions.push('vs/amdX.js'); // TODO@jrieken remove after ESM is real
+				// Always add "do/nls" and "do/amdX"
+				restrictions.push('do/nls.js');
+				restrictions.push('do/amdX.js'); // TODO@jrieken remove after ESM is real
 			}
 
 			if (targetIsVS && option.layer) {
@@ -225,7 +225,7 @@ export default new class implements eslint.Rule.RuleModule {
 	}
 
 	private _checkImport(context: eslint.Rule.RuleContext, config: ImportPatternsConfig, node: TSESTree.Node, importPath: string) {
-		const targetIsVS = /^src\/vs\//.test(getRelativeFilename(context));
+		const targetIsVS = /^src\/do\//.test(getRelativeFilename(context));
 		if (targetIsVS) {
 
 			// ESM: check for import ending with ".js" or ".css"
@@ -237,7 +237,7 @@ export default new class implements eslint.Rule.RuleModule {
 			}
 
 			// check for import being relative
-			if (importPath.startsWith('vs/')) {
+			if (importPath.startsWith('do/')) {
 				context.report({
 					loc: node.loc,
 					messageId: 'badAbsolute',
@@ -249,7 +249,7 @@ export default new class implements eslint.Rule.RuleModule {
 		if (importPath[0] === '.') {
 			const relativeFilename = getRelativeFilename(context);
 			importPath = path.posix.join(path.posix.dirname(relativeFilename), importPath);
-			if (/^src\/vs\//.test(importPath)) {
+			if (/^src\/do\//.test(importPath)) {
 				// resolve using base url
 				importPath = importPath.substring('src/'.length);
 			}

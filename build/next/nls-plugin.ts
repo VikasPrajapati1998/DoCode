@@ -139,7 +139,7 @@ export async function finalizeNLS(
 		),
 		fs.promises.writeFile(
 			path.join(dir, 'nls.messages.js'),
-			`/*---------------------------------------------------------\n * Copyright (C) Microsoft Corporation. All rights reserved.\n *--------------------------------------------------------*/\nglobalThis._VSCODE_NLS_MESSAGES=${serializeNlsData(allMessages)};`
+			`/*---------------------------------------------------------\n * Copyright (C) Microsoft Corporation. All rights reserved.\n *--------------------------------------------------------*/\nglobalThis._DOCODE_NLS_MESSAGES=${serializeNlsData(allMessages)};`
 		),
 	]));
 
@@ -409,7 +409,7 @@ export function nlsPlugin(options: NLSPluginOptions): esbuild.Plugin {
 
 				const source = await fs.promises.readFile(args.path, 'utf-8');
 
-				// Compute module ID (e.g., "vs/editor/editor" from "src/vs/editor/editor.ts")
+				// Compute module ID (e.g., "do/editor/editor" from "src/do/editor/editor.ts")
 				const relativePath = path.relative(options.baseDir, args.path);
 				const moduleId = relativePath
 					.replace(/\\/g, '/')

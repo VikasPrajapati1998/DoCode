@@ -9,7 +9,7 @@ import type { Node } from 'estree';
 import { dirname, resolve } from 'path';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
-const pfsModule = resolve(repositoryRoot, 'src/vs/base/node/pfs');
+const pfsModule = resolve(repositoryRoot, 'src/do/base/node/pfs');
 
 type Binding = { kind: 'fs' | 'module' | 'requireFactory' | 'require' } | { kind: 'sync' | 'syncBind'; name: string };
 
@@ -29,7 +29,7 @@ function moduleBinding(node: TSESTree.Node, filename: string): Binding | undefin
 		return undefined;
 	}
 	const importedPath = value.startsWith('.') ? resolve(dirname(filename), value)
-		: value.startsWith('vs/') ? resolve(repositoryRoot, 'src', value) : value;
+		: value.startsWith('do/') ? resolve(repositoryRoot, 'src', value) : value;
 	if (['fs', 'node:fs', 'original-fs'].includes(value) || importedPath.replace(/\.(?:js|ts)$/, '') === pfsModule) {
 		return { kind: 'fs' };
 	}

@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import VsCodeTelemetryReporter from '@vscode/extension-telemetry';
-import * as vscode from 'vscode';
-import * as tas from 'vscode-tas-client';
+import VsCodeTelemetryReporter from '@docode/extension-telemetry';
+import * as docode from 'docode';
+import * as tas from '@docode/tas-client';
 
-export interface IExperimentationTelemetryReporter extends tas.IExperimentationTelemetry, vscode.Disposable {
+export interface IExperimentationTelemetryReporter extends tas.IExperimentationTelemetry, docode.Disposable {
 	postEventObj(eventName: string, props: { [prop: string]: string }): void;
 }
 

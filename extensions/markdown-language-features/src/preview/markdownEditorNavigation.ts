@@ -3,30 +3,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import type { MarkdownEditorHost, MarkdownEditorRenderer, MarkdownNavigationState } from './markdownEditorProtocol';
 
-export class MarkdownEditorNavigation implements vscode.CustomTextEditorNavigation {
-	readonly #onDidChangeSelection = new vscode.EventEmitter<vscode.Selection | undefined>();
-	readonly #lifetime = new vscode.CancellationTokenSource();
+export class MarkdownEditorNavigation implements docode.CustomTextEditorNavigation {
+	readonly #onDidChangeSelection = new docode.EventEmitter<docode.Selection | undefined>();
+	readonly #lifetime = new docode.CancellationTokenSource();
 	readonly onDidChangeSelection = this.#onDidChangeSelection.event;
-	readonly #document: vscode.TextDocument;
+	readonly #document: docode.TextDocument;
 	readonly #drain: () => Promise<void>;
 	readonly #snapshot: () => { text: string; editEpoch: number };
 	readonly #renderer: () => Pick<MarkdownEditorRenderer, 'captureNavigationState' | 'revealRange' | 'restoreNavigationState'>;
-	readonly #waitUntilReady: (token: vscode.CancellationToken) => Promise<void>;
-	#selection: vscode.Selection | undefined;
+	readonly #waitUntilReady: (token: docode.CancellationToken) => Promise<void>;
+	#selection: docode.Selection | undefined;
 	#disposed = false;
 	#generation = 0;
 	#selectionRequest = 0;
 
 	constructor(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		drain: () => Promise<void>,
 		snapshot: () => { text: string; editEpoch: number },
 		renderer: () => Pick<MarkdownEditorRenderer, 'captureNavigationState' | 'revealRange' | 'restoreNavigationState'>,
-		waitUntilReady: (token: vscode.CancellationToken) => Promise<void>,
+		waitUntilReady: (token: docode.CancellationToken) => Promise<void>,
 	) {
 		this.#document = document;
 		this.#drain = drain;
@@ -35,7 +35,7 @@ export class MarkdownEditorNavigation implements vscode.CustomTextEditorNavigati
 		this.#waitUntilReady = waitUntilReady;
 	}
 
-	get selection(): vscode.Selection | undefined { return this.#selection; }
+	get selection(): docode.Selection | undefined { return this.#selection; }
 
 	async acceptSelection(message: Parameters<MarkdownEditorHost['selectionChanged']>[0]): Promise<void> {
 		const request = ++this.#selectionRequest;
@@ -48,13 +48,13 @@ export class MarkdownEditorNavigation implements vscode.CustomTextEditorNavigati
 		if (selection && Math.max(selection.anchor, selection.active) > mirror.getText().length) {
 			throw new Error('Invalid Markdown editor navigation selection');
 		}
-		this.#selection = selection ? new vscode.Selection(
+		this.#selection = selection ? new docode.Selection(
 			this.#position(mirror.positionAt(selection.anchor)), this.#position(mirror.positionAt(selection.active)),
 		) : undefined;
 		this.#onDidChangeSelection.fire(this.#selection);
 	}
 
-	async revealRange(range: vscode.Range, options: vscode.CustomTextEditorRevealOptions, token: vscode.CancellationToken): Promise<void> {
+	async revealRange(range: docode.Range, options: docode.CustomTextEditorRevealOptions, token: docode.CancellationToken): Promise<void> {
 		await this.#waitUntilReady(token);
 		this.#checkCurrent(token);
 		await this.#drain();
@@ -65,7 +65,7 @@ export class MarkdownEditorNavigation implements vscode.CustomTextEditorNavigati
 		const state = await renderer.captureNavigationState({});
 		this.#checkCurrent(token);
 		if (version !== this.#document.version || generation !== this.#generation || state.editEpoch !== this.#snapshot().editEpoch) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 		if (!this.#document.validateRange(range).isEqual(range)
 			|| options.selection && !this.#document.validateRange(options.selection).isEqual(options.selection)) {
@@ -93,14 +93,14 @@ export class MarkdownEditorNavigation implements vscode.CustomTextEditorNavigati
 		return new MarkdownEditorViewState(generation, version, await this.#renderer().captureNavigationState({}));
 	}
 
-	async restoreViewState(value: unknown, token: vscode.CancellationToken): Promise<void> {
+	async restoreViewState(value: unknown, token: docode.CancellationToken): Promise<void> {
 		const saved = await value;
 		this.#checkCurrent(token);
 		if (!(saved instanceof MarkdownEditorViewState)) {
 			throw new Error('Invalid Markdown editor view state');
 		}
 		if (saved.generation !== this.#generation || saved.version !== this.#document.version) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 		await this.#renderer().restoreNavigationState(saved.state);
 	}
@@ -125,13 +125,13 @@ export class MarkdownEditorNavigation implements vscode.CustomTextEditorNavigati
 		return TextDocument.create(this.#document.uri.toString(), 'markdown', 0, this.#snapshot().text);
 	}
 
-	#position(position: { line: number; character: number }): vscode.Position {
-		return new vscode.Position(position.line, position.character);
+	#position(position: { line: number; character: number }): docode.Position {
+		return new docode.Position(position.line, position.character);
 	}
 
-	#checkCurrent(token: vscode.CancellationToken): void {
+	#checkCurrent(token: docode.CancellationToken): void {
 		if (this.#disposed || token.isCancellationRequested || this.#document.isClosed) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 	}
 }

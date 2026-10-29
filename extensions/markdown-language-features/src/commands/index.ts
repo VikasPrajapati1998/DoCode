@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { CommandManager } from '../commandManager';
 import { MarkdownItEngine } from '../markdownEngine';
 import { MarkdownPreviewManager } from '../preview/previewManager';
@@ -28,7 +28,7 @@ export function registerMarkdownCommands(
 	telemetryReporter: TelemetryReporter,
 	cspArbiter: ContentSecurityPolicyArbiter,
 	engine: MarkdownItEngine,
-): vscode.Disposable {
+): docode.Disposable {
 	const previewSecuritySelector = new PreviewSecuritySelector(cspArbiter, previewManager);
 
 	commandManager.register(new OpenImageCommand(previewManager));

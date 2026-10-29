@@ -50,7 +50,7 @@ export class PlaywrightDriver {
 	private static screenShotCounter = 1;
 	private static reloadMarkerCounter = 1;
 
-	private static readonly vscodeToPlaywrightKey: { [key: string]: string } = {
+	private static readonly docodeToPlaywrightKey: { [key: string]: string } = {
 		cmd: 'Meta',
 		ctrl: 'Control',
 		shift: 'Shift',
@@ -212,7 +212,7 @@ export class PlaywrightDriver {
 		}
 		const { executionContextId } = await this.sendCDPTargetCommand(targetId, 'Page.createIsolatedWorld', {
 			frameId,
-			worldName: 'vscodeAutomation',
+			worldName: 'docodeAutomation',
 			grantUniveralAccess: true
 		}) as Protocol.Page.createIsolatedWorldReturnValue;
 		const response = await this.sendCDPTargetCommand(targetId, 'Runtime.evaluate', {
@@ -581,7 +581,7 @@ export class PlaywrightDriver {
 	 * document apart from the one that a window reload will bring up.
 	 */
 	async markWindowForReload(): Promise<string> {
-		const marker = `vscodeSmokeTestReloadMarker${PlaywrightDriver.reloadMarkerCounter++}`;
+		const marker = `docodeSmokeTestReloadMarker${PlaywrightDriver.reloadMarkerCounter++}`;
 		await this.page.evaluate(m => { (window as unknown as Record<string, boolean>)[m] = true; }, marker);
 
 		return marker;
@@ -746,8 +746,8 @@ export class PlaywrightDriver {
 			const keys = chord.split('+');
 			const keysDown: string[] = [];
 			for (let i = 0; i < keys.length; i++) {
-				if (keys[i] in PlaywrightDriver.vscodeToPlaywrightKey) {
-					keys[i] = PlaywrightDriver.vscodeToPlaywrightKey[keys[i]];
+				if (keys[i] in PlaywrightDriver.docodeToPlaywrightKey) {
+					keys[i] = PlaywrightDriver.docodeToPlaywrightKey[keys[i]];
 				}
 				await this.page.keyboard.down(keys[i]);
 				keysDown.push(keys[i]);

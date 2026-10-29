@@ -1,0 +1,15 @@
+.docode/**
+.docode-test/**
+out/test/**
+out/**
+esbuild*.mts
+package-lock.json
+src/**
+.gitignore
+vsc-extension-quickstart.md
+**/tsconfig*.json
+**/*.tsbuildinfo
+**/tslint.json
+**/*.map
+**/*.ts
+packageMocks/

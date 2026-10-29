@@ -5,7 +5,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
-USER_DATA_DIR="${CODE_OSS_DEV_AUTHED_USER_DATA_DIR:-$HOME/.vscode-oss-dev}"
+USER_DATA_DIR="${CODE_OSS_DEV_AUTHED_USER_DATA_DIR:-$HOME/.docode-oss-dev}"
 EXIT_MARKER=""
 
 while [[ $# -gt 0 ]]; do

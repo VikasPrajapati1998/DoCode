@@ -21,10 +21,10 @@ import {
 	sha256File,
 } from './copilotShimFixtures.js';
 
-const fixtureSourceMarker = '.vscode-copilot-shim-fixture-source.json';
-const fixtureSourcePurpose = 'vscode-copilot-shim-fixture-source';
+const fixtureSourceMarker = '.docode-copilot-shim-fixture-source.json';
+const fixtureSourcePurpose = 'docode-copilot-shim-fixture-source';
 const productionTemplatePaths = [
-	'build/gulpfile.vscode.linux.ts',
+	'build/gulpfile.docode.linux.ts',
 	'resources/linux/copilot-link.sh',
 	'resources/linux/debian/postinst.template',
 	'resources/linux/debian/postrm.template',
@@ -102,7 +102,7 @@ export function generateFixtureSet(planPath: string, outputDirectory: string): v
 			throw new Error(`Fixture ${entry.id} has an OSS role but a non-OSS identity.`);
 		}
 
-		const preparedPayload = path.resolve(entry.sourceRoot, '..', `VSCode-linux-${plan.architecture}`);
+		const preparedPayload = path.resolve(entry.sourceRoot, '..', `DoCode-linux-${plan.architecture}`);
 		validatePreparedPayload(entry, preparedPayload);
 		const sourceHelperPath = path.join(entry.sourceRoot, 'resources', 'linux', 'copilot-link.sh');
 		if (entry.role !== 'legacy-no-shim') {
@@ -151,7 +151,7 @@ export function generateFixtureSet(planPath: string, outputDirectory: string): v
 		helper: {
 			sourcePath: path.join('provenance', 'copilot-link.sh'),
 			sha256: sha256File(helperOutputPath),
-			functionName: 'vscode_copilot_link',
+			functionName: 'docode_copilot_link',
 			templateMarker: '@@COPILOT_LINK_HELPER@@',
 		},
 		fixtures,
@@ -315,7 +315,7 @@ function runProductionPackageTask(
 	phase: 'prepare' | 'build',
 ): void {
 	const suffix = format === 'deb' ? 'deb' : 'rpm';
-	runRequiredCommand('npm', ['run', 'gulp', `vscode-linux-${architecture}-${phase}-${suffix}`], sourceRoot);
+	runRequiredCommand('npm', ['run', 'gulp', `docode-linux-${architecture}-${phase}-${suffix}`], sourceRoot);
 }
 
 function minimizePreparedPackage(entry: IFixtureBuildPlanEntry, architecture: IFixtureBuildPlan['architecture'], format: CopilotShimPackageFormat): void {
@@ -366,8 +366,8 @@ function instrumentGeneratedInstallHook(entry: IFixtureBuildPlanEntry, architect
 		? path.join(entry.sourceRoot, '.build', 'linux', 'deb', debArchitecture(architecture), `${entry.identity}-${debArchitecture(architecture)}`, 'DEBIAN', 'postinst')
 		: path.join(entry.sourceRoot, '.build', 'linux', 'rpm', rpmArchitecture(architecture), 'rpmbuild', 'SPECS', `${entry.identity}.spec`);
 	const installInvocation = format === 'deb'
-		? `vscode_copilot_link install "${entry.identity}" || :`
-		: 'vscode_copilot_link install "%{name}" || :';
+		? `docode_copilot_link install "${entry.identity}" || :`
+		: 'docode_copilot_link install "%{name}" || :';
 	const script = fs.readFileSync(scriptPath, 'utf8');
 	const firstIndex = script.indexOf(installInvocation);
 	if (firstIndex < 0 || firstIndex !== script.lastIndexOf(installInvocation)) {
@@ -426,7 +426,7 @@ function createFixture(
 		provenance: {
 			kind: entry.sourceKind,
 			sourceRevision: entry.sourceRevision,
-			generationCommand: `npm run gulp vscode-linux-${architecture}-prepare-${format} && npm run gulp vscode-linux-${architecture}-build-${format}`,
+			generationCommand: `npm run gulp docode-linux-${architecture}-prepare-${format} && npm run gulp docode-linux-${architecture}-build-${format}`,
 			templatePaths: entry.role === 'legacy-no-shim' ? [] : productionTemplatePaths,
 			fixtureAdjustments: [
 				...entry.fixtureAdjustments,
@@ -491,7 +491,7 @@ function createForeignOwnerFixture(
 		const packageRoot = path.join(stagingRoot, 'package');
 		fs.mkdirSync(path.join(packageRoot, 'DEBIAN'), { recursive: true, mode: 0o755 });
 		fs.mkdirSync(path.join(packageRoot, 'usr', 'bin'), { recursive: true, mode: 0o755 });
-		fs.writeFileSync(path.join(packageRoot, 'DEBIAN', 'control'), `Package: vscode-copilot-shim-foreign-command\nVersion: 1.0.0-1\nArchitecture: ${debArchitecture(architecture)}\nMaintainer: VS Code Fixture Harness <vscode@example.invalid>\nDescription: Test-owned foreign Copilot command\n`, { mode: 0o644 });
+		fs.writeFileSync(path.join(packageRoot, 'DEBIAN', 'control'), `Package: docode-copilot-shim-foreign-command\nVersion: 1.0.0-1\nArchitecture: ${debArchitecture(architecture)}\nMaintainer: VS Code Fixture Harness <docode@example.invalid>\nDescription: Test-owned foreign Copilot command\n`, { mode: 0o644 });
 		fs.writeFileSync(path.join(packageRoot, 'usr', 'bin', 'copilot'), '#!/bin/sh\nprintf "%s\\n" foreign-package-copilot\n', { mode: 0o755 });
 		runRequiredCommand('dpkg-deb', ['--build', packageRoot, outputPackagePath]);
 	} else {
@@ -500,7 +500,7 @@ function createForeignOwnerFixture(
 			fs.mkdirSync(path.join(topDirectory, directory), { recursive: true, mode: 0o755 });
 		}
 		const specPath = path.join(topDirectory, 'SPECS', 'foreign-copilot-owner.spec');
-		fs.writeFileSync(specPath, `Name: vscode-copilot-shim-foreign-command
+		fs.writeFileSync(specPath, `Name: docode-copilot-shim-foreign-command
 Version: 1.0.0
 Release: 1
 Summary: Test-owned foreign Copilot command
@@ -519,7 +519,7 @@ chmod 755 %{buildroot}/usr/bin/copilot
 /usr/bin/copilot
 `, { mode: 0o644 });
 		runRequiredCommand('rpmbuild', ['-bb', '--define', `_topdir ${topDirectory}`, '--target', rpmArchitecture(architecture), specPath]);
-		const builtPath = path.join(topDirectory, 'RPMS', rpmArchitecture(architecture), 'vscode-copilot-shim-foreign-command-1.0.0-1.' + rpmArchitecture(architecture) + '.rpm');
+		const builtPath = path.join(topDirectory, 'RPMS', rpmArchitecture(architecture), 'docode-copilot-shim-foreign-command-1.0.0-1.' + rpmArchitecture(architecture) + '.rpm');
 		fs.copyFileSync(builtPath, outputPackagePath);
 	}
 

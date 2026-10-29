@@ -6,7 +6,7 @@
 import 'mocha';
 import { findGit, Git, GitStatusParser, parseGitCommits, parseGitFileLog, parseGitmodules, parseLsTree, parseLsFiles, parseGitRemotes, parseCoAuthors } from '../git';
 import * as assert from 'assert';
-import { LogOutputChannel, window } from 'vscode';
+import { LogOutputChannel, window } from 'docode';
 import { splitInChunks } from '../util';
 
 suite('git', () => {
@@ -592,7 +592,7 @@ suite('git', () => {
 
 	suite('parseLsTree', function () {
 		test('sample', function () {
-			const input = `040000 tree 0274a81f8ee9ca3669295dc40f510bd2021d0043       -	.vscode
+			const input = `040000 tree 0274a81f8ee9ca3669295dc40f510bd2021d0043       -	.docode
 100644 blob 1d487c1817262e4f20efbfa1d04c18f51b0046f6  491570	Screen Shot 2018-06-01 at 14.48.05.png
 100644 blob 686c16e4f019b734655a2576ce8b98749a9ffdb9  764420	Screen Shot 2018-06-07 at 20.04.59.png
 100644 blob 257cc5642cb1a054f08cc83f2d943e56fd3ebe99       4	boom.txt
@@ -607,7 +607,7 @@ suite('git', () => {
 			const output = parseLsTree(input);
 
 			assert.deepStrictEqual(output, [
-				{ mode: '040000', type: 'tree', object: '0274a81f8ee9ca3669295dc40f510bd2021d0043', size: '-', file: '.vscode' },
+				{ mode: '040000', type: 'tree', object: '0274a81f8ee9ca3669295dc40f510bd2021d0043', size: '-', file: '.docode' },
 				{ mode: '100644', type: 'blob', object: '1d487c1817262e4f20efbfa1d04c18f51b0046f6', size: '491570', file: 'Screen Shot 2018-06-01 at 14.48.05.png' },
 				{ mode: '100644', type: 'blob', object: '686c16e4f019b734655a2576ce8b98749a9ffdb9', size: '764420', file: 'Screen Shot 2018-06-07 at 20.04.59.png' },
 				{ mode: '100644', type: 'blob', object: '257cc5642cb1a054f08cc83f2d943e56fd3ebe99', size: '4', file: 'boom.txt' },
@@ -624,7 +624,7 @@ suite('git', () => {
 
 	suite('parseLsFiles', function () {
 		test('sample', function () {
-			const input = `100644 7a73a41bfdf76d6f793007240d80983a52f15f97 0	.vscode/settings.json
+			const input = `100644 7a73a41bfdf76d6f793007240d80983a52f15f97 0	.docode/settings.json
 100644 1d487c1817262e4f20efbfa1d04c18f51b0046f6 0	Screen Shot 2018-06-01 at 14.48.05.png
 100644 686c16e4f019b734655a2576ce8b98749a9ffdb9 0	Screen Shot 2018-06-07 at 20.04.59.png
 100644 257cc5642cb1a054f08cc83f2d943e56fd3ebe99 0	boom.txt
@@ -639,7 +639,7 @@ suite('git', () => {
 			const output = parseLsFiles(input);
 
 			assert.deepStrictEqual(output, [
-				{ mode: '100644', object: '7a73a41bfdf76d6f793007240d80983a52f15f97', stage: '0', file: '.vscode/settings.json' },
+				{ mode: '100644', object: '7a73a41bfdf76d6f793007240d80983a52f15f97', stage: '0', file: '.docode/settings.json' },
 				{ mode: '100644', object: '1d487c1817262e4f20efbfa1d04c18f51b0046f6', stage: '0', file: 'Screen Shot 2018-06-01 at 14.48.05.png' },
 				{ mode: '100644', object: '686c16e4f019b734655a2576ce8b98749a9ffdb9', stage: '0', file: 'Screen Shot 2018-06-07 at 20.04.59.png' },
 				{ mode: '100644', object: '257cc5642cb1a054f08cc83f2d943e56fd3ebe99', stage: '0', file: 'boom.txt' },

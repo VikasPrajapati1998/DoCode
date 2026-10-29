@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vscode';
+import { Disposable } from 'docode';
 import { ITerminalEnvironmentProvider } from '../terminal';
 import { toDisposable } from '../util';
 import * as path from 'path';
@@ -14,14 +14,14 @@ import * as crypto from 'crypto';
 
 function getIPCHandlePath(id: string): string {
 	if (process.platform === 'win32') {
-		return `\\\\.\\pipe\\vscode-git-${id}-sock`;
+		return `\\\\.\\pipe\\docode-git-${id}-sock`;
 	}
 
 	if (process.platform !== 'darwin' && process.env['XDG_RUNTIME_DIR']) {
-		return path.join(process.env['XDG_RUNTIME_DIR'] as string, `vscode-git-${id}.sock`);
+		return path.join(process.env['XDG_RUNTIME_DIR'] as string, `docode-git-${id}.sock`);
 	}
 
-	return path.join(os.tmpdir(), `vscode-git-${id}.sock`);
+	return path.join(os.tmpdir(), `docode-git-${id}.sock`);
 }
 
 export interface IIPCHandler {
@@ -108,11 +108,11 @@ export class IPCServer implements IIPCServer, ITerminalEnvironmentProvider, Disp
 	}
 
 	getEnv(): { [key: string]: string } {
-		return { VSCODE_GIT_IPC_HANDLE: this.ipcHandlePath };
+		return { DOCODE_GIT_IPC_HANDLE: this.ipcHandlePath };
 	}
 
 	getTerminalEnv(): { [key: string]: string } {
-		return { VSCODE_GIT_IPC_HANDLE: this.ipcHandlePath };
+		return { DOCODE_GIT_IPC_HANDLE: this.ipcHandlePath };
 	}
 
 	dispose(): void {

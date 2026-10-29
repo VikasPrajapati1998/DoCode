@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.monaco-editor .findOptionsWidget {
+	background-color: var(--docode-editorWidget-background);
+	color: var(--docode-editorWidget-foreground);
+	box-shadow: var(--docode-shadow-lg);
+	border: 2px solid var(--docode-contrastBorder);
+}

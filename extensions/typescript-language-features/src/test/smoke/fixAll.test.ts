@@ -5,27 +5,27 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { createTestEditor, joinLines, wait } from '../../test/testUtils';
 import { disposeAll } from '../../utils/dispose';
 
-const testDocumentUri = vscode.Uri.parse('untitled:test.ts');
+const testDocumentUri = docode.Uri.parse('untitled:test.ts');
 
-const emptyRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
+const emptyRange = new docode.Range(new docode.Position(0, 0), new docode.Position(0, 0));
 
 suite.skip('TypeScript Fix All', () => {
 
-	const _disposables: vscode.Disposable[] = [];
+	const _disposables: docode.Disposable[] = [];
 
 	setup(async () => {
 		// the tests assume that typescript features are registered
-		await vscode.extensions.getExtension('vscode.typescript-language-features')!.activate();
+		await docode.extensions.getExtension('docode.typescript-language-features')!.activate();
 	});
 
 	teardown(async () => {
 		disposeAll(_disposables);
 
-		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+		await docode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	test('Fix all should remove unreachable code', async () => {
@@ -42,13 +42,13 @@ suite.skip('TypeScript Fix All', () => {
 
 		await wait(2000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			emptyRange,
-			vscode.CodeActionKind.SourceFixAll
+			docode.CodeActionKind.SourceFixAll
 		);
 
-		await vscode.workspace.applyEdit(fixes![0].edit!);
+		await docode.workspace.applyEdit(fixes![0].edit!);
 
 		assert.strictEqual(editor.document.getText(), joinLines(
 			`function foo() {`,
@@ -72,13 +72,13 @@ suite.skip('TypeScript Fix All', () => {
 
 		await wait(2000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			emptyRange,
-			vscode.CodeActionKind.SourceFixAll
+			docode.CodeActionKind.SourceFixAll
 		);
 
-		await vscode.workspace.applyEdit(fixes![0].edit!);
+		await docode.workspace.applyEdit(fixes![0].edit!);
 		assert.strictEqual(editor.document.getText(), joinLines(
 			`interface I {`,
 			`    x: number;`,
@@ -106,13 +106,13 @@ suite.skip('TypeScript Fix All', () => {
 
 		await wait(2000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			emptyRange,
-			vscode.CodeActionKind.Source.append('removeUnused')
+			docode.CodeActionKind.Source.append('removeUnused')
 		);
 
-		await vscode.workspace.applyEdit(fixes![0].edit!);
+		await docode.workspace.applyEdit(fixes![0].edit!);
 		assert.strictEqual(editor.document.getText(), joinLines(
 			`export const _ = 1;`,
 			`function used() {`,
@@ -129,13 +129,13 @@ suite.skip('TypeScript Fix All', () => {
 
 		await wait(2000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			emptyRange,
-			vscode.CodeActionKind.Source.append('removeUnused')
+			docode.CodeActionKind.Source.append('removeUnused')
 		);
 
-		await vscode.workspace.applyEdit(fixes![0].edit!);
+		await docode.workspace.applyEdit(fixes![0].edit!);
 		assert.strictEqual(editor.document.getText(), joinLines(
 			`export const _ = 1;`,
 			``

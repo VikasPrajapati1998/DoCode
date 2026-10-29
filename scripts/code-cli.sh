@@ -20,7 +20,7 @@ function code() {
 	fi
 
 	# Get electron, compile, built-in extensions
-	if [[ -z "${VSCODE_SKIP_PRELAUNCH}" ]]; then
+	if [[ -z "${DOCODE_SKIP_PRELAUNCH}" ]]; then
 		node build/lib/preLaunch.ts
 	fi
 
@@ -31,14 +31,14 @@ function code() {
 	fi
 
 	# Disable test extension
-	DISABLE_TEST_EXTENSION="--disable-extension=vscode.vscode-api-tests"
+	DISABLE_TEST_EXTENSION="--disable-extension=docode.docode-api-tests"
 	if [[ "$@" == *"--extensionTestsPath"* ]]; then
 		DISABLE_TEST_EXTENSION=""
 	fi
 
 	ELECTRON_RUN_AS_NODE=1 \
 	NODE_ENV=development \
-	VSCODE_DEV=1 \
+	DOCODE_DEV=1 \
 	ELECTRON_ENABLE_LOGGING=1 \
 	ELECTRON_ENABLE_STACK_DUMPING=1 \
 	"$CODE" --inspect=5874 "$ROOT/out/cli.js" . $DISABLE_TEST_EXTENSION "$@"

@@ -11,7 +11,7 @@ use std::process::Command;
 #[cfg(unix)]
 use std::process::Stdio;
 
-const SHIM_MARKER: &[u8] = b"VSCODE_COPILOT_RUST_SHIM_V1";
+const SHIM_MARKER: &[u8] = b"DOCODE_COPILOT_RUST_SHIM_V1";
 
 #[test]
 fn rediscovery_and_shadowing_matrix() {
@@ -109,18 +109,18 @@ fn copied_shim_is_skipped_and_binary_marker_is_retained() {
 fn diagnostics_require_the_verbose_modifier() {
 	let binary = Path::new(env!("CARGO_BIN_EXE_copilot"));
 	let quiet = Command::new(binary)
-		.arg("--vscode-shim")
-		.env_remove("VSCODE_COPILOT_SHIM_VERBOSE")
+		.arg("--docode-shim")
+		.env_remove("DOCODE_COPILOT_SHIM_VERBOSE")
 		.output()
 		.expect("run quiet malformed invocation");
 	let verbose = Command::new(binary)
-		.args(["--vscode-shim", "verbose", "--vscode-shim"])
-		.env_remove("VSCODE_COPILOT_SHIM_VERBOSE")
+		.args(["--docode-shim", "verbose", "--docode-shim"])
+		.env_remove("DOCODE_COPILOT_SHIM_VERBOSE")
 		.output()
 		.expect("run verbose malformed invocation");
 	let environment = Command::new(binary)
-		.arg("--vscode-shim")
-		.env("VSCODE_COPILOT_SHIM_VERBOSE", "1")
+		.arg("--docode-shim")
+		.env("DOCODE_COPILOT_SHIM_VERBOSE", "1")
 		.output()
 		.expect("run malformed invocation with verbose environment");
 
@@ -146,8 +146,8 @@ fn diagnostics_require_the_verbose_modifier() {
 			Vec::<u8>::new(),
 			Some(2),
 			Vec::<u8>::new(),
-			String::from("--vscode-shim requires an option name"),
-			String::from("--vscode-shim requires an option name"),
+			String::from("--docode-shim requires an option name"),
+			String::from("--docode-shim requires an option name"),
 		)
 	);
 }
@@ -176,7 +176,7 @@ fn macos_install_only_finds_an_existing_cli_without_launching_it() {
 	fs::set_permissions(&cli, permissions).expect("make sentinel executable");
 
 	let output = Command::new(env!("CARGO_BIN_EXE_copilot"))
-		.args(["--vscode-shim", "install", "--interactive"])
+		.args(["--docode-shim", "install", "--interactive"])
 		.env("PATH", directory.path())
 		.env("HOME", &home)
 		.env("PREFIX", &prefix)
@@ -229,9 +229,9 @@ fn unix_black_box_preserves_launch_contract() {
 
 	let mut child = Command::new(env!("CARGO_BIN_EXE_copilot"))
 		.args([
-			"--vscode-shim",
+			"--docode-shim",
 			"clear",
-			"--vscode-shim",
+			"--docode-shim",
 			"verbose",
 			"--clear",
 			"",

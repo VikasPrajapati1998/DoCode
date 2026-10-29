@@ -7,7 +7,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { createRequire } from 'node:module';
-import type { IProductConfiguration } from './vs/base/common/product.js';
+import type { IProductConfiguration } from './do/base/common/product.js';
 
 const require = createRequire(import.meta.url);
 const isWindows = process.platform === 'win32';
@@ -20,7 +20,7 @@ if (process.platform === 'linux') {
 // increase number of stack frames(from 10, https://github.com/v8/v8/wiki/Stack-Trace-API)
 Error.stackTraceLimit = 100;
 
-if (!process.env['VSCODE_HANDLES_SIGPIPE']) {
+if (!process.env['DOCODE_HANDLES_SIGPIPE']) {
 	// Workaround for Electron not installing a handler to ignore SIGPIPE
 	// (https://github.com/electron/electron/issues/13254)
 	let didLogAboutSIGPIPE = false;
@@ -37,16 +37,16 @@ if (!process.env['VSCODE_HANDLES_SIGPIPE']) {
 
 // Setup current working directory in all our node & electron processes
 // - Windows: call `process.chdir()` to always set application folder as cwd
-// -  all OS: store the `process.cwd()` inside `VSCODE_CWD` for consistent lookups
+// -  all OS: store the `process.cwd()` inside `DOCODE_CWD` for consistent lookups
 function setupCurrentWorkingDirectory(): void {
 	try {
 
-		// Store the `process.cwd()` inside `VSCODE_CWD`
+		// Store the `process.cwd()` inside `DOCODE_CWD`
 		// for consistent lookups, but make sure to only
 		// do this once unless defined already from e.g.
 		// a parent process.
-		if (typeof process.env['VSCODE_CWD'] !== 'string') {
-			process.env['VSCODE_CWD'] = process.cwd();
+		if (typeof process.env['DOCODE_CWD'] !== 'string') {
+			process.env['DOCODE_CWD'] = process.cwd();
 		}
 
 		// Windows: always set application folder as current working dir
@@ -81,7 +81,7 @@ function enableASARSupport(): void {
 		return; // only on Electron / Electron-as-node
 	}
 
-	if (process.env['VSCODE_DEV']) {
+	if (process.env['DOCODE_DEV']) {
 		return; // no ASAR when running out of sources
 	}
 
@@ -132,7 +132,7 @@ enableASARSupport();
  * Note: only applies when running out of sources.
  */
 export function devInjectNodeModuleLookupPath(injectPath: string): void {
-	if (!process.env['VSCODE_DEV']) {
+	if (!process.env['DOCODE_DEV']) {
 		return; // only applies running out of sources
 	}
 
@@ -206,7 +206,7 @@ export function configurePortable(product: Partial<IProductConfiguration>): { po
 	const appRoot = path.dirname(import.meta.dirname);
 
 	function getApplicationPath(): string {
-		if (process.env['VSCODE_DEV']) {
+		if (process.env['DOCODE_DEV']) {
 			return appRoot;
 		}
 
@@ -223,8 +223,8 @@ export function configurePortable(product: Partial<IProductConfiguration>): { po
 	}
 
 	function getPortableDataPath(): string {
-		if (process.env['VSCODE_PORTABLE']) {
-			return process.env['VSCODE_PORTABLE'];
+		if (process.env['DOCODE_PORTABLE']) {
+			return process.env['DOCODE_PORTABLE'];
 		}
 
 		if (process.platform === 'win32' || process.platform === 'linux') {
@@ -241,9 +241,9 @@ export function configurePortable(product: Partial<IProductConfiguration>): { po
 	const isTempPortable = isPortable && fs.existsSync(portableTempPath);
 
 	if (isPortable) {
-		process.env['VSCODE_PORTABLE'] = portableDataPath;
+		process.env['DOCODE_PORTABLE'] = portableDataPath;
 	} else {
-		delete process.env['VSCODE_PORTABLE'];
+		delete process.env['DOCODE_PORTABLE'];
 	}
 
 	if (isTempPortable) {

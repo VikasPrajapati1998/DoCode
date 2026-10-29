@@ -24,7 +24,7 @@ async function init() {
 	currentAbortController = new AbortController();
 	const signal = currentAbortController.signal;
 
-	// `vscode.markdown.updateContent` fires after theme switches refresh the preview, so resolve
+	// `docode.markdown.updateContent` fires after theme switches refresh the preview, so resolve
 	// the theme variables from the live CSS variables before rebuilding mermaid's config.
 	themeTracker.refresh();
 
@@ -53,5 +53,5 @@ async function init() {
 	diagramManager.retainStates(activeIds);
 }
 
-window.addEventListener('vscode.markdown.updateContent', init);
+window.addEventListener('docode.markdown.updateContent', init);
 init();

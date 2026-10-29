@@ -15,7 +15,7 @@ use std::{
 use serde::{de::DeserializeOwned, Serialize};
 
 use crate::{
-	constants::{DEFAULT_DATA_PARENT_DIR, SERVER_DATA_PARENT_DIR, VSCODE_CLI_QUALITY},
+	constants::{DEFAULT_DATA_PARENT_DIR, SERVER_DATA_PARENT_DIR, DOCODE_CLI_QUALITY},
 	download_cache::DownloadCache,
 	util::errors::{wrap, AnyError, NoHomeForLauncherError, WrappedError},
 };
@@ -140,7 +140,7 @@ impl LauncherPaths {
 			return Self::new(root);
 		}
 
-		if let Ok(portable) = std::env::var("VSCODE_PORTABLE") {
+		if let Ok(portable) = std::env::var("DOCODE_PORTABLE") {
 			if !portable.is_empty() {
 				let mut new_dir = PathBuf::from(portable);
 				new_dir.push(DEFAULT_DATA_PARENT_DIR);
@@ -154,7 +154,7 @@ impl LauncherPaths {
 			Some(d) => d,
 		};
 
-		let old_dir = home_dir.join(".vscode-cli");
+		let old_dir = home_dir.join(".docode-cli");
 		let mut new_dir = home_dir;
 		new_dir.push(DEFAULT_DATA_PARENT_DIR);
 		new_dir.push("cli");
@@ -175,7 +175,7 @@ impl LauncherPaths {
 			return Self::new_for_root_string(root);
 		}
 
-		if let Ok(portable) = std::env::var("VSCODE_PORTABLE") {
+		if let Ok(portable) = std::env::var("DOCODE_PORTABLE") {
 			if !portable.is_empty() {
 				let mut dir = PathBuf::from(portable);
 				dir.push(DEFAULT_DATA_PARENT_DIR);
@@ -232,7 +232,7 @@ impl LauncherPaths {
 	pub fn tunnel_lockfile(&self) -> PathBuf {
 		self.root.join(format!(
 			"tunnel-{}.lock",
-			VSCODE_CLI_QUALITY.unwrap_or("oss")
+			DOCODE_CLI_QUALITY.unwrap_or("oss")
 		))
 	}
 
@@ -240,7 +240,7 @@ impl LauncherPaths {
 	pub fn forwarding_lockfile(&self) -> PathBuf {
 		self.root.join(format!(
 			"forwarding-{}.lock",
-			VSCODE_CLI_QUALITY.unwrap_or("oss")
+			DOCODE_CLI_QUALITY.unwrap_or("oss")
 		))
 	}
 
@@ -269,7 +269,7 @@ impl LauncherPaths {
 	pub fn agent_host_log_file(&self) -> PathBuf {
 		self.agent_host_root().join(format!(
 			"agent-host-{}.log",
-			VSCODE_CLI_QUALITY.unwrap_or("oss")
+			DOCODE_CLI_QUALITY.unwrap_or("oss")
 		))
 	}
 
@@ -279,7 +279,7 @@ impl LauncherPaths {
 	/// land on the same log file. Falls back to `self.root` when no home
 	/// directory is available.
 	pub fn agent_host_root(&self) -> PathBuf {
-		if let Ok(portable) = std::env::var("VSCODE_PORTABLE") {
+		if let Ok(portable) = std::env::var("DOCODE_PORTABLE") {
 			if !portable.is_empty() {
 				return PathBuf::from(portable)
 					.join(SERVER_DATA_PARENT_DIR)
@@ -317,7 +317,7 @@ mod tests {
 		let portable_dir = temp.path().join("portab~1-data");
 		std::fs::create_dir_all(&portable_dir).unwrap();
 
-		std::env::set_var("VSCODE_PORTABLE", &portable_dir);
+		std::env::set_var("DOCODE_PORTABLE", &portable_dir);
 
 		let paths = LauncherPaths::new(None).unwrap();
 		let expected = portable_dir.join(DEFAULT_DATA_PARENT_DIR).join("cli");
@@ -329,6 +329,6 @@ mod tests {
 		let expected_agent_host = portable_dir.join(SERVER_DATA_PARENT_DIR).join("cli");
 		assert_eq!(paths.agent_host_root(), expected_agent_host);
 
-		std::env::remove_var("VSCODE_PORTABLE");
+		std::env::remove_var("DOCODE_PORTABLE");
 	}
 }

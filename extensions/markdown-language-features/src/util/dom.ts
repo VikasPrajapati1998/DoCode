@@ -2,9 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
-export function escapeAttribute(value: string | vscode.Uri): string {
+export function escapeAttribute(value: string | docode.Uri): string {
 	return value.toString()
 		.replace(/&/g, '&amp;')
 		.replace(/"/g, '&quot;')

@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { cp } from '@vscode/fs-copyfile';
-import TelemetryReporter from '@vscode/extension-telemetry';
+import TelemetryReporter from '@docode/extension-telemetry';
 import { uniqueNamesGenerator, adjectives, animals, colors, NumberDictionary } from '@joaomoreno/unique-names-generator';
 import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import picomatch from 'picomatch';
-import { CancellationError, CancellationToken, CancellationTokenSource, Command, commands, CustomExecution, Disposable, Event, EventEmitter, FileDecoration, l10n, LogLevel, LogOutputChannel, Memento, ProcessExecution, ProgressLocation, ProgressOptions, RelativePattern, scm, ShellExecution, SourceControl, SourceControlInputBox, SourceControlInputBoxValidation, SourceControlInputBoxValidationType, SourceControlResourceDecorations, SourceControlResourceGroup, SourceControlResourceState, TabInputNotebookDiff, TabInputTextDiff, TabInputTextMultiDiff, Task, TaskPanelKind, TaskRevealKind, TaskRunOn, tasks, ThemeColor, ThemeIcon, Uri, window, workspace, WorkspaceEdit, WorkspaceFolder } from 'vscode';
+import { CancellationError, CancellationToken, CancellationTokenSource, Command, commands, CustomExecution, Disposable, Event, EventEmitter, FileDecoration, l10n, LogLevel, LogOutputChannel, Memento, ProcessExecution, ProgressLocation, ProgressOptions, RelativePattern, scm, ShellExecution, SourceControl, SourceControlInputBox, SourceControlInputBoxValidation, SourceControlInputBoxValidationType, SourceControlResourceDecorations, SourceControlResourceGroup, SourceControlResourceState, TabInputNotebookDiff, TabInputTextDiff, TabInputTextMultiDiff, Task, TaskPanelKind, TaskRevealKind, TaskRunOn, tasks, ThemeColor, ThemeIcon, Uri, window, workspace, WorkspaceEdit, WorkspaceFolder } from 'docode';
 import { ActionButton } from './actionButton';
 import { ApiRepository } from './api/api1';
 import type { Branch, BranchQuery, Change, CommitOptions, DiffChange, FetchOptions, LogOptions, Ref, Remote, RepositoryKind } from './api/git';
@@ -523,7 +523,7 @@ class ResourceCommandResolver {
 
 	resolveFileCommand(resource: Resource): Command {
 		return {
-			command: 'vscode.open',
+			command: 'docode.open',
 			title: l10n.t('Open'),
 			arguments: [resource.resourceUri]
 		};
@@ -547,14 +547,14 @@ class ResourceCommandResolver {
 				};
 			} else {
 				return {
-					command: 'vscode.open',
+					command: 'docode.open',
 					title: l10n.t('Open'),
 					arguments: [resource.rightUri, { override: bothModified ? false : undefined }, title]
 				};
 			}
 		} else {
 			return {
-				command: 'vscode.diff',
+				command: 'docode.diff',
 				title: l10n.t('Open'),
 				arguments: [leftUri, resource.rightUri, title]
 			};
@@ -1718,7 +1718,7 @@ export class Repository implements Disposable {
 	async deleteBranch(name: string, force?: boolean): Promise<void> {
 		return this.run(Operation.DeleteBranch, async () => {
 			await this.repository.deleteBranch(name, force);
-			await this.repository.config('unset', 'local', `branch.${name}.vscode-merge-base`);
+			await this.repository.config('unset', 'local', `branch.${name}.docode-merge-base`);
 		});
 	}
 
@@ -1775,7 +1775,7 @@ export class Repository implements Disposable {
 		const branch = await this.getBranch(ref);
 
 		// Git config
-		const mergeBaseConfigKey = `branch.${branch.name}.vscode-merge-base`;
+		const mergeBaseConfigKey = `branch.${branch.name}.docode-merge-base`;
 
 		try {
 			const mergeBase = await this.getConfig(mergeBaseConfigKey);
@@ -2067,7 +2067,7 @@ export class Repository implements Disposable {
 			return [];
 		}
 
-		const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'vscode-git-worktree-symlink-'));
+		const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'docode-git-worktree-symlink-'));
 		const patternsFile = path.join(tempDir, 'patterns');
 
 		try {
@@ -2165,7 +2165,7 @@ export class Repository implements Disposable {
 
 		// Git reads the patterns from a file so that they are parsed exactly
 		// like a `.gitignore` file (comments, blank lines, trailing spaces).
-		const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'vscode-git-worktree-include-'));
+		const tempDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'docode-git-worktree-include-'));
 		const includePatternsFile = path.join(tempDir, 'patterns');
 
 		try {

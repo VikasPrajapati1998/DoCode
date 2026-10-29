@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { LinkPresentation } from '@vscode/markdown-editor';
-import type { IObservable } from '@vscode/observables';
-import * as vscode from 'vscode';
+import type { LinkPresentation } from '@docode/markdown-editor';
+import type { IObservable } from '@docode/observables';
+import * as docode from 'docode';
 import { buildGitCommitLookupFailurePresentation, buildGitCommitPresentation, buildLoadingLinkPresentation, type GitCommitPresentationData } from './linkPresentationBuilders';
 import { createAsyncLinkPresentation, decodeUrlPathSegments, ImmutableLinkPresentationCache, type LinkPresentationResolver, type LinkPresentationResolverContext } from './linkPresentationResolver';
 
@@ -13,14 +13,14 @@ export class GitLinkPresentationResolver implements LinkPresentationResolver {
 	readonly refreshOnInterval = false;
 	readonly #cache: ImmutableLinkPresentationCache;
 	readonly #activateGit: () => Promise<GitExtension | undefined>;
-	readonly #onDidChangeRepositories = new vscode.EventEmitter<void>();
+	readonly #onDidChangeRepositories = new docode.EventEmitter<void>();
 	#gitApi: Promise<GitApi | undefined> | undefined;
-	#gitApiSubscriptions: vscode.Disposable | undefined;
+	#gitApiSubscriptions: docode.Disposable | undefined;
 	#isDisposed = false;
 
 	constructor(
 		cache: ImmutableLinkPresentationCache,
-		activateGit: () => Promise<GitExtension | undefined> = async () => vscode.extensions.getExtension<GitExtension>('vscode.git')?.activate(),
+		activateGit: () => Promise<GitExtension | undefined> = async () => docode.extensions.getExtension<GitExtension>('docode.git')?.activate(),
 	) {
 		this.#cache = cache;
 		this.#activateGit = activateGit;
@@ -53,7 +53,7 @@ export class GitLinkPresentationResolver implements LinkPresentationResolver {
 
 		try {
 			const result = await this.#findCommit(target);
-			await vscode.commands.executeCommand(
+			await docode.commands.executeCommand(
 				'git.viewCommit',
 				result.repository.rootUri,
 				result.commit.hash,
@@ -63,7 +63,7 @@ export class GitLinkPresentationResolver implements LinkPresentationResolver {
 			if (target.repository && !target.pathHint) {
 				return false;
 			}
-			await vscode.window.showWarningMessage(vscode.l10n.t(
+			await docode.window.showWarningMessage(docode.l10n.t(
 				"The commit could not be opened. {0}",
 				error instanceof Error ? error.message : '',
 			));
@@ -88,12 +88,12 @@ export class GitLinkPresentationResolver implements LinkPresentationResolver {
 				throw new Error('The Git extension is not available.');
 			}
 			const uri = resolveGitRepositoryHint(target.pathHint);
-			if (!uri || (uri.scheme !== 'file' && uri.scheme !== 'vscode-remote')) {
+			if (!uri || (uri.scheme !== 'file' && uri.scheme !== 'docode-remote')) {
 				throw new Error('The repository path must resolve to a local or remote file URI.');
 			}
 			let repository = api.getRepository(uri);
 			if (!repository) {
-				if (!vscode.workspace.isTrusted) {
+				if (!docode.workspace.isTrusted) {
 					throw new Error('Trust the workspace before opening a repository from a commit link.');
 				}
 				const root = await api.getRepositoryRoot(uri);
@@ -139,7 +139,7 @@ export class GitLinkPresentationResolver implements LinkPresentationResolver {
 				return undefined;
 			}
 			const api = git.getAPI(1);
-			const subscriptions = vscode.Disposable.from(
+			const subscriptions = docode.Disposable.from(
 				api.onDidOpenRepository(() => this.#onDidChangeRepositories.fire()),
 				api.onDidCloseRepository(() => this.#onDidChangeRepositories.fire()),
 			);
@@ -200,7 +200,7 @@ function parseGitCommitTarget(href: string): GitCommitTarget | undefined {
 	};
 }
 
-export function resolveGitCommitHref(href: string, fromResource?: vscode.Uri): string {
+export function resolveGitCommitHref(href: string, fromResource?: docode.Uri): string {
 	const target = parseGitCommitTarget(href);
 	if (!target?.pathHint) {
 		return href;
@@ -214,15 +214,15 @@ export function resolveGitCommitHref(href: string, fromResource?: vscode.Uri): s
 	return uri.toString();
 }
 
-function resolveGitRepositoryHint(hint: string, fromResource?: vscode.Uri): vscode.Uri | undefined {
+function resolveGitRepositoryHint(hint: string, fromResource?: docode.Uri): docode.Uri | undefined {
 	return /^[a-z]:[\\/]/i.test(hint) || hint.startsWith('\\\\')
-		? vscode.Uri.file(hint)
+		? docode.Uri.file(hint)
 		: /^[a-z][a-z\d+.-]*:/i.test(hint)
-			? vscode.Uri.parse(hint)
+			? docode.Uri.parse(hint)
 			: fromResource
 				? hint.startsWith('/')
 					? fromResource.with({ path: hint, query: '', fragment: '' })
-					: vscode.Uri.joinPath(fromResource, '..', hint.replace(/\\/g, '/')).with({ query: '', fragment: '' })
+					: docode.Uri.joinPath(fromResource, '..', hint.replace(/\\/g, '/')).with({ query: '', fragment: '' })
 				: undefined;
 }
 
@@ -258,15 +258,15 @@ interface GitExtension {
 
 interface GitApi {
 	readonly repositories: readonly GitRepository[];
-	readonly onDidOpenRepository: vscode.Event<GitRepository>;
-	readonly onDidCloseRepository: vscode.Event<GitRepository>;
-	getRepository(uri: vscode.Uri): GitRepository | null;
-	getRepositoryRoot(uri: vscode.Uri): Promise<vscode.Uri | null>;
-	openRepository(uri: vscode.Uri): Promise<GitRepository | null>;
+	readonly onDidOpenRepository: docode.Event<GitRepository>;
+	readonly onDidCloseRepository: docode.Event<GitRepository>;
+	getRepository(uri: docode.Uri): GitRepository | null;
+	getRepositoryRoot(uri: docode.Uri): Promise<docode.Uri | null>;
+	openRepository(uri: docode.Uri): Promise<GitRepository | null>;
 }
 
 interface GitRepository {
-	readonly rootUri: vscode.Uri;
+	readonly rootUri: docode.Uri;
 	readonly state: {
 		readonly remotes: readonly GitRemote[];
 	};

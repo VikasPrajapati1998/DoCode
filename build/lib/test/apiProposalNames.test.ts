@@ -31,15 +31,15 @@ export type ApiProposalName = keyof typeof _allApiProposals;
 `;
 
 function createFixture(context: TestContext, registry = expectedRegistry) {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-api-proposal-names-'));
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-api-proposal-names-'));
 	context.after(() => fs.rmSync(root, { recursive: true, force: true }));
-	const declarationsPath = path.join(root, 'src', 'vscode-dts');
-	const registryPath = path.join(root, 'src', 'vs', 'platform', 'extensions', 'common', 'extensionsApiProposals.ts');
+	const declarationsPath = path.join(root, 'src', 'docode-dts');
+	const registryPath = path.join(root, 'src', 'do', 'platform', 'extensions', 'common', 'extensionsApiProposals.ts');
 	fs.mkdirSync(declarationsPath, { recursive: true });
 	fs.mkdirSync(path.dirname(registryPath), { recursive: true });
-	fs.writeFileSync(path.join(declarationsPath, 'vscode.proposed.zProposal2.d.ts'), 'declare module \'vscode\' { }\n');
-	fs.writeFileSync(path.join(declarationsPath, 'vscode.proposed.aProposal.d.ts'), 'declare module \'vscode\' { }\n');
-	fs.writeFileSync(path.join(declarationsPath, 'vscode.d.ts'), 'declare module \'vscode\' { }\n');
+	fs.writeFileSync(path.join(declarationsPath, 'docode.proposed.zProposal2.d.ts'), 'declare module \'docode\' { }\n');
+	fs.writeFileSync(path.join(declarationsPath, 'docode.proposed.aProposal.d.ts'), 'declare module \'docode\' { }\n');
+	fs.writeFileSync(path.join(declarationsPath, 'docode.d.ts'), 'declare module \'docode\' { }\n');
 	fs.writeFileSync(path.join(declarationsPath, 'README.md'), 'Not a proposal.\n');
 	fs.writeFileSync(registryPath, registry);
 	return { root, declarationsPath, registryPath };
@@ -70,12 +70,12 @@ function assertReadOnly(root: string, action: () => void): void {
 suite('API proposal registry', () => {
 	test('preserves generated format, metadata, ordering, filtering, and deduplication', () => {
 		assert.strictEqual(generateApiProposalNames([
-			'vscode.proposed.zProposal2.d.ts',
-			path.join('nested', 'vscode.proposed.aProposal.d.ts'),
-			'vscode.proposed.zProposal2.d.ts',
-			'vscode.proposed.invalid-name.d.ts',
-			'vscode.proposed.ignored.d.ts.bak',
-			'vscode.d.ts',
+			'docode.proposed.zProposal2.d.ts',
+			path.join('nested', 'docode.proposed.aProposal.d.ts'),
+			'docode.proposed.zProposal2.d.ts',
+			'docode.proposed.invalid-name.d.ts',
+			'docode.proposed.ignored.d.ts.bak',
+			'docode.d.ts',
 			'README.md',
 		], '\n'), expectedRegistry);
 	});
@@ -85,8 +85,8 @@ suite('API proposal registry', () => {
 			const registry = expectedRegistry.replace(/\n/g, eol);
 			const fixture = createFixture(context, registry);
 			assert.strictEqual(generateApiProposalNames([
-				'vscode.proposed.zProposal2.d.ts',
-				'vscode.proposed.aProposal.d.ts',
+				'docode.proposed.zProposal2.d.ts',
+				'docode.proposed.aProposal.d.ts',
 			], eol), registry);
 			assertReadOnly(fixture.root, () => checkApiProposalNames(fixture.root));
 		});
@@ -102,8 +102,8 @@ suite('API proposal registry', () => {
 		const nestedPath = path.join(fixture.declarationsPath, 'nested');
 		fs.mkdirSync(nestedPath);
 		fs.renameSync(
-			path.join(fixture.declarationsPath, 'vscode.proposed.aProposal.d.ts'),
-			path.join(nestedPath, 'vscode.proposed.aProposal.d.ts')
+			path.join(fixture.declarationsPath, 'docode.proposed.aProposal.d.ts'),
+			path.join(nestedPath, 'docode.proposed.aProposal.d.ts')
 		);
 		assertReadOnly(fixture.root, () => checkApiProposalNames(fixture.root));
 	});
@@ -111,10 +111,10 @@ suite('API proposal registry', () => {
 	for (const change of ['added', 'removed', 'renamed']) {
 		test(`rejects ${change} proposals without repairing the registry`, context => {
 			const fixture = createFixture(context);
-			const originalPath = path.join(fixture.declarationsPath, 'vscode.proposed.aProposal.d.ts');
-			const newPath = path.join(fixture.declarationsPath, 'vscode.proposed.newProposal.d.ts');
+			const originalPath = path.join(fixture.declarationsPath, 'docode.proposed.aProposal.d.ts');
+			const newPath = path.join(fixture.declarationsPath, 'docode.proposed.newProposal.d.ts');
 			if (change === 'added') {
-				fs.writeFileSync(newPath, 'declare module \'vscode\' { }\n');
+				fs.writeFileSync(newPath, 'declare module \'docode\' { }\n');
 			} else if (change === 'removed') {
 				fs.unlinkSync(originalPath);
 			} else {
@@ -167,8 +167,8 @@ suite('API proposal registry', () => {
 
 	test('rejects an empty set of proposal declarations', context => {
 		const fixture = createFixture(context);
-		fs.unlinkSync(path.join(fixture.declarationsPath, 'vscode.proposed.aProposal.d.ts'));
-		fs.unlinkSync(path.join(fixture.declarationsPath, 'vscode.proposed.zProposal2.d.ts'));
+		fs.unlinkSync(path.join(fixture.declarationsPath, 'docode.proposed.aProposal.d.ts'));
+		fs.unlinkSync(path.join(fixture.declarationsPath, 'docode.proposed.zProposal2.d.ts'));
 		assertReadOnly(fixture.root, () => assert.throws(() => checkApiProposalNames(fixture.root), {
 			message: `No API proposal declarations found in ${fixture.declarationsPath}.`
 		}));
@@ -176,7 +176,7 @@ suite('API proposal registry', () => {
 
 	test('reports an unreadable declaration instead of accepting its filename', context => {
 		const fixture = createFixture(context);
-		const declarationPath = path.join(fixture.declarationsPath, 'vscode.proposed.aProposal.d.ts');
+		const declarationPath = path.join(fixture.declarationsPath, 'docode.proposed.aProposal.d.ts');
 		fs.unlinkSync(declarationPath);
 		fs.mkdirSync(declarationPath);
 		assertReadOnly(fixture.root, () => assert.throws(() => checkApiProposalNames(fixture.root), {
@@ -240,9 +240,9 @@ suite('API proposal registry tasks', () => {
 	const expectedStages: Record<string, string[]> = {
 		'core-ci': [
 			...outBuildStages,
-			'esbuild-vscode-min',
-			'esbuild-vscode-reh-min',
-			'esbuild-vscode-reh-web-min',
+			'esbuild-docode-min',
+			'esbuild-docode-reh-min',
+			'esbuild-docode-reh-web-min',
 		],
 		// Pull request CI does not build the minified bundles.
 		'core-ci-pr': outBuildStages,
@@ -314,8 +314,8 @@ suite('API proposal registry tasks', () => {
 		const fixture = createFixture(context);
 		const hiddenPath = path.join(fixture.declarationsPath, '.hidden');
 		fs.mkdirSync(hiddenPath);
-		fs.writeFileSync(path.join(hiddenPath, 'vscode.proposed.hidden.d.ts'), '');
-		fs.writeFileSync(path.join(fixture.declarationsPath, '.vscode.proposed.hiddenFile.d.ts'), '');
+		fs.writeFileSync(path.join(hiddenPath, 'docode.proposed.hidden.d.ts'), '');
+		fs.writeFileSync(path.join(fixture.declarationsPath, '.docode.proposed.hiddenFile.d.ts'), '');
 		const before = snapshot(fixture.root);
 		await inDirectory(fixture.root, () => task.series(getTask('compile-api-proposal-names'))());
 		checkApiProposalNames(fixture.root);
@@ -324,7 +324,7 @@ suite('API proposal registry tasks', () => {
 
 	test('the real repository registry is up to date', () => {
 		const root = path.resolve(import.meta.dirname, '..', '..', '..');
-		const registryPath = path.join(root, 'src', 'vs', 'platform', 'extensions', 'common', 'extensionsApiProposals.ts');
+		const registryPath = path.join(root, 'src', 'do', 'platform', 'extensions', 'common', 'extensionsApiProposals.ts');
 		const before = { contents: fs.readFileSync(registryPath), stat: fs.statSync(registryPath, { bigint: true }) };
 		checkApiProposalNames(root);
 		const after = { contents: fs.readFileSync(registryPath), stat: fs.statSync(registryPath, { bigint: true }) };

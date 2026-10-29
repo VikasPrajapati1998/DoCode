@@ -38,14 +38,14 @@ suite('layersChecker', () => {
 	});
 
 	test('matches rules relative to a hidden parent path', () => {
-		const fileName = join(rootPath, 'vs', 'feature', 'browser', 'feature.ts');
+		const fileName = join(rootPath, 'do', 'feature', 'browser', 'feature.ts');
 
 		assert.strictEqual(getRule(fileName, rootPath, rules), rules[1]);
 	});
 
 	test('ignores skipped files', async () => {
 		writeForbiddenService();
-		writeSource('vs/feature/browser/test/feature.test.ts', `
+		writeSource('do/feature/browser/test/feature.test.ts', `
 			import { ForbiddenService } from '../../../platform/common/service.js';
 			export const service: ForbiddenService | undefined = undefined;
 		`);
@@ -55,32 +55,32 @@ suite('layersChecker', () => {
 
 	test('detects aliased forbidden types', async () => {
 		writeForbiddenService();
-		writeSource('vs/feature/browser/feature.ts', `
+		writeSource('do/feature/browser/feature.ts', `
 			import { ForbiddenService as Service } from '../../platform/common/service.js';
 			export const service: Service | undefined = undefined;
 		`);
 
 		assert.deepStrictEqual(await getViolations(), [
-			{ type: 'ForbiddenService', fileName: 'vs/feature/browser/feature.ts', line: 2, character: 13 },
-			{ type: 'ForbiddenService', fileName: 'vs/feature/browser/feature.ts', line: 2, character: 33 },
-			{ type: 'ForbiddenService', fileName: 'vs/feature/browser/feature.ts', line: 3, character: 26 },
+			{ type: 'ForbiddenService', fileName: 'do/feature/browser/feature.ts', line: 2, character: 13 },
+			{ type: 'ForbiddenService', fileName: 'do/feature/browser/feature.ts', line: 2, character: 33 },
+			{ type: 'ForbiddenService', fileName: 'do/feature/browser/feature.ts', line: 3, character: 26 },
 		]);
 	});
 
 	test('detects members of inferred forbidden types', async () => {
 		writeForbiddenService();
-		writeSource('vs/feature/browser/feature.ts', `
+		writeSource('do/feature/browser/feature.ts', `
 			import { getService } from '../../platform/common/service.js';
 			getService().run();
 		`);
 
 		assert.deepStrictEqual(await getViolations(), [
-			{ type: 'ForbiddenService', fileName: 'vs/feature/browser/feature.ts', line: 3, character: 17 },
+			{ type: 'ForbiddenService', fileName: 'do/feature/browser/feature.ts', line: 3, character: 17 },
 		]);
 	});
 
 	function writeForbiddenService(): void {
-		writeSource('vs/platform/common/service.ts', `
+		writeSource('do/platform/common/service.ts', `
 			export interface ForbiddenService { run(): void }
 			export declare function getService(): ForbiddenService;
 		`);

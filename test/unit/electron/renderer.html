@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>VSCode Tests</title>
+	<title>DoCode Tests</title>
 	<link href="../../../node_modules/mocha/mocha.css" rel="stylesheet" />
 </head>
 
@@ -114,15 +114,15 @@
 		style.type = 'text/css';
 		document.head.appendChild(style);
 
-		globalThis._VSCODE_CSS_LOAD = function (url) {
+		globalThis._DOCODE_CSS_LOAD = function (url) {
 			style.sheet.insertRule(`@import url(${url});`);
 		};
 
 		const { promisify } = require('util');
-		globalThis._VSCODE_TEST_INIT = promisify(require('glob'))('**/*.css', { cwd: basePath }).then(cssModules => {
+		globalThis._DOCODE_TEST_INIT = promisify(require('glob'))('**/*.css', { cwd: basePath }).then(cssModules => {
 			for (const cssModule of cssModules) {
 				const cssUrl = new URL(cssModule, baseUrl).href;
-				const jsSrc = `globalThis._VSCODE_CSS_LOAD('${cssUrl}');\n`;
+				const jsSrc = `globalThis._DOCODE_CSS_LOAD('${cssUrl}');\n`;
 				const blob = new Blob([jsSrc], { type: 'application/javascript' });
 				importMap.imports[cssUrl] = URL.createObjectURL(blob);
 			}

@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.chat-readonly-banner {
+	display: flex;
+	flex: 0 0 26px;
+	align-items: center;
+	justify-content: center;
+	gap: var(--docode-spacing-size40);
+	box-sizing: border-box;
+	height: 26px;
+	padding: 0 var(--docode-spacing-size100);
+	background-color: color-mix(in srgb, var(--docode-focusBorder) 4%, var(--docode-editorWidget-background));
+	color: var(--docode-descriptionForeground);
+	font-family: var(--docode-chat-font-family, inherit);
+	font-size: var(--docode-fontSize-label1);
+}
+
+.chat-readonly-banner.hidden {
+	display: none;
+}
+
+.chat-readonly-banner-icon {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	color: var(--docode-icon-foreground);
+}
+
+.chat-readonly-banner-icon .codicon {
+	font-size: var(--docode-codiconFontSize);
+}
+
+.chat-readonly-banner-text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.hc-black .chat-readonly-banner,
+.hc-light .chat-readonly-banner {
+	border-top: var(--docode-strokeThickness) solid var(--docode-contrastBorder);
+	border-bottom: var(--docode-strokeThickness) solid var(--docode-contrastBorder);
+}

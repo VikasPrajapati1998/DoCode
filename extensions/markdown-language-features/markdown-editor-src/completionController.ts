@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorModel, EditorView, Selection, SuggestModel, SuggestWidget } from '@vscode/markdown-editor';
-import { Disposable, autorun } from '@vscode/observables';
+import { EditorModel, EditorView, Selection, SuggestModel, SuggestWidget } from '@docode/markdown-editor';
+import { Disposable, autorun } from '@docode/observables';
 import type { MarkdownCompletion, MarkdownEditorHost } from '../src/preview/markdownEditorProtocol';
-import '@vscode/markdown-editor/suggest.css';
+import '@docode/markdown-editor/suggest.css';
 import './languageFeatures.css';
 
 export class CompletionController extends Disposable {

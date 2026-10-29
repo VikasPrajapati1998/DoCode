@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AsyncClipboardStrategy, EditorModel, EditorView, Selection, readNativeClipboard, type IClipboardContext, type IClipboardStrategy, type NativeClipboardData } from '@vscode/markdown-editor';
-import { Disposable } from '@vscode/observables';
+import { AsyncClipboardStrategy, EditorModel, EditorView, Selection, readNativeClipboard, type IClipboardContext, type IClipboardStrategy, type NativeClipboardData } from '@docode/markdown-editor';
+import { Disposable } from '@docode/observables';
 import type { MarkdownEditorHost, MarkdownEditorRenderer } from '../src/preview/markdownEditorProtocol';
 import { ClipboardMediaStore } from '../src/preview/markdownEditorMediaTransfer';
 import { clipboardFormatsUnavailableMessage, getNativeClipboardMedia } from './clipboardMedia';

@@ -7,7 +7,7 @@ use std::{fs, path::Path};
 use tempfile::tempdir;
 
 use crate::{
-	constants::{VSCODE_CLI_COMMIT, VSCODE_CLI_QUALITY},
+	constants::{DOCODE_CLI_COMMIT, DOCODE_CLI_QUALITY},
 	options::Quality,
 	update_service::{unzip_downloaded_release, Platform, Release, TargetKind, UpdateService},
 	util::{
@@ -30,9 +30,9 @@ static OLD_UPDATE_EXTENSION: &str = "Updating CLI";
 impl<'a> SelfUpdate<'a> {
 	pub fn new(update_service: &'a UpdateService) -> Result<Self, AnyError> {
 		let commit =
-			VSCODE_CLI_COMMIT.ok_or(CodeError::UpdatesNotConfigured("unknown build commit"))?;
+			DOCODE_CLI_COMMIT.ok_or(CodeError::UpdatesNotConfigured("unknown build commit"))?;
 
-		let quality = VSCODE_CLI_QUALITY
+		let quality = DOCODE_CLI_QUALITY
 			.ok_or(CodeError::UpdatesNotConfigured("no configured quality"))
 			.and_then(|q| {
 				Quality::try_from(q).map_err(|_| CodeError::UpdatesNotConfigured("unknown quality"))

@@ -11,8 +11,8 @@ Find and display logs from the most recent Code OSS or Agents app dev run.
 
 | App | Default User Data Dir | Logs Path |
 |-----|-----------------------|-----------|
-| Code OSS | `$HOME/.vscode-oss-dev` | `$HOME/.vscode-oss-dev/logs/` |
-| Agents app | `$HOME/.vscode-oss-dev` | `$HOME/.vscode-oss-dev/logs/` |
+| Code OSS | `$HOME/.docode-oss-dev` | `$HOME/.docode-oss-dev/logs/` |
+| Agents app | `$HOME/.docode-oss-dev` | `$HOME/.docode-oss-dev/logs/` |
 
 If Code OSS was launched with `--user-data-dir=<dir>`, use `<dir>/logs/` instead of the defaults above. Launch and debugging helpers often create temporary user data dirs under `.build/`; always prefer the exact user data dir from the launch command when it is known.
 
@@ -23,7 +23,7 @@ Each run creates a timestamped folder like `20260330T163430`. The most recent fo
 1. **Identify which app** the user is asking about: Code OSS or Agents app. If unclear, check both.
 2. **Find the most recent log folder**:
     ```bash
-    ls -lt "$HOME/.vscode-oss-dev/logs" | head -5
+    ls -lt "$HOME/.docode-oss-dev/logs" | head -5
     # or for a custom user data dir:
     ls -lt "<user-data-dir>/logs" | head -5
     ```
@@ -110,7 +110,7 @@ find "<timestamp>" -type f -size +0 -print
 
 When using temporary `console.log` probes and you need those probes to persist in the normal log files, enable dev console forwarding locally before launching Code OSS.
 
-1. In `src/vs/platform/log/common/log.ts`, find `isDevConsoleLogForwardingEnabled`.
+1. In `src/do/platform/log/common/log.ts`, find `isDevConsoleLogForwardingEnabled`.
 2. Temporarily enable the commented `Boolean("true")` line:
     ```ts
     export const isDevConsoleLogForwardingEnabled = false

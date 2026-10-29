@@ -31,12 +31,12 @@ import * as path from 'path';
 import { resolveSdkPackageRoot } from './common.ts';
 
 const SCRIPT = 'nuget.ts';
-const VSCODE_FEED_PREFIX = 'https://pkgs.dev.azure.com/monacotools/';
+const DOCODE_FEED_PREFIX = 'https://pkgs.dev.azure.com/monacotools/';
 const VSS_NUGET_ACCESSTOKEN = 'VSS_NUGET_ACCESSTOKEN';
 const MAX_DOWNLOAD_ATTEMPTS = 5;
 const INITIAL_RETRY_DELAY_MS = 1_000;
 const MAX_RETRY_DELAY_MS = 30_000;
-export const VSCODE_NUGET_FEED = 'https://pkgs.dev.azure.com/monacotools/Monaco/_packaging/vscode/nuget/v3/index.json';
+export const DOCODE_NUGET_FEED = 'https://pkgs.dev.azure.com/monacotools/Monaco/_packaging/vscode/nuget/v3/index.json';
 
 /**
  * `adm-zip`, resolved through `foundry-local-sdk`'s own dependency tree (it is a
@@ -50,11 +50,11 @@ function loadAdmZip(): any {
 
 /** The authenticated VS Code NuGet feed used for native runtime packages. */
 const FEEDS: readonly string[] = [
-	VSCODE_NUGET_FEED,
+	DOCODE_NUGET_FEED,
 ];
 
 function getRequestOptions(url: string): https.RequestOptions {
-	if (!url.startsWith(VSCODE_FEED_PREFIX)) {
+	if (!url.startsWith(DOCODE_FEED_PREFIX)) {
 		return {};
 	}
 	const token = process.env[VSS_NUGET_ACCESSTOKEN];
@@ -63,7 +63,7 @@ function getRequestOptions(url: string): https.RequestOptions {
 	}
 	return {
 		headers: {
-			Authorization: `Basic ${Buffer.from(`vscode:${token}`).toString('base64')}`,
+			Authorization: `Basic ${Buffer.from(`docode:${token}`).toString('base64')}`,
 		},
 	};
 }

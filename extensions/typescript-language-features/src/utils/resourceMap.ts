@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as fileSchemes from '../configuration/fileSchemes';
 import { looksLikeAbsoluteWindowsPath } from './fs';
 
@@ -15,17 +15,17 @@ import { looksLikeAbsoluteWindowsPath } from './fs';
  */
 export class ResourceMap<T> {
 
-	private static readonly defaultPathNormalizer = (resource: vscode.Uri): string => {
+	private static readonly defaultPathNormalizer = (resource: docode.Uri): string => {
 		if (resource.scheme === fileSchemes.file) {
 			return resource.fsPath;
 		}
 		return resource.toString(true);
 	};
 
-	private readonly _map = new Map<string, { readonly resource: vscode.Uri; value: T }>();
+	private readonly _map = new Map<string, { readonly resource: docode.Uri; value: T }>();
 
 	constructor(
-		protected readonly _normalizePath: (resource: vscode.Uri) => string | undefined = ResourceMap.defaultPathNormalizer,
+		protected readonly _normalizePath: (resource: docode.Uri) => string | undefined = ResourceMap.defaultPathNormalizer,
 		protected readonly config: {
 			readonly onCaseInsensitiveFileSystem: boolean;
 		},
@@ -35,12 +35,12 @@ export class ResourceMap<T> {
 		return this._map.size;
 	}
 
-	public has(resource: vscode.Uri): boolean {
+	public has(resource: docode.Uri): boolean {
 		const file = this.toKey(resource);
 		return !!file && this._map.has(file);
 	}
 
-	public get(resource: vscode.Uri): T | undefined {
+	public get(resource: docode.Uri): T | undefined {
 		const file = this.toKey(resource);
 		if (!file) {
 			return undefined;
@@ -49,7 +49,7 @@ export class ResourceMap<T> {
 		return entry ? entry.value : undefined;
 	}
 
-	public set(resource: vscode.Uri, value: T) {
+	public set(resource: docode.Uri, value: T) {
 		const file = this.toKey(resource);
 		if (!file) {
 			return;
@@ -62,7 +62,7 @@ export class ResourceMap<T> {
 		}
 	}
 
-	public delete(resource: vscode.Uri): void {
+	public delete(resource: docode.Uri): void {
 		const file = this.toKey(resource);
 		if (file) {
 			this._map.delete(file);
@@ -77,11 +77,11 @@ export class ResourceMap<T> {
 		return Array.from(this._map.values(), x => x.value);
 	}
 
-	public entries(): Iterable<{ resource: vscode.Uri; value: T }> {
+	public entries(): Iterable<{ resource: docode.Uri; value: T }> {
 		return this._map.values();
 	}
 
-	private toKey(resource: vscode.Uri): string | undefined {
+	private toKey(resource: docode.Uri): string | undefined {
 		const key = this._normalizePath(resource);
 		if (!key) {
 			return key;

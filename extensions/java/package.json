@@ -3,13 +3,13 @@
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "10.0.0",
-  "publisher": "vscode",
+  "publisher": "docode",
   "license": "MIT",
   "engines": {
-    "vscode": "*"
+    "docode": "*"
   },
   "scripts": {
-    "update-grammar": "node ../node_modules/vscode-grammar-updater/bin redhat-developer/vscode-java language-support/java/java.tmLanguage.json ./syntaxes/java.tmLanguage.json"
+    "update-grammar": "node ../node_modules/vscode-grammar-updater/bin redhat-developer/docode-java language-support/java/java.tmLanguage.json ./syntaxes/java.tmLanguage.json"
   },
   "categories": ["Programming Languages"],
   "contributes": {

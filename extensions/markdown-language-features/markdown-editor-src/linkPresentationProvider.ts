@@ -8,8 +8,8 @@ import type {
 	ILinkPresentationProvider,
 	LinkPresentation,
 	LinkPresentationKind,
-} from '@vscode/markdown-editor';
-import { Disposable, observableValue, type ISettableObservable } from '@vscode/observables';
+} from '@docode/markdown-editor';
+import { Disposable, observableValue, type ISettableObservable } from '@docode/observables';
 import type { RichLinkPresentationUpdate, RichLinkSubscriptions, MarkdownEditorHost } from '../src/preview/markdownEditorProtocol';
 
 interface LinkPresentationEntry {

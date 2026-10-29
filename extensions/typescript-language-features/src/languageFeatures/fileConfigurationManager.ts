@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as fileSchemes from '../configuration/fileSchemes';
 import { isTypeScriptDocument } from '../configuration/languageIds';
 import { API } from '../tsServer/api';
@@ -40,7 +40,7 @@ export default class FileConfigurationManager extends Disposable {
 	) {
 		super();
 		this.formatOptions = new ResourceMap(undefined, { onCaseInsensitiveFileSystem });
-		vscode.workspace.onDidCloseTextDocument(textDocument => {
+		docode.workspace.onDidCloseTextDocument(textDocument => {
 			// When a document gets closed delete the cached formatting options.
 			// This is necessary since the tsserver now closed a project when its
 			// last file in it closes which drops the stored formatting options
@@ -50,16 +50,16 @@ export default class FileConfigurationManager extends Disposable {
 	}
 
 	public async ensureConfigurationForDocument(
-		document: vscode.TextDocument,
-		token: vscode.CancellationToken
+		document: docode.TextDocument,
+		token: docode.CancellationToken
 	): Promise<void> {
 		const formattingOptions = this.getFormattingOptions(document)
 			?? { tabSize: undefined, insertSpaces: undefined };
 		return this.ensureConfigurationOptions(document, formattingOptions, token);
 	}
 
-	private getFormattingOptions(document: vscode.TextDocument): FormattingOptions | undefined {
-		const editor = vscode.window.visibleTextEditors.find(editor => editor.document.uri.toString() === document.uri.toString());
+	private getFormattingOptions(document: docode.TextDocument): FormattingOptions | undefined {
+		const editor = docode.window.visibleTextEditors.find(editor => editor.document.uri.toString() === document.uri.toString());
 		if (!editor) {
 			return undefined;
 		}
@@ -71,9 +71,9 @@ export default class FileConfigurationManager extends Disposable {
 	}
 
 	public async ensureConfigurationOptions(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		options: FormattingOptions,
-		token: vscode.CancellationToken
+		token: docode.CancellationToken
 	): Promise<void> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
@@ -108,8 +108,8 @@ export default class FileConfigurationManager extends Disposable {
 	}
 
 	public async setGlobalConfigurationFromDocument(
-		document: vscode.TextDocument,
-		token: vscode.CancellationToken,
+		document: docode.TextDocument,
+		token: docode.CancellationToken,
 	): Promise<void> {
 		const formattingOptions = this.getFormattingOptions(document);
 		if (!formattingOptions) {
@@ -128,7 +128,7 @@ export default class FileConfigurationManager extends Disposable {
 	}
 
 	private getFileOptions(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		options: FormattingOptions
 	): FileConfiguration {
 		return {
@@ -138,7 +138,7 @@ export default class FileConfigurationManager extends Disposable {
 	}
 
 	private getFormatOptions(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		options: FormattingOptions
 	): Proto.FormatCodeSettings {
 		const fallbackSection = isTypeScriptDocument(document) ? 'typescript' : 'javascript';
@@ -170,10 +170,10 @@ export default class FileConfigurationManager extends Disposable {
 		};
 	}
 
-	private getPreferences(document: vscode.TextDocument): Proto.UserPreferences {
+	private getPreferences(document: docode.TextDocument): Proto.UserPreferences {
 		const fallbackSection = isTypeScriptDocument(document) ? 'typescript' : 'javascript';
 
-		const oldConfig = vscode.workspace.getConfiguration(fallbackSection, document);
+		const oldConfig = docode.workspace.getConfiguration(fallbackSection, document);
 		const preferences: Proto.UserPreferences = {
 			...oldConfig.get('unstable'),
 			quotePreference: getQuoteStylePreference(document, fallbackSection),
@@ -190,7 +190,7 @@ export default class FileConfigurationManager extends Disposable {
 			includeCompletionsWithSnippetText: true,
 			includeCompletionsWithClassMemberSnippets: readUnifiedConfig<boolean>('suggest.classMemberSnippets.enabled', true, { scope: document, fallbackSection }),
 			includeCompletionsWithObjectLiteralMethodSnippets: readUnifiedConfig<boolean>('suggest.objectLiteralMethodSnippets.enabled', true, { scope: document, fallbackSection }),
-			autoImportFileExcludePatterns: this.getAutoImportFileExcludePatternsPreference(document, fallbackSection, vscode.workspace.getWorkspaceFolder(document.uri)?.uri),
+			autoImportFileExcludePatterns: this.getAutoImportFileExcludePatternsPreference(document, fallbackSection, docode.workspace.getWorkspaceFolder(document.uri)?.uri),
 			autoImportSpecifierExcludeRegexes: readUnifiedConfig<string[] | undefined>('preferences.autoImportSpecifierExcludeRegexes', undefined, { scope: document, fallbackSection }),
 			preferTypeOnlyAutoImports: readUnifiedConfig<boolean>('preferences.preferTypeOnlyAutoImports', false, { scope: document, fallbackSection }),
 			useLabelDetailsInCompletionEntries: true,
@@ -207,7 +207,7 @@ export default class FileConfigurationManager extends Disposable {
 		return preferences;
 	}
 
-	private getAutoImportFileExcludePatternsPreference(scope: UnifiedConfigurationScope, fallbackSection: string, workspaceFolder: vscode.Uri | undefined): string[] | undefined {
+	private getAutoImportFileExcludePatternsPreference(scope: UnifiedConfigurationScope, fallbackSection: string, workspaceFolder: docode.Uri | undefined): string[] | undefined {
 		const patterns = readUnifiedConfig<string[] | undefined>('preferences.autoImportFileExcludePatterns', undefined, { scope, fallbackSection });
 		return workspaceFolder && patterns?.map(p => {
 			// Normalization rules: https://github.com/microsoft/TypeScript/pull/49578
@@ -219,15 +219,15 @@ export default class FileConfigurationManager extends Disposable {
 				: path.parse(this.client.toTsFilePath(workspaceFolder)!).root;
 			return path.isAbsolute(p) ? p :
 				p.startsWith('*') ? wildcardPrefix + p :
-					isRelative ? this.client.toTsFilePath(vscode.Uri.joinPath(workspaceFolder, p))! :
+					isRelative ? this.client.toTsFilePath(docode.Uri.joinPath(workspaceFolder, p))! :
 						wildcardPrefix + '**' + path.sep + p;
 		});
 	}
 
 
-	private getMaximumHoverLength(document: vscode.TextDocument): number {
+	private getMaximumHoverLength(document: docode.TextDocument): number {
 		const defaultMaxLength = 500;
-		const maximumHoverLength = vscode.workspace.getConfiguration('js/ts', document).get<number>('hover.maximumLength', defaultMaxLength);
+		const maximumHoverLength = docode.workspace.getConfiguration('js/ts', document).get<number>('hover.maximumLength', defaultMaxLength);
 		if (!Number.isSafeInteger(maximumHoverLength) || maximumHoverLength <= 0) {
 			return defaultMaxLength;
 		}

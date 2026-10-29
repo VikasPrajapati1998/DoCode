@@ -1,0 +1,38 @@
+{
+	"name": "docode-extras",
+	"displayName": "DoCode Extras",
+	"description": "Extra utility features for the DoCode selfhost workspace",
+	"engines": {
+		"docode": "^1.88.0"
+	},
+	"version": "0.0.1",
+	"publisher": "ms-vscode",
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"workspaceContains:src/docode-dts/docode.d.ts"
+	],
+	"main": "./out/extension.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/microsoft/docode.git"
+	},
+	"license": "MIT",
+	"scripts": {
+		"compile": "gulp compile-extension:docode-extras",
+		"watch": "gulp watch-extension:docode-extras"
+	},
+	"contributes": {
+		"configuration": {
+			"title": "DoCode Extras",
+			"properties": {
+				"docode-extras.npmUpToDateFeature.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show a status bar warning when npm dependencies are out of date."
+				}
+			}
+		}
+	}
+}

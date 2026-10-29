@@ -161,7 +161,7 @@ Native crashes in a remote server's extension host use core dumps and `gdb` inst
 2. Reproduce the crash. Retrieve the core dump via `coredumpctl`, or from the path in `/proc/sys/kernel/core_pattern`.
 3. Load it in gdb and capture output:
     ```bash
-    gdb -se <path-to-vscode-server>/node -c <path-to-core-file>
+    gdb -se <path-to-docode-server>/node -c <path-to-core-file>
     ```
    Then run and collect the output of:
     ```

@@ -64,7 +64,7 @@ async function npmInstallAsync(dir: string, opts?: child_process.SpawnOptions): 
 
 	const command = process.env['npm_command'] || 'install';
 
-	if (process.env['VSCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME'] && /^(.build\/distro\/npm\/)?remote$/.test(dir)) {
+	if (process.env['DOCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME'] && /^(.build\/distro\/npm\/)?remote$/.test(dir)) {
 		const syncOpts: child_process.SpawnSyncOptions = {
 			env: finalOpts.env,
 			cwd: root,
@@ -72,20 +72,20 @@ async function npmInstallAsync(dir: string, opts?: child_process.SpawnOptions): 
 			shell: true,
 		};
 		const userinfo = os.userInfo();
-		log(dir, `Installing dependencies inside container ${process.env['VSCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME']}...`);
+		log(dir, `Installing dependencies inside container ${process.env['DOCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME']}...`);
 
 		if (process.env['npm_config_arch'] === 'arm64') {
-			run('sudo', ['docker', 'run', '--rm', '--privileged', 'vscodehub.azurecr.io/multiarch/qemu-user-static@sha256:fe60359c92e86a43cc87b3d906006245f77bfc0565676b80004cc666e4feb9f0', '--reset', '-p', 'yes'], syncOpts);
+			run('sudo', ['docker', 'run', '--rm', '--privileged', 'docodehub.azurecr.io/multiarch/qemu-user-static@sha256:fe60359c92e86a43cc87b3d906006245f77bfc0565676b80004cc666e4feb9f0', '--reset', '-p', 'yes'], syncOpts);
 		}
 		run('sudo', [
 			'docker', 'run',
 			'-e', 'GITHUB_TOKEN',
-			'-v', `${process.env['VSCODE_HOST_MOUNT']}:/root/vscode`,
-			'-v', `${process.env['VSCODE_HOST_MOUNT']}/.build/.gitconfig-distro:/root/.gitconfig`,
-			'-v', `${process.env['VSCODE_NPMRC_PATH']}:/root/.npmrc`,
-			'-w', path.resolve('/root/vscode', dir),
-			process.env['VSCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME'],
-			'sh', '-c', `\"chown -R root:root ${path.resolve('/root/vscode', dir)} && export PATH="/root/vscode/.build/nodejs-musl/usr/local/bin:$PATH" && npm i -g node-gyp-build && npm ci\"`
+			'-v', `${process.env['DOCODE_HOST_MOUNT']}:/root/docode`,
+			'-v', `${process.env['DOCODE_HOST_MOUNT']}/.build/.gitconfig-distro:/root/.gitconfig`,
+			'-v', `${process.env['DOCODE_NPMRC_PATH']}:/root/.npmrc`,
+			'-w', path.resolve('/root/docode', dir),
+			process.env['DOCODE_REMOTE_DEPENDENCIES_CONTAINER_NAME'],
+			'sh', '-c', `\"chown -R root:root ${path.resolve('/root/docode', dir)} && export PATH="/root/docode/.build/nodejs-musl/usr/local/bin:$PATH" && npm i -g node-gyp-build && npm ci\"`
 		], syncOpts);
 		run('sudo', ['chown', '-R', `${userinfo.uid}:${userinfo.gid}`, `${path.resolve(root, dir)}`], syncOpts);
 	} else {
@@ -238,7 +238,7 @@ async function runWithConcurrency(tasks: (() => Promise<void>)[], concurrency: n
 async function main() {
 	await ensureElectronTypes();
 
-	if (!process.env['VSCODE_FORCE_INSTALL'] && isUpToDate()) {
+	if (!process.env['DOCODE_FORCE_INSTALL'] && isUpToDate()) {
 		finishCloudSandbox();
 		log('.', 'All dependencies up to date, skipping postinstall.');
 		child_process.execSync('git config pull.rebase merges');
@@ -274,22 +274,22 @@ async function main() {
 			const remoteDir = dir;
 			nativeTasks.push(() => {
 				const env: NodeJS.ProcessEnv = { ...process.env };
-				if (process.env['VSCODE_REMOTE_CC']) {
-					env['CC'] = process.env['VSCODE_REMOTE_CC'];
+				if (process.env['DOCODE_REMOTE_CC']) {
+					env['CC'] = process.env['DOCODE_REMOTE_CC'];
 				} else {
 					delete env['CC'];
 				}
-				if (process.env['VSCODE_REMOTE_CXX']) {
-					env['CXX'] = process.env['VSCODE_REMOTE_CXX'];
+				if (process.env['DOCODE_REMOTE_CXX']) {
+					env['CXX'] = process.env['DOCODE_REMOTE_CXX'];
 				} else {
 					delete env['CXX'];
 				}
 				if (process.env['CXXFLAGS']) { delete env['CXXFLAGS']; }
 				if (process.env['CFLAGS']) { delete env['CFLAGS']; }
 				if (process.env['LDFLAGS']) { delete env['LDFLAGS']; }
-				if (process.env['VSCODE_REMOTE_CXXFLAGS']) { env['CXXFLAGS'] = process.env['VSCODE_REMOTE_CXXFLAGS']; }
-				if (process.env['VSCODE_REMOTE_LDFLAGS']) { env['LDFLAGS'] = process.env['VSCODE_REMOTE_LDFLAGS']; }
-				if (process.env['VSCODE_REMOTE_NODE_GYP']) { env['npm_config_node_gyp'] = process.env['VSCODE_REMOTE_NODE_GYP']; }
+				if (process.env['DOCODE_REMOTE_CXXFLAGS']) { env['CXXFLAGS'] = process.env['DOCODE_REMOTE_CXXFLAGS']; }
+				if (process.env['DOCODE_REMOTE_LDFLAGS']) { env['LDFLAGS'] = process.env['DOCODE_REMOTE_LDFLAGS']; }
+				if (process.env['DOCODE_REMOTE_NODE_GYP']) { env['npm_config_node_gyp'] = process.env['DOCODE_REMOTE_NODE_GYP']; }
 				setNpmrcConfig('remote', env);
 				return npmInstallAsync(remoteDir, { env });
 			});
@@ -347,7 +347,7 @@ async function main() {
 			continue;
 		}
 		const content = fs.readFileSync(nativeLoaderFile, 'utf8');
-		const marker = '// VSCODE_PATCH:foundry-addons-from-library-path';
+		const marker = '// DOCODE_PATCH:foundry-addons-from-library-path';
 		if (content.includes(marker)) {
 			continue;
 		}

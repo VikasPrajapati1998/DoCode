@@ -3,10 +3,10 @@
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "10.0.0",
-  "publisher": "vscode",
+  "publisher": "docode",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.4.0"
+    "docode": "^1.4.0"
   },
   "icon": "images/icon.png",
   "activationEvents": [
@@ -34,33 +34,33 @@
     "jsonValidation": [
       {
         "fileMatch": "package.json",
-        "url": "vscode://schemas/vscode-extensions"
+        "url": "docode://schemas/docode-extensions"
       },
       {
         "fileMatch": "*language-configuration.json",
-        "url": "vscode://schemas/language-configuration"
+        "url": "docode://schemas/language-configuration"
       },
       {
         "fileMatch": [
           "*icon-theme.json",
           "!*product-icon-theme.json"
         ],
-        "url": "vscode://schemas/icon-theme"
+        "url": "docode://schemas/icon-theme"
       },
       {
         "fileMatch": "*product-icon-theme.json",
-        "url": "vscode://schemas/product-icon-theme"
+        "url": "docode://schemas/product-icon-theme"
       },
       {
         "fileMatch": "*color-theme.json",
-        "url": "vscode://schemas/color-theme"
+        "url": "docode://schemas/color-theme"
       }
     ],
     "languages": [
       {
         "id": "ignore",
         "filenames": [
-          ".vscodeignore"
+          ".docodeignore"
         ]
       }
     ]

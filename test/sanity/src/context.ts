@@ -33,53 +33,53 @@ interface ITargetMetadata {
  * silently falling back to the update service.
  */
 const targetArtifacts: Readonly<Record<string, string>> = {
-	'cli-alpine-arm64': 'vscode_cli_alpine_arm64_cli',
-	'cli-alpine-x64': 'vscode_cli_alpine_x64_cli',
-	'cli-darwin-arm64': 'vscode_cli_darwin_arm64_cli',
-	'cli-darwin-x64': 'vscode_cli_darwin_x64_cli',
-	'cli-linux-arm64': 'vscode_cli_linux_arm64_cli',
-	'cli-linux-armhf': 'vscode_cli_linux_armhf_cli',
-	'cli-linux-x64': 'vscode_cli_linux_x64_cli',
-	'cli-win32-arm64': 'vscode_cli_win32_arm64_cli',
-	'cli-win32-x64': 'vscode_cli_win32_x64_cli',
-	'darwin': 'vscode_client_darwin_x64_archive',
-	'darwin-arm64': 'vscode_client_darwin_arm64_archive',
-	'darwin-arm64-dmg': 'vscode_client_darwin_arm64_dmg',
-	'darwin-universal': 'vscode_client_darwin_universal_archive',
-	'darwin-universal-dmg': 'vscode_client_darwin_universal_dmg',
-	'darwin-x64-dmg': 'vscode_client_darwin_x64_dmg',
-	'linux-arm64': 'vscode_client_linux_arm64_archive-unsigned',
-	'linux-armhf': 'vscode_client_linux_armhf_archive-unsigned',
-	'linux-deb-arm64': 'vscode_client_linux_arm64_deb-package',
-	'linux-deb-armhf': 'vscode_client_linux_armhf_deb-package',
-	'linux-deb-x64': 'vscode_client_linux_x64_deb-package',
-	'linux-rpm-arm64': 'vscode_client_linux_arm64_rpm-package',
-	'linux-rpm-armhf': 'vscode_client_linux_armhf_rpm-package',
-	'linux-rpm-x64': 'vscode_client_linux_x64_rpm-package',
-	'linux-snap-x64': 'vscode_client_linux_x64_snap',
-	'linux-x64': 'vscode_client_linux_x64_archive-unsigned',
-	'server-alpine-arm64': 'vscode_server_alpine_arm64_archive-unsigned',
-	'server-alpine-arm64-web': 'vscode_web_alpine_arm64_archive-unsigned',
-	'server-darwin': 'vscode_server_darwin_x64_archive',
-	'server-darwin-arm64': 'vscode_server_darwin_arm64_archive',
-	'server-darwin-arm64-web': 'vscode_web_darwin_arm64_archive',
-	'server-darwin-web': 'vscode_web_darwin_x64_archive',
-	'server-linux-alpine': 'vscode_server_linux_alpine_archive-unsigned',
-	'server-linux-alpine-web': 'vscode_web_linux_alpine_archive-unsigned',
-	'server-linux-arm64': 'vscode_server_linux_arm64_archive-unsigned',
-	'server-linux-arm64-web': 'vscode_web_linux_arm64_archive-unsigned',
-	'server-linux-x64': 'vscode_server_linux_x64_archive-unsigned',
-	'server-linux-x64-web': 'vscode_web_linux_x64_archive-unsigned',
-	'server-win32-arm64': 'vscode_server_win32_arm64_archive',
-	'server-win32-arm64-web': 'vscode_web_win32_arm64_archive',
-	'server-win32-x64': 'vscode_server_win32_x64_archive',
-	'server-win32-x64-web': 'vscode_web_win32_x64_archive',
-	'win32-arm64': 'vscode_client_win32_arm64_setup',
-	'win32-arm64-archive': 'vscode_client_win32_arm64_archive',
-	'win32-arm64-user': 'vscode_client_win32_arm64_user-setup',
-	'win32-x64': 'vscode_client_win32_x64_setup',
-	'win32-x64-archive': 'vscode_client_win32_x64_archive',
-	'win32-x64-user': 'vscode_client_win32_x64_user-setup',
+	'cli-alpine-arm64': 'docode_cli_alpine_arm64_cli',
+	'cli-alpine-x64': 'docode_cli_alpine_x64_cli',
+	'cli-darwin-arm64': 'docode_cli_darwin_arm64_cli',
+	'cli-darwin-x64': 'docode_cli_darwin_x64_cli',
+	'cli-linux-arm64': 'docode_cli_linux_arm64_cli',
+	'cli-linux-armhf': 'docode_cli_linux_armhf_cli',
+	'cli-linux-x64': 'docode_cli_linux_x64_cli',
+	'cli-win32-arm64': 'docode_cli_win32_arm64_cli',
+	'cli-win32-x64': 'docode_cli_win32_x64_cli',
+	'darwin': 'docode_client_darwin_x64_archive',
+	'darwin-arm64': 'docode_client_darwin_arm64_archive',
+	'darwin-arm64-dmg': 'docode_client_darwin_arm64_dmg',
+	'darwin-universal': 'docode_client_darwin_universal_archive',
+	'darwin-universal-dmg': 'docode_client_darwin_universal_dmg',
+	'darwin-x64-dmg': 'docode_client_darwin_x64_dmg',
+	'linux-arm64': 'docode_client_linux_arm64_archive-unsigned',
+	'linux-armhf': 'docode_client_linux_armhf_archive-unsigned',
+	'linux-deb-arm64': 'docode_client_linux_arm64_deb-package',
+	'linux-deb-armhf': 'docode_client_linux_armhf_deb-package',
+	'linux-deb-x64': 'docode_client_linux_x64_deb-package',
+	'linux-rpm-arm64': 'docode_client_linux_arm64_rpm-package',
+	'linux-rpm-armhf': 'docode_client_linux_armhf_rpm-package',
+	'linux-rpm-x64': 'docode_client_linux_x64_rpm-package',
+	'linux-snap-x64': 'docode_client_linux_x64_snap',
+	'linux-x64': 'docode_client_linux_x64_archive-unsigned',
+	'server-alpine-arm64': 'docode_server_alpine_arm64_archive-unsigned',
+	'server-alpine-arm64-web': 'docode_web_alpine_arm64_archive-unsigned',
+	'server-darwin': 'docode_server_darwin_x64_archive',
+	'server-darwin-arm64': 'docode_server_darwin_arm64_archive',
+	'server-darwin-arm64-web': 'docode_web_darwin_arm64_archive',
+	'server-darwin-web': 'docode_web_darwin_x64_archive',
+	'server-linux-alpine': 'docode_server_linux_alpine_archive-unsigned',
+	'server-linux-alpine-web': 'docode_web_linux_alpine_archive-unsigned',
+	'server-linux-arm64': 'docode_server_linux_arm64_archive-unsigned',
+	'server-linux-arm64-web': 'docode_web_linux_arm64_archive-unsigned',
+	'server-linux-x64': 'docode_server_linux_x64_archive-unsigned',
+	'server-linux-x64-web': 'docode_web_linux_x64_archive-unsigned',
+	'server-win32-arm64': 'docode_server_win32_arm64_archive',
+	'server-win32-arm64-web': 'docode_web_win32_arm64_archive',
+	'server-win32-x64': 'docode_server_win32_x64_archive',
+	'server-win32-x64-web': 'docode_web_win32_x64_archive',
+	'win32-arm64': 'docode_client_win32_arm64_setup',
+	'win32-arm64-archive': 'docode_client_win32_arm64_archive',
+	'win32-arm64-user': 'docode_client_win32_arm64_user-setup',
+	'win32-x64': 'docode_client_win32_x64_setup',
+	'win32-x64-archive': 'docode_client_win32_x64_archive',
+	'win32-x64-user': 'docode_client_win32_x64_user-setup',
 };
 
 /**
@@ -256,7 +256,7 @@ export class TestContext {
 	 * Creates a new temporary directory and returns its path.
 	 */
 	public createTempDir(): string {
-		const tempDir = fs.mkdtempSync(path.join(this.osTempDir, 'vscode-sanity'));
+		const tempDir = fs.mkdtempSync(path.join(this.osTempDir, 'docode-sanity'));
 		this.log(`Created temp directory: ${tempDir}`);
 		this.tempDirs.add(tempDir);
 		return tempDir;
@@ -266,7 +266,7 @@ export class TestContext {
 	 * Creates a new temporary directory in WSL and returns its path.
 	 */
 	public createWslTempDir(): string {
-		const tempDir = `/tmp/vscode-sanity-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+		const tempDir = `/tmp/docode-sanity-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 		this.log(`Creating WSL temp directory: ${tempDir}`);
 		this.runNoErrors('wsl', 'mkdir', '-p', tempDir);
 		this.wslTempDirs.add(tempDir);
@@ -1444,7 +1444,7 @@ export class TestContext {
 		}
 
 		try {
-			const screenshotDir = this.options.screenshotsDir ?? path.join(this.osTempDir, 'vscode-sanity-screenshots');
+			const screenshotDir = this.options.screenshotsDir ?? path.join(this.osTempDir, 'docode-sanity-screenshots');
 			fs.mkdirSync(screenshotDir, { recursive: true });
 			const sanitizedName = this.currentTestName.replace(/[^a-zA-Z0-9_-]/g, '_');
 			const screenshotPath = path.join(screenshotDir, `${sanitizedName}-${++this.screenshotCounter}.png`);
@@ -1471,7 +1471,7 @@ export class TestContext {
 				this.warn(`No logs to capture in ${logsDir}`);
 				return;
 			}
-			const screenshotDir = this.options.screenshotsDir ?? path.join(this.osTempDir, 'vscode-sanity-screenshots');
+			const screenshotDir = this.options.screenshotsDir ?? path.join(this.osTempDir, 'docode-sanity-screenshots');
 			const sanitizedName = this.currentTestName.replace(/[^a-zA-Z0-9_-]/g, '_');
 			const targetDir = path.join(screenshotDir, `${sanitizedName}-logs`);
 			fs.rmSync(targetDir, { recursive: true, force: true });
@@ -1567,7 +1567,7 @@ export class TestContext {
 	 */
 	public getTunnelUrl(baseUrl: string, workspaceDir?: string): string {
 		const url = new URL(baseUrl);
-		url.searchParams.set('vscode-version', this.options.commit);
+		url.searchParams.set('docode-version', this.options.commit);
 		if (workspaceDir) {
 			let folder = workspaceDir.replaceAll('\\', '/');
 			if (!folder.startsWith('/')) {
@@ -1594,19 +1594,19 @@ export class TestContext {
 
 	/**
 	 * Returns the default WSL server extensions directory path.
-	 * @returns The path to the extensions directory (e.g., '~/.vscode-server-insiders/extensions').
+	 * @returns The path to the extensions directory (e.g., '~/.docode-server-insiders/extensions').
 	 */
 	public getWslServerExtensionsDir(): string {
 		let serverDir: string;
 		switch (this.options.quality) {
 			case 'stable':
-				serverDir = '.vscode-server';
+				serverDir = '.docode-server';
 				break;
 			case 'insider':
-				serverDir = '.vscode-server-insiders';
+				serverDir = '.docode-server-insiders';
 				break;
 			case 'exploration':
-				serverDir = '.vscode-server-exploration';
+				serverDir = '.docode-server-exploration';
 				break;
 		}
 		return `~/${serverDir}/extensions`;

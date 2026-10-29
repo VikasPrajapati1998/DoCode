@@ -41,7 +41,7 @@ suite('SVG finishing', () => {
 				await fs.promises.writeFile(file.path, file.contents);
 			}
 
-			const copiedPath = path.join(outDir, 'vs', 'feature', 'copied.svg');
+			const copiedPath = path.join(outDir, 'do', 'feature', 'copied.svg');
 			await copyFile(path.join(sourceDir, 'copied.svg'), copiedPath);
 			const otherPaths = result.outputFiles.filter(file => !file.path.endsWith('.svg')).map(file => file.path);
 			const binaryPath = path.join(outDir, 'image.png');
@@ -144,7 +144,7 @@ suite('SVG finishing', () => {
 	<title id="title">Accessible illustration</title>
 	<desc id="description">Created with an SVG editor</desc>
 	<metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"><cc:Work xmlns:cc="http://creativecommons.org/ns#"><cc:license rdf:resource="https://opensource.org/licenses/MIT"/></cc:Work></rdf:RDF></metadata>
-	<style>/* Copyright (c) Microsoft Corporation. Licensed under the MIT License. */use { stroke: var(--vscode-foreground); }</style>
+	<style>/* Copyright (c) Microsoft Corporation. Licensed under the MIT License. */use { stroke: var(--docode-foreground); }</style>
 	<defs>
 		<linearGradient id="paint"><stop stop-color="#ff0000"/><stop offset="1" stop-color="#0000ff"/></linearGradient>
 		<clipPath id="clip"><rect width="24" height="24"/></clipPath>
@@ -152,7 +152,7 @@ suite('SVG finishing', () => {
 	</defs>
 	<g clip-path="url(#clip)">
 		<use xlink:href="#shape" fill="url(#paint)"/>
-		<use href="#shape" x="8" fill="var(--vscode-foreground)"/>
+		<use href="#shape" x="8" fill="var(--docode-foreground)"/>
 	</g>
 	<path id="external-fragment" opacity="0" d="M0 0 L8 0 L8 8 Z" aria-hidden="true"/>
 </svg>`;
@@ -169,9 +169,9 @@ suite('SVG finishing', () => {
 		const { outDir } = await createFixture(context);
 		const sourceRoot = path.resolve(import.meta.dirname, '../../../src');
 		const examples = [
-			'vs/workbench/contrib/extensions/browser/media/language-icon.svg',
-			'vs/workbench/contrib/extensions/browser/media/loading.svg',
-			'vs/workbench/contrib/welcomeGettingStarted/common/media/multi-file-edits.svg',
+			'do/workbench/contrib/extensions/browser/media/language-icon.svg',
+			'do/workbench/contrib/extensions/browser/media/loading.svg',
+			'do/workbench/contrib/welcomeGettingStarted/common/media/multi-file-edits.svg',
 		];
 		const inputs = await Promise.all(examples.map(async file => {
 			const sourcePath = path.join(sourceRoot, file);
@@ -189,7 +189,7 @@ suite('SVG finishing', () => {
 });
 
 async function createFixture(context: TestContext): Promise<{ root: string; sourceDir: string; outDir: string }> {
-	const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-svg-'));
+	const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-svg-'));
 	context.after(() => fs.promises.rm(root, { recursive: true, force: true }));
 	const sourceDir = path.join(root, 'src');
 	const outDir = path.join(root, 'out');

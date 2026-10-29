@@ -5,7 +5,7 @@
 
 import 'mocha';
 import assert from 'assert';
-import { workspace, commands, window, Uri, WorkspaceEdit, Range, TextDocument, extensions, TabInputTextDiff, TabInputNotebook, TabInputNotebookDiff } from 'vscode';
+import { workspace, commands, window, Uri, WorkspaceEdit, Range, TextDocument, extensions, TabInputTextDiff, TabInputNotebook, TabInputNotebookDiff } from 'docode';
 import * as cp from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -52,7 +52,7 @@ suite('git smoke test', function () {
 		cp.execSync('git commit -m "initial commit"', { cwd });
 
 		// make sure git is activated
-		const ext = extensions.getExtension<GitExtension>('vscode.git');
+		const ext = extensions.getExtension<GitExtension>('docode.git');
 		await ext?.activate();
 		git = ext!.exports.getAPI(1);
 

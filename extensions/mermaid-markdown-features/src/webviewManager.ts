@@ -2,11 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 export interface MermaidWebviewInfo {
 	readonly id: string;
-	readonly webview: vscode.Webview;
+	readonly webview: docode.Webview;
 	readonly mermaidSource: string;
 	readonly title: string | undefined;
 	readonly type: 'chat' | 'editor';
@@ -34,7 +34,7 @@ export class MermaidWebviewManager {
 		return this._activeWebviewId ? this._webviews.get(this._activeWebviewId) : undefined;
 	}
 
-	public registerWebview(id: string, webview: vscode.Webview, mermaidSource: string, title: string | undefined, type: 'chat' | 'editor'): vscode.Disposable {
+	public registerWebview(id: string, webview: docode.Webview, mermaidSource: string, title: string | undefined, type: 'chat' | 'editor'): docode.Disposable {
 		if (this._webviews.has(id)) {
 			throw new Error(`Webview with id ${id} is already registered.`);
 		}

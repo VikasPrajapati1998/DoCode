@@ -3,30 +3,30 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { SymbolsTree } from '../tree';
 import { ContextKey } from '../utils';
 import { TypeHierarchyDirection, TypeItem, TypesTreeInput } from './model';
 
-export function register(tree: SymbolsTree, context: vscode.ExtensionContext): void {
+export function register(tree: SymbolsTree, context: docode.ExtensionContext): void {
 
 	const direction = new RichTypesDirection(context.workspaceState, TypeHierarchyDirection.Subtypes);
 
 	function showTypeHierarchy() {
-		if (vscode.window.activeTextEditor) {
-			const input = new TypesTreeInput(new vscode.Location(vscode.window.activeTextEditor.document.uri, vscode.window.activeTextEditor.selection.active), direction.value);
+		if (docode.window.activeTextEditor) {
+			const input = new TypesTreeInput(new docode.Location(docode.window.activeTextEditor.document.uri, docode.window.activeTextEditor.selection.active), direction.value);
 			tree.setInput(input);
 		}
 	}
 
-	function setTypeHierarchyDirection(value: TypeHierarchyDirection, anchor: TypeItem | vscode.Location | unknown) {
+	function setTypeHierarchyDirection(value: TypeHierarchyDirection, anchor: TypeItem | docode.Location | unknown) {
 		direction.value = value;
 
 		let newInput: TypesTreeInput | undefined;
 		const oldInput = tree.getInput();
 		if (anchor instanceof TypeItem) {
-			newInput = new TypesTreeInput(new vscode.Location(anchor.item.uri, anchor.item.selectionRange.start), direction.value);
-		} else if (anchor instanceof vscode.Location) {
+			newInput = new TypesTreeInput(new docode.Location(anchor.item.uri, anchor.item.selectionRange.start), direction.value);
+		} else if (anchor instanceof docode.Location) {
 			newInput = new TypesTreeInput(anchor, direction.value);
 		} else if (oldInput instanceof TypesTreeInput) {
 			newInput = new TypesTreeInput(oldInput.location, direction.value);
@@ -37,10 +37,10 @@ export function register(tree: SymbolsTree, context: vscode.ExtensionContext): v
 	}
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('references-view.showTypeHierarchy', showTypeHierarchy),
-		vscode.commands.registerCommand('references-view.showSupertypes', (item: TypeItem | vscode.Location | unknown) => setTypeHierarchyDirection(TypeHierarchyDirection.Supertypes, item)),
-		vscode.commands.registerCommand('references-view.showSubtypes', (item: TypeItem | vscode.Location | unknown) => setTypeHierarchyDirection(TypeHierarchyDirection.Subtypes, item)),
-		vscode.commands.registerCommand('references-view.removeTypeItem', removeTypeItem)
+		docode.commands.registerCommand('references-view.showTypeHierarchy', showTypeHierarchy),
+		docode.commands.registerCommand('references-view.showSupertypes', (item: TypeItem | docode.Location | unknown) => setTypeHierarchyDirection(TypeHierarchyDirection.Supertypes, item)),
+		docode.commands.registerCommand('references-view.showSubtypes', (item: TypeItem | docode.Location | unknown) => setTypeHierarchyDirection(TypeHierarchyDirection.Subtypes, item)),
+		docode.commands.registerCommand('references-view.removeTypeItem', removeTypeItem)
 	);
 }
 
@@ -57,7 +57,7 @@ class RichTypesDirection {
 	private _ctxMode = new ContextKey<TypeHierarchyDirection>('references-view.typeHierarchyMode');
 
 	constructor(
-		private _mem: vscode.Memento,
+		private _mem: docode.Memento,
 		private _value: TypeHierarchyDirection = TypeHierarchyDirection.Subtypes,
 	) {
 		const raw = _mem.get<TypeHierarchyDirection>(RichTypesDirection._key);

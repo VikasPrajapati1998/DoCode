@@ -104,7 +104,7 @@ where
 				entry_path.into_owned()
 			};
 
-			// Skip bare top-level directory entries (e.g. "vscode-server-linux-x64/")
+			// Skip bare top-level directory entries (e.g. "docode-server-linux-x64/")
 			// once their single segment has been stripped. They contribute no file
 			// to extract, and the directory will be created on demand for nested
 			// entries below. Only directory entries are skipped; non-directory

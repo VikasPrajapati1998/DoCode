@@ -20,7 +20,7 @@ const packageJsonMarkerId = 'BUILD_INSERT_PACKAGE_CONFIGURATION';
 // are done to the product configuration during build. There are
 // at least 2 more changes that kick in very late:
 // - a `darwinUniversalAssetId` is added in`create-universal-app.ts`
-// - a `target` is added in `gulpfile.vscode.win32.js`
+// - a `target` is added in `gulpfile.docode.win32.js`
 // const productJsonMarkerId = 'BUILD_INSERT_PRODUCT_CONFIGURATION';
 
 export function inlineMeta(result: NodeJS.ReadWriteStream, ctx: IInlineMetaContext): NodeJS.ReadWriteStream {

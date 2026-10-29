@@ -259,8 +259,8 @@ impl Harness {
 }
 
 /// The modules that the test runners load into every test run, or that serve requests of the
-/// tests: those that their code names by a path alias, such as `'vs/workbench/test/common/utils'`
-/// or `` `${out}/vs/base/common/uri.js` ``. No test imports them.
+/// tests: those that their code names by a path alias, such as `'do/workbench/test/common/utils'`
+/// or `` `${out}/do/base/common/uri.js` ``. No test imports them.
 fn harness_modules(config: &Config, snap: &Snapshot, read: &mut ReadBlob) -> Result<Vec<Harness>> {
 	let mut modules: Vec<Harness> = Vec::new();
 	for e in snap
@@ -329,7 +329,7 @@ fn harness_reached(
 }
 
 /// The paths in a text that start with a path alias at the start of a path segment, such as
-/// `vs/base/common/uri.js` in `` `${out}/vs/base/common/uri.js` ``.
+/// `do/base/common/uri.js` in `` `${out}/do/base/common/uri.js` ``.
 fn alias_paths<'a>(text: &'a str, config: &Config) -> Vec<&'a str> {
 	let is_path = |c: char| c.is_ascii_alphanumeric() || "_-./@".contains(c);
 	let mut out = Vec::new();

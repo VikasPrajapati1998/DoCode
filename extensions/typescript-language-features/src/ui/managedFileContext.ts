@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { disabledSchemes } from '../configuration/fileSchemes';
 import { isJsConfigOrTsConfigFileName } from '../configuration/languageDescription';
 import { isSupportedLanguageMode } from '../configuration/languageIds';
@@ -11,7 +11,7 @@ import { Disposable } from '../utils/dispose';
 import { ActiveJsTsEditorTracker } from './activeJsTsEditorTracker';
 
 /**
- * When clause context set when the current file is managed by vscode's built-in typescript extension.
+ * When clause context set when the current file is managed by docode's built-in typescript extension.
  */
 export default class ManagedFileContextManager extends Disposable {
 	private static readonly contextName = 'typescript.isManagedFile';
@@ -32,7 +32,7 @@ export default class ManagedFileContextManager extends Disposable {
 		super.dispose();
 	}
 
-	private onDidChangeActiveTextEditor(editor?: vscode.TextEditor): void {
+	private onDidChangeActiveTextEditor(editor?: docode.TextEditor): void {
 		if (editor) {
 			this.updateContext(this.isManagedFile(editor));
 		} else {
@@ -45,19 +45,19 @@ export default class ManagedFileContextManager extends Disposable {
 			return;
 		}
 
-		vscode.commands.executeCommand('setContext', ManagedFileContextManager.contextName, newValue);
+		docode.commands.executeCommand('setContext', ManagedFileContextManager.contextName, newValue);
 		this.isInManagedFileContext = newValue;
 	}
 
-	private isManagedFile(editor: vscode.TextEditor): boolean {
+	private isManagedFile(editor: docode.TextEditor): boolean {
 		return this.isManagedScriptFile(editor) || this.isManagedConfigFile(editor);
 	}
 
-	private isManagedScriptFile(editor: vscode.TextEditor): boolean {
+	private isManagedScriptFile(editor: docode.TextEditor): boolean {
 		return isSupportedLanguageMode(editor.document) && !disabledSchemes.has(editor.document.uri.scheme);
 	}
 
-	private isManagedConfigFile(editor: vscode.TextEditor): boolean {
+	private isManagedConfigFile(editor: docode.TextEditor): boolean {
 		return isJsConfigOrTsConfigFileName(editor.document.fileName);
 	}
 }

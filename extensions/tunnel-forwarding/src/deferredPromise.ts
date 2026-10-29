@@ -11,7 +11,7 @@ const enum DeferredOutcome {
 }
 
 /**
- * Copied from src\vs\base\common\async.ts
+ * Copied from src\do\base\common\async.ts
  */
 export class DeferredPromise<T> {
 

@@ -8,7 +8,7 @@ html, body {
 	padding: 0;
 	height: 100%;
 	width: 100%;
-	background: var(--vscode-editor-background);
+	background: var(--docode-editor-background);
 }
 
 body {
@@ -21,18 +21,18 @@ body {
 	overflow: auto;
 	scrollbar-gutter: stable both-edges;
 	scrollbar-width: thin;
-	scrollbar-color: var(--vscode-scrollbarSlider-background) transparent;
+	scrollbar-color: var(--docode-scrollbarSlider-background) transparent;
 }
 
 .md-comment-widget {
 	background:
-		linear-gradient(var(--vscode-menu-background), var(--vscode-menu-background)),
-		var(--vscode-editor-background);
+		linear-gradient(var(--docode-menu-background), var(--docode-menu-background)),
+		var(--docode-editor-background);
 }
 
 .md-comment-widget:hover,
 .md-comment-widget--hover {
 	background:
-		linear-gradient(var(--vscode-list-hoverBackground), var(--vscode-list-hoverBackground)),
-		var(--vscode-editor-background);
+		linear-gradient(var(--docode-list-hoverBackground), var(--docode-list-hoverBackground)),
+		var(--docode-editor-background);
 }

@@ -161,7 +161,7 @@ vsda/**
 @vscode/policy-watcher/binding.gyp
 @vscode/policy-watcher/README.md
 @vscode/policy-watcher/index.d.ts
-!@vscode/policy-watcher/build/Release/vscode-policy-watcher.node
+!@vscode/policy-watcher/build/Release/docode-policy-watcher.node
 
 @vscode/windows-ca-certs/**/*
 !@vscode/windows-ca-certs/package.json

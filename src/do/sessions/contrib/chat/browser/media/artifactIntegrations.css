@@ -1,0 +1,220 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.artifact-integration-pill.artifact-pill-selected .monaco-button.chat-pill-button,
+.artifact-integration-group-pill.artifact-pill-selected .monaco-button.chat-pill-button {
+	border-color: var(--docode-focusBorder);
+}
+
+/* A pinned artifact's Unpin button rides on the trailing padding of its last segment, like other pinned pills. */
+.chat-pill-item.artifact-integration-pill.chat-pill-segmented.has-promoted-action > .monaco-button.chat-pill-button {
+	padding-right: var(--docode-spacing-size60);
+}
+
+.chat-pill-item.artifact-integration-pill.chat-pill-segmented.has-promoted-action .chat-pill-sections > .monaco-button.chat-pill-button:last-child {
+	padding-right: calc(var(--docode-spacing-size40) + var(--docode-spacing-size160) + var(--docode-spacing-size20));
+}
+
+.artifact-details-context-view {
+	box-sizing: border-box;
+	border: var(--docode-strokeThickness) solid var(--docode-editorWidget-border);
+	border-radius: var(--docode-cornerRadius-large);
+	background: var(--docode-editorWidget-background);
+	color: var(--docode-editorWidget-foreground);
+	box-shadow: var(--docode-shadow-lg);
+	overflow: hidden;
+}
+
+.hc-black .artifact-details-context-view,
+.hc-light .artifact-details-context-view {
+	border-color: var(--docode-contrastBorder);
+	box-shadow: none;
+}
+
+.artifact-integration-panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size80);
+	padding: var(--docode-spacing-size120);
+	box-sizing: border-box;
+	font-size: var(--docode-fontSize-body1);
+	overflow-wrap: anywhere;
+	min-width: 0;
+}
+
+.monaco-workbench .artifact-details-context-view > .artifact-integration-panel:focus {
+	outline: none;
+}
+
+.artifact-details-header {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--docode-spacing-size120);
+	flex-shrink: 0;
+}
+
+.artifact-details-title-icon {
+	display: flex;
+	flex-shrink: 0;
+	padding-top: var(--docode-spacing-size20);
+}
+
+.artifact-details-title-icon .codicon {
+	font-size: var(--docode-codiconFontSize);
+}
+
+.artifact-details-header .artifact-details-title {
+	margin: 0;
+	font-size: var(--docode-fontSize-heading3);
+	font-weight: var(--docode-fontWeight-semiBold);
+	line-height: 1.5;
+	min-width: 0;
+	flex: 1;
+}
+
+.artifact-details-title-link {
+	color: inherit;
+	text-decoration: none;
+}
+
+.artifact-details-title-link:is(:hover, .hovered, :focus-visible) {
+	color: var(--docode-textLink-activeForeground);
+}
+
+.artifact-header-actions {
+	flex-shrink: 0;
+	max-width: 50%;
+	justify-content: flex-end;
+}
+
+.artifact-details-scrollable {
+	min-height: 0;
+	flex: 1 1 auto;
+}
+
+.artifact-details-body {
+	overflow: hidden;
+	min-width: 0;
+}
+
+.artifact-details-description-content {
+	color: var(--docode-descriptionForeground);
+	line-height: 1.5;
+	white-space: normal;
+	overflow: clip;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}
+
+.artifact-details-availability {
+	white-space: pre-wrap;
+	color: var(--docode-descriptionForeground);
+	margin: 0;
+}
+
+.artifact-details-lower-scrollable {
+	min-height: 0;
+	flex-shrink: 0;
+}
+
+.artifact-details-lower-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size120);
+	overflow: hidden;
+}
+
+.artifact-controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--docode-spacing-size40);
+	min-width: 0;
+}
+
+.artifact-general-actions {
+	border-top: var(--docode-strokeThickness) solid var(--docode-widget-border);
+	padding-top: var(--docode-spacing-size60);
+	flex-shrink: 0;
+}
+
+.artifact-button-label {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+.artifact-integration-panel .artifact-controls .monaco-button {
+	width: auto;
+	max-width: 100%;
+	gap: var(--docode-spacing-size40);
+}
+
+.artifact-integration-panel .artifact-general-actions .monaco-button {
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-label1);
+}
+
+.artifact-details-title-link:focus-visible,
+.artifact-integration-panel .artifact-controls .monaco-button:focus-visible,
+.artifact-card-disclosure:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: -1px;
+}
+
+.artifact-details-card {
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+	border-radius: var(--docode-cornerRadius-medium);
+	background: var(--docode-dropdown-background, var(--docode-editorWidget-background));
+	color: var(--docode-dropdown-foreground, var(--docode-editorWidget-foreground));
+	min-width: 0;
+	flex-shrink: 0;
+}
+
+.artifact-card-heading {
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size80);
+	padding: var(--docode-spacing-size80) var(--docode-spacing-size120);
+	min-width: 0;
+}
+
+.artifact-card-title {
+	margin: 0;
+	min-width: 0;
+}
+
+.artifact-card-summary {
+	margin-left: auto;
+	font-size: var(--docode-fontSize-body2);
+	color: var(--docode-descriptionForeground);
+}
+
+.artifact-card-title .artifact-card-disclosure {
+	width: auto;
+	min-width: 0;
+	max-width: 100%;
+	padding: 0;
+	gap: var(--docode-spacing-size40);
+	font-size: var(--docode-fontSize-label1);
+	font-weight: var(--docode-fontWeight-semiBold);
+}
+
+.artifact-card-disclosure .monaco-button-mdlabel {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.artifact-card-content {
+	padding: var(--docode-spacing-size80) var(--docode-spacing-size120);
+	border-top: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+}
+
+.artifact-integration-panel [hidden] {
+	display: none;
+}

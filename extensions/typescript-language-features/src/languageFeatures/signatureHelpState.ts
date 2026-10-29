@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as vscode from 'vscode';
+import type * as docode from 'docode';
 
 interface PreviousSignatureHelpState {
 	readonly activeSignatureIndex: number;
@@ -14,21 +14,21 @@ interface PreviousSignatureHelpState {
 /** Tracks automatic and user-selected signature help overloads between provider calls. */
 export class SignatureHelpState {
 
-	private readonly requestIds = new WeakMap<vscode.TextDocument, number>();
-	private readonly previousSignatureHelpState = new WeakMap<vscode.TextDocument, PreviousSignatureHelpState>();
+	private readonly requestIds = new WeakMap<docode.TextDocument, number>();
+	private readonly previousSignatureHelpState = new WeakMap<docode.TextDocument, PreviousSignatureHelpState>();
 
-	public startRequest(document: vscode.TextDocument): number {
+	public startRequest(document: docode.TextDocument): number {
 		const requestId = (this.requestIds.get(document) ?? 0) + 1;
 		this.requestIds.set(document, requestId);
 		return requestId;
 	}
 
 	public getActiveSignature(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		requestId: number,
-		context: vscode.SignatureHelpContext,
+		context: docode.SignatureHelpContext,
 		typeScriptSelectedSignatureIndex: number,
-		signatures: readonly vscode.SignatureInformation[],
+		signatures: readonly docode.SignatureInformation[],
 	): number {
 		if (requestId !== this.requestIds.get(document)) {
 			return typeScriptSelectedSignatureIndex;
@@ -68,7 +68,7 @@ export class SignatureHelpState {
 		return activeSignatureIndex;
 	}
 
-	private hasMatchingSignatures(signatures: readonly vscode.SignatureInformation[], signatureLabels: readonly string[]): boolean {
+	private hasMatchingSignatures(signatures: readonly docode.SignatureInformation[], signatureLabels: readonly string[]): boolean {
 		return signatures.length === signatureLabels.length
 			&& signatures.every((signature, index) => signature.label === signatureLabels[index]);
 	}

@@ -14,8 +14,8 @@ import rule from '../code-no-sync-fs.ts';
 RuleTester.describe = suite;
 RuleTester.it = test;
 
-const modules = ['fs', 'node:fs', 'original-fs', '../../base/node/pfs.js', 'vs/base/node/pfs'];
-const productionFile = resolve(import.meta.dirname, '../../src/vs/workbench/node/example.ts');
+const modules = ['fs', 'node:fs', 'original-fs', '../../base/node/pfs.js', 'do/base/node/pfs'];
+const productionFile = resolve(import.meta.dirname, '../../src/do/workbench/node/example.ts');
 const errors = (name: string) => [{ messageId: 'syncFs', data: { name } }];
 
 new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-sync-fs', rule, {
@@ -96,7 +96,7 @@ suite('code-no-sync-fs production configuration', () => {
 	});
 
 	test('enforces core and built-in extension production code', async () => {
-		const files = ['src/vs/platform/agentHost/node/example.ts', 'src/vs/base/node/example.ts', 'extensions/git/src/example.ts', 'extensions/copilot/src/platform/example.ts'];
+		const files = ['src/do/platform/agentHost/node/example.ts', 'src/do/base/node/example.ts', 'extensions/git/src/example.ts'];
 		assert.deepStrictEqual(await Promise.all(files.map(async file => {
 			const results = await eslint.lintText(`import { statSync } from 'fs'; statSync('file');`, { filePath: resolve(root, file) });
 			return results.flatMap(result => result.messages.filter(message => message.ruleId === 'local/code-no-sync-fs').map(message => message.severity));
@@ -104,7 +104,7 @@ suite('code-no-sync-fs production configuration', () => {
 	});
 
 	test('allows tests and development scripts', async () => {
-		const files = ['src/vs/base/test/node/example.test.ts', 'extensions/git/src/test/example.ts', 'extensions/copilot/src/platform/example.spec.ts', 'extensions/copilot/src/platform/example.spec.tsx', 'extensions/copilot/script/example.ts', 'scripts/example.ts', 'build/example.ts', 'src/vs/code/node/cli.ts', 'src/vs/server/node/server.cli.ts'];
+		const files = ['src/do/base/test/node/example.test.ts', 'extensions/git/src/test/example.ts', 'scripts/example.ts', 'build/example.ts', 'src/do/code/node/cli.ts', 'src/do/server/node/server.cli.ts'];
 		assert.deepStrictEqual(await Promise.all(files.map(async file => {
 			const results = await eslint.lintText(`import { statSync } from 'fs'; statSync('file');`, { filePath: resolve(root, file) });
 			return results.flatMap(result => result.messages.filter(message => message.ruleId === 'local/code-no-sync-fs'));
@@ -120,7 +120,7 @@ suite('code-no-sync-fs production configuration', () => {
 	});
 
 	test('allows bootstrap entry points and the AMD loader without exempting nested production files', async () => {
-		const files = ['src/bootstrap-esm.ts', 'src/bootstrap-node.ts', 'src/mainImpl.ts', 'src/server-main.ts', 'src/future-bootstrap.ts', 'src/vs/amdX.ts', 'src/vs/code/electron-main/main.ts', 'src/vs/platform/agentHost/node/example.ts'];
+		const files = ['src/bootstrap-esm.ts', 'src/bootstrap-node.ts', 'src/mainImpl.ts', 'src/server-main.ts', 'src/future-bootstrap.ts', 'src/do/amdX.ts', 'src/do/code/electron-main/main.ts', 'src/do/platform/agentHost/node/example.ts'];
 		assert.deepStrictEqual(await Promise.all(files.map(async file => {
 			const results = await eslint.lintText(`import { statSync } from 'fs'; statSync('file');`, { filePath: resolve(root, file) });
 			return results.flatMap(result => result.messages.filter(message => message.ruleId === 'local/code-no-sync-fs').map(message => message.severity));
@@ -128,26 +128,26 @@ suite('code-no-sync-fs production configuration', () => {
 	});
 
 	test('allows a documented call-site exception without exempting later calls', async () => {
-		const results = await eslint.lintText(`import { statSync } from 'fs';\n// eslint-disable-next-line local/code-no-sync-fs -- Synchronous startup initialization.\nstatSync('startup');\nstatSync('runtime');`, { filePath: resolve(root, 'src/vs/base/node/example.ts') });
+		const results = await eslint.lintText(`import { statSync } from 'fs';\n// eslint-disable-next-line local/code-no-sync-fs -- Synchronous startup initialization.\nstatSync('startup');\nstatSync('runtime');`, { filePath: resolve(root, 'src/do/base/node/example.ts') });
 		assert.deepStrictEqual(results.flatMap(result => result.messages.filter(message => message.ruleId === 'local/code-no-sync-fs').map(message => message.line)), [4]);
 	});
 
 	test('allows designated core startup/shutdown files without exempting their directories or helper callers', async () => {
 		const files = [
-			'src/vs/base/node/pfs.ts',
-			'src/vs/platform/environment/node/wait.ts',
-			'src/vs/server/node/remoteExtensionHostAgentServer.ts',
-			'src/vs/server/node/server.main.ts',
-			'src/vs/workbench/api/node/extHostCLIServer.ts',
-			'src/vs/workbench/api/node/extHostExtensionService.ts',
-			'src/vs/workbench/api/node/extHostStoragePaths.ts',
-			'src/vs/base/node/example.ts',
-			'src/vs/platform/environment/node/example.ts',
-			'src/vs/server/node/example.ts',
-			'src/vs/workbench/api/node/example.ts',
+			'src/do/base/node/pfs.ts',
+			'src/do/platform/environment/node/wait.ts',
+			'src/do/server/node/remoteExtensionHostAgentServer.ts',
+			'src/do/server/node/server.main.ts',
+			'src/do/workbench/api/node/extHostCLIServer.ts',
+			'src/do/workbench/api/node/extHostExtensionService.ts',
+			'src/do/workbench/api/node/extHostStoragePaths.ts',
+			'src/do/base/node/example.ts',
+			'src/do/platform/environment/node/example.ts',
+			'src/do/server/node/example.ts',
+			'src/do/workbench/api/node/example.ts',
 		];
 		assert.deepStrictEqual(await Promise.all(files.map(async file => {
-			const results = await eslint.lintText(`import { writeFileSync } from 'vs/base/node/pfs'; writeFileSync('file', 'data');`, { filePath: resolve(root, file) });
+			const results = await eslint.lintText(`import { writeFileSync } from 'do/base/node/pfs'; writeFileSync('file', 'data');`, { filePath: resolve(root, file) });
 			return results.flatMap(result => result.messages.filter(message => message.ruleId === 'local/code-no-sync-fs').map(message => message.severity));
 		})), [[], [], [], [], [], [], [], [2], [2], [2], [2]]);
 	});

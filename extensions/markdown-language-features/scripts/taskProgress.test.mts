@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { registerHooks } from 'node:module';
 import { describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { EditorModel, ListItemAstNode, StringValue, type AstNode } from '@vscode/markdown-editor';
+import { EditorModel, ListItemAstNode, StringValue, type AstNode } from '@docode/markdown-editor';
 import { isTaskProgressMessage } from '../markdown-editor-src/taskProgress/taskProgressProtocol.ts';
 import { buildTaskProgressHtml } from './buildTaskProgressHtml.mts';
 
@@ -84,9 +84,9 @@ describe('built-in task progress', () => {
 			selector: provider.selector,
 			descriptor: await provider.resolve('widget:task-progress'),
 		}, {
-			id: 'vscode.markdown.taskProgress',
+			id: 'docode.markdown.taskProgress',
 			selector: { language: 'widget:task-progress' },
-			descriptor: { html, runtimeKey: 'vscode.markdown.taskProgress', hostTransport: true, initialHeight: 88 },
+			descriptor: { html, runtimeKey: 'docode.markdown.taskProgress', hostTransport: true, initialHeight: 88 },
 		});
 	});
 

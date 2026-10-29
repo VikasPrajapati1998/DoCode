@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command, CommandManager } from '../commands/commandManager';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { TelemetryReporter } from '../logging/telemetry';
@@ -21,8 +21,8 @@ import { CompositeCommand, EditorChatFollowUp, EditorChatFollowUp_Args, Expand }
 import { conditionalRegistration, requireSomeCapability } from './util/dependentRegistration';
 
 type ApplyCodeActionCommand_args = {
-	readonly document: vscode.TextDocument;
-	readonly diagnostic: vscode.Diagnostic;
+	readonly document: docode.TextDocument;
+	readonly diagnostic: docode.Diagnostic;
 	readonly action: Proto.CodeFixAction;
 	readonly followupAction?: Command;
 };
@@ -95,24 +95,24 @@ class ApplyFixAllCodeAction implements Command {
  * Unique set of diagnostics keyed on diagnostic range and error code.
  */
 class DiagnosticsSet {
-	public static from(diagnostics: vscode.Diagnostic[]) {
-		const values = new Map<string, vscode.Diagnostic>();
+	public static from(diagnostics: docode.Diagnostic[]) {
+		const values = new Map<string, docode.Diagnostic>();
 		for (const diagnostic of diagnostics) {
 			values.set(DiagnosticsSet.key(diagnostic), diagnostic);
 		}
 		return new DiagnosticsSet(values);
 	}
 
-	private static key(diagnostic: vscode.Diagnostic) {
+	private static key(diagnostic: docode.Diagnostic) {
 		const { start, end } = diagnostic.range;
 		return `${diagnostic.code}-${start.line},${start.character}-${end.line},${end.character}`;
 	}
 
 	private constructor(
-		private readonly _values: Map<string, vscode.Diagnostic>
+		private readonly _values: Map<string, docode.Diagnostic>
 	) { }
 
-	public get values(): Iterable<vscode.Diagnostic> {
+	public get values(): Iterable<docode.Diagnostic> {
 		return this._values.values();
 	}
 
@@ -121,11 +121,11 @@ class DiagnosticsSet {
 	}
 }
 
-class VsCodeCodeAction extends vscode.CodeAction {
+class VsCodeCodeAction extends docode.CodeAction {
 	constructor(
 		public readonly tsAction: Proto.CodeFixAction,
 		title: string,
-		kind: vscode.CodeActionKind
+		kind: docode.CodeActionKind
 	) {
 		super(title, kind);
 	}
@@ -136,7 +136,7 @@ class VsCodeFixAllCodeAction extends VsCodeCodeAction {
 		tsAction: Proto.CodeFixAction,
 		public readonly file: string,
 		title: string,
-		kind: vscode.CodeActionKind
+		kind: docode.CodeActionKind
 	) {
 		super(tsAction, title, kind);
 	}
@@ -198,7 +198,7 @@ class SupportedCodeActionProvider {
 		private readonly client: ITypeScriptServiceClient
 	) { }
 
-	public async getFixableDiagnosticsForContext(diagnostics: readonly vscode.Diagnostic[]): Promise<DiagnosticsSet> {
+	public async getFixableDiagnosticsForContext(diagnostics: readonly docode.Diagnostic[]): Promise<DiagnosticsSet> {
 		const fixableCodes = await this.fixableDiagnosticCodes.value;
 		return DiagnosticsSet.from(
 			diagnostics.filter(diagnostic => typeof diagnostic.code !== 'undefined' && fixableCodes.has(diagnostic.code + '')));
@@ -211,12 +211,12 @@ class SupportedCodeActionProvider {
 	});
 }
 
-class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCodeAction> {
+class TypeScriptQuickFixProvider implements docode.CodeActionProvider<VsCodeCodeAction> {
 
 	private static readonly _maxCodeActionsPerFile: number = 1000;
 
-	public static readonly metadata: vscode.CodeActionProviderMetadata = {
-		providedCodeActionKinds: [vscode.CodeActionKind.QuickFix]
+	public static readonly metadata: docode.CodeActionProviderMetadata = {
+		providedCodeActionKinds: [docode.CodeActionKind.QuickFix]
 	};
 
 	private readonly supportedCodeActionProvider: SupportedCodeActionProvider;
@@ -237,10 +237,10 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 	}
 
 	public async provideCodeActions(
-		document: vscode.TextDocument,
-		range: vscode.Range,
-		context: vscode.CodeActionContext,
-		token: vscode.CancellationToken
+		document: docode.TextDocument,
+		range: docode.Range,
+		context: docode.CodeActionContext,
+		token: docode.CancellationToken
 	): Promise<VsCodeCodeAction[] | undefined> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
@@ -257,7 +257,7 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 			if (token.isCancellationRequested) {
 				return;
 			}
-			const allDiagnostics: vscode.Diagnostic[] = [];
+			const allDiagnostics: docode.Diagnostic[] = [];
 
 			// Match ranges again after getting new diagnostics
 			for (const diagnostic of this.diagnosticsManager.getDiagnostics(document.uri)) {
@@ -296,7 +296,7 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 		return allActions;
 	}
 
-	public async resolveCodeAction(codeAction: VsCodeCodeAction, token: vscode.CancellationToken): Promise<VsCodeCodeAction> {
+	public async resolveCodeAction(codeAction: VsCodeCodeAction, token: docode.CancellationToken): Promise<VsCodeCodeAction> {
 		if (!(codeAction instanceof VsCodeFixAllCodeAction) || !codeAction.tsAction.fixId) {
 			return codeAction;
 		}
@@ -319,11 +319,11 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 	}
 
 	private async getFixesForDiagnostic(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		file: string,
-		diagnostic: vscode.Diagnostic,
+		diagnostic: docode.Diagnostic,
 		results: CodeActionSet,
-		token: vscode.CancellationToken,
+		token: docode.CancellationToken,
 	): Promise<CodeActionSet> {
 		const args: Proto.CodeFixRequestArgs = {
 			...typeConverters.Range.toFileRangeRequestArgs(file, diagnostic.range),
@@ -344,12 +344,12 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 	}
 
 	private getFixesForTsCodeAction(
-		document: vscode.TextDocument,
-		diagnostic: vscode.Diagnostic,
+		document: docode.TextDocument,
+		diagnostic: docode.Diagnostic,
 		action: Proto.CodeFixAction
 	): VsCodeCodeAction[] {
 		const actions: VsCodeCodeAction[] = [];
-		const codeAction = new VsCodeCodeAction(action, action.description, vscode.CodeActionKind.QuickFix);
+		const codeAction = new VsCodeCodeAction(action, action.description, docode.CodeActionKind.QuickFix);
 		codeAction.edit = getEditForCodeAction(this.client, action);
 		codeAction.diagnostics = [diagnostic];
 		codeAction.ranges = [diagnostic.range];
@@ -360,33 +360,33 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 		};
 		actions.push(codeAction);
 
-		const copilot = vscode.extensions.getExtension('github.copilot-chat');
+		const copilot = docode.extensions.getExtension('github.copilot-chat');
 		if (copilot?.isActive) {
 			let message: string | undefined;
 			let expand: Expand | undefined;
 			let title = action.description;
 			if (action.fixName === fixNames.classIncorrectlyImplementsInterface) {
-				title = vscode.l10n.t('{0} with AI', action.description);
-				message = vscode.l10n.t('Implement the stubbed-out class members for {0} with a useful implementation.', document.getText(diagnostic.range));
+				title = docode.l10n.t('{0} with AI', action.description);
+				message = docode.l10n.t('Implement the stubbed-out class members for {0} with a useful implementation.', document.getText(diagnostic.range));
 				expand = { kind: 'code-action', action };
 			} else if (action.fixName === fixNames.fixClassDoesntImplementInheritedAbstractMember) {
-				title = vscode.l10n.t('{0} with AI', action.description);
-				message = vscode.l10n.t(`Implement the stubbed-out class members for {0} with a useful implementation.`, document.getText(diagnostic.range));
+				title = docode.l10n.t('{0} with AI', action.description);
+				message = docode.l10n.t(`Implement the stubbed-out class members for {0} with a useful implementation.`, document.getText(diagnostic.range));
 				expand = { kind: 'code-action', action };
 			} else if (action.fixName === fixNames.fixMissingFunctionDeclaration) {
-				title = vscode.l10n.t(`Implement missing function declaration '{0}' using AI`, document.getText(diagnostic.range));
-				message = vscode.l10n.t(`Provide a reasonable implementation of the function {0} given its type and the context it's called in.`, document.getText(diagnostic.range));
+				title = docode.l10n.t(`Implement missing function declaration '{0}' using AI`, document.getText(diagnostic.range));
+				message = docode.l10n.t(`Provide a reasonable implementation of the function {0} given its type and the context it's called in.`, document.getText(diagnostic.range));
 				expand = { kind: 'code-action', action };
 			} else if (action.fixName === fixNames.inferFromUsage) {
-				const inferFromBody = new VsCodeCodeAction(action, vscode.l10n.t('Infer types using AI'), vscode.CodeActionKind.QuickFix);
-				inferFromBody.edit = new vscode.WorkspaceEdit();
+				const inferFromBody = new VsCodeCodeAction(action, docode.l10n.t('Infer types using AI'), docode.CodeActionKind.QuickFix);
+				inferFromBody.edit = new docode.WorkspaceEdit();
 				inferFromBody.diagnostics = [diagnostic];
 				inferFromBody.ranges = [diagnostic.range];
 				inferFromBody.isAI = true;
 				inferFromBody.command = {
 					command: EditorChatFollowUp.ID,
 					arguments: [{
-						message: vscode.l10n.t('Add types to this code. Add separate interfaces when possible. Do not change the code except for adding types.'),
+						message: docode.l10n.t('Add types to this code. Add separate interfaces when possible. Do not change the code except for adding types.'),
 						expand: { kind: 'navtree-function', pos: diagnostic.range.start },
 						document,
 						action: { type: 'quickfix', quickfix: action }
@@ -397,15 +397,15 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 			}
 			else if (action.fixName === fixNames.addNameToNamelessParameter) {
 				const newText = action.changes.map(change => change.textChanges.map(textChange => textChange.newText).join('')).join('');
-				title = vscode.l10n.t('Add meaningful parameter name with AI');
-				message = vscode.l10n.t(`Rename the parameter {0} with a more meaningful name.`, newText);
+				title = docode.l10n.t('Add meaningful parameter name with AI');
+				message = docode.l10n.t(`Rename the parameter {0} with a more meaningful name.`, newText);
 				expand = {
 					kind: 'navtree-function',
 					pos: diagnostic.range.start
 				};
 			}
 			if (expand && message !== undefined) {
-				const aiCodeAction = new VsCodeCodeAction(action, title, vscode.CodeActionKind.QuickFix);
+				const aiCodeAction = new VsCodeCodeAction(action, title, docode.CodeActionKind.QuickFix);
 				aiCodeAction.edit = getEditForCodeAction(this.client, action);
 				aiCodeAction.edit?.insert(document.uri, diagnostic.range.start, '');
 				aiCodeAction.diagnostics = [diagnostic];
@@ -437,9 +437,9 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 
 	private addFixAllForTsCodeAction(
 		results: CodeActionSet,
-		resource: vscode.Uri,
+		resource: docode.Uri,
 		file: string,
-		diagnostic: vscode.Diagnostic,
+		diagnostic: docode.Diagnostic,
 		tsAction: Proto.CodeFixAction,
 	): CodeActionSet {
 		if (!tsAction.fixId || results.hasFixAllAction(tsAction.fixId)) {
@@ -460,8 +460,8 @@ class TypeScriptQuickFixProvider implements vscode.CodeActionProvider<VsCodeCode
 		const action = new VsCodeFixAllCodeAction(
 			tsAction,
 			file,
-			tsAction.fixAllDescription || vscode.l10n.t("{0} (Fix all in file)", tsAction.description),
-			vscode.CodeActionKind.QuickFix);
+			tsAction.fixAllDescription || docode.l10n.t("{0} (Fix all in file)", tsAction.description),
+			docode.CodeActionKind.QuickFix);
 
 		action.diagnostics = [diagnostic];
 		action.ranges = [diagnostic.range];
@@ -549,7 +549,7 @@ export function register(
 	return conditionalRegistration([
 		requireSomeCapability(client, ClientCapability.Semantic),
 	], () => {
-		return vscode.languages.registerCodeActionsProvider(selector.semantic,
+		return docode.languages.registerCodeActionsProvider(selector.semantic,
 			new TypeScriptQuickFixProvider(client, fileConfigurationManager, commandManager, diagnosticsManager, telemetryReporter),
 			TypeScriptQuickFixProvider.metadata);
 	});

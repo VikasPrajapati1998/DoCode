@@ -7,7 +7,7 @@ import 'mocha';
 import * as assert from 'assert';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { EventEmitter, Uri } from 'vscode';
+import { EventEmitter, Uri } from 'docode';
 import { GitIgnoreDecorationProvider } from '../decorationProvider';
 import type { Repository } from '../repository';
 

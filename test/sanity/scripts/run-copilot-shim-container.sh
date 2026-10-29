@@ -11,7 +11,7 @@ fixtures=
 grep=
 arch=amd64
 timeout=
-registry='vscodehub.azurecr.io/vscode-linux-build-agent/sanity-tests'
+registry='docodehub.azurecr.io/docode-linux-build-agent/sanity-tests'
 
 usage() {
 	cat <<'EOF'
@@ -46,7 +46,7 @@ sanity_root=$(cd "$script_directory/.." && pwd)
 fixture_manifest=$(cd "$(dirname "$fixtures")" && pwd)/$(basename "$fixtures")
 fixture_root=$(dirname "$fixture_manifest")
 runner_id="copilot-shim-$(date +%s)-$$"
-marker="/run/vscode-copilot-shim-package-lifecycle/$runner_id/marker.json"
+marker="/run/docode-copilot-shim-package-lifecycle/$runner_id/marker.json"
 evidence_directory="$sanity_root/artifacts/copilot-shim-evidence/$runner_id"
 image="$registry:$container-$arch"
 
@@ -59,16 +59,16 @@ docker_arguments=(
 	--mount "type=bind,source=$sanity_root,target=/workspace,readonly"
 	--mount "type=bind,source=$fixture_root,target=/fixtures,readonly"
 	--mount "type=bind,source=$evidence_directory,target=/evidence"
-	--env VSCODE_COPILOT_SHIM_DISPOSABLE_RUNNER=1
-	--env VSCODE_COPILOT_SHIM_RUNNER_ID="$runner_id"
-	--env VSCODE_COPILOT_SHIM_RUNNER_MARKER="$marker"
-	--env VSCODE_COPILOT_SHIM_EVIDENCE_DIR=/evidence
-	--env "VSCODE_COPILOT_SHIM_FIXTURES=/fixtures/$(basename "$fixture_manifest")"
-	--env "VSCODE_COPILOT_SHIM_FORMAT=$format"
-	--env "VSCODE_COPILOT_SHIM_GREP=$grep"
+	--env DOCODE_COPILOT_SHIM_DISPOSABLE_RUNNER=1
+	--env DOCODE_COPILOT_SHIM_RUNNER_ID="$runner_id"
+	--env DOCODE_COPILOT_SHIM_RUNNER_MARKER="$marker"
+	--env DOCODE_COPILOT_SHIM_EVIDENCE_DIR=/evidence
+	--env "DOCODE_COPILOT_SHIM_FIXTURES=/fixtures/$(basename "$fixture_manifest")"
+	--env "DOCODE_COPILOT_SHIM_FORMAT=$format"
+	--env "DOCODE_COPILOT_SHIM_GREP=$grep"
 )
 if [ -n "$timeout" ]; then
-	docker_arguments+=(--env "VSCODE_COPILOT_SHIM_TIMEOUT=$timeout")
+	docker_arguments+=(--env "DOCODE_COPILOT_SHIM_TIMEOUT=$timeout")
 fi
 
 docker run "${docker_arguments[@]}" \
@@ -76,14 +76,14 @@ docker run "${docker_arguments[@]}" \
 	"$image" \
 	-c 'set -eu
 		bash /workspace/scripts/provision-copilot-shim-runner.sh
-		if [ -n "${VSCODE_COPILOT_SHIM_TIMEOUT:-}" ]; then
+		if [ -n "${DOCODE_COPILOT_SHIM_TIMEOUT:-}" ]; then
 			exec node /workspace/out/copilotShimIndex.js \
-				--fixtures "$VSCODE_COPILOT_SHIM_FIXTURES" \
-				--format "$VSCODE_COPILOT_SHIM_FORMAT" \
-				--grep "$VSCODE_COPILOT_SHIM_GREP" \
-				--timeout "$VSCODE_COPILOT_SHIM_TIMEOUT"
+				--fixtures "$DOCODE_COPILOT_SHIM_FIXTURES" \
+				--format "$DOCODE_COPILOT_SHIM_FORMAT" \
+				--grep "$DOCODE_COPILOT_SHIM_GREP" \
+				--timeout "$DOCODE_COPILOT_SHIM_TIMEOUT"
 		fi
 		exec node /workspace/out/copilotShimIndex.js \
-			--fixtures "$VSCODE_COPILOT_SHIM_FIXTURES" \
-			--format "$VSCODE_COPILOT_SHIM_FORMAT" \
-			--grep "$VSCODE_COPILOT_SHIM_GREP"'
+			--fixtures "$DOCODE_COPILOT_SHIM_FIXTURES" \
+			--format "$DOCODE_COPILOT_SHIM_FORMAT" \
+			--grep "$DOCODE_COPILOT_SHIM_GREP"'

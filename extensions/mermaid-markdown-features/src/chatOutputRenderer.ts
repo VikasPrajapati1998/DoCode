@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MermaidEditorManager } from './editorManager';
 import { MermaidCommandContext, MermaidWebviewManager } from './webviewManager';
 import { escapeHtmlText } from './util/html';
@@ -18,16 +18,16 @@ const mime = 'text/vnd.mermaid';
 /**
  * View type that uniquely identifies the Mermaid chat output renderer.
  */
-const viewType = 'vscode.mermaid-markdown-features.chatOutputItem';
+const viewType = 'docode.mermaid-markdown-features.chatOutputItem';
 
-class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
+class MermaidChatOutputRenderer implements docode.ChatOutputRenderer {
 
 	constructor(
-		private readonly _extensionUri: vscode.Uri,
+		private readonly _extensionUri: docode.Uri,
 		private readonly _webviewManager: MermaidWebviewManager
 	) { }
 
-	async renderChatOutput({ value }: vscode.ChatOutputDataItem, chatOutputWebview: vscode.ChatOutputWebview, _ctx: unknown, _token: vscode.CancellationToken): Promise<void> {
+	async renderChatOutput({ value }: docode.ChatOutputDataItem, chatOutputWebview: docode.ChatOutputWebview, _ctx: unknown, _token: docode.CancellationToken): Promise<void> {
 		const webview = chatOutputWebview.webview;
 		const decoded = decodeMermaidData(value);
 		const mermaidSource = decoded.source;
@@ -36,7 +36,7 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 		// Generate unique ID for this webview
 		const webviewId = generateUuid();
 
-		const disposables: vscode.Disposable[] = [];
+		const disposables: docode.Disposable[] = [];
 
 		// Register and set as active
 		disposables.push(this._webviewManager.registerWebview(webviewId, webview, mermaidSource, title, 'chat'));
@@ -44,7 +44,7 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 		// Listen for messages from the webview
 		disposables.push(webview.onDidReceiveMessage(message => {
 			if (message.type === 'openInEditor') {
-				void vscode.commands.executeCommand('_mermaid-markdown.openInEditor', { mermaidWebviewId: webviewId });
+				void docode.commands.executeCommand('_mermaid-markdown.openInEditor', { mermaidWebviewId: webviewId });
 			}
 		}));
 
@@ -54,7 +54,7 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 		});
 
 		// Set the options for the webview
-		const mediaRoot = vscode.Uri.joinPath(this._extensionUri, 'chat-webview-out');
+		const mediaRoot = docode.Uri.joinPath(this._extensionUri, 'chat-webview-out');
 		webview.options = {
 			enableScripts: true,
 			localResourceRoots: [mediaRoot],
@@ -62,9 +62,9 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 
 		// Set the HTML content for the webview
 		const nonce = generateUuid();
-		const mermaidScript = vscode.Uri.joinPath(mediaRoot, 'index.js');
-		const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(mediaRoot, 'codicon.css'));
-		const openInEditorLabel = vscode.l10n.t('Open Diagram in Editor');
+		const mermaidScript = docode.Uri.joinPath(mediaRoot, 'index.js');
+		const codiconsUri = webview.asWebviewUri(docode.Uri.joinPath(mediaRoot, 'codicon.css'));
+		const openInEditorLabel = docode.l10n.t('Open Diagram in Editor');
 
 		webview.html = `
 			<!DOCTYPE html>
@@ -96,9 +96,9 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 						justify-content: center;
 						width: 26px;
 						height: 26px;
-						background: var(--vscode-editorWidget-background);
-						color: var(--vscode-icon-foreground);
-						border: 1px solid var(--vscode-editorWidget-border);
+						background: var(--docode-editorWidget-background);
+						color: var(--docode-icon-foreground);
+						border: 1px solid var(--docode-editorWidget-border);
 						border-radius: 6px;
 						cursor: pointer;
 						z-index: 100;
@@ -111,12 +111,12 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 					}
 					.open-in-editor-btn:hover {
 						opacity: 1;
-						background: var(--vscode-toolbar-hoverBackground);
+						background: var(--docode-toolbar-hoverBackground);
 					}
 				</style>
 			</head>
 
-			<body data-vscode-context='${JSON.stringify({ preventDefaultContextMenuItems: true, mermaidWebviewId: webviewId })}' data-vscode-mermaid-webview-id="${webviewId}">
+			<body data-docode-context='${JSON.stringify({ preventDefaultContextMenuItems: true, mermaidWebviewId: webviewId })}' data-docode-mermaid-webview-id="${webviewId}">
 				${renderMermaidConfigSpan()}
 				<button class="open-in-editor-btn" title="${openInEditorLabel}" aria-label="${openInEditorLabel}"><i class="codicon codicon-open-preview" aria-hidden="true"></i></button>
 				<pre class="mermaid">
@@ -131,14 +131,14 @@ class MermaidChatOutputRenderer implements vscode.ChatOutputRenderer {
 
 
 export function registerChatSupport(
-	context: vscode.ExtensionContext,
+	context: docode.ExtensionContext,
 	webviewManager: MermaidWebviewManager,
 	editorManager: MermaidEditorManager
-): vscode.Disposable {
-	const disposables: vscode.Disposable[] = [];
+): docode.Disposable {
+	const disposables: docode.Disposable[] = [];
 
 	disposables.push(
-		vscode.commands.registerCommand('_mermaid-markdown.openInEditor', (ctx?: MermaidCommandContext) => {
+		docode.commands.registerCommand('_mermaid-markdown.openInEditor', (ctx?: MermaidCommandContext) => {
 			if (typeof ctx?.mermaidSource === 'string') {
 				editorManager.openPreview(ctx.mermaidSource, typeof ctx.title === 'string' ? ctx.title : undefined);
 				return;
@@ -153,7 +153,7 @@ export function registerChatSupport(
 
 	// Register lm tools
 	disposables.push(
-		vscode.lm.registerTool<{ markup: string; title?: string }>('renderMermaidDiagram', {
+		docode.lm.registerTool<{ markup: string; title?: string }>('renderMermaidDiagram', {
 			invoke: async (options, _token) => {
 				const sourceCode = options.input.markup;
 				const title = options.input.title;
@@ -166,23 +166,23 @@ export function registerChatSupport(
 	// This will be invoked with the data generated by the tools.
 	// It can also be invoked when rendering old Mermaid diagrams in the chat history.
 	const renderer = new MermaidChatOutputRenderer(context.extensionUri, webviewManager);
-	disposables.push(vscode.chat.registerChatOutputRenderer(viewType, renderer));
+	disposables.push(docode.chat.registerChatOutputRenderer(viewType, renderer));
 
-	return vscode.Disposable.from(...disposables);
+	return docode.Disposable.from(...disposables);
 }
 
-function writeMermaidToolOutput(sourceCode: string, title: string | undefined): vscode.LanguageModelToolResult {
+function writeMermaidToolOutput(sourceCode: string, title: string | undefined): docode.LanguageModelToolResult {
 	// Expose the source code as a markdown mermaid code block
 	const fence = getFenceForContent(sourceCode);
-	const result = new vscode.LanguageModelToolResult([
-		new vscode.LanguageModelTextPart(`${fence}mermaid\n${sourceCode}\n${fence}`)
+	const result = new docode.LanguageModelToolResult([
+		new docode.LanguageModelTextPart(`${fence}mermaid\n${sourceCode}\n${fence}`)
 	]);
 
 	// And store custom data in the tool result details to indicate that a custom renderer should be used for it.
 	// Encode source and optional title as JSON.
 	const data = JSON.stringify({ source: sourceCode, title });
 	// Add cast to use proposed API
-	(result as vscode.ExtendedLanguageModelToolResult2).toolResultDetails2 = {
+	(result as docode.ExtendedLanguageModelToolResult2).toolResultDetails2 = {
 		mime,
 		value: new TextEncoder().encode(data),
 	};

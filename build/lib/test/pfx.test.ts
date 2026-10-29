@@ -125,7 +125,7 @@ if (!isMainThread) {
 		const invalidPFX = Buffer.from('Not a PKCS#12 certificate').toString('base64');
 
 		before(() => {
-			root = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-pfx-test-'));
+			root = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-pfx-test-'));
 			certificates = ['auth', 'signing'].map(name => {
 				const key = path.join(root, `${name}.key`);
 				const certificate = path.join(root, `${name}.pem`);

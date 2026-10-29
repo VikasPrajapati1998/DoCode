@@ -3,7 +3,7 @@ set -e
 
 CONTAINER=""
 ARCH="amd64"
-REGISTRY="vscodehub.azurecr.io/vscode-linux-build-agent/sanity-tests"
+REGISTRY="docodehub.azurecr.io/docode-linux-build-agent/sanity-tests"
 ARGS=""
 SETUID_SANDBOX=""
 

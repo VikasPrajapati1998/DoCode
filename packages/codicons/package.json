@@ -1,0 +1,10 @@
+{
+	"name": "@docode/codicons",
+	"version": "0.0.46-48",
+	"fontVersion": "1.15",
+	"description": "The icon font for DoCode",
+	"license": "CC-BY-4.0",
+	"author": {
+		"name": "Microsoft Corporation"
+	}
+}

@@ -45,7 +45,7 @@ vscode-textmate/webpack.config.js
 @xterm/addon-webgl/out/**
 
 # This makes sure the model is included in the package
-!@vscode/vscode-languagedetection/model/**
+!@docode/languagedetection/model/**
 !@vscode/tree-sitter-wasm/wasm/**
 
 # Ensure only the required telemetry pieces are loaded in web to reduce bundle size

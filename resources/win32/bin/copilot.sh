@@ -3,10 +3,10 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 #
-# vscode-copilot-launcher: the copilot command for POSIX shells that use the Windows PATH. In WSL it runs the Linux
+# docode-copilot-launcher: the copilot command for POSIX shells that use the Windows PATH. In WSL it runs the Linux
 # copilot shim from the VS Code Server in the distribution, like the code command runs the server's code command. In
 # Git Bash and Cygwin it runs copilot.exe from this folder. Windows shells run copilot.exe directly.
-if [ "$VSCODE_WSL_DEBUG_INFO" = true ]; then
+if [ "$DOCODE_WSL_DEBUG_INFO" = true ]; then
 	set -x
 fi
 
@@ -44,10 +44,10 @@ is_shim() {
 # the standalone code CLI (code tunnel), or else the most recently built one of any installed server, because any
 # version of the shim works the same way.
 find_shim() {
-	cli_data="${VSCODE_CLI_DATA_DIR:-${HOME:+$HOME/$DATAFOLDER/cli}}"
+	cli_data="${DOCODE_CLI_DATA_DIR:-${HOME:+$HOME/$DATAFOLDER/cli}}"
 	for candidate in \
-		"${VSCODE_AGENT_FOLDER:+$VSCODE_AGENT_FOLDER/bin/$COMMIT/bin/copilot-shim/copilot}" \
-		"${VSCODE_AGENT_FOLDER:+$VSCODE_AGENT_FOLDER/cli/servers/$SERVER_QUALITY-$COMMIT/server/bin/copilot-shim/copilot}" \
+		"${DOCODE_AGENT_FOLDER:+$DOCODE_AGENT_FOLDER/bin/$COMMIT/bin/copilot-shim/copilot}" \
+		"${DOCODE_AGENT_FOLDER:+$DOCODE_AGENT_FOLDER/cli/servers/$SERVER_QUALITY-$COMMIT/server/bin/copilot-shim/copilot}" \
 		"${HOME:+$HOME/$SERVERDATAFOLDER/bin/$COMMIT/bin/copilot-shim/copilot}" \
 		"${HOME:+$HOME/$SERVERDATAFOLDER/cli/servers/$SERVER_QUALITY-$COMMIT/server/bin/copilot-shim/copilot}" \
 		"${cli_data:+$cli_data/servers/$SERVER_QUALITY-$COMMIT/server/bin/copilot-shim/copilot}"; do
@@ -58,11 +58,11 @@ find_shim() {
 	done
 
 	ls -1t -- \
-		"${VSCODE_AGENT_FOLDER:-/nonexistent}"/bin/*/bin/copilot-shim/copilot \
-		"${VSCODE_AGENT_FOLDER:-/nonexistent}"/cli/servers/*/server/bin/copilot-shim/copilot \
-		"${VSCODE_CLI_DATA_DIR:-/nonexistent}"/servers/*/server/bin/copilot-shim/copilot \
-		"${HOME:-/nonexistent}"/.vscode-server*/bin/*/bin/copilot-shim/copilot \
-		"${HOME:-/nonexistent}"/.vscode*/cli/servers/*/server/bin/copilot-shim/copilot \
+		"${DOCODE_AGENT_FOLDER:-/nonexistent}"/bin/*/bin/copilot-shim/copilot \
+		"${DOCODE_AGENT_FOLDER:-/nonexistent}"/cli/servers/*/server/bin/copilot-shim/copilot \
+		"${DOCODE_CLI_DATA_DIR:-/nonexistent}"/servers/*/server/bin/copilot-shim/copilot \
+		"${HOME:-/nonexistent}"/.docode-server*/bin/*/bin/copilot-shim/copilot \
+		"${HOME:-/nonexistent}"/.docode*/cli/servers/*/server/bin/copilot-shim/copilot \
 		2>/dev/null | while IFS= read -r candidate; do
 		if is_shim "$candidate"; then
 			printf '%s\n' "$candidate"
@@ -81,7 +81,7 @@ path_without_launchers() {
 	while [ -n "$remaining" ]; do
 		entry="${remaining%%:*}"
 		remaining="${remaining#*:}"
-		if [ -f "${entry:-.}/copilot" ] && head -c 512 "${entry:-.}/copilot" 2>/dev/null | grep -q 'vscode-copilot-launcher'; then
+		if [ -f "${entry:-.}/copilot" ] && head -c 512 "${entry:-.}/copilot" 2>/dev/null | grep -q 'docode-copilot-launcher'; then
 			continue
 		fi
 		result="$result$separator$entry"

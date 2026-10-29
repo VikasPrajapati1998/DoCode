@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type { ICompletionResource } from '../types';
 
-export function createCompletionItem(cursorPosition: number, currentCommandString: string, commandResource: ICompletionResource, detail?: string, documentation?: string | vscode.MarkdownString, kind?: vscode.TerminalCompletionItemKind): vscode.TerminalCompletionItem {
+export function createCompletionItem(cursorPosition: number, currentCommandString: string, commandResource: ICompletionResource, detail?: string, documentation?: string | docode.MarkdownString, kind?: docode.TerminalCompletionItemKind): docode.TerminalCompletionItem {
 	const endsWithSpace = currentCommandString.endsWith(' ');
 	const lastWord = endsWithSpace ? '' : currentCommandString.split(' ').at(-1) ?? '';
 	return {
@@ -14,6 +14,6 @@ export function createCompletionItem(cursorPosition: number, currentCommandStrin
 		detail: detail ?? commandResource.detail ?? '',
 		documentation,
 		replacementRange: [cursorPosition - lastWord.length, cursorPosition],
-		kind: kind ?? commandResource.kind ?? vscode.TerminalCompletionItemKind.Method
+		kind: kind ?? commandResource.kind ?? docode.TerminalCompletionItemKind.Method
 	};
 }

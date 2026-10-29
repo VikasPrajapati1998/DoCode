@@ -163,7 +163,7 @@ export function renderChapters(runRoot: string): void {
 	const videoPath = path.join(runRoot, relativeVideo);
 	const outputRelative = 'videos/annotated.mp4';
 	const outputPath = path.join(runRoot, outputRelative);
-	const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-evidence-chapters-'));
+	const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-evidence-chapters-'));
 	// Filters run from workDir with relative file names so no path escaping
 	// (drive letters, colons, backslashes) can corrupt the filter description.
 	fs.copyFileSync(font, path.join(workDir, 'font.ttf'));

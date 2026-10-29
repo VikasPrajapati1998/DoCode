@@ -35,7 +35,7 @@ function getTypeScriptCompilerOptions(src: string): ts.CompilerOptions {
 	const options: ts.CompilerOptions = {};
 	options.verbose = false;
 	options.sourceMap = true;
-	if (process.env['VSCODE_NO_SOURCEMAP']) { // To be used by developers in a hurry
+	if (process.env['DOCODE_NO_SOURCEMAP']) { // To be used by developers in a hurry
 		options.sourceMap = false;
 	}
 	options.rootDir = rootDir;
@@ -243,7 +243,7 @@ class MonacoGenerator {
 		}
 
 		fs.writeFileSync(result.filePath, result.content);
-		fs.writeFileSync(path.join(REPO_SRC_FOLDER, 'vs/editor/common/standalone/standaloneEnums.ts'), result.enums);
+		fs.writeFileSync(path.join(REPO_SRC_FOLDER, 'do/editor/common/standalone/standaloneEnums.ts'), result.enums);
 		this._log(`monaco.d.ts is changed - total time took ${Date.now() - startTime} ms`);
 		if (!this._isWatch) {
 			this.stream.emit('error', 'monaco.d.ts is no longer up to date. Please run gulp watch and commit the new file.');
@@ -255,7 +255,7 @@ function createApiProposalNamesGenerator() {
 	let eol: string;
 
 	try {
-		const src = fs.readFileSync('src/vs/platform/extensions/common/extensionsApiProposals.ts', 'utf-8');
+		const src = fs.readFileSync('src/do/platform/extensions/common/extensionsApiProposals.ts', 'utf-8');
 		const match = /\r?\n/m.exec(src);
 		eol = match ? match[0] : os.EOL;
 	} catch {
@@ -271,7 +271,7 @@ function createApiProposalNamesGenerator() {
 		}, function () {
 			const contents = generateApiProposalNames(proposalFiles, eol);
 
-			const filePath = 'vs/platform/extensions/common/extensionsApiProposals.ts';
+			const filePath = 'do/platform/extensions/common/extensionsApiProposals.ts';
 			try {
 				const existing = fs.readFileSync(path.join('src', filePath), 'utf-8');
 				if (existing === contents) {
@@ -318,7 +318,7 @@ function generateExtensionPointNames() {
 		}, function () {
 			collectedNames.sort();
 			const content = JSON.stringify(collectedNames, undefined, '\t') + '\n';
-			const filePath = 'vs/workbench/services/extensions/common/extensionPoints.json';
+			const filePath = 'do/workbench/services/extensions/common/extensionPoints.json';
 			try {
 				const existing = fs.readFileSync(path.join('src', filePath), 'utf-8');
 				if (existing.replace(/\r\n/g, '\n') === content) {
@@ -341,18 +341,18 @@ function generateExtensionPointNames() {
 const extensionPointNamesReporter = createReporter('extension-point-names');
 
 export const compileExtensionPointNamesTask = task.define('compile-extension-point-names', () => {
-	return gulp.src('src/vs/workbench/**/*.ts')
+	return gulp.src('src/do/workbench/**/*.ts')
 		.pipe(generateExtensionPointNames())
 		.pipe(gulp.dest('src'))
 		.pipe(extensionPointNamesReporter.end(true));
 });
 
 export const watchExtensionPointNamesTask = task.define('watch-extension-point-names', () => {
-	const task = () => gulp.src('src/vs/workbench/**/*.ts')
+	const task = () => gulp.src('src/do/workbench/**/*.ts')
 		.pipe(generateExtensionPointNames())
 		.pipe(extensionPointNamesReporter.end(true));
 
-	return watch('src/vs/workbench/**/*.ts', { readDelay: 200 })
+	return watch('src/do/workbench/**/*.ts', { readDelay: 200 })
 		.pipe(util.debounce(task))
 		.pipe(gulp.dest('src'));
 });
@@ -369,8 +369,8 @@ export const watchApiProposalNamesTask = task.define('watch-api-proposal-names',
 
 // Codicons
 const root = path.dirname(path.dirname(import.meta.dirname));
-const codiconSource = path.join(root, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.ttf');
-const codiconDest = path.join(root, 'src', 'vs', 'base', 'browser', 'ui', 'codicons', 'codicon', 'codicon.ttf');
+const codiconSource = path.join(root, 'node_modules', '@docode', 'codicons', 'dist', 'codicon.ttf');
+const codiconDest = path.join(root, 'src', 'do', 'base', 'browser', 'ui', 'codicons', 'codicon', 'codicon.ttf');
 
 function copyCodiconsImpl() {
 	try {
@@ -393,7 +393,7 @@ task.task(copyCodiconsTask);
 
 export const watchCodiconsTask = task.define('watch-codicons', () => {
 	copyCodiconsImpl();
-	return watch('node_modules/@vscode/codicons/dist/**', { readDelay: 200 })
+	return watch('node_modules/@docode/codicons/dist/**', { readDelay: 200 })
 		.on('data', () => copyCodiconsImpl());
 });
 task.task(watchCodiconsTask);

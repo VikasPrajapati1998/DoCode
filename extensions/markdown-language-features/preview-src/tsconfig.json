@@ -11,7 +11,7 @@
 			"DOM.Iterable"
 		],
 		"types": [
-			"vscode-webview"
+			"docode-webview"
 		],
 		"typeRoots": [
 			"../node_modules/@types"
@@ -20,7 +20,7 @@
 	},
 	"typeAcquisition": {
 		"include": [
-			"@types/vscode-webview"
+			"@types/docode-webview"
 		]
 	}
 }

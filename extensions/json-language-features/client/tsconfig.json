@@ -17,8 +17,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../../src/vscode-dts/vscode.d.ts",
-		"../../../src/vscode-dts/vscode.proposed.languageStatus.d.ts",
-		"../../../src/vscode-dts/vscode.proposed.extensionsAny.d.ts"
+		"../../../src/docode-dts/docode.d.ts",
+		"../../../src/docode-dts/docode.proposed.languageStatus.d.ts",
+		"../../../src/docode-dts/docode.proposed.extensionsAny.d.ts"
 	]
 }

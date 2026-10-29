@@ -33,11 +33,11 @@ export async function launch(options: LaunchOptions): Promise<{ serverProcess: C
 async function launchServer(options: LaunchOptions) {
 	const { userDataDir, codePath, extensionsPath, logger, logsPath } = options;
 	const serverLogsPath = join(logsPath, 'server');
-	const codeServerPath = codePath ?? process.env.VSCODE_REMOTE_SERVER_PATH;
+	const codeServerPath = codePath ?? process.env.DOCODE_REMOTE_SERVER_PATH;
 	const agentFolder = userDataDir;
 
 	const env = {
-		VSCODE_REMOTE_SERVER_PATH: codeServerPath,
+		DOCODE_REMOTE_SERVER_PATH: codeServerPath,
 		...process.env
 	};
 

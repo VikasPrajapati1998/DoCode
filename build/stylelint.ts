@@ -22,7 +22,7 @@ type Reporter = (message: string, isError: boolean) => void;
 /**
  * Stylelint gulpfile task. When `designTokensEverywhere` is `true` the
  * design-token suggestions run on every linted file rather than only the
- * design-system area (`src/vs/sessions`); used when the caller explicitly
+ * design-system area (`src/do/sessions`); used when the caller explicitly
  * targets a path so the checks follow the requested scope. Set
  * `reportDesignTokenSuggestions` to `false` when only enforced checks should run.
  */
@@ -64,7 +64,7 @@ export default function gulpstylelint(reporter: Reporter, designTokensEverywhere
 			}
 
 			if (isRestrictedPath && !isLayerCheckerDisabled && monacoWorkbenchPattern.test(line)) {
-				reporter(file.relative + '(' + (i + 1) + ',1): The class .monaco-workbench cannot be used in files under src/vs/{base,platform,editor} because only src/vs/workbench applies it', true);
+				reporter(file.relative + '(' + (i + 1) + ',1): The class .monaco-workbench cannot be used in files under src/do/{base,platform,editor} because only src/do/workbench applies it', true);
 				errorCount++;
 			}
 		});
@@ -87,7 +87,7 @@ export default function gulpstylelint(reporter: Reporter, designTokensEverywhere
 		}
 
 		// Design-token checks that need block (selector + declaration) awareness.
-		// By default these are scoped to the design-system area (src/vs/sessions),
+		// By default these are scoped to the design-system area (src/do/sessions),
 		// but when `designTokensEverywhere` is set (an explicit path was targeted)
 		// they run on every linted file so the checks follow the requested scope.
 		// All findings are advisory warnings (never fail the build). Findings for a
@@ -119,7 +119,7 @@ export default function gulpstylelint(reporter: Reporter, designTokensEverywhere
 		this.emit('data', file);
 	}, function () {
 		if (errorCount > 0) {
-			reporter('All valid variable names are in `build/lib/stylelint/vscode-known-variables.json`\nTo update that file, run `./scripts/test-documentation.sh|bat.`', false);
+			reporter('All valid variable names are in `build/lib/stylelint/docode-known-variables.json`\nTo update that file, run `./scripts/test-documentation.sh|bat.`', false);
 		}
 		const designTokenTotal = designTokenCounts.codicon + designTokenCounts['font-size'] + designTokenCounts.weight + designTokenCounts.radius + designTokenCounts.spacing + designTokenCounts.stroke + designTokenCounts.deprecated;
 		if (designTokenTotal > 0) {
@@ -183,7 +183,7 @@ function stylelint(sources: string[] = Array.from(stylelintFilter), explicit = f
  * expanded to `<folder>/**\/*.css`. With no arguments the default
  * `src/**\/*.css` set is linted. Returns the resolved globs plus whether an
  * explicit path was given (used to widen the design-token checks beyond the
- * default `src/vs/sessions` scope to follow the requested path).
+ * default `src/do/sessions` scope to follow the requested path).
  */
 export function resolveStylelintSources(argv: readonly string[]): { sources: string[]; explicit: boolean } {
 	const targets: string[] = [];

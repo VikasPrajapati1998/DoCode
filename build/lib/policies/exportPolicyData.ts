@@ -77,8 +77,8 @@ function runPolicyExport(codeScript: string, outputPath: string, userDataPath: s
 	}
 
 	const env = { ...process.env };
-	delete env['VSCODE_PORTABLE'];
-	delete env['VSCODE_APPDATA'];
+	delete env['DOCODE_PORTABLE'];
+	delete env['DOCODE_APPDATA'];
 	return new Promise((resolve, reject) => {
 		const child = spawn(codeScript, args, {
 			cwd: rootPath,

@@ -19,13 +19,13 @@ else
 fi
 
 # Get electron
-if [[ -z "${VSCODE_SKIP_PRELAUNCH}" ]]; then
+if [[ -z "${DOCODE_SKIP_PRELAUNCH}" ]]; then
 	npm run electron
 fi
 
 popd
 
-export VSCODE_DEV=1
+export DOCODE_DEV=1
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	ulimit -n 4096 ; ELECTRON_RUN_AS_NODE=1 \
 		"$CODE" \

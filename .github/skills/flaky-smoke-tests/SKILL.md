@@ -10,7 +10,6 @@ Use this skill for failures from the Azure DevOps **Flaky Smoke Tests** pipeline
 - Organization: `https://dev.azure.com/monacotools`
 - Project: `Monaco`
 - Definition ID: `700`
-- Pipeline YAML: `build/azure-pipelines/product-smoke-flaky.yml`
 - Scheduled runs: twice daily on `main`
 
 The pipeline builds VS Code from source and runs the complete Electron smoke suite once per entry in the `iterations` parameter. Each platform runs its iterations sequentially in one job. The exception is Windows unit and integration tests, which are each split into two parallel jobs: `WindowsSmokeFlakyUnit_odd` / `WindowsSmokeFlakyIntegration_odd` run the odd iterations and `WindowsSmokeFlakyUnit_even` / `WindowsSmokeFlakyIntegration_even` run the even ones. Each shard has its own artifacts (`logs-windows-x64-<unit|integration>-<odd|even>-<attempt>`) and its own Slack tally line.
@@ -201,7 +200,7 @@ Session-list text and active-view text answer different questions:
 - The active view can already be a fresh untitled composer while the response belongs to a completed, inactive session.
 - Broad response selectors can match stale DOM from an earlier session or iteration.
 - Reusing a fixed warm-up scenario marker can let a later warm-up wait match an earlier response and abandon the actually-running warm-up.
-- Standard smoke suites created through `installAllHandlers` use distinct randomized user-data directories. Do not attribute a setting from the preceding suite to the failing suite without comparing the actual `vscode-userdata:` or `--user-data-dir` paths in their logs. Iterations share broader job state, but sibling suites normally do not share the same profile.
+- Standard smoke suites created through `installAllHandlers` use distinct randomized user-data directories. Do not attribute a setting from the preceding suite to the failing suite without comparing the actual `docode-userdata:` or `--user-data-dir` paths in their logs. Iterations share broader job state, but sibling suites normally do not share the same profile.
 - A setup change can alter rather than fix the symptom. Re-check the exact stack and the gesture/dispatch/request/rendering chain on every validation run. For example, moving extension enablement before startup can eliminate an editor-open timeout while activating the extension before test settings are written, producing a later request or response timeout instead.
 
 Prefer assertions that establish identity:
@@ -246,9 +245,9 @@ az pipelines run \
   --branch <BRANCH> \
   --commit-id <COMMIT_SHA> \
   --parameters "iterations=[1,2,3,4,5,6]" \
-    VSCODE_BUILD_MACOS=true \
-    VSCODE_BUILD_LINUX=false \
-    VSCODE_BUILD_WIN32=true \
+    DOCODE_BUILD_MACOS=true \
+    DOCODE_BUILD_LINUX=false \
+    DOCODE_BUILD_WIN32=true \
   --org https://dev.azure.com/monacotools \
   --project Monaco \
   --output json

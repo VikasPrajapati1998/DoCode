@@ -12,7 +12,7 @@ import rule from '../code-no-timeout-polling-loop.ts';
 RuleTester.describe = suite;
 RuleTester.it = test;
 
-const filename = resolve(import.meta.dirname, '../../src/vs/workbench/test/browser/example.test.ts');
+const filename = resolve(import.meta.dirname, '../../src/do/workbench/test/browser/example.test.ts');
 const errors = [{ messageId: 'polling' }];
 
 new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-timeout-polling-loop', rule, {

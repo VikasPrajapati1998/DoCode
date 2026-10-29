@@ -70,7 +70,7 @@ async function main(): Promise<void> {
 	if (!/^[0-9a-zA-Z_-]+$/.test(token)) {
 		throw new Error('Invalid fixture Agent Host connection token.');
 	}
-	const upstream = process.env.VSCODE_SMOKE_TEST_WSL_MOCK_UPSTREAM;
+	const upstream = process.env.DOCODE_SMOKE_TEST_WSL_MOCK_UPSTREAM;
 	const proxy = upstream ? await createMockProxy(new URL(upstream)) : undefined;
 	if (proxy) {
 		process.once('exit', () => proxy.dispose());
@@ -91,17 +91,17 @@ async function main(): Promise<void> {
 				...(proxy ? {
 					COPILOT_API_URL: proxy.url,
 					COPILOT_DEBUG_GITHUB_API_URL: proxy.url,
-					VSCODE_AGENT_HOST_CAPI_URL_OVERRIDE: proxy.url,
+					DOCODE_AGENT_HOST_CAPI_URL_OVERRIDE: proxy.url,
 				} : {}),
-				VSCODE_ESM_ENTRYPOINT: 'vs/platform/agentHost/node/agentHostMain',
-				VSCODE_AGENT_HOST_PORT: '0',
-				VSCODE_AGENT_HOST_HOST: '127.0.0.1',
-				VSCODE_AGENT_HOST_CONNECTION_TOKEN: token,
-				VSCODE_AGENT_HOST_LAUNCH_KIND: 'vscode_cli',
-				VSCODE_PARENT_PID: String(process.pid),
-				VSCODE_PIPE_LOGGING: 'false',
-				VSCODE_HANDLES_UNCAUGHT_ERRORS: 'true',
-				VSCODE_NLS_CONFIG: JSON.stringify({
+				DOCODE_ESM_ENTRYPOINT: 'do/platform/agentHost/node/agentHostMain',
+				DOCODE_AGENT_HOST_PORT: '0',
+				DOCODE_AGENT_HOST_HOST: '127.0.0.1',
+				DOCODE_AGENT_HOST_CONNECTION_TOKEN: token,
+				DOCODE_AGENT_HOST_LAUNCH_KIND: 'docode_cli',
+				DOCODE_PARENT_PID: String(process.pid),
+				DOCODE_PIPE_LOGGING: 'false',
+				DOCODE_HANDLES_UNCAUGHT_ERRORS: 'true',
+				DOCODE_NLS_CONFIG: JSON.stringify({
 					userLocale: 'en',
 					osLocale: 'en',
 					resolvedLanguage: 'en',

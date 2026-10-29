@@ -12,11 +12,11 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.chatOutputRenderer.d.ts",
-		"../../src/vscode-dts/vscode.proposed.chatParticipantAdditions.d.ts",
-		"../../src/vscode-dts/vscode.proposed.languageModelThinkingPart.d.ts",
-		"../../src/vscode-dts/vscode.proposed.chatParticipantPrivate.d.ts",
-		"../../src/vscode-dts/vscode.proposed.languageModelProxy.d.ts"
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.chatOutputRenderer.d.ts",
+		"../../src/docode-dts/docode.proposed.chatParticipantAdditions.d.ts",
+		"../../src/docode-dts/docode.proposed.languageModelThinkingPart.d.ts",
+		"../../src/docode-dts/docode.proposed.chatParticipantPrivate.d.ts",
+		"../../src/docode-dts/docode.proposed.languageModelProxy.d.ts"
 	]
 }

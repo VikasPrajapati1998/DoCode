@@ -7,7 +7,7 @@
 
 /**
  * Fixture for chat-simulation benchmarks.
- * Simplified from src/vs/base/common/uri.ts for stable perf testing.
+ * Simplified from src/do/base/common/uri.ts for stable perf testing.
  */
 
 const _empty = '';

@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
-export function disposeAll(disposables: Iterable<vscode.Disposable>): void {
+export function disposeAll(disposables: Iterable<docode.Disposable>): void {
 	const errors: unknown[] = [];
 
 	for (const disposable of disposables) {
@@ -30,7 +30,7 @@ export interface IDisposable {
 export abstract class Disposable {
 	#isDisposed = false;
 
-	protected _disposables: vscode.Disposable[] = [];
+	protected _disposables: docode.Disposable[] = [];
 
 	public dispose(): void {
 		if (this.#isDisposed) {

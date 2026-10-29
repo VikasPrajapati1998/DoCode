@@ -1,6 +1,6 @@
 ---
-description: Architecture documentation for VS Code AI Customization view. Use when working in `src/vs/workbench/contrib/chat/browser/aiCustomization`
-applyTo: 'src/vs/workbench/contrib/chat/browser/aiCustomization/**'
+description: Architecture documentation for VS Code AI Customization view. Use when working in `src/do/workbench/contrib/chat/browser/aiCustomization`
+applyTo: 'src/do/workbench/contrib/chat/browser/aiCustomization/**'
 ---
 
 # AI Customization View
@@ -43,7 +43,7 @@ AI Customization (View Container)
 
 ## File Structure
 
-All files are located in `src/vs/workbench/contrib/chat/browser/aiCustomization/`:
+All files are located in `src/do/workbench/contrib/chat/browser/aiCustomization/`:
 
 ```
 aiCustomization/

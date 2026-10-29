@@ -2,11 +2,11 @@
   "name": "github-authentication",
   "displayName": "%displayName%",
   "description": "%description%",
-  "publisher": "vscode",
+  "publisher": "docode",
   "license": "MIT",
   "version": "0.0.2",
   "engines": {
-    "vscode": "^1.41.0"
+    "docode": "^1.41.0"
   },
   "icon": "images/icon.png",
   "categories": [
@@ -95,12 +95,12 @@
     "compile-web": "node esbuild.browser.mts",
     "watch": "gulp watch-extension:github-authentication",
     "watch-web": "node esbuild.browser.mts --watch",
-    "vscode:prepublish": "npm run compile"
+    "docode:prepublish": "npm run compile"
   },
   "dependencies": {
     "node-fetch": "2.6.7",
-    "@vscode/extension-telemetry": "^0.9.8",
-    "vscode-tas-client": "^0.1.84"
+    "@docode/extension-telemetry": "file:../../packages/extension-telemetry",
+    "@docode/tas-client": "file:../../packages/tas-client"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

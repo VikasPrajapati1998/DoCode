@@ -44,7 +44,7 @@ const exactPaths = new Set([
 	'scripts/test-integration.bat',
 	'scripts/test.sh',
 	'scripts/test.bat',
-	'src/vs/nls.ts',
+	'src/do/nls.ts',
 ]);
 
 const pathPrefixes = [
@@ -53,18 +53,18 @@ const pathPrefixes = [
 	'build/',
 	'src/bootstrap',
 	'src/tsconfig',
-	'src/vs/base/',
-	'src/vs/platform/',
+	'src/do/base/',
+	'src/do/platform/',
 	'test/unit/electron/',
 	'test/integration/agentHost/',
 ];
 
-const fullProfilePaths = new Set([...exactPaths].filter(path => path !== 'src/vs/nls.ts'));
+const fullProfilePaths = new Set([...exactPaths].filter(path => path !== 'src/do/nls.ts'));
 const fullProfilePrefixes = [
 	'.github/actions/detect-agent-host-e2e-changes/',
 	'.github/workflows/pr',
 	'build/',
-	'src/vs/platform/agentHost/test/',
+	'src/do/platform/agentHost/test/',
 	'test/unit/electron/',
 	'test/integration/agentHost/',
 ];

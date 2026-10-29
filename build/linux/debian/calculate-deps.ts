@@ -11,8 +11,8 @@ import manifests from '../../../cgmanifest.json' with { type: 'json' };
 import { additionalDeps } from './dep-lists.ts';
 import type { DebianArchString } from './types.ts';
 
-export function generatePackageDeps(files: string[], arch: DebianArchString, chromiumSysroot: string, vscodeSysroot: string): Set<string>[] {
-	const dependencies: Set<string>[] = files.map(file => calculatePackageDeps(file, arch, chromiumSysroot, vscodeSysroot));
+export function generatePackageDeps(files: string[], arch: DebianArchString, chromiumSysroot: string, docodeSysroot: string): Set<string>[] {
+	const dependencies: Set<string>[] = files.map(file => calculatePackageDeps(file, arch, chromiumSysroot, docodeSysroot));
 	const additionalDepsSet = new Set(additionalDeps);
 	dependencies.push(additionalDepsSet);
 	return dependencies;
@@ -62,7 +62,7 @@ function getDpkgShlibdepsScript(): string {
 }
 
 // Based on https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/calculate_package_deps.py.
-function calculatePackageDeps(binaryPath: string, arch: DebianArchString, chromiumSysroot: string, vscodeSysroot: string): Set<string> {
+function calculatePackageDeps(binaryPath: string, arch: DebianArchString, chromiumSysroot: string, docodeSysroot: string): Set<string> {
 	try {
 		if (!(statSync(binaryPath).mode & constants.S_IXUSR)) {
 			throw new Error(`Binary ${binaryPath} needs to have an executable bit set.`);
@@ -78,25 +78,25 @@ function calculatePackageDeps(binaryPath: string, arch: DebianArchString, chromi
 		case 'amd64':
 			cmd.push(`-l${chromiumSysroot}/usr/lib/x86_64-linux-gnu`,
 				`-l${chromiumSysroot}/lib/x86_64-linux-gnu`,
-				`-l${vscodeSysroot}/usr/lib/x86_64-linux-gnu`,
-				`-l${vscodeSysroot}/lib/x86_64-linux-gnu`);
+				`-l${docodeSysroot}/usr/lib/x86_64-linux-gnu`,
+				`-l${docodeSysroot}/lib/x86_64-linux-gnu`);
 			break;
 		case 'armhf':
 			cmd.push(`-l${chromiumSysroot}/usr/lib/arm-linux-gnueabihf`,
 				`-l${chromiumSysroot}/lib/arm-linux-gnueabihf`,
-				`-l${vscodeSysroot}/usr/lib/arm-linux-gnueabihf`,
-				`-l${vscodeSysroot}/lib/arm-linux-gnueabihf`);
+				`-l${docodeSysroot}/usr/lib/arm-linux-gnueabihf`,
+				`-l${docodeSysroot}/lib/arm-linux-gnueabihf`);
 			break;
 		case 'arm64':
 			cmd.push(`-l${chromiumSysroot}/usr/lib/aarch64-linux-gnu`,
 				`-l${chromiumSysroot}/lib/aarch64-linux-gnu`,
-				`-l${vscodeSysroot}/usr/lib/aarch64-linux-gnu`,
-				`-l${vscodeSysroot}/lib/aarch64-linux-gnu`);
+				`-l${docodeSysroot}/usr/lib/aarch64-linux-gnu`,
+				`-l${docodeSysroot}/lib/aarch64-linux-gnu`);
 			break;
 	}
 	cmd.push(`-l${chromiumSysroot}/usr/lib`);
 	cmd.push(`-l${path.dirname(path.resolve(binaryPath))}`);
-	cmd.push(`-L${vscodeSysroot}/debian/libxkbfile1/DEBIAN/shlibs`);
+	cmd.push(`-L${docodeSysroot}/debian/libxkbfile1/DEBIAN/shlibs`);
 	cmd.push('-O', '-e', path.resolve(binaryPath));
 
 	const dpkgShlibdepsResult = spawnSync('perl', cmd, { cwd: chromiumSysroot });

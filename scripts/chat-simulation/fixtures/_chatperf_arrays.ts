@@ -7,7 +7,7 @@
 
 /**
  * Fixture for chat-simulation benchmarks.
- * Simplified from src/vs/base/common/arrays.ts for stable perf testing.
+ * Simplified from src/do/base/common/arrays.ts for stable perf testing.
  */
 
 export function coalesce<T>(array: ReadonlyArray<T | undefined | null>): T[] {

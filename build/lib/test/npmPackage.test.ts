@@ -16,7 +16,7 @@ const packageName = '@github/copilot-darwin-arm64';
 const version = '1.0.73';
 
 function createFixture(t: TestContext, fromLockfile: boolean) {
-	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-npm-package-test-'));
+	const root = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-npm-package-test-'));
 	t.after(() => fs.rmSync(root, { recursive: true, force: true }));
 
 	const packageRoot = path.join(root, 'package');

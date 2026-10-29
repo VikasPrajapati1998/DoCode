@@ -8,7 +8,7 @@ import { Transform } from 'stream';
 export const splitNewLines = () => new StreamSplitter('\n'.charCodeAt(0));
 
 /**
- * Copied and simplified from src\vs\base\node\nodeStreams.ts
+ * Copied and simplified from src\do\base\node\nodeStreams.ts
  *
  * Exception: does not include the split character in the output.
  */

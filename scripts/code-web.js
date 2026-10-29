@@ -43,7 +43,7 @@ async function main() {
 			'./scripts/code-web.sh|bat[, folderMountPath[, options]]\n' +
 			'                           Start with an empty workspace and no folder opened in explorer\n' +
 			'  folderMountPath          Open local folder (eg: use `.` to open current directory)\n' +
-			'  --playground             Include the vscode-web-playground extension\n'
+			'  --playground             Include the docode-web-playground extension\n'
 		);
 		startServer(['--help']);
 		return;
@@ -61,7 +61,7 @@ async function main() {
 		serverArgs.push('--port', PORT);
 	}
 
-	// only use `./scripts/code-web.sh --playground` to add vscode-web-playground extension by default.
+	// only use `./scripts/code-web.sh --playground` to add docode-web-playground extension by default.
 	if (args['playground'] === true) {
 		serverArgs.push('--extensionPath', WEB_DEV_EXTENSIONS_ROOT);
 		serverArgs.push('--folder-uri', 'memfs:///sample-folder');
@@ -131,7 +131,7 @@ async function downloadPlaygroundFile(fileName, httpsLocation, destinationRoot) 
 async function ensureWebDevExtensions(verbose) {
 
 	// Playground (https://github.com/microsoft/vscode-web-playground)
-	const webDevPlaygroundRoot = path.join(WEB_DEV_EXTENSIONS_ROOT, 'vscode-web-playground');
+	const webDevPlaygroundRoot = path.join(WEB_DEV_EXTENSIONS_ROOT, 'docode-web-playground');
 	const webDevPlaygroundExists = await directoryExists(webDevPlaygroundRoot);
 
 	let downloadPlayground = false;
@@ -150,7 +150,7 @@ async function ensureWebDevExtensions(verbose) {
 
 	if (downloadPlayground) {
 		if (verbose) {
-			fancyLog(`${ansiColors.magenta('Web Development extensions')}: Downloading vscode-web-playground to ${webDevPlaygroundRoot}`);
+			fancyLog(`${ansiColors.magenta('Web Development extensions')}: Downloading docode-web-playground to ${webDevPlaygroundRoot}`);
 		}
 		const playgroundRepo = `https://raw.githubusercontent.com/microsoft/vscode-web-playground/main/`;
 		await Promise.all(['package.json', 'dist/extension.js', 'dist/extension.js.map'].map(
@@ -159,7 +159,7 @@ async function ensureWebDevExtensions(verbose) {
 
 	} else {
 		if (verbose) {
-			fancyLog(`${ansiColors.magenta('Web Development extensions')}: Using existing vscode-web-playground in ${webDevPlaygroundRoot}`);
+			fancyLog(`${ansiColors.magenta('Web Development extensions')}: Using existing docode-web-playground in ${webDevPlaygroundRoot}`);
 		}
 	}
 }

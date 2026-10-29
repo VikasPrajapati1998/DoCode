@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 #[cfg(any(target_os = "linux", test))]
-const LINUX_POLICY_PATH: &str = "/etc/vscode/policy.json";
+const LINUX_POLICY_PATH: &str = "/etc/docode/policy.json";
 
 #[cfg(any(target_os = "linux", test))]
 fn linux_policy_disabled(contents: &str) -> bool {
@@ -32,9 +32,9 @@ fn linux_copilot_cli_command_disabled() -> bool {
 
 #[cfg(target_os = "macos")]
 const MACOS_POLICY_DOMAINS: &[&str] = &[
-	"com.microsoft.VSCode",
-	"com.microsoft.VSCodeInsiders",
-	"com.microsoft.VSCodeExploration",
+	"com.microsoft.DoCode",
+	"com.microsoft.DoCodeInsiders",
+	"com.microsoft.DoCodeExploration",
 	"com.visualstudio.code.oss",
 ];
 
@@ -147,7 +147,7 @@ mod tests {
 
 	#[test]
 	fn linux_reader_observes_changed_file_contents_and_fails_open() {
-		assert_eq!(LINUX_POLICY_PATH, "/etc/vscode/policy.json");
+		assert_eq!(LINUX_POLICY_PATH, "/etc/docode/policy.json");
 
 		let file = tempfile::NamedTempFile::new().expect("create temporary policy");
 		std::fs::write(file.path(), r#"{"CopilotCliCommand":false}"#)
@@ -194,9 +194,9 @@ mod tests {
 			assert_eq!(
 				MACOS_POLICY_DOMAINS,
 				[
-					"com.microsoft.VSCode",
-					"com.microsoft.VSCodeInsiders",
-					"com.microsoft.VSCodeExploration",
+					"com.microsoft.DoCode",
+					"com.microsoft.DoCodeInsiders",
+					"com.microsoft.DoCodeExploration",
 					"com.visualstudio.code.oss",
 				]
 			);
@@ -302,7 +302,7 @@ mod tests {
 		#[test]
 		fn production_copier_fails_open_for_a_unique_never_written_domain() {
 			let domain = format!(
-				"com.microsoft.vscode.copilot-shim-test-never-written-{}-{}",
+				"com.microsoft.docode.copilot-shim-test-never-written-{}-{}",
 				std::process::id(),
 				NEXT_DOMAIN.fetch_add(1, Ordering::Relaxed)
 			);

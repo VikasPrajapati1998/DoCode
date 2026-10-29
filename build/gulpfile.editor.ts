@@ -20,7 +20,7 @@ import { createReporter } from './lib/reporter.ts';
 import monacoPackage from './monaco/package.json' with { type: 'json' };
 
 const root = path.dirname(import.meta.dirname);
-const standaloneEnumsPath = path.join(root, 'src/vs/editor/common/standalone/standaloneEnums.ts');
+const standaloneEnumsPath = path.join(root, 'src/do/editor/common/standalone/standaloneEnums.ts');
 const sha1 = getVersion(root);
 const semver = monacoPackage.version;
 const headerVersion = semver + '(' + sha1 + ')';
@@ -37,8 +37,8 @@ const BUNDLED_FILE_HEADER = [
 
 const extractEditorSrcTask = task.define('extract-editor-src', () => {
 	// Ensure codicon.ttf is copied from node_modules (needed when node_modules is cached and postinstall doesn't run)
-	const codiconSource = path.join(root, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.ttf');
-	const codiconDest = path.join(root, 'src', 'vs', 'base', 'browser', 'ui', 'codicons', 'codicon', 'codicon.ttf');
+	const codiconSource = path.join(root, 'node_modules', '@docode', 'codicons', 'dist', 'codicon.ttf');
+	const codiconDest = path.join(root, 'src', 'do', 'base', 'browser', 'ui', 'codicons', 'codicon', 'codicon.ttf');
 	if (fs.existsSync(codiconSource)) {
 		fs.mkdirSync(path.dirname(codiconDest), { recursive: true });
 		fs.copyFileSync(codiconSource, codiconDest);
@@ -49,9 +49,9 @@ const extractEditorSrcTask = task.define('extract-editor-src', () => {
 	standalone.extractEditor({
 		sourcesRoot: path.join(root, 'src'),
 		entryPoints: [
-			'vs/editor/editor.main.ts',
-			'vs/editor/editor.worker.start.ts',
-			'vs/editor/common/services/editorWebWorkerMain.ts',
+			'do/editor/editor.main.ts',
+			'do/editor/editor.worker.start.ts',
+			'do/editor/common/services/editorWebWorkerMain.ts',
 		],
 		inlineEntryPoints: [
 			apiusages,
@@ -59,8 +59,8 @@ const extractEditorSrcTask = task.define('extract-editor-src', () => {
 		],
 		typings: [],
 		additionalFilesToCopyOut: [
-			'vs/base/browser/dompurify/dompurify.js',
-			'vs/base/common/marked/marked.js',
+			'do/base/browser/dompurify/dompurify.js',
+			'do/base/common/marked/marked.js',
 		],
 		shakeLevel: 2, // 0-Files, 1-InnerFile, 2-ClassMembers
 		importIgnorePattern: /\.css$/,
@@ -135,11 +135,11 @@ const finalEditorResourcesTask = task.define('final-editor-resources', () => {
 		es.merge(
 			gulp.src('build/monaco/LICENSE'),
 			gulp.src('build/monaco/ThirdPartyNotices.txt'),
-			gulp.src('src/vs/monaco.d.ts')
+			gulp.src('src/do/monaco.d.ts')
 		).pipe(gulp.dest('out-monaco-editor-core')),
 
 		// place the .d.ts in the esm folder
-		gulp.src('src/vs/monaco.d.ts')
+		gulp.src('src/do/monaco.d.ts')
 			.pipe(es.through(function (data) {
 				this.emit('data', new File({
 					path: data.path.replace(/monaco\.d\.ts/, 'editor.api.d.ts'),
@@ -158,8 +158,8 @@ const finalEditorResourcesTask = task.define('final-editor-resources', () => {
 				let markedVersion;
 				let dompurifyVersion;
 				try {
-					const markedManifestPath = path.join(root, 'src/vs/base/common/marked/cgmanifest.json');
-					const dompurifyManifestPath = path.join(root, 'src/vs/base/browser/dompurify/cgmanifest.json');
+					const markedManifestPath = path.join(root, 'src/do/base/common/marked/cgmanifest.json');
+					const dompurifyManifestPath = path.join(root, 'src/do/base/browser/dompurify/cgmanifest.json');
 
 					const markedManifest = JSON.parse(fs.readFileSync(markedManifestPath, 'utf8'));
 					const dompurifyManifest = JSON.parse(fs.readFileSync(dompurifyManifestPath, 'utf8'));
@@ -276,7 +276,7 @@ function createTscCompileTask(watch: boolean) {
 					const match = /(.*\(\d+,\d+\): )(.*: )(.*)/.exec(str);
 					if (match) {
 						// trying to massage the message so that it matches the gulp-tsb error messages
-						// e.g. src/vs/base/common/strings.ts(663,5): error TS2322: Type '1234' is not assignable to type 'string'.
+						// e.g. src/do/base/common/strings.ts(663,5): error TS2322: Type '1234' is not assignable to type 'string'.
 						const fullpath = path.join(root, match[1]);
 						const message = match[3];
 						reporter(fullpath + message);

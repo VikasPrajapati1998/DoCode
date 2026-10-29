@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { computeUnifiedDiff } from '../../src/vs/sessions/browser/parts/mobile/contributions/mobileDiffHelpers.js';
+import { computeUnifiedDiff } from '../../src/do/sessions/browser/parts/mobile/contributions/mobileDiffHelpers.js';
 
 interface IComputeDiffRequest {
 	readonly id: number;

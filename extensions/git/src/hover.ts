@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, l10n, MarkdownString, Uri } from 'vscode';
+import { Command, l10n, MarkdownString, Uri } from 'docode';
 import { fromNow, getCommitShortHash } from './util';
 import { emojify } from './emoji';
 import { CoAuthor, CommitShortStat } from './git';
@@ -133,13 +133,13 @@ function appendShortStats(markdownString: MarkdownString, shortStats: { files: n
 		l10n.t('{0} files changed', shortStats.files)}</span>`);
 
 	if (shortStats.insertions) {
-		markdownString.appendMarkdown(`,&nbsp;<span style="color:var(--vscode-scmGraph-historyItemHoverAdditionsForeground);">${shortStats.insertions === 1 ?
+		markdownString.appendMarkdown(`,&nbsp;<span style="color:var(--docode-scmGraph-historyItemHoverAdditionsForeground);">${shortStats.insertions === 1 ?
 			l10n.t('{0} insertion{1}', shortStats.insertions, '(+)') :
 			l10n.t('{0} insertions{1}', shortStats.insertions, '(+)')}</span>`);
 	}
 
 	if (shortStats.deletions) {
-		markdownString.appendMarkdown(`,&nbsp;<span style="color:var(--vscode-scmGraph-historyItemHoverDeletionsForeground);">${shortStats.deletions === 1 ?
+		markdownString.appendMarkdown(`,&nbsp;<span style="color:var(--docode-scmGraph-historyItemHoverDeletionsForeground);">${shortStats.deletions === 1 ?
 			l10n.t('{0} deletion{1}', shortStats.deletions, '(-)') :
 			l10n.t('{0} deletions{1}', shortStats.deletions, '(-)')}</span>`);
 	}

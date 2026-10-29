@@ -34,7 +34,7 @@ export interface ITreeShakingOptions {
 	sourcesRoot: string;
 	/**
 	 * Module ids.
-	 * e.g. `vs/editor/editor.main` or `index`
+	 * e.g. `do/editor/editor.main` or `index`
 	 */
 	entryPoints: string[];
 	/**

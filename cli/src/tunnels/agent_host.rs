@@ -28,7 +28,7 @@ use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 use crate::async_pipe::{
 	get_socket_name, get_socket_rw_stream, listen_socket_rw_stream, AsyncPipe, AsyncPipeListener,
 };
-use crate::constants::VSCODE_CLI_QUALITY;
+use crate::constants::DOCODE_CLI_QUALITY;
 use crate::download_cache::DownloadCache;
 use crate::log;
 use crate::options::{Quality, TelemetryLevel};
@@ -61,9 +61,9 @@ pub const STARTUP_TIMEOUT: Duration = Duration::from_secs(30);
 /// socket the CLI is listening on. Read by the agent host server at
 /// startup; its presence is what tells the server that it has a managing
 /// CLI and may therefore advertise the management RPC method to clients.
-pub const MANAGEMENT_SOCKET_ENV: &str = "VSCODE_AGENT_HOST_MANAGEMENT_SOCKET";
-const GITHUB_ENVIRONMENT_OPTIONS_ENV: &str = "VSCODE_CLI_GITHUB_ENVIRONMENT_OPTIONS";
-const GITHUB_ENVIRONMENT_READY_PREFIX: &str = "__VSCODE_GITHUB_ENVIRONMENT_READY__:";
+pub const MANAGEMENT_SOCKET_ENV: &str = "DOCODE_AGENT_HOST_MANAGEMENT_SOCKET";
+const GITHUB_ENVIRONMENT_OPTIONS_ENV: &str = "DOCODE_CLI_GITHUB_ENVIRONMENT_OPTIONS";
+const GITHUB_ENVIRONMENT_READY_PREFIX: &str = "__DOCODE_GITHUB_ENVIRONMENT_READY__:";
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -91,7 +91,7 @@ impl std::fmt::Debug for GithubEnvironmentConfig {
 /// is initially downloaded and started at this commit; subsequent upgrades
 /// still resolve the real latest version. Intended for testing the upgrade
 /// flow.
-pub const INITIAL_AGENT_HOST_VERSION_ENV: &str = "VSCODE_CLI_INITIAL_AH_VERSION";
+pub const INITIAL_AGENT_HOST_VERSION_ENV: &str = "DOCODE_CLI_INITIAL_AH_VERSION";
 
 /// Reads {@link INITIAL_AGENT_HOST_VERSION_ENV}, returning the commit SHA
 /// override if it is set to a non-empty value. The value is restricted to
@@ -300,7 +300,7 @@ impl AgentHostManager {
 		server_dir: PathBuf,
 		opener: BarrierOpener<Result<PathBuf, String>>,
 	) {
-		let executable = if let Some(p) = option_env!("VSCODE_CLI_OVERRIDE_SERVER_PATH") {
+		let executable = if let Some(p) = option_env!("DOCODE_CLI_OVERRIDE_SERVER_PATH") {
 			PathBuf::from(p)
 		} else {
 			server_dir
@@ -350,7 +350,7 @@ impl AgentHostManager {
 			cmd.arg(ct);
 		}
 		cmd.env(MANAGEMENT_SOCKET_ENV, &self.management_socket_path);
-		cmd.env_remove("VSCODE_DEV");
+		cmd.env_remove("DOCODE_DEV");
 
 		let mut child = match cmd.spawn() {
 			Ok(c) => c,
@@ -541,7 +541,7 @@ impl AgentHostManager {
 	async fn get_cached_or_download(&self) -> Result<(Release, PathBuf), CodeError> {
 		// When using a dev override, skip the update service entirely -
 		// the override path is used directly by run_server().
-		if option_env!("VSCODE_CLI_OVERRIDE_SERVER_PATH").is_some() {
+		if option_env!("DOCODE_CLI_OVERRIDE_SERVER_PATH").is_some() {
 			let release = Release {
 				name: String::new(),
 				commit: String::from("dev"),
@@ -569,7 +569,7 @@ impl AgentHostManager {
 			return Ok((release, dir));
 		}
 
-		let quality = VSCODE_CLI_QUALITY
+		let quality = DOCODE_CLI_QUALITY
 			.ok_or(CodeError::UpdatesNotConfigured("no configured quality"))
 			.and_then(|q| {
 				Quality::try_from(q).map_err(|_| CodeError::UpdatesNotConfigured("unknown quality"))
@@ -640,7 +640,7 @@ impl AgentHostManager {
 		let mut latest = self.latest_release.lock().await;
 		let now = Instant::now();
 
-		let quality = VSCODE_CLI_QUALITY
+		let quality = DOCODE_CLI_QUALITY
 			.ok_or(CodeError::UpdatesNotConfigured("no configured quality"))
 			.and_then(|q| {
 				Quality::try_from(q).map_err(|_| CodeError::UpdatesNotConfigured("unknown quality"))
@@ -1266,7 +1266,7 @@ impl AgentHostSidecar {
 			bound_addr.port(),
 			public_token.clone().unwrap_or_default(),
 			AGENT_HOST_PROTOCOL_VERSION.to_string(),
-			VSCODE_CLI_QUALITY.map(str::to_string),
+			DOCODE_CLI_QUALITY.map(str::to_string),
 			None,
 		);
 
@@ -2437,7 +2437,7 @@ mod tests {
 		let manager_for_start = manager.clone();
 		let path = dir.path().to_path_buf();
 		let body = format!(
-			"printf '%s' \"$VSCODE_CLI_GITHUB_ENVIRONMENT_OPTIONS\" > '{}'\n\
+			"printf '%s' \"$DOCODE_CLI_GITHUB_ENVIRONMENT_OPTIONS\" > '{}'\n\
 			 printf '%s\\n' \"$@\" > '{}'\n\
 			 i=0; while [ ! -e '{}' ] && [ $i -lt 100 ]; do sleep 0.05; i=$((i+1)); done\n\
 			 echo '{}environment-123'",

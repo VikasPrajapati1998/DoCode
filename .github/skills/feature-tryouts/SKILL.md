@@ -7,7 +7,7 @@ description: Use when adding, reviewing, or troubleshooting an interactive relea
 
 Feature tryouts connect release-note links to trusted product interactions. Use this skill to choose the least invasive useful experience, keep behavior feature-owned, bind guidance to the correct UI instance, fail closed, and validate the real journey.
 
-The authoritative contributor contract is [src/vs/workbench/contrib/onboarding/README.md](../../../src/vs/workbench/contrib/onboarding/README.md). Read it before implementation. This skill owns the execution workflow and must not duplicate a catalogue of current tryouts.
+The authoritative contributor contract is [src/do/workbench/contrib/onboarding/README.md](../../../src/do/workbench/contrib/onboarding/README.md). Read it before implementation. This skill owns the execution workflow and must not duplicate a catalogue of current tryouts.
 
 ## 1. Classify the experience
 
@@ -54,8 +54,8 @@ Add a feature-owned presentation only when the built-in types cannot express the
 
 Canonical implementations:
 
-- [diffEditorTryout.contribution.ts](../../../src/vs/workbench/contrib/codeEditor/browser/diffEditorTryout.contribution.ts) — isolated editor sample.
-- [modelPickerTryout.contribution.ts](../../../src/vs/workbench/contrib/chat/browser/onboarding/modelPickerTryout.contribution.ts) — scoped multi-instance target.
+- [diffEditorTryout.contribution.ts](../../../src/do/workbench/contrib/codeEditor/browser/diffEditorTryout.contribution.ts) — isolated editor sample.
+- [modelPickerTryout.contribution.ts](../../../src/do/workbench/contrib/chat/browser/onboarding/modelPickerTryout.contribution.ts) — scoped multi-instance target.
 
 ## 4. Preserve the trust boundary
 
@@ -69,7 +69,7 @@ Requirements:
 - Commands retain their normal preconditions, confirmation, permission, and undo behavior.
 - Availability is rechecked after asynchronous preparation and immediately before execution.
 - Setup actions are offered explicitly and never run while rendering release notes.
-- External `vscode://tryout/<id>` links contain only the registered ID and always require the product confirmation. External launch defaults to allowed; set `allowExternalLaunch: false` when a tryout must remain in-product only.
+- External `docode://tryout/<id>` links contain only the registered ID and always require the product confirmation. External launch defaults to allowed; set `allowExternalLaunch: false` when a tryout must remain in-product only.
 
 Never automatically:
 
@@ -103,7 +103,7 @@ Editors, Chat widgets, split panes, and repeated controls require a run scope:
 
 Scopes are opaque run identities. They are not selectors, persisted state, release-note input, or authorization tokens.
 
-See [onboardingTarget.ts](../../../src/vs/workbench/contrib/onboarding/browser/spotlight/onboardingTarget.ts), [guidedTryoutPresentation.ts](../../../src/vs/workbench/contrib/onboarding/browser/guidedTryoutPresentation.ts), and [spotlightPresentation.ts](../../../src/vs/workbench/contrib/onboarding/browser/spotlight/spotlightPresentation.ts).
+See [onboardingTarget.ts](../../../src/do/workbench/contrib/onboarding/browser/spotlight/onboardingTarget.ts), [guidedTryoutPresentation.ts](../../../src/do/workbench/contrib/onboarding/browser/guidedTryoutPresentation.ts), and [spotlightPresentation.ts](../../../src/do/workbench/contrib/onboarding/browser/spotlight/spotlightPresentation.ts).
 
 ## 6. Handle prerequisites through real product actions
 
@@ -137,11 +137,11 @@ Use `targetWindow: 'agents'` when implementation belongs in the Agents window.
 - Keep shared IDs and metadata in a layer both windows can load.
 - Keep the implementation in its owning Sessions contribution.
 - Import it from the appropriate `sessions.*.main.ts` entry point.
-- Preserve the `vs/sessions` → `vs/workbench` layer direction.
+- Preserve the `do/sessions` → `do/workbench` layer direction.
 - Rely on the request-scoped native handoff; do not persist or replay the request.
 - A newer request must supersede and dispose the active destination run.
 
-Invoke the `sessions` skill for changes under `src/vs/sessions/**`.
+Invoke the `sessions` skill for changes under `src/do/sessions/**`.
 
 ## 9. Apply specialist guidance
 
@@ -173,7 +173,7 @@ The surrounding prose should explain:
 - what the example will not change;
 - any prerequisite or unavailable fallback.
 
-Use [releaseNotesTryouts.md](../../../src/vs/workbench/contrib/onboarding/test/browser/fixtures/releaseNotesTryouts.md) for manual validation, not as another source of feature contracts.
+Use [releaseNotesTryouts.md](../../../src/do/workbench/contrib/onboarding/test/browser/fixtures/releaseNotesTryouts.md) for manual validation, not as another source of feature contracts.
 
 ## 11. Test the contract
 
@@ -195,11 +195,11 @@ Add the smallest applicable coverage:
 
 Framework references:
 
-- [onboardingTryoutService.test.ts](../../../src/vs/workbench/contrib/onboarding/test/browser/onboardingTryoutService.test.ts)
-- [onboardingTryoutActions.test.ts](../../../src/vs/workbench/contrib/onboarding/test/browser/onboardingTryoutActions.test.ts)
-- [guidedTryoutPresentation.test.ts](../../../src/vs/workbench/contrib/onboarding/test/browser/guidedTryoutPresentation.test.ts)
-- [spotlightPresentation.test.ts](../../../src/vs/workbench/contrib/onboarding/test/browser/spotlightPresentation.test.ts)
-- [onboardingTryoutWindow.test.ts](../../../src/vs/workbench/contrib/onboarding/test/electron-browser/onboardingTryoutWindow.test.ts)
+- [onboardingTryoutService.test.ts](../../../src/do/workbench/contrib/onboarding/test/browser/onboardingTryoutService.test.ts)
+- [onboardingTryoutActions.test.ts](../../../src/do/workbench/contrib/onboarding/test/browser/onboardingTryoutActions.test.ts)
+- [guidedTryoutPresentation.test.ts](../../../src/do/workbench/contrib/onboarding/test/browser/guidedTryoutPresentation.test.ts)
+- [spotlightPresentation.test.ts](../../../src/do/workbench/contrib/onboarding/test/browser/spotlightPresentation.test.ts)
+- [onboardingTryoutWindow.test.ts](../../../src/do/workbench/contrib/onboarding/test/electron-browser/onboardingTryoutWindow.test.ts)
 
 ## 12. Validate and report
 

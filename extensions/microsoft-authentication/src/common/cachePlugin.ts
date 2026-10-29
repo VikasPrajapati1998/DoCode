@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ICachePlugin, TokenCacheContext } from '@azure/msal-node';
-import { Disposable, EventEmitter, SecretStorage } from 'vscode';
+import { Disposable, EventEmitter, SecretStorage } from 'docode';
 
 export class SecretStorageCachePlugin implements ICachePlugin, Disposable {
 	private readonly _onDidChange: EventEmitter<void> = new EventEmitter<void>();

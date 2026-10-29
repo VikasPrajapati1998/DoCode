@@ -1,0 +1,37 @@
+{
+	"name": "@docode/proxy-agent",
+	"version": "0.45.0",
+	"description": "NodeJS http(s) agent implementation for DoCode",
+	"main": "out/index.js",
+	"types": "out/index.d.ts",
+	"keywords": [
+		"proxy",
+		"agent",
+		"http",
+		"https",
+		"socks",
+		"request",
+		"access"
+	],
+	"authors": [
+		"Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+		"Félicien François <felicien@tweakstyle.com>",
+		"Microsoft Corporation"
+	],
+	"license": "MIT",
+	"engines": {
+		"node": ">=22.15.0"
+	},
+	"dependencies": {
+		"@tootallnate/once": "^3.0.0",
+		"agent-base": "^7.0.1",
+		"debug": "^4.3.4",
+		"http-proxy-agent": "^7.0.0",
+		"https-proxy-agent": "^7.0.2",
+		"socks-proxy-agent": "^8.0.1",
+		"undici": "^7.2.0"
+	},
+	"optionalDependencies": {
+		"@vscode/windows-ca-certs": "^0.3.1"
+	}
+}

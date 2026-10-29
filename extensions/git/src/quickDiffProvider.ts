@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { FileType, l10n, LogOutputChannel, QuickDiffProvider, Uri, workspace } from 'vscode';
+import { FileType, l10n, LogOutputChannel, QuickDiffProvider, Uri, workspace } from 'docode';
 import { IRepositoryResolver, Repository } from './repository';
 import { isDescendant, pathEquals } from './util';
 import { toGitUri } from './uri';

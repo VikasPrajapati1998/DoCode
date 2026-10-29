@@ -26,15 +26,15 @@ const sourceMapRoot = 'https://example.test/sourcemaps/commit';
 const sourceMapBaseUrl = `${sourceMapRoot}/core`;
 const preloads = [
 	{
-		file: 'vs/base/parts/sandbox/electron-browser/preload.ts',
+		file: 'do/base/parts/sandbox/electron-browser/preload.ts',
 		markers: ['startsWith(', 'postMessage(', 'exposeInMainWorld('],
 	},
 	{
-		file: 'vs/base/parts/sandbox/electron-browser/preload-aux.ts',
+		file: 'do/base/parts/sandbox/electron-browser/preload-aux.ts',
 		markers: ['startsWith(', 'setZoomLevel(', 'exposeInMainWorld('],
 	},
 	{
-		file: 'vs/platform/browserView/electron-browser/preload-browserView.ts',
+		file: 'do/platform/browserView/electron-browser/preload-browserView.ts',
 		markers: ['isTrusted', 'exposeInMainWorld(', 'getBoundingClientRect(', '_onPicked('],
 	},
 ];
@@ -176,7 +176,7 @@ suite('standalone preloads', () => {
 			unchangedBytes: javascriptFiles.map(() => true),
 		});
 
-		const preloadIndex = javascriptFiles.indexOf('vs/base/parts/sandbox/electron-browser/preload.js');
+		const preloadIndex = javascriptFiles.indexOf('do/base/parts/sandbox/electron-browser/preload.js');
 		const beforeURLRewrite = finalContents[preloadIndex].toString().replace(
 			/^\/\/# sourceMappingURL=.+$/m,
 			'//# sourceMappingURL=preload.js.map',
@@ -194,7 +194,7 @@ suite('standalone preloads', () => {
 });
 
 async function temporaryDirectory(t: TestContext): Promise<string> {
-	const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-standalone-test-'));
+	const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-standalone-test-'));
 	t.after(() => fs.promises.rm(root, { recursive: true, force: true }));
 	return root;
 }

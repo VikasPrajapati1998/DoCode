@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { AccountLinks } from '../common/accountLinks';
 import { IGitHubUserInfo } from '../common/gitHubAccount';
 import { Log } from '../common/logger';
@@ -20,7 +20,7 @@ interface TestGitHubAuthenticationProvider {
 		deleteToken(): Promise<void>;
 	};
 	readonly _githubServer: {
-		getFallbackBaseUri(): vscode.Uri;
+		getFallbackBaseUri(): docode.Uri;
 		getUserInfo(token: string): Promise<{ id: string; accountName: string; avatarUrl: string | undefined }>;
 	};
 	readonly _logger: {
@@ -28,8 +28,8 @@ interface TestGitHubAuthenticationProvider {
 		info(message: string): void;
 		trace(message: string): void;
 	};
-	readSessions(): Promise<vscode.AuthenticationSession[]>;
-	storeSessions(sessions: vscode.AuthenticationSession[]): Promise<void>;
+	readSessions(): Promise<docode.AuthenticationSession[]>;
+	storeSessions(sessions: docode.AuthenticationSession[]): Promise<void>;
 }
 
 suite('GitHub session persistence', () => {
@@ -41,7 +41,7 @@ suite('GitHub session persistence', () => {
 		}]);
 		let userInfoRequests = 0;
 		let secretWrites = 0;
-		const secretChangeReads: Promise<vscode.AuthenticationSession[]>[] = [];
+		const secretChangeReads: Promise<docode.AuthenticationSession[]>[] = [];
 
 		const provider: TestGitHubAuthenticationProvider = Object.assign(Object.create(GitHubSessionEngine.prototype), {
 			_keychain: {
@@ -49,7 +49,7 @@ suite('GitHub session persistence', () => {
 				deleteToken: async () => { }
 			},
 			_githubServer: {
-				getFallbackBaseUri: () => vscode.Uri.parse('https://github.com'),
+				getFallbackBaseUri: () => docode.Uri.parse('https://github.com'),
 				getUserInfo: async _token => {
 					userInfoRequests++;
 					return {
@@ -109,17 +109,17 @@ suite('GitHub session persistence', () => {
  * calling the private methods one at a time would test the pieces rather than the order they run in,
  * which is where every one of these bugs lives.
  */
-function registerMicrosoftBrokeredSessionTests(type: AuthProviderType, baseUri: vscode.Uri, authorizationServer: string): void {
+function registerMicrosoftBrokeredSessionTests(type: AuthProviderType, baseUri: docode.Uri, authorizationServer: string): void {
 
 	const STORAGE_KEY = 'github.auth.microsoftAccountLinks';
 	const SCOPES = ['read:user', 'repo'];
-	const MICROSOFT_ACCOUNT: vscode.AuthenticationSessionAccountInformation = { id: 'entra-oid', label: 'mona@contoso.com' };
+	const MICROSOFT_ACCOUNT: docode.AuthenticationSessionAccountInformation = { id: 'entra-oid', label: 'mona@contoso.com' };
 	const GITHUB_ACCOUNT: IGitHubUserInfo = { id: '42', accountName: 'mona_contoso', avatarUrl: undefined };
 	const ACCOUNT_LABEL_SUFFIX = type === AuthProviderType.githubEnterprise ? ` - ${baseUri.authority}${baseUri.path.replace(/\/+$/, '')}` : '';
 	const GITHUB_ACCOUNT_LABEL = `${GITHUB_ACCOUNT.accountName}${ACCOUNT_LABEL_SUFFIX}`;
 
 	interface ITransientSession {
-		readonly session: vscode.AuthenticationSession;
+		readonly session: docode.AuthenticationSession;
 		readonly expiresAt: number;
 	}
 
@@ -129,20 +129,20 @@ function registerMicrosoftBrokeredSessionTests(type: AuthProviderType, baseUri: 
 		_accountLabelSuffix: string | undefined;
 		_accountLinks: AccountLinks;
 		_accountsSeen: Set<string>;
-		_persistedSessionsPromise: Promise<vscode.AuthenticationSession[]>;
+		_persistedSessionsPromise: Promise<docode.AuthenticationSession[]>;
 		_transientSessions: Map<string, ITransientSession>;
-		_renewals: Map<string, Promise<vscode.AuthenticationSession | undefined>>;
-		_restores: Map<string, Promise<vscode.AuthenticationSession | undefined>>;
+		_renewals: Map<string, Promise<docode.AuthenticationSession | undefined>>;
+		_restores: Map<string, Promise<docode.AuthenticationSession | undefined>>;
 		_restoresTried: Set<string>;
 		_microsoftGeneration: number;
-		_microsoft: { getAccounts(): Promise<vscode.AuthenticationSessionAccountInformation[]> };
+		_microsoft: { getAccounts(): Promise<docode.AuthenticationSessionAccountInformation[]> };
 		_githubServer: {
-			getFallbackBaseUri(): vscode.Uri;
+			getFallbackBaseUri(): docode.Uri;
 			loginWithMicrosoft: IGitHubServer['loginWithMicrosoft'];
 			renewWithMicrosoft: IGitHubServer['renewWithMicrosoft'];
-			sendAdditionalTelemetryInfo(session: vscode.AuthenticationSession): Promise<void>;
+			sendAdditionalTelemetryInfo(session: docode.AuthenticationSession): Promise<void>;
 		};
-		_sessionChangeEmitter: { fire(e: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent): void };
+		_sessionChangeEmitter: { fire(e: docode.AuthenticationProviderAuthenticationSessionsChangeEvent): void };
 	}
 
 	interface IHarness {
@@ -165,18 +165,18 @@ function registerMicrosoftBrokeredSessionTests(type: AuthProviderType, baseUri: 
 		logger = new Log(type);
 	});
 
-	function sessionFor(account: string, id: string, accessToken: string): vscode.AuthenticationSession {
-		return { id, accessToken, account: { id: '42', label: `${account}${ACCOUNT_LABEL_SUFFIX}` }, scopes: SCOPES, authorizationServer: vscode.Uri.parse(authorizationServer) };
+	function sessionFor(account: string, id: string, accessToken: string): docode.AuthenticationSession {
+		return { id, accessToken, account: { id: '42', label: `${account}${ACCOUNT_LABEL_SUFFIX}` }, scopes: SCOPES, authorizationServer: docode.Uri.parse(authorizationServer) };
 	}
 
 	function createHarness(overrides: {
 		/** Rows already remembered, as `[Microsoft account, GitHub account]`. */
-		links?: readonly (readonly [string, vscode.AuthenticationSessionAccountInformation])[];
-		persisted?: readonly vscode.AuthenticationSession[];
+		links?: readonly (readonly [string, docode.AuthenticationSessionAccountInformation])[];
+		persisted?: readonly docode.AuthenticationSession[];
 		/** Sessions already held in memory, and how long each has left in milliseconds. */
-		transient?: readonly (readonly [vscode.AuthenticationSession, number])[];
-		serverBaseUri?: vscode.Uri;
-		microsoftAccounts?: (call: number) => vscode.AuthenticationSessionAccountInformation[];
+		transient?: readonly (readonly [docode.AuthenticationSession, number])[];
+		serverBaseUri?: docode.Uri;
+		microsoftAccounts?: (call: number) => docode.AuthenticationSessionAccountInformation[];
 		login?: (call: number, scopes: readonly string[], options: IEntraLoginOptions | undefined) => Promise<IEntraExchangedToken>;
 		renew?: (call: number, renewal: IEntraRenewal) => Promise<IEntraRenewedToken>;
 	} = {}): IHarness {
@@ -209,14 +209,14 @@ function registerMicrosoftBrokeredSessionTests(type: AuthProviderType, baseUri: 
 					const exchanged = overrides.login
 						? await overrides.login(logins.length - 1, scopes, options)
 						: { token: `gho_login_${logins.length}`, expiresAfter: 7_200_000, account: GITHUB_ACCOUNT };
-					return { ...exchanged, authorizationServer: vscode.Uri.parse(authorizationServer) };
+					return { ...exchanged, authorizationServer: docode.Uri.parse(authorizationServer) };
 				},
 				renewWithMicrosoft: async renewal => {
 					renewals.push(renewal);
 					const renewed = overrides.renew
 						? await overrides.renew(renewals.length - 1, renewal)
 						: { token: `gho_${renewals.length}`, expiresAfter: 3_600_000, account: GITHUB_ACCOUNT, scopes: renewal.scopes ?? SCOPES };
-					return { ...renewed, authorizationServer: vscode.Uri.parse(authorizationServer) };
+					return { ...renewed, authorizationServer: docode.Uri.parse(authorizationServer) };
 				},
 				sendAdditionalTelemetryInfo: async () => { }
 			},
@@ -337,11 +337,11 @@ function registerMicrosoftBrokeredSessionTests(type: AuthProviderType, baseUri: 
 	});
 
 	test('uses the issuer returned with Microsoft tokens during creation, restoration, and renewal', async () => {
-		const serverBaseUri = vscode.Uri.parse('https://unrelated.example');
+		const serverBaseUri = docode.Uri.parse('https://unrelated.example');
 		const interactive = createHarness({ serverBaseUri });
 		const created = await interactive.provider.createSession(SCOPES, { provider: GitHubSignInProvider.Microsoft });
 		const restored = await (await withLink(createHarness({ serverBaseUri }))).provider.getSessions(SCOPES);
-		const oldSession = { ...sessionFor('mona_contoso', 'expiring', 'gho_stale'), authorizationServer: vscode.Uri.parse('https://old.example/login/oauth') };
+		const oldSession = { ...sessionFor('mona_contoso', 'expiring', 'gho_stale'), authorizationServer: docode.Uri.parse('https://old.example/login/oauth') };
 		const renewed = await (await withLink(createHarness({ serverBaseUri, transient: [[oldSession, 0]] }))).provider.getSessions(SCOPES);
 
 		assert.deepStrictEqual([created, ...restored, ...renewed].map(session => session.authorizationServer?.toString()), [
@@ -561,7 +561,7 @@ for (const { name, type, base, issuer } of [
 	{ name: 'GitHub', type: AuthProviderType.github, base: 'https://github.com', issuer: 'https://github.com/login/oauth' },
 	{ name: 'GitHub Enterprise', type: AuthProviderType.githubEnterprise, base: 'https://octocat.ghe.com:443/Team%20Space', issuer: 'https://octocat.ghe.com:443/Team%20Space/login/oauth' }
 ]) {
-	suite(`${name} Microsoft-brokered sessions`, () => registerMicrosoftBrokeredSessionTests(type, vscode.Uri.parse(base), issuer));
+	suite(`${name} Microsoft-brokered sessions`, () => registerMicrosoftBrokeredSessionTests(type, docode.Uri.parse(base), issuer));
 }
 
 suite('GitHub Microsoft link probe', () => {
@@ -586,7 +586,7 @@ suite('GitHub Microsoft link probe', () => {
 		const { provider, probed } = createProvider(linkedToken);
 		let result: unknown;
 		try {
-			result = await provider.getSessions([], { _workbenchEntraExchangeProbe: value } as vscode.AuthenticationProviderSessionOptions);
+			result = await provider.getSessions([], { _workbenchEntraExchangeProbe: value } as docode.AuthenticationProviderSessionOptions);
 		} catch (e) {
 			result = (e as Error).message;
 		}

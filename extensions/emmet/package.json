@@ -3,10 +3,10 @@
   "displayName": "Emmet",
   "description": "%description%",
   "version": "10.0.0",
-  "publisher": "vscode",
+  "publisher": "docode",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.13.0"
+    "docode": "^1.13.0"
   },
   "icon": "images/icon.png",
   "categories": [
@@ -482,7 +482,7 @@
     "watch-web": "npm-run-all2 -lp watch-bundle-web watch-typecheck-web",
     "watch-bundle-web": "node ./esbuild.browser.mts --watch",
     "watch-typecheck-web": "node ../../node_modules/@typescript/native/lib/tsc.js --project ./tsconfig.browser.json --noEmit --watch",
-    "deps": "npm install @vscode/emmet-helper"
+    "deps": "npm install @docode/emmet-helper"
   },
   "devDependencies": {
     "@types/node": "24.x"
@@ -491,7 +491,7 @@
     "@emmetio/css-parser": "^0.4.1",
     "@emmetio/html-matcher": "^0.3.3",
     "@emmetio/math-expression": "^1.0.5",
-    "@vscode/emmet-helper": "^2.8.8",
+    "@docode/emmet-helper": "file:../../packages/emmet-helper",
     "image-size": "~1.0.0",
     "vscode-languageserver-textdocument": "^1.0.1"
   },

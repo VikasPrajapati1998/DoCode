@@ -9,8 +9,8 @@
 
 html,
 body {
-	background: var(--vscode-editorWidget-background);
-	color: var(--vscode-editorWidget-foreground);
+	background: var(--docode-editorWidget-background);
+	color: var(--docode-editorWidget-foreground);
 }
 
 body {
@@ -19,28 +19,28 @@ body {
 
 main {
 	display: grid;
-	gap: var(--vscode-spacing-size80);
+	gap: var(--docode-spacing-size80);
 	box-sizing: border-box;
-	padding: var(--vscode-spacing-size120);
-	border-left: var(--vscode-strokeThickness) solid var(--vscode-textLink-foreground);
-	background: var(--vscode-editorWidget-background);
-	color: var(--vscode-editorWidget-foreground);
-	font-family: var(--vscode-font-family);
+	padding: var(--docode-spacing-size120);
+	border-left: var(--docode-strokeThickness) solid var(--docode-textLink-foreground);
+	background: var(--docode-editorWidget-background);
+	color: var(--docode-editorWidget-foreground);
+	font-family: var(--docode-font-family);
 }
 
 .task-progress-summary {
-	font-size: var(--vscode-fontSize-body1);
-	font-weight: var(--vscode-fontWeight-semiBold);
+	font-size: var(--docode-fontSize-body1);
+	font-weight: var(--docode-fontWeight-semiBold);
 }
 
 .task-progress {
 	--task-progress-ratio: 0;
 
 	width: 100%;
-	height: var(--vscode-spacing-size80);
+	height: var(--docode-spacing-size80);
 	overflow: hidden;
-	border-radius: var(--vscode-cornerRadius-xSmall);
-	background: var(--vscode-editor-background);
+	border-radius: var(--docode-cornerRadius-xSmall);
+	background: var(--docode-editor-background);
 }
 
 .task-progress-value {
@@ -48,7 +48,7 @@ main {
 	height: 100%;
 	transform: scaleX(var(--task-progress-ratio));
 	transform-origin: left;
-	background: var(--vscode-progressBar-background);
+	background: var(--docode-progressBar-background);
 }
 
 @media (prefers-reduced-motion: no-preference) {

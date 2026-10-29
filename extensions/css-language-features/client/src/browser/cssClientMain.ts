@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionContext, Uri, l10n } from 'vscode';
+import { ExtensionContext, Uri, l10n } from 'docode';
 import { BaseLanguageClient, LanguageClientOptions } from 'vscode-languageclient';
 import { startClient, LanguageClientConstructor } from '../cssClient';
 import { LanguageClient } from 'vscode-languageclient/browser';

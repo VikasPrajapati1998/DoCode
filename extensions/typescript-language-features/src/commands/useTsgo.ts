@@ -3,20 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { readUnifiedConfig, unifiedConfigSection } from '../utils/configuration';
 import { Command } from './commandManager';
 
 export const tsNativeExtensionOldId = 'typescriptteam.native-preview';
 export const tsNativeExtensionIds = [
-	'typescriptteam.vscode-typescript',
-	'typescriptteam.vscode-typescript-nightly',
+	'typescriptteam.docode-typescript',
+	'typescriptteam.docode-typescript-nightly',
 	tsNativeExtensionOldId
 ] as const;
 
-export function getTsNativeExtension(): vscode.Extension<unknown> | undefined {
+export function getTsNativeExtension(): docode.Extension<unknown> | undefined {
 	for (const extensionId of tsNativeExtensionIds) {
-		const extension = vscode.extensions.getExtension(extensionId);
+		const extension = docode.extensions.getExtension(extensionId);
 		if (extension) {
 			return extension;
 		}
@@ -49,16 +49,16 @@ async function updateTsgoSetting(enable: boolean): Promise<void> {
 	const tsgoExtension = getTsNativeExtension();
 	// Error if the TypeScript Go extension is not installed with a button to open the GitHub repo
 	if (!tsgoExtension) {
-		const selection = await vscode.window.showErrorMessage(
-			vscode.l10n.t('The TypeScript Go extension is not installed.'),
+		const selection = await docode.window.showErrorMessage(
+			docode.l10n.t('The TypeScript Go extension is not installed.'),
 			{
-				title: vscode.l10n.t('Open on GitHub'),
+				title: docode.l10n.t('Open on GitHub'),
 				isCloseAffordance: true,
 			}
 		);
 
 		if (selection) {
-			await vscode.env.openExternal(vscode.Uri.parse('https://github.com/microsoft/typescript-go'));
+			await docode.env.openExternal(docode.Uri.parse('https://github.com/microsoft/typescript-go'));
 		}
 	}
 
@@ -68,23 +68,23 @@ async function updateTsgoSetting(enable: boolean): Promise<void> {
 	}
 
 	// Determine the target scope for the configuration update
-	let target = vscode.ConfigurationTarget.Global;
-	const unifiedConfig = vscode.workspace.getConfiguration(unifiedConfigSection);
+	let target = docode.ConfigurationTarget.Global;
+	const unifiedConfig = docode.workspace.getConfiguration(unifiedConfigSection);
 	const inspect = unifiedConfig.inspect<boolean>('experimental.useTsgo');
-	const legacyInspect = vscode.workspace.getConfiguration('typescript').inspect<boolean>('experimental.useTsgo');
+	const legacyInspect = docode.workspace.getConfiguration('typescript').inspect<boolean>('experimental.useTsgo');
 	if (inspect?.workspaceValue !== undefined || legacyInspect?.workspaceValue !== undefined) {
-		target = vscode.ConfigurationTarget.Workspace;
+		target = docode.ConfigurationTarget.Workspace;
 	} else if (inspect?.workspaceFolderValue !== undefined || legacyInspect?.workspaceFolderValue !== undefined) {
-		target = vscode.ConfigurationTarget.WorkspaceFolder;
+		target = docode.ConfigurationTarget.WorkspaceFolder;
 	} else {
 		// If setting is not defined yet, use the same scope as typescript-go.executablePath
-		const tsgoConfig = vscode.workspace.getConfiguration('typescript-go');
+		const tsgoConfig = docode.workspace.getConfiguration('typescript-go');
 		const tsgoInspect = tsgoConfig.inspect<string>('executablePath');
 
 		if (tsgoInspect?.workspaceValue !== undefined) {
-			target = vscode.ConfigurationTarget.Workspace;
+			target = docode.ConfigurationTarget.Workspace;
 		} else if (tsgoInspect?.workspaceFolderValue !== undefined) {
-			target = vscode.ConfigurationTarget.WorkspaceFolder;
+			target = docode.ConfigurationTarget.WorkspaceFolder;
 		}
 	}
 

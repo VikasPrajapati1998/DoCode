@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { homedir } from 'os';
 
 import { activateEmmetExtension } from '../emmetCommon';
 import { setHomeDir } from '../util';
 
-export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('editor.emmet.action.updateImageSize', () => {
+export function activate(context: docode.ExtensionContext) {
+	context.subscriptions.push(docode.commands.registerCommand('editor.emmet.action.updateImageSize', () => {
 		return import('../updateImageSize').then(uis => uis.updateImageSize());
 	}));
 
-	setHomeDir(vscode.Uri.file(homedir()));
+	setHomeDir(docode.Uri.file(homedir()));
 	activateEmmetExtension(context);
 }

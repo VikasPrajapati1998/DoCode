@@ -38,7 +38,7 @@ suite('Cloud Sandbox install setup', () => {
 	for (const replacement of ['valid', 'bad-checksum', 'wrong-version']) {
 		test(`repairs a stale Node cache only after replacement validation: ${replacement}`, t => {
 			const root = fixture(t);
-			const nodeDirectory = path.join(root, '.local/share/vscode-cloud-sandbox/node-v24.18.0-linux-x64');
+			const nodeDirectory = path.join(root, '.local/share/docode-cloud-sandbox/node-v24.18.0-linux-x64');
 			const cachedNode = path.join(nodeDirectory, 'bin/node');
 			fs.mkdirSync(path.dirname(cachedNode), { recursive: true });
 			fs.writeFileSync(cachedNode, 'stale');
@@ -304,14 +304,14 @@ suite('Cloud Sandbox install setup', () => {
 					return '';
 				},
 			};
-			const nodeBin = path.join(root, '.local/share/vscode-cloud-sandbox/node-v24.18.0-linux-arm64/bin');
+			const nodeBin = path.join(root, '.local/share/docode-cloud-sandbox/node-v24.18.0-linux-arm64/bin');
 			for (let attempt = 0; attempt < 2; attempt++) {
 				assert.equal(prepareCloudSandbox(options), path.join(nodeBin, 'node'));
 			}
 			prepareCloudSandbox({ ...options, nodeVersion: '24.18.0' });
 			assert.deepStrictEqual({
 				downloads,
-				files: fs.readdirSync(path.join(root, '.local/share/vscode-cloud-sandbox')),
+				files: fs.readdirSync(path.join(root, '.local/share/docode-cloud-sandbox')),
 				links: ['node', 'npm', 'npx'].map(executable => fs.readlinkSync(path.join(root, 'host-bin', executable))),
 			}, {
 				downloads: [
@@ -327,7 +327,7 @@ suite('Cloud Sandbox install setup', () => {
 	for (const unusable of ['missing', 'non-executable']) {
 		test(`validates cached npx before replacing any host executable (${unusable})`, t => {
 			const root = fixture(t);
-			const bin = path.join(root, '.local/share/vscode-cloud-sandbox/node-v24.18.0-linux-x64/bin');
+			const bin = path.join(root, '.local/share/docode-cloud-sandbox/node-v24.18.0-linux-x64/bin');
 			fs.mkdirSync(bin, { recursive: true });
 			for (const executable of ['node', 'npm']) {
 				fs.writeFileSync(path.join(bin, executable), '', { mode: 0o755 });
@@ -359,7 +359,7 @@ suite('Cloud Sandbox install setup', () => {
 		for (const executable of ['npm', 'npx']) {
 			fs.writeFileSync(path.join(earlierBin, executable), '', { mode: 0o755 });
 		}
-		const bin = path.join(root, '.local/share/vscode-cloud-sandbox/node-v24.18.0-linux-x64/bin');
+		const bin = path.join(root, '.local/share/docode-cloud-sandbox/node-v24.18.0-linux-x64/bin');
 		fs.mkdirSync(bin, { recursive: true });
 		for (const executable of ['node', 'npm', 'npx']) {
 			fs.writeFileSync(path.join(bin, executable), '', { mode: 0o755 });
@@ -387,7 +387,7 @@ suite('Cloud Sandbox install setup', () => {
 
 	test('creates missing npm and npx alongside the selected host Node executable', t => {
 		const root = fixture(t);
-		const bin = path.join(root, '.local/share/vscode-cloud-sandbox/node-v24.18.0-linux-x64/bin');
+		const bin = path.join(root, '.local/share/docode-cloud-sandbox/node-v24.18.0-linux-x64/bin');
 		fs.mkdirSync(bin, { recursive: true });
 		for (const executable of ['node', 'npm', 'npx']) {
 			fs.writeFileSync(path.join(bin, executable), '', { mode: 0o755 });
@@ -417,7 +417,7 @@ suite('Cloud Sandbox install setup', () => {
 				return '';
 			},
 		}), /checksum verification failed/);
-		assert.deepStrictEqual(fs.readdirSync(path.join(root, '.local/share/vscode-cloud-sandbox')), []);
+		assert.deepStrictEqual(fs.readdirSync(path.join(root, '.local/share/docode-cloud-sandbox')), []);
 	});
 
 	test('removes partial Node downloads when the network fails', t => {
@@ -431,7 +431,7 @@ suite('Cloud Sandbox install setup', () => {
 				throw new Error('Node download failed');
 			},
 		}), /Node download failed/);
-		assert.deepStrictEqual(fs.readdirSync(path.join(root, '.local/share/vscode-cloud-sandbox')), []);
+		assert.deepStrictEqual(fs.readdirSync(path.join(root, '.local/share/docode-cloud-sandbox')), []);
 	});
 
 	test('rejects unsupported architectures and invalid required versions before installing packages', t => {
@@ -585,7 +585,7 @@ suite('Cloud Sandbox install setup', () => {
 		for (const args of [['install'], ['ci'], ['run', 'install-fast']]) {
 			const result = spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', [...args, '--offline', '--no-audit', '--no-fund'], {
 				cwd: root, encoding: 'utf8', timeout: 30_000, shell: process.platform === 'win32',
-				env: { ...process.env, GITHUB_ENVIRONMENT_ID: '', npm_config_cache: path.join(root, 'cache'), npm_config_userconfig: path.join(root, 'user.npmrc'), VSCODE_FORCE_INSTALL: '', VSCODE_SKIP_NODE_VERSION_CHECK: '' },
+				env: { ...process.env, GITHUB_ENVIRONMENT_ID: '', npm_config_cache: path.join(root, 'cache'), npm_config_userconfig: path.join(root, 'user.npmrc'), DOCODE_FORCE_INSTALL: '', DOCODE_SKIP_NODE_VERSION_CHECK: '' },
 			});
 			assert.equal(result.status, 0, result.stdout + result.stderr);
 			results.push(fs.readFileSync(path.join(root, 'calls'), 'utf8'));
@@ -639,7 +639,7 @@ suite('Cloud Sandbox install setup', () => {
 		const options = {
 			cwd: root, encoding: 'utf8' as const, timeout: 30_000,
 			env: {
-				...process.env, GITHUB_ENVIRONMENT_ID: '', VSCODE_FORCE_INSTALL: '', VSCODE_SKIP_NODE_VERSION_CHECK: '',
+				...process.env, GITHUB_ENVIRONMENT_ID: '', DOCODE_FORCE_INSTALL: '', DOCODE_SKIP_NODE_VERSION_CHECK: '',
 				npm_config_cache: path.join(root, 'cache'), npm_config_userconfig: path.join(root, 'user.npmrc'),
 				npm_config_offline: 'true', npm_config_audit: 'false', npm_config_fund: 'false',
 			},
@@ -725,12 +725,12 @@ suite('Cloud Sandbox install setup', () => {
 		fs.writeFileSync(path.join(root, '.build/electron/code'), '#!/bin/sh\nprintf "%s\\n" "$@"\n', { mode: 0o755 });
 		const result = spawnSync('bash', ['-c', 'OSTYPE=linux-gnu; source "$0" --test-launch', path.join(root, 'scripts/code.sh')], {
 			encoding: 'utf8', timeout: 10_000,
-			env: { ...process.env, PATH: `${path.dirname(fakeNode)}${path.delimiter}${process.env.PATH}`, GITHUB_ENVIRONMENT_ID: 'environment', VSCODE_SKIP_PRELAUNCH: '1' },
+			env: { ...process.env, PATH: `${path.dirname(fakeNode)}${path.delimiter}${process.env.PATH}`, GITHUB_ENVIRONMENT_ID: 'environment', DOCODE_SKIP_PRELAUNCH: '1' },
 		});
 		assert.deepStrictEqual({
 			status: result.status,
 			args: result.stdout.trim().split('\n'),
-		}, { status: 0, args: ['.', '--disable-extension=vscode.vscode-api-tests', '--disable-dev-shm-usage', '--test-launch'] }, result.stderr);
+		}, { status: 0, args: ['.', '--disable-extension=docode.docode-api-tests', '--disable-dev-shm-usage', '--test-launch'] }, result.stderr);
 	});
 
 	test('startup continues under the selected Node executable without a manual second invocation', t => {
@@ -774,7 +774,7 @@ exec ${quote(process.execPath)} "$@"
 		assert.deepStrictEqual({
 			status: result.status,
 			completed: fs.existsSync(path.join(root, '.build/cloud-sandbox-setup')),
-			lockRemaining: fs.existsSync(path.join(root, '.local/share/vscode-cloud-sandbox/setup.lock')),
+			lockRemaining: fs.existsSync(path.join(root, '.local/share/docode-cloud-sandbox/setup.lock')),
 		}, { status: 0, completed: true, lockRemaining: false }, result.stdout + result.stderr);
 	});
 
@@ -842,7 +842,7 @@ exec ${quote(process.execPath)} "$@"
 				headers: calls().filter(call => call === 'headers').length,
 				limits: calls().filter(call => call === 'limit').length,
 				mutationLeft: fs.existsSync(path.join(root, 'mutation')),
-				lockLeft: fs.existsSync(path.join(root, '.local/share/vscode-cloud-sandbox/setup.lock')),
+				lockLeft: fs.existsSync(path.join(root, '.local/share/docode-cloud-sandbox/setup.lock')),
 				completed: fs.existsSync(path.join(root, '.build/cloud-sandbox-setup')),
 			}, {
 				prepares: expectedSetups, headers: expectedSetups, limits: 6,
@@ -861,7 +861,7 @@ exec ${quote(process.execPath)} "$@"
 
 			const exited = spawnSync(process.execPath, ['-e', 'console.log(process.pid)'], { encoding: 'utf8' });
 			assert.equal(exited.status, 0, exited.stderr);
-			const lockFile = path.join(root, '.local/share/vscode-cloud-sandbox/setup.lock');
+			const lockFile = path.join(root, '.local/share/docode-cloud-sandbox/setup.lock');
 			fs.writeFileSync(lockFile, exited.stdout.trim());
 			const blocked = await start();
 			assert.equal(blocked.code, 1);

@@ -63,29 +63,29 @@ body.showEditorSelection .code-line {
 }
 
 .code-line-diff-added {
-	background-color: var(--vscode-diffEditor-insertedTextBackground);
-	box-shadow: -4px 0 0 var(--vscode-diffEditorGutter-insertedLineBackground);
+	background-color: var(--docode-diffEditor-insertedTextBackground);
+	box-shadow: -4px 0 0 var(--docode-diffEditorGutter-insertedLineBackground);
 }
 
 .code-line-diff-deleted {
-	background-color: var(--vscode-diffEditor-removedTextBackground);
-	box-shadow: -4px 0 0 var(--vscode-diffEditorGutter-removedLineBackground);
+	background-color: var(--docode-diffEditor-removedTextBackground);
+	box-shadow: -4px 0 0 var(--docode-diffEditorGutter-removedLineBackground);
 }
 
-.vscode-high-contrast .code-line-diff-added {
-	outline: 1px solid var(--vscode-diffEditor-insertedTextBorder);
+.docode-high-contrast .code-line-diff-added {
+	outline: 1px solid var(--docode-diffEditor-insertedTextBorder);
 }
 
-.vscode-high-contrast .code-line-diff-deleted {
-	outline: 1px solid var(--vscode-diffEditor-removedTextBorder);
+.docode-high-contrast .code-line-diff-deleted {
+	outline: 1px solid var(--docode-diffEditor-removedTextBorder);
 }
 
 ::highlight(diff-inner-added) {
-	background-color: var(--vscode-diffEditor-insertedTextBackground);
+	background-color: var(--docode-diffEditor-insertedTextBackground);
 }
 
 ::highlight(diff-inner-deleted) {
-	background-color: var(--vscode-diffEditor-removedTextBackground);
+	background-color: var(--docode-diffEditor-removedTextBackground);
 }
 
 /* Hide the empty marker spans so they don't affect layout */
@@ -110,7 +110,7 @@ body.showEditorSelection .code-line {
 	left: -12px;
 	right: 0;
 	height: 12px;
-	background-color: var(--vscode-diffEditorGutter-removedLineBackground, var(--vscode-diffEditor-removedTextBackground));
+	background-color: var(--docode-diffEditorGutter-removedLineBackground, var(--docode-diffEditor-removedTextBackground));
 	clip-path: polygon(
 		0px 0px,
 		4px 4px,
@@ -157,8 +157,8 @@ body.showEditorSelection .code-line {
 	height: 2px;
 	background: repeating-linear-gradient(
 		90deg,
-		var(--vscode-diffEditorGutter-removedLineBackground, var(--vscode-diffEditor-removedTextBackground)) 0px,
-		var(--vscode-diffEditorGutter-removedLineBackground, var(--vscode-diffEditor-removedTextBackground)) 4px,
+		var(--docode-diffEditorGutter-removedLineBackground, var(--docode-diffEditor-removedTextBackground)) 0px,
+		var(--docode-diffEditorGutter-removedLineBackground, var(--docode-diffEditor-removedTextBackground)) 4px,
 		transparent 4px,
 		transparent 8px
 	);
@@ -176,7 +176,7 @@ body.showEditorSelection .code-line {
 	left: -12px;
 	width: 4px;
 	z-index: 5;
-	background-color: var(--vscode-editorGutter-modifiedBackground, #1b81a8);
+	background-color: var(--docode-editorGutter-modifiedBackground, #1b81a8);
 	cursor: pointer;
 }
 
@@ -200,8 +200,8 @@ body.showEditorSelection .code-line {
 	left: 0;
 	right: 0;
 	z-index: 10;
-	background-color: var(--vscode-editor-background);
-	border: 1px solid var(--vscode-editorWidget-border, var(--vscode-contrastBorder, rgba(127, 127, 127, 0.35)));
+	background-color: var(--docode-editor-background);
+	border: 1px solid var(--docode-editorWidget-border, var(--docode-contrastBorder, rgba(127, 127, 127, 0.35)));
 	border-radius: 3px;
 	max-height: min(400px, 80vh);
 	overflow-y: auto;
@@ -217,18 +217,18 @@ body.showEditorSelection .code-line {
 	border: 0;
 	white-space: pre-wrap;
 	word-break: break-word;
-	color: var(--vscode-editor-foreground);
+	color: var(--docode-editor-foreground);
 }
 
 .diff-tooltip-deleted {
-	background-color: var(--vscode-diffEditor-removedTextBackground);
-	border-left: 4px solid var(--vscode-diffEditorGutter-removedLineBackground, var(--vscode-diffEditor-removedTextBackground));
+	background-color: var(--docode-diffEditor-removedTextBackground);
+	border-left: 4px solid var(--docode-diffEditorGutter-removedLineBackground, var(--docode-diffEditor-removedTextBackground));
 	padding: 2px 6px;
 }
 
 .diff-tooltip-added {
-	background-color: var(--vscode-diffEditor-insertedTextBackground);
-	border-left: 4px solid var(--vscode-diffEditorGutter-insertedLineBackground, var(--vscode-diffEditor-insertedTextBackground));
+	background-color: var(--docode-diffEditor-insertedTextBackground);
+	border-left: 4px solid var(--docode-diffEditorGutter-insertedLineBackground, var(--docode-diffEditor-insertedTextBackground));
 	padding: 2px 6px;
 }
 
@@ -238,13 +238,13 @@ body.showEditorSelection .code-line {
 }
 
 .diff-tooltip-inner-deleted {
-	background-color: var(--vscode-diffEditor-removedTextBackground);
+	background-color: var(--docode-diffEditor-removedTextBackground);
 	text-decoration: line-through;
-	text-decoration-color: var(--vscode-editor-foreground);
+	text-decoration-color: var(--docode-editor-foreground);
 }
 
 .diff-tooltip-inner-added {
-	background-color: var(--vscode-diffEditor-insertedTextBackground);
+	background-color: var(--docode-diffEditor-insertedTextBackground);
 }
 
 body.showEditorSelection :not(tr,ul,ol).code-active-line:before,
@@ -257,7 +257,7 @@ body.showEditorSelection :not(tr,ul,ol).code-line:hover:before {
 	height: 100%;
 }
 
-.vscode-high-contrast.showEditorSelection  :not(tr,ul,ol).code-line .code-line:hover:before {
+.docode-high-contrast.showEditorSelection  :not(tr,ul,ol).code-line .code-line:hover:before {
 	border-left: none;
 }
 
@@ -266,27 +266,27 @@ body.showEditorSelection li.code-line:hover:before {
 	left: -30px;
 }
 
-.vscode-light.showEditorSelection .code-active-line:before {
+.docode-light.showEditorSelection .code-active-line:before {
 	border-left: 3px solid rgba(0, 0, 0, 0.15);
 }
 
-.vscode-light.showEditorSelection .code-line:hover:before {
+.docode-light.showEditorSelection .code-line:hover:before {
 	border-left: 3px solid rgba(0, 0, 0, 0.40);
 }
 
-.vscode-dark.showEditorSelection .code-active-line:before {
+.docode-dark.showEditorSelection .code-active-line:before {
 	border-left: 3px solid rgba(255, 255, 255, 0.4);
 }
 
-.vscode-dark.showEditorSelection .code-line:hover:before {
+.docode-dark.showEditorSelection .code-line:hover:before {
 	border-left: 3px solid rgba(255, 255, 255, 0.60);
 }
 
-.vscode-high-contrast.showEditorSelection .code-active-line:before {
+.docode-high-contrast.showEditorSelection .code-active-line:before {
 	border-left: 3px solid rgba(255, 160, 0, 0.7);
 }
 
-.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+.docode-high-contrast.showEditorSelection .code-line:hover:before {
 	border-left: 3px solid rgba(255, 160, 0, 1);
 }
 
@@ -402,7 +402,7 @@ blockquote {
 }
 
 code {
-	font-family: var(--vscode-editor-font-family, "SF Mono", Monaco, Menlo, Consolas, "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace);
+	font-family: var(--docode-editor-font-family, "SF Mono", Monaco, Menlo, Consolas, "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace);
 	font-size: 1em;
 	line-height: 1.357em;
 }
@@ -420,7 +420,7 @@ pre.hljs code > div {
 
 pre code {
 	display: inline-block;
-	color: var(--vscode-editor-foreground);
+	color: var(--docode-editor-foreground);
 	tab-size: 4;
 	background: none;
 }
@@ -429,8 +429,8 @@ pre code {
 
 pre {
 	position: relative;
-	background-color: var(--vscode-textCodeBlock-background);
-	border: 1px solid var(--vscode-widget-border);
+	background-color: var(--docode-textCodeBlock-background);
+	border: 1px solid var(--docode-widget-border);
 }
 
 /* Code block copy button */
@@ -444,10 +444,10 @@ pre {
 	width: 28px;
 	height: 28px;
 	padding: 0;
-	border: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35));
+	border: 1px solid var(--docode-widget-border, rgba(127, 127, 127, 0.35));
 	border-radius: 4px;
-	background-color: var(--vscode-textCodeBlock-background, var(--vscode-editor-background));
-	color: var(--vscode-editor-foreground);
+	background-color: var(--docode-textCodeBlock-background, var(--docode-editor-background));
+	color: var(--docode-editor-foreground);
 	cursor: pointer;
 	opacity: 0;
 	transition: opacity 0.15s ease;
@@ -459,41 +459,41 @@ pre:hover > .code-block-copy-button,
 }
 
 .code-block-copy-button:hover {
-	background-color: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
+	background-color: var(--docode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
 }
 
 .code-block-copy-button:active {
-	background-color: var(--vscode-toolbar-activeBackground, rgba(99, 102, 103, 0.31));
+	background-color: var(--docode-toolbar-activeBackground, rgba(99, 102, 103, 0.31));
 }
 
 .code-block-copy-button.copied {
-	color: var(--vscode-testing-iconPassed, #73c991);
+	color: var(--docode-testing-iconPassed, #73c991);
 	opacity: 1;
 }
 
-.vscode-high-contrast h1 {
+.docode-high-contrast h1 {
 	border-color: rgb(0, 0, 0);
 }
 
-.vscode-light th {
+.docode-light th {
 	border-color: rgba(0, 0, 0, 0.69);
 }
 
-.vscode-dark th {
+.docode-dark th {
 	border-color: rgba(255, 255, 255, 0.69);
 }
 
-.vscode-light h1,
-.vscode-light h2,
-.vscode-light hr,
-.vscode-light td {
+.docode-light h1,
+.docode-light h2,
+.docode-light hr,
+.docode-light td {
 	border-color: rgba(0, 0, 0, 0.18);
 }
 
-.vscode-dark h1,
-.vscode-dark h2,
-.vscode-dark hr,
-.vscode-dark td {
+.docode-dark h1,
+.docode-dark h2,
+.docode-dark hr,
+.docode-dark td {
 	border-color: rgba(255, 255, 255, 0.18);
 }
 
@@ -506,7 +506,7 @@ table.frontmatter {
 table.frontmatter th,
 table.frontmatter td {
 	padding: 6px 13px;
-	border: 1px solid var(--vscode-widget-border, rgba(127, 127, 127, 0.35));
+	border: 1px solid var(--docode-widget-border, rgba(127, 127, 127, 0.35));
 	text-align: left;
 	vertical-align: top;
 }
@@ -528,9 +528,9 @@ pre.frontmatter {
 .frontmatter-error {
 	margin-bottom: 16px;
 	padding: 8px 13px;
-	border-left: 4px solid var(--vscode-editorError-foreground, #f48771);
-	background: var(--vscode-inputValidation-errorBackground, rgba(244, 135, 113, 0.1));
-	color: var(--vscode-editorError-foreground, #f48771);
+	border-left: 4px solid var(--docode-editorError-foreground, #f48771);
+	background: var(--docode-inputValidation-errorBackground, rgba(244, 135, 113, 0.1));
+	color: var(--docode-editorError-foreground, #f48771);
 }
 
 .frontmatter-error pre {

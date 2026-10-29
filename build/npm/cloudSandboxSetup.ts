@@ -82,7 +82,7 @@ function setupFingerprint(nodeVersion: string): string {
 
 if (isCloudSandbox()) {
 	// Serialize across checkouts too: Node downloads and OS packages are shared by the sandbox.
-	const directory = path.join(os.homedir(), '.local/share/vscode-cloud-sandbox');
+	const directory = path.join(os.homedir(), '.local/share/docode-cloud-sandbox');
 	fs.mkdirSync(directory, { recursive: true });
 	const release = await acquireSetupLock(path.join(directory, 'setup.lock'));
 	try {
@@ -104,7 +104,7 @@ if (isCloudSandbox()) {
 			execFileSync(node, [path.join(root, 'build/npm/preinstall.ts')], {
 				cwd: root,
 				stdio: 'inherit',
-				env: { ...process.env, PATH: `${path.dirname(node)}${path.delimiter}${process.env.PATH ?? ''}`, npm_command: 'ci', VSCODE_FORCE_INSTALL: '1' },
+				env: { ...process.env, PATH: `${path.dirname(node)}${path.delimiter}${process.env.PATH ?? ''}`, npm_command: 'ci', DOCODE_FORCE_INSTALL: '1' },
 			});
 			fs.mkdirSync(path.dirname(stateFile), { recursive: true });
 			fs.writeFileSync(stateFile, fingerprint);

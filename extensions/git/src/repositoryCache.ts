@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LogOutputChannel, Memento, Uri, workspace } from 'vscode';
+import { LogOutputChannel, Memento, Uri, workspace } from 'docode';
 import { LRUCache } from './cache';
 import type { Remote, RepositoryAccessDetails } from './api/git';
 import { isDescendant } from './util';

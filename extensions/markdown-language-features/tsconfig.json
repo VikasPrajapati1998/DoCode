@@ -10,14 +10,14 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.agentEditorComments.d.ts",
-		"../../src/vscode-dts/vscode.proposed.customEditorDiffs.d.ts",
-		"../../src/vscode-dts/vscode.proposed.customTextEditorNavigation.d.ts",
-		"../../src/vscode-dts/vscode.proposed.documentDiff.d.ts",
-		"../../src/vscode-dts/vscode.proposed.documentSyntaxHighlighting.d.ts",
-		"../../src/vscode-dts/vscode.proposed.externalUriOpener.d.ts",
-		"../../src/vscode-dts/vscode.proposed.linkPresentation.d.ts",
-		"../../src/vscode-dts/vscode.proposed.textEditorDiffInformation.d.ts"
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.agentEditorComments.d.ts",
+		"../../src/docode-dts/docode.proposed.customEditorDiffs.d.ts",
+		"../../src/docode-dts/docode.proposed.customTextEditorNavigation.d.ts",
+		"../../src/docode-dts/docode.proposed.documentDiff.d.ts",
+		"../../src/docode-dts/docode.proposed.documentSyntaxHighlighting.d.ts",
+		"../../src/docode-dts/docode.proposed.externalUriOpener.d.ts",
+		"../../src/docode-dts/docode.proposed.linkPresentation.d.ts",
+		"../../src/docode-dts/docode.proposed.textEditorDiffInformation.d.ts"
 	]
 }

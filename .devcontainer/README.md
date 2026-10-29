@@ -4,7 +4,7 @@
 
 This repository includes configuration for a development container for working with Code - OSS in a local container or using [GitHub Codespaces](https://github.com/features/codespaces).
 
-> **Tip:** The default VNC password is `vscode`. The VNC server runs on port `5901` and a web client is available on port `6080`.
+> **Tip:** The default VNC password is `docode`. The VNC server runs on port `5901` and a web client is available on port `6080`.
 
 ## Quick start - local
 
@@ -30,7 +30,7 @@ If you already have VS Code and Docker installed, you can click the badge above 
 
 6. After the container is running:
     1. If you have the `DISPLAY` or `WAYLAND_DISPLAY` environment variables set locally (or in WSL on Windows), desktop apps in the container will be shown in local windows.
-    2. If these are not set, open a web browser and go to [http://localhost:6080](http://localhost:6080), or use a [VNC Viewer][def] to connect to `localhost:5901` and enter `vscode` as the password. Anything you start in VS Code, or the integrated terminal, will appear here.
+    2. If these are not set, open a web browser and go to [http://localhost:6080](http://localhost:6080), or use a [VNC Viewer][def] to connect to `localhost:5901` and enter `docode` as the password. Anything you start in VS Code, or the integrated terminal, will appear here.
 
 Next: **[Try it out!](#try-it)**
 
@@ -46,7 +46,7 @@ Next: **[Try it out!](#try-it)**
 
     > **Tip:** If you do not see the port, <kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> or <kbd>F1</kbd>, select **Forward a Port** and enter port `6080`.
 
-4. In the new tab, you should see noVNC. Click **Connect** and enter `vscode` as the password.
+4. In the new tab, you should see noVNC. Click **Connect** and enter `docode` as the password.
 
 Anything you start in VS Code, or the integrated terminal, will appear here.
 
@@ -66,7 +66,7 @@ You may see improved VNC responsiveness when accessing a codespace from VS Code 
 - Select any branch (e.g. **main**) - you can select a different one later.
 - Choose **Standard** (4-core, 8GB) as the size.
 
-3. After you have connected to the codespace, you can use a [VNC Viewer][def] to connect to `localhost:5901` and enter `vscode` as the password.
+3. After you have connected to the codespace, you can use a [VNC Viewer][def] to connect to `localhost:5901` and enter `docode` as the password.
 
     > **Tip:** You may also need to change your VNC client's **Picture Quality** setting to **High** to get a full color desktop.
 
@@ -89,7 +89,7 @@ To start working with Code - OSS, follow these steps:
    bash scripts/code.sh
    ```
 
-2. After the build is complete, open a web browser or a [VNC Viewer][def] to connect to the desktop environment as described in the quick start and enter `vscode` as the password.
+2. After the build is complete, open a web browser or a [VNC Viewer][def] to connect to the desktop environment as described in the quick start and enter `docode` as the password.
 
 3. You should now see Code - OSS!
 
@@ -99,7 +99,7 @@ Next, let's try debugging.
 
 2. Go to your local VS Code client, and use the **Run / Debug** view to launch the **VS Code** configuration. (Typically the default, so you can likely just press <kbd>F5</kbd>).
 
-   > **Note:** If launching times out, you can increase the value of `timeout` in the "VS Code", "Attach Main Process", "Attach Extension Host", and "Attach to Shared Process" configurations in [launch.json](../.vscode/launch.json). However, running `./scripts/code.sh` first will set up Electron which will usually solve timeout issues.
+   > **Note:** If launching times out, you can increase the value of `timeout` in the "VS Code", "Attach Main Process", "Attach Extension Host", and "Attach to Shared Process" configurations in [launch.json](../.docode/launch.json). However, running `./scripts/code.sh` first will set up Electron which will usually solve timeout issues.
 
 3. After a bit, Code - OSS will appear with the debugger attached!
 
@@ -107,6 +107,6 @@ Enjoy!
 
 ### Notes
 
-The container comes with VS Code Insiders installed. To run it from an Integrated Terminal use `VSCODE_IPC_HOOK_CLI= /usr/bin/code-insiders .`.
+The container comes with VS Code Insiders installed. To run it from an Integrated Terminal use `DOCODE_IPC_HOOK_CLI= /usr/bin/code-insiders .`.
 
 [def]: https://www.realvnc.com/en/connect/download/viewer/

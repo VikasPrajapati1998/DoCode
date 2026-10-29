@@ -140,25 +140,25 @@ async function runDmgBuild(settingsFile: string, volumeName: string, artifactPat
 }
 
 async function main(buildDir?: string, outDir?: string): Promise<void> {
-	const arch = process.env['VSCODE_ARCH'];
-	const quality = process.env['VSCODE_QUALITY'];
+	const arch = process.env['DOCODE_ARCH'];
+	const quality = process.env['DOCODE_QUALITY'];
 
 	if (!buildDir) {
 		throw new Error('Build directory argument is required');
 	}
 
 	if (!arch) {
-		throw new Error('$VSCODE_ARCH not set');
+		throw new Error('$DOCODE_ARCH not set');
 	}
 
 	if (!outDir) {
 		throw new Error('Output directory argument is required');
 	}
 
-	const appRoot = path.join(buildDir, `VSCode-darwin-${arch}`);
+	const appRoot = path.join(buildDir, `DoCode-darwin-${arch}`);
 	const appName = product.nameLong + '.app';
 	const appPath = path.join(appRoot, appName);
-	const dmgName = `VSCode-darwin-${arch}`;
+	const dmgName = `DoCode-darwin-${arch}`;
 	const artifactPath = path.join(outDir, `${dmgName}.dmg`);
 	const backgroundPath = path.join(import.meta.dirname, `dmg-background-${quality}.tiff`);
 	const diskIconPath = path.join(root, 'resources', 'darwin', 'code.icns');

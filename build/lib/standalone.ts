@@ -121,7 +121,7 @@ export function extractEditor(options: tss.ITreeShakingOptions & { destRoot: str
 	});
 
 	copyFile('typings/css.d.ts');
-	copyFile('../node_modules/@vscode/tree-sitter-wasm/wasm/web-tree-sitter.d.ts', '@vscode/tree-sitter-wasm.d.ts');
+	copyFile('../node_modules/@docode/tree-sitter-wasm/wasm/web-tree-sitter.d.ts', '@docode/tree-sitter-wasm.d.ts');
 }
 
 function transportCSS(module: string, enqueue: (module: string) => void, write: (path: string, contents: string | Buffer) => void): boolean {

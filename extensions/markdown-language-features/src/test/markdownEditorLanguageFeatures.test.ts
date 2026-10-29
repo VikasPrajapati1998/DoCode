@@ -5,29 +5,29 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MarkdownEditorLanguageFeatures, mapMarkdownDiagnostics, type MarkdownCompletionApi } from '../preview/markdownEditorLanguageFeatures';
 
 suite('Markdown editor diagnostics and completion', () => {
 	const request = { requestId: 1, offset: 11, editEpoch: 0, automatic: false };
 
 	async function setup(overrides: Partial<MarkdownCompletionApi> = {}) {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: '# Title\r\n\r\nTa' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: '# Title\r\n\r\nTa' });
 		const state = { text: '# Title\n\nTa', editEpoch: 0, active: true };
-		const item = new vscode.CompletionItem('Target', vscode.CompletionItemKind.Reference);
-		item.range = new vscode.Range(2, 0, 2, 2);
+		const item = new docode.CompletionItem('Target', docode.CompletionItemKind.Reference);
+		item.range = new docode.Range(2, 0, 2, 2);
 		const counts: number[] = [];
-		const commands: vscode.Command[] = [];
+		const commands: docode.Command[] = [];
 		let applied = 0;
 		const api: MarkdownCompletionApi = {
 			provide: async (_uri, position, resolveCount) => {
-				assert.deepStrictEqual(position, new vscode.Position(2, 2));
+				assert.deepStrictEqual(position, new docode.Position(2, 2));
 				counts.push(resolveCount);
-				return new vscode.CompletionList([item]);
+				return new docode.CompletionList([item]);
 			},
 			apply: async edit => {
 				applied++;
-				const result = await vscode.workspace.applyEdit(edit);
+				const result = await docode.workspace.applyEdit(edit);
 				state.text = document.getText();
 				state.editEpoch++;
 				return result;
@@ -42,9 +42,9 @@ suite('Markdown editor diagnostics and completion', () => {
 	test('maps all diagnostic severities, source and code from CRLF documents to LF renderer offsets', async () => {
 		const test = await setup();
 		const diagnostics = [0, 1, 2, 3].map(severity => {
-			const item = new vscode.Diagnostic(new vscode.Range(2, 0, 2, 2), `Message ${severity}`, severity);
+			const item = new docode.Diagnostic(new docode.Range(2, 0, 2, 2), `Message ${severity}`, severity);
 			item.source = 'third-party';
-			item.code = { value: 'rule', target: vscode.Uri.parse('https://example.com/rule') };
+			item.code = { value: 'rule', target: docode.Uri.parse('https://example.com/rule') };
 			return item;
 		});
 		assert.deepStrictEqual(mapMarkdownDiagnostics(test.document, test.state.text, diagnostics),
@@ -55,9 +55,9 @@ suite('Markdown editor diagnostics and completion', () => {
 
 	test('reads diagnostics from arbitrary collections and propagates clearing', async () => {
 		const test = await setup();
-		const collection = vscode.languages.createDiagnosticCollection('rich-editor-test');
+		const collection = docode.languages.createDiagnosticCollection('rich-editor-test');
 		try {
-			collection.set(test.document.uri, [new vscode.Diagnostic(new vscode.Range(2, 0, 2, 2), 'Third-party warning', vscode.DiagnosticSeverity.Warning)]);
+			collection.set(test.document.uri, [new docode.Diagnostic(new docode.Range(2, 0, 2, 2), 'Third-party warning', docode.DiagnosticSeverity.Warning)]);
 			const result = await test.features.diagnostics();
 			assert.ok(result.items.some(item => item.message === 'Third-party warning' && item.severity === 'warning'));
 			collection.clear();
@@ -69,47 +69,47 @@ suite('Markdown editor diagnostics and completion', () => {
 
 	test('defaults automatic completion to off and honors live rich-editor and language settings without disabling manual completion', async () => {
 		const test = await setup();
-		const config = vscode.workspace.getConfiguration('editor', test.document);
+		const config = docode.workspace.getConfiguration('editor', test.document);
 		const previous = config.inspect('quickSuggestions')?.globalLanguageValue;
-		const richConfig = vscode.workspace.getConfiguration('markdown.editor', test.document);
+		const richConfig = docode.workspace.getConfiguration('markdown.editor', test.document);
 		const previousRich = richConfig.inspect('quickSuggestions')?.globalValue;
 		try {
 			assert.strictEqual(richConfig.inspect('quickSuggestions')?.defaultValue, false);
-			await richConfig.update('quickSuggestions', undefined, vscode.ConfigurationTarget.Global);
-			await config.update('quickSuggestions', { other: 'on' }, vscode.ConfigurationTarget.Global, true);
+			await richConfig.update('quickSuggestions', undefined, docode.ConfigurationTarget.Global);
+			await config.update('quickSuggestions', { other: 'on' }, docode.ConfigurationTarget.Global, true);
 			assert.deepStrictEqual(await test.features.completions({ ...request, automatic: true }), { items: [], incomplete: false });
 			assert.deepStrictEqual(test.counts, []);
 			assert.strictEqual((await test.features.completions({ ...request, requestId: 2 })).items[0].label, 'Target');
-			await richConfig.update('quickSuggestions', true, vscode.ConfigurationTarget.Global);
+			await richConfig.update('quickSuggestions', true, docode.ConfigurationTarget.Global);
 			const result = await test.features.completions({ ...request, requestId: 3, automatic: true });
 			assert.strictEqual(result.items[0].label, 'Target');
 			assert.strictEqual(result.items[0].highlightLength, 2);
-			await config.update('quickSuggestions', { other: 'off' }, vscode.ConfigurationTarget.Global, true);
+			await config.update('quickSuggestions', { other: 'off' }, docode.ConfigurationTarget.Global, true);
 			assert.deepStrictEqual(await test.features.completions({ ...request, requestId: 4, automatic: true }), { items: [], incomplete: false });
 			assert.strictEqual((await test.features.completions({ ...request, requestId: 5 })).items[0].label, 'Target');
-			await config.update('quickSuggestions', { other: 'on' }, vscode.ConfigurationTarget.Global, true);
-			await richConfig.update('quickSuggestions', false, vscode.ConfigurationTarget.Global);
+			await config.update('quickSuggestions', { other: 'on' }, docode.ConfigurationTarget.Global, true);
+			await richConfig.update('quickSuggestions', false, docode.ConfigurationTarget.Global);
 			assert.deepStrictEqual(await test.features.completions({ ...request, requestId: 6, automatic: true }), { items: [], incomplete: false });
 			assert.deepStrictEqual(test.counts, [0, 0, 0]);
 		} finally {
 			try {
-				await richConfig.update('quickSuggestions', previousRich, vscode.ConfigurationTarget.Global);
+				await richConfig.update('quickSuggestions', previousRich, docode.ConfigurationTarget.Global);
 			} finally {
-				await config.update('quickSuggestions', previous, vscode.ConfigurationTarget.Global, true);
+				await config.update('quickSuggestions', previous, docode.ConfigurationTarget.Global, true);
 			}
 		}
 	});
 
 	test('matches and highlights ASCII I independently of locale, including filter text', async () => {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: 'i' });
-		const items = ['Image', 'Other', '\u0131tem'].map(label => new vscode.CompletionItem(label));
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: 'i' });
+		const items = ['Image', 'Other', '\u0131tem'].map(label => new docode.CompletionItem(label));
 		items[1].filterText = 'IMAGE';
 		for (const item of items) {
-			item.range = new vscode.Range(0, 0, 0, 1);
+			item.range = new docode.Range(0, 0, 0, 1);
 		}
 		const features = new MarkdownEditorLanguageFeatures(document, async () => { },
 			() => ({ text: 'i', editEpoch: 0 }), () => true, {
-				provide: async () => new vscode.CompletionList(items),
+				provide: async () => new docode.CompletionList(items),
 				apply: async () => { throw new Error('Unexpected edit'); },
 				execute: async () => { throw new Error('Unexpected command'); },
 			});
@@ -135,13 +135,13 @@ suite('Markdown editor diagnostics and completion', () => {
 	test('applies resolved additional edits and executes the provider command', async () => {
 		const test = await setup({
 			provide: async (_uri, _position, resolveCount) => {
-				const item = new vscode.CompletionItem('Target');
-				item.range = new vscode.Range(2, 0, 2, 2);
+				const item = new docode.CompletionItem('Target');
+				item.range = new docode.Range(2, 0, 2, 2);
 				if (resolveCount) {
-					item.additionalTextEdits = [vscode.TextEdit.insert(new vscode.Position(0, 0), 'Top\n')];
+					item.additionalTextEdits = [docode.TextEdit.insert(new docode.Position(0, 0), 'Top\n')];
 					item.command = { command: 'test.followUp', title: '', arguments: [42] };
 				}
-				return new vscode.CompletionList([item]);
+				return new docode.CompletionList([item]);
 			},
 		});
 		await test.features.completions(request);
@@ -152,7 +152,7 @@ suite('Markdown editor diagnostics and completion', () => {
 
 	test('clearly marks snippet completions and never inserts snippet syntax literally', async () => {
 		const test = await setup();
-		test.item.insertText = new vscode.SnippetString('Target${1:value}$0');
+		test.item.insertText = new docode.SnippetString('Target${1:value}$0');
 		const result = await test.features.completions(request);
 		assert.match(result.items[0].unsupported!, /Snippet editing is not supported/);
 		await assert.rejects(test.features.accept({ requestId: 1, id: '0' }), /Snippet editing is not supported/);
@@ -176,16 +176,16 @@ suite('Markdown editor diagnostics and completion', () => {
 	test('discards cancelled in-flight provider results', async () => {
 		const entered = Promise.withResolvers<void>();
 		const finish = Promise.withResolvers<void>();
-		const test = await setup({ provide: async () => { entered.resolve(); await finish.promise; return new vscode.CompletionList([]); } });
+		const test = await setup({ provide: async () => { entered.resolve(); await finish.promise; return new docode.CompletionList([]); } });
 		const result = test.features.completions(request);
 		await entered.promise;
 		test.features.cancel(1);
 		finish.resolve();
-		await assert.rejects(result, vscode.CancellationError);
+		await assert.rejects(result, docode.CancellationError);
 	});
 
 	test('refuses a changed item identity when resolving instead of inserting the wrong completion', async () => {
-		const test = await setup({ provide: async (_uri, _position, count) => new vscode.CompletionList([new vscode.CompletionItem(count ? 'Tampered' : 'Target')]) });
+		const test = await setup({ provide: async (_uri, _position, count) => new docode.CompletionList([new docode.CompletionItem(count ? 'Tampered' : 'Target')]) });
 		await test.features.completions(request);
 		await assert.rejects(test.features.accept({ requestId: 1, id: '0' }), /completion list changed/);
 		assert.strictEqual(test.applied, 0);
@@ -194,14 +194,14 @@ suite('Markdown editor diagnostics and completion', () => {
 	test('compares effective edits when provider resolution drops redundant defaults', async () => {
 		const test = await setup({
 			provide: async (_uri, _position, count) => {
-				const item = new vscode.CompletionItem('Target');
+				const item = new docode.CompletionItem('Target');
 				if (!count) {
 					item.sortText = 'Target';
 					item.filterText = 'Target';
 					item.insertText = 'Target';
-					item.range = new vscode.Range(2, 0, 2, 2);
+					item.range = new docode.Range(2, 0, 2, 2);
 				}
-				return new vscode.CompletionList([item]);
+				return new docode.CompletionList([item]);
 			}
 		});
 		await test.features.completions(request);
@@ -211,7 +211,7 @@ suite('Markdown editor diagnostics and completion', () => {
 
 	test('rejects overlapping edits and workspace rejection', async () => {
 		const test = await setup();
-		test.item.additionalTextEdits = [vscode.TextEdit.replace(new vscode.Range(2, 1, 2, 2), 'X')];
+		test.item.additionalTextEdits = [docode.TextEdit.replace(new docode.Range(2, 1, 2, 2), 'X')];
 		await test.features.completions(request);
 		await assert.rejects(test.features.accept({ requestId: 1, id: '0' }), /overlapping edits/);
 		assert.strictEqual(test.applied, 0);
@@ -231,7 +231,7 @@ suite('Markdown editor diagnostics and completion', () => {
 	test('maps the accepted caret back to a normalized renderer snapshot', async () => {
 		const test = await setup({
 			apply: async edit => {
-				const applied = await vscode.workspace.applyEdit(edit);
+				const applied = await docode.workspace.applyEdit(edit);
 				test.state.text = test.document.getText().replace(/\r\n/g, '\n');
 				test.state.editEpoch++;
 				return applied;
@@ -245,9 +245,9 @@ suite('Markdown editor diagnostics and completion', () => {
 	test('does not restore a stale caret after a follow-up command edits the document', async () => {
 		const test = await setup({
 			execute: async () => {
-				const edit = new vscode.WorkspaceEdit();
-				edit.insert(test.document.uri, new vscode.Position(0, 0), 'Command\n');
-				await vscode.workspace.applyEdit(edit);
+				const edit = new docode.WorkspaceEdit();
+				edit.insert(test.document.uri, new docode.Position(0, 0), 'Command\n');
+				await docode.workspace.applyEdit(edit);
 				test.state.text = test.document.getText();
 				test.state.editEpoch++;
 			}
@@ -274,7 +274,7 @@ suite('Markdown editor diagnostics and completion', () => {
 		const test = await setup({
 			provide: async (_uri, _position, count) => {
 				if (count) { entered.resolve(); await finish.promise; }
-				return new vscode.CompletionList([new vscode.CompletionItem('Target')]);
+				return new docode.CompletionList([new docode.CompletionItem('Target')]);
 			}
 		});
 		await test.features.completions(request);
@@ -283,7 +283,7 @@ suite('Markdown editor diagnostics and completion', () => {
 		await assert.rejects(test.features.accept({ requestId: 1, id: '0' }), /Request suggestions again/);
 		test.features.cancel(1);
 		finish.resolve();
-		await assert.rejects(accepting, vscode.CancellationError);
+		await assert.rejects(accepting, docode.CancellationError);
 		assert.strictEqual(test.applied, 0);
 	});
 
@@ -291,11 +291,11 @@ suite('Markdown editor diagnostics and completion', () => {
 		const test = await setup({
 			provide: async (_uri, _position, count) => {
 				if (count) {
-					const edit = new vscode.WorkspaceEdit();
-					edit.insert(test.document.uri, new vscode.Position(0, 0), 'Changed\n');
-					await vscode.workspace.applyEdit(edit);
+					const edit = new docode.WorkspaceEdit();
+					edit.insert(test.document.uri, new docode.Position(0, 0), 'Changed\n');
+					await docode.workspace.applyEdit(edit);
 				}
-				return new vscode.CompletionList([new vscode.CompletionItem('Target')]);
+				return new docode.CompletionList([new docode.CompletionItem('Target')]);
 			}
 		});
 		await test.features.completions(request);
@@ -303,7 +303,7 @@ suite('Markdown editor diagnostics and completion', () => {
 		assert.strictEqual(test.applied, 0);
 
 		const invalid = await setup();
-		invalid.item.additionalTextEdits = [vscode.TextEdit.insert(new vscode.Position(99, 0), 'Out of bounds')];
+		invalid.item.additionalTextEdits = [docode.TextEdit.insert(new docode.Position(99, 0), 'Out of bounds')];
 		await invalid.features.completions(request);
 		await assert.rejects(invalid.features.accept({ requestId: 1, id: '0' }), /invalid edit range/);
 		assert.strictEqual(invalid.applied, 0);

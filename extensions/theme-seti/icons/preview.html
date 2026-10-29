@@ -44,7 +44,7 @@
 			color: #000000;
 		}
 
-		.vs-dark {
+		.do-dark {
 			background-color: #1E1E1E;
 			color: #D4D4D4;
 		}
@@ -86,8 +86,8 @@
 			document.head.appendChild(style);
 
 			htmContent.push('<div class="grid">');
-			generateIconsForScheme('dark', themeFile, 'vs-dark', htmContent);
-			generateIconsForScheme('light', themeFile.light, 'vs', htmContent);
+			generateIconsForScheme('dark', themeFile, 'do-dark', htmContent);
+			generateIconsForScheme('light', themeFile.light, 'do', htmContent);
 			htmContent.push('</div>');
 
 			document.body.innerHTML += htmContent.join('\n');

@@ -104,8 +104,8 @@ function filePathToResourceUri(filepath: string): URI | undefined {
 }
 
 export function mapUri(uri: URI, mappedScheme: string): URI {
-	if (uri.scheme === 'vscode-global-typings') {
-		throw new Error('can\'t map vscode-global-typings');
+	if (uri.scheme === 'docode-global-typings') {
+		throw new Error('can\'t map docode-global-typings');
 	}
 	if (!uri.authority) {
 		uri = uri.with({ authority: 'ts-nul-authority' });

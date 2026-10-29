@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
 	[string]$Repo = (Get-Location).Path,
-	[string]$UserDataDir = $(if ($env:CODE_OSS_DEV_AUTHED_USER_DATA_DIR) { $env:CODE_OSS_DEV_AUTHED_USER_DATA_DIR } else { Join-Path $env:USERPROFILE '.vscode-oss-dev' }),
+	[string]$UserDataDir = $(if ($env:CODE_OSS_DEV_AUTHED_USER_DATA_DIR) { $env:CODE_OSS_DEV_AUTHED_USER_DATA_DIR } else { Join-Path $env:USERPROFILE '.docode-oss-dev' }),
 	[switch]$WaitForExit,
 	[string]$ExitMarker = '',
 	[int]$ReadyTimeoutMs = 90000
@@ -33,16 +33,16 @@ if ($WaitForExit) {
 $Repo = (Resolve-Path -LiteralPath $Repo).Path
 $codeBat = Join-Path $Repo 'scripts\code.bat'
 if (-not (Test-Path -LiteralPath $codeBat -PathType Leaf)) {
-	throw "Could not find a Code OSS launcher at $codeBat. Pass -Repo <vscode-repo-root>."
+	throw "Could not find a Code OSS launcher at $codeBat. Pass -Repo <docode-repo-root>."
 }
 
 $UserDataDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($UserDataDir)
 $sharedDataDir = if ($env:CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR) {
 	$env:CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR
-} elseif ($env:VSCODE_PORTABLE) {
-	Join-Path $env:VSCODE_PORTABLE 'shared-data'
+} elseif ($env:DOCODE_PORTABLE) {
+	Join-Path $env:DOCODE_PORTABLE 'shared-data'
 } else {
-	$folderName = '.vscode-oss-shared'
+	$folderName = '.docode-oss-shared'
 	$productJson = Join-Path $Repo 'product.json'
 	if (Test-Path -LiteralPath $productJson -PathType Leaf) {
 		$product = Get-Content -LiteralPath $productJson -Raw | ConvertFrom-Json

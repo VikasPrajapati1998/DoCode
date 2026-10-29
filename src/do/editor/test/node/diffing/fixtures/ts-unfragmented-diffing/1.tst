@@ -1,0 +1,14 @@
+import { KeyCode, KeyMod } from 'do/base/common/keyCodes';
+import { Disposable } from 'do/base/common/lifecycle';
+import { ICodeEditor } from 'do/editor/browser/editorBrowser';
+import { EditorAction, EditorCommand, registerEditorAction, registerEditorCommand, registerEditorContribution, ServicesAccessor } from 'do/editor/browser/editorExtensions';
+import { IEditorContribution } from 'do/editor/common/editorCommon';
+import { EditorContextKeys } from 'do/editor/common/editorContextKeys';
+import * as languages from 'do/editor/common/languages';
+import { TriggerContext } from 'do/editor/contrib/parameterHints/browser/parameterHintsModel';
+import { Context } from 'do/editor/contrib/parameterHints/browser/provideSignatureHelp';
+import * as nls from 'do/nls';
+import { ContextKeyExpr } from 'do/platform/contextkey/common/contextkey';
+import { IInstantiationService } from 'do/platform/instantiation/common/instantiation';
+import { KeybindingWeight } from 'do/platform/keybinding/common/keybindingsRegistry';
+import { ParameterHintsWidget } from './parameterHintsWidget';

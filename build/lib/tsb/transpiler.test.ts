@@ -28,7 +28,7 @@ suite('extension transpilation module formats', () => {
 		{ module: 'nodenext', type: 'commonjs', suffix: '.mts', commonJS: false },
 	]) {
 		test(`${module} ${type} ${suffix} produces loadable ${commonJS ? 'CommonJS' : 'ESM'}`, async () => {
-			const root = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-extension-transpile-'));
+			const root = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-extension-transpile-'));
 			try {
 				const extension = path.join(root, 'extensions', 'sample');
 				const sourceDir = path.join(extension, 'src');
@@ -68,7 +68,7 @@ suite('extension transpilation module formats', () => {
 	}
 
 	test('resolves inherited output directories and skips declaration-only inputs', async () => {
-		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-extension-transpile-'));
+		const root = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-extension-transpile-'));
 		try {
 			const project = path.join(root, 'extensions', 'sample', 'web');
 			const sourceDir = path.join(project, 'src');

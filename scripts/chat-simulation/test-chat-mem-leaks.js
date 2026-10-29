@@ -34,7 +34,7 @@ const path = require('path');
 const {
 	DATA_DIR, loadConfig,
 	resolveBuild, buildEnv, buildArgs, prepareRunDir,
-	launchVSCode,
+	launchDoCode,
 } = require('./common/utils');
 const {
 	CONTENT_SCENARIOS, TOOL_CALL_SCENARIOS, MULTI_TURN_SCENARIOS,
@@ -263,15 +263,15 @@ async function runScenario(page, mockServer, scenarioId, label) {
 async function runLeakCheck(electronPath, mockServer, opts) {
 	const { iterations, verbose } = opts;
 	const { userDataDir, extDir, logsDir } = prepareRunDir('leak-check', mockServer, opts.settingsOverrides);
-	const isDevBuild = !electronPath.includes('.vscode-test');
+	const isDevBuild = !electronPath.includes('.docode-test');
 
-	const vscode = await launchVSCode(
+	const docode = await launchDoCode(
 		electronPath,
 		buildArgs(userDataDir, extDir, logsDir, { isDevBuild }),
 		buildEnv(mockServer, { isDevBuild }),
 		{ verbose },
 	);
-	const page = vscode.page;
+	const page = docode.page;
 
 	try {
 		await page.waitForSelector('.monaco-workbench', { timeout: 60_000 });
@@ -370,7 +370,7 @@ async function runLeakCheck(electronPath, mockServer, opts) {
 			iterations: iterationResults,
 		};
 	} finally {
-		await vscode.close();
+		await docode.close();
 	}
 }
 

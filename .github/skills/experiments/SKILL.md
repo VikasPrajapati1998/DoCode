@@ -14,7 +14,7 @@ To try an assignment locally, set `experiments.override.<treatment name>` in you
 
 ## Trigger events for triggered scorecards
 
-A triggered scorecard only compares users who reached the moment where control and treatment behave differently, so users that the experiment never affected don't dilute the result. Log that moment with the helpers in [experimentTrigger.ts](../../../src/vs/platform/telemetry/common/experimentTrigger.ts):
+A triggered scorecard only compares users who reached the moment where control and treatment behave differently, so users that the experiment never affected don't dilute the result. Log that moment with the helpers in [experimentTrigger.ts](../../../src/do/platform/telemetry/common/experimentTrigger.ts):
 
 ```ts
 logSettingExperimentTrigger(telemetryService, MY_SETTING_ID); // experiment-controlled setting

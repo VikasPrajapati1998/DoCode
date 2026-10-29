@@ -1,0 +1,178 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.artifact-tabbed-state-widget {
+	min-width: 0;
+	flex-shrink: 0;
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+	border-radius: var(--docode-cornerRadius-medium);
+	overflow: hidden;
+}
+
+.artifact-tabbed-state-widget.has-lists {
+	border: 0;
+}
+
+.artifact-tabbed-state-widget.has-lists.lists-collapsed {
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+}
+
+.artifact-tabbed-header,
+.artifact-list-tab-item {
+	background: var(--docode-editorWidget-background);
+}
+
+.artifact-tabbed-header {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+
+.artifact-tabbed-content {
+	background: var(--docode-dropdown-background, var(--docode-editorWidget-background));
+	color: var(--docode-dropdown-foreground, var(--docode-editorWidget-foreground));
+}
+
+.artifact-tabbed-state-widget.has-lists .artifact-tabbed-content {
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+	border-top: 0;
+	border-radius: 0 0 var(--docode-cornerRadius-medium) var(--docode-cornerRadius-medium);
+	overflow: hidden;
+}
+
+.artifact-tabbed-state-widget.has-lists.lists-collapsed .artifact-tabbed-content {
+	border: 0;
+	border-radius: 0;
+}
+
+.artifact-tabbed-state-widget.lists-collapsed .artifact-list-tab-item {
+	border-bottom-color: transparent;
+}
+
+.artifact-tabbed-state-widget.lists-collapsed .artifact-list-tab-item + .artifact-list-tab-item {
+	border-left-color: var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+}
+
+.artifact-list-tabs-scrollable {
+	flex: 1;
+	min-width: 0;
+}
+
+.artifact-list-tabs {
+	display: flex;
+	width: max-content;
+	min-width: 100%;
+	height: var(--docode-spacing-size360);
+}
+
+.artifact-list-tab-item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	min-width: 0;
+	box-sizing: border-box;
+	gap: var(--docode-spacing-size40);
+	padding: 0 var(--docode-spacing-size120);
+	border: var(--docode-strokeThickness) solid transparent;
+	border-bottom-color: var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+	cursor: pointer;
+}
+
+.artifact-list-tab-item.selected {
+	border-color: var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+	border-bottom-color: transparent;
+	border-radius: var(--docode-cornerRadius-medium) var(--docode-cornerRadius-medium) 0 0;
+	background: var(--docode-dropdown-background, var(--docode-editorWidget-background));
+	color: var(--docode-dropdown-foreground, var(--docode-editorWidget-foreground));
+}
+
+.artifact-list-tabs .monaco-button.artifact-list-tab {
+	flex: 0 1 auto;
+	width: auto;
+	min-width: 0;
+	height: 100%;
+	gap: var(--docode-spacing-size80);
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	font-size: var(--docode-fontSize-label1);
+}
+
+.artifact-list-tab .monaco-button-mdlabel {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+.artifact-list-tab-item.selected .artifact-list-tab {
+	font-weight: var(--docode-fontWeight-semiBold);
+}
+
+.artifact-list-tab-focus {
+	display: none;
+	position: absolute;
+	inset: var(--docode-spacing-size20);
+	border: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	border-radius: var(--docode-cornerRadius-small);
+	pointer-events: none;
+}
+
+.artifact-list-tab:is(:focus-visible, .synthetic-focus) ~ .artifact-list-tab-focus {
+	display: block;
+}
+
+.monaco-workbench .artifact-list-tabs .artifact-list-tab:is(:focus, .synthetic-focus) {
+	outline: 0 !important;
+}
+
+.artifact-list-tab-item .monaco-button.artifact-list-tab-info:not([hidden]) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: var(--docode-spacing-size160);
+	height: var(--docode-spacing-size160);
+	padding: 0;
+	border: 0;
+	border-radius: var(--docode-cornerRadius-circle);
+	font-size: var(--docode-codiconFontSize-compact);
+}
+
+.artifact-state-list {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	height: 100%;
+	padding: var(--docode-spacing-size80) var(--docode-spacing-size120);
+	min-width: 0;
+}
+
+.artifact-state-list .artifact-details-list {
+	flex: 1;
+	min-height: 0;
+}
+
+.artifact-state-list-message {
+	white-space: pre-wrap;
+	color: var(--docode-descriptionForeground);
+	margin: 0 0 var(--docode-spacing-size80);
+}
+
+.artifact-tabbed-state-widget .artifact-state-actions {
+	padding: var(--docode-spacing-size80) var(--docode-spacing-size120);
+}
+
+.artifact-tabbed-state-widget.has-lists .artifact-state-actions {
+	border-top: var(--docode-strokeThickness) solid var(--docode-contrastBorder, var(--docode-dropdown-border, var(--docode-widget-border)));
+}
+
+.artifact-list-tab-info:focus-visible,
+.artifact-state-list:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: -2px;
+}

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ExperimentationTelemetry } from './common/experimentationService';
 import { AuthProviderType, UriEventHandler } from './github';
 import { Log } from './common/logger';
@@ -26,7 +26,7 @@ const REDIRECT_URL_INSIDERS = 'https://insiders.vscode.dev/redirect';
 
 export interface IGitHubToken {
 	readonly token: string;
-	readonly authorizationServer: vscode.Uri;
+	readonly authorizationServer: docode.Uri;
 }
 
 export interface IGitHubServer {
@@ -34,7 +34,7 @@ export interface IGitHubServer {
 	 * Only use to fill missing session provenance before returning a session to a client.
 	 * Codespaces-provided sessions omit `authorizationServer`.
 	 */
-	getFallbackBaseUri(): vscode.Uri;
+	getFallbackBaseUri(): docode.Uri;
 	login(scopes: string, signInProvider?: GitHubOAuthSignInProvider, extraAuthorizeParameters?: Record<string, string>, existingLogin?: string): Promise<IGitHubToken>;
 	/**
 	 * Signs in with Microsoft and exchanges the resulting Entra identity for a GitHub token on this
@@ -52,9 +52,9 @@ export interface IGitHubServer {
 	 * without showing anything or leaving a usable token behind. See {@link EntraTokenExchange.probe}.
 	 */
 	probeMicrosoftLink(subjectToken: string): Promise<IGitHubUserInfo | undefined>;
-	logout(session: vscode.AuthenticationSession): Promise<void>;
+	logout(session: docode.AuthenticationSession): Promise<void>;
 	getUserInfo(token: string): Promise<IGitHubUserInfo>;
-	sendAdditionalTelemetryInfo(session: vscode.AuthenticationSession): Promise<void>;
+	sendAdditionalTelemetryInfo(session: docode.AuthenticationSession): Promise<void>;
 	friendlyName: string;
 }
 
@@ -72,10 +72,10 @@ export class GitHubServer implements IGitHubServer {
 		private readonly _logger: Log,
 		private readonly _telemetryReporter: ExperimentationTelemetry,
 		private readonly _uriHandler: UriEventHandler,
-		private readonly _extensionKind: vscode.ExtensionKind,
+		private readonly _extensionKind: docode.ExtensionKind,
 		microsoft: IMicrosoftAuthentication,
 		accountLinks: AccountLinks,
-		private readonly _ghesUri?: vscode.Uri
+		private readonly _ghesUri?: docode.Uri
 	) {
 		this._type = _ghesUri ? AuthProviderType.githubEnterprise : AuthProviderType.github;
 		this.friendlyName = this._type === AuthProviderType.github ? 'GitHub' : _ghesUri?.authority!;
@@ -105,22 +105,22 @@ export class GitHubServer implements IGitHubServer {
 
 	private get baseUri() {
 		if (this._type === AuthProviderType.github) {
-			return vscode.Uri.parse('https://github.com/');
+			return docode.Uri.parse('https://github.com/');
 		}
 		return this._ghesUri!;
 	}
 
-	getFallbackBaseUri(): vscode.Uri {
+	getFallbackBaseUri(): docode.Uri {
 		return this.baseUri;
 	}
 
 	async loginWithMicrosoft(scopes: readonly string[], options?: IEntraLoginOptions): Promise<IEntraExchangedToken & IGitHubToken> {
-		const authorizationServer = vscode.Uri.joinPath(this.baseUri, '/login/oauth');
+		const authorizationServer = docode.Uri.joinPath(this.baseUri, '/login/oauth');
 		return { ...await this._entraTokenExchange.login(scopes, options), authorizationServer };
 	}
 
 	async renewWithMicrosoft(renewal: IEntraRenewal): Promise<IEntraRenewedToken & IGitHubToken> {
-		const authorizationServer = vscode.Uri.joinPath(this.baseUri, '/login/oauth');
+		const authorizationServer = docode.Uri.joinPath(this.baseUri, '/login/oauth');
 		return { ...await this._entraTokenExchange.renew(renewal), authorizationServer };
 	}
 
@@ -133,7 +133,7 @@ export class GitHubServer implements IGitHubServer {
 			return this._redirectEndpoint;
 		}
 		if (this._type === AuthProviderType.github) {
-			const proxyEndpoints = await vscode.commands.executeCommand<{ [providerId: string]: string } | undefined>('workbench.getCodeExchangeProxyEndpoints');
+			const proxyEndpoints = await docode.commands.executeCommand<{ [providerId: string]: string } | undefined>('workbench.getCodeExchangeProxyEndpoints');
 			// If we are running in insiders vscode.dev, then ensure we use the redirect route on that.
 			this._redirectEndpoint = REDIRECT_URL_STABLE;
 			if (proxyEndpoints?.github && new URL(proxyEndpoints.github).hostname === 'insiders.vscode.dev') {
@@ -158,8 +158,8 @@ export class GitHubServer implements IGitHubServer {
 		if (this._isNoCorsEnvironment !== undefined) {
 			return this._isNoCorsEnvironment;
 		}
-		const uri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://vscode.github-authentication/dummy`));
-		this._isNoCorsEnvironment = (uri.scheme === 'https' && /^((insiders\.)?vscode|github)\./.test(uri.authority)) || (uri.scheme === 'http' && /^localhost/.test(uri.authority));
+		const uri = await docode.env.asExternalUri(docode.Uri.parse(`${docode.env.uriScheme}://docode.github-authentication/dummy`));
+		this._isNoCorsEnvironment = (uri.scheme === 'https' && /^((insiders\.)?docode|github)\./.test(uri.authority)) || (uri.scheme === 'http' && /^localhost/.test(uri.authority));
 		return this._isNoCorsEnvironment;
 	}
 
@@ -169,17 +169,17 @@ export class GitHubServer implements IGitHubServer {
 
 		// Used for showing a friendlier message to the user when the explicitly cancel a flow.
 		let userCancelled: boolean | undefined;
-		const yes = vscode.l10n.t('Yes');
-		const no = vscode.l10n.t('No');
+		const yes = docode.l10n.t('Yes');
+		const no = docode.l10n.t('No');
 		const promptToContinue = async (mode: string) => {
 			if (userCancelled === undefined) {
 				// We haven't had a failure yet so wait to prompt
 				return;
 			}
 			const message = userCancelled
-				? vscode.l10n.t('Having trouble logging in? Would you like to try a different way? ({0})', mode)
-				: vscode.l10n.t('You have not yet finished authorizing this extension to use GitHub. Would you like to try a different way? ({0})', mode);
-			const result = await vscode.window.showWarningMessage(message, {
+				? docode.l10n.t('Having trouble logging in? Would you like to try a different way? ({0})', mode)
+				: docode.l10n.t('You have not yet finished authorizing this extension to use GitHub. Would you like to try a different way? ({0})', mode);
+			const result = await docode.window.showWarningMessage(message, {
 				notificationId: userCancelled ? 'githubAuthentication.signIn.retryAfterCancel' : 'githubAuthentication.signIn.retryAfterFailure'
 			}, yes, no);
 			if (result !== yes) {
@@ -188,7 +188,7 @@ export class GitHubServer implements IGitHubServer {
 		};
 
 		const nonce: string = crypto.getRandomValues(new Uint32Array(2)).reduce((prev, curr) => prev += curr.toString(16), '');
-		const callbackUri = await vscode.env.asExternalUri(vscode.Uri.parse(`${vscode.env.uriScheme}://vscode.github-authentication/did-authenticate?nonce=${encodeURIComponent(nonce)}`));
+		const callbackUri = await docode.env.asExternalUri(docode.Uri.parse(`${docode.env.uriScheme}://docode.github-authentication/did-authenticate?nonce=${encodeURIComponent(nonce)}`));
 
 		const supportedClient = isSupportedClient(callbackUri);
 		const supportedTarget = isSupportedTarget(this._type, this._ghesUri);
@@ -199,7 +199,7 @@ export class GitHubServer implements IGitHubServer {
 				? GitHubTarget.DotCom
 				: supportedTarget ? GitHubTarget.HostedEnterprise : GitHubTarget.Enterprise,
 			extensionHost: isNodeEnvironment
-				? this._extensionKind === vscode.ExtensionKind.UI ? ExtensionHost.Local : ExtensionHost.Remote
+				? this._extensionKind === docode.ExtensionKind.UI ? ExtensionHost.Local : ExtensionHost.Remote
 				: ExtensionHost.WebWorker,
 			isSupportedClient: supportedClient
 		});
@@ -220,10 +220,10 @@ export class GitHubServer implements IGitHubServer {
 					logger: this._logger,
 					uriHandler: this._uriHandler,
 					enterpriseUri: this._ghesUri,
-					redirectUri: vscode.Uri.parse(await this.getRedirectEndpoint()),
+					redirectUri: docode.Uri.parse(await this.getRedirectEndpoint()),
 					existingLogin
 				});
-				return { token, authorizationServer: vscode.Uri.joinPath(baseUri, '/login/oauth') };
+				return { token, authorizationServer: docode.Uri.joinPath(baseUri, '/login/oauth') };
 			} catch (e) {
 				userCancelled = this.processLoginError(e);
 			}
@@ -232,7 +232,7 @@ export class GitHubServer implements IGitHubServer {
 		throw new Error(userCancelled ? CANCELLATION_ERROR : 'No auth flow succeeded.');
 	}
 
-	public async logout(session: vscode.AuthenticationSession): Promise<void> {
+	public async logout(session: docode.AuthenticationSession): Promise<void> {
 		this._logger.trace(`Deleting session (${session.id}) from server...`);
 
 		if (!Config.gitHubClientSecret) {
@@ -266,7 +266,7 @@ export class GitHubServer implements IGitHubServer {
 					Accept: 'application/vnd.github+json',
 					Authorization: authHeader,
 					'X-GitHub-Api-Version': '2022-11-28',
-					'User-Agent': `${vscode.env.appName} (${vscode.env.appHost})`
+					'User-Agent': `${docode.env.appName} (${docode.env.appHost})`
 				},
 				body: JSON.stringify({ access_token: session.accessToken }),
 			});
@@ -291,18 +291,18 @@ export class GitHubServer implements IGitHubServer {
 		const apiUri = this.baseUri;
 		// github.com and Hosted GitHub Enterprise instances
 		if (isSupportedTarget(this._type, this._ghesUri)) {
-			return vscode.Uri.parse(`${apiUri.scheme}://api.${apiUri.authority}`).with({ path });
+			return docode.Uri.parse(`${apiUri.scheme}://api.${apiUri.authority}`).with({ path });
 		}
 		// GitHub Enterprise Server (aka on-prem)
-		return vscode.Uri.parse(`${apiUri.scheme}://${apiUri.authority}/api/v3${path}`);
+		return docode.Uri.parse(`${apiUri.scheme}://${apiUri.authority}/api/v3${path}`);
 	}
 
 	public async getUserInfo(token: string): Promise<IGitHubUserInfo> {
 		return await fetchUserInfo(this._http, this.getServerUri('/user').toString(), token, this._logger);
 	}
 
-	public async sendAdditionalTelemetryInfo(session: vscode.AuthenticationSession): Promise<void> {
-		if (!vscode.env.isTelemetryEnabled) {
+	public async sendAdditionalTelemetryInfo(session: docode.AuthenticationSession): Promise<void> {
+		if (!docode.env.isTelemetryEnabled) {
 			return;
 		}
 		const nocors = await this.isNoCorsEnvironment();
@@ -319,7 +319,7 @@ export class GitHubServer implements IGitHubServer {
 		await this.checkEnterpriseVersion(session.accessToken);
 	}
 
-	private async checkUserDetails(session: vscode.AuthenticationSession): Promise<void> {
+	private async checkUserDetails(session: docode.AuthenticationSession): Promise<void> {
 		let edu: string | undefined;
 
 		// The account label is the GitHub login. Normal logins only allow alphanumerics and
@@ -340,7 +340,7 @@ export class GitHubServer implements IGitHubServer {
 					headers: {
 						Authorization: `token ${session.accessToken}`,
 						'faculty-check-preview': 'true',
-						'User-Agent': `${vscode.env.appName} (${vscode.env.appHost})`
+						'User-Agent': `${docode.env.appName} (${docode.env.appHost})`
 					}
 				});
 
@@ -384,7 +384,7 @@ export class GitHubServer implements IGitHubServer {
 					expectJSON: true,
 					headers: {
 						Authorization: `token ${token}`,
-						'User-Agent': `${vscode.env.appName} (${vscode.env.appHost})`
+						'User-Agent': `${docode.env.appName} (${docode.env.appHost})`
 					}
 				});
 

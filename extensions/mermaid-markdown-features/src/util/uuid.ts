@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 /**
- * Copied from src/vs/base/common/uuid.ts
+ * Copied from src/do/base/common/uuid.ts
  */
 export function generateUuid(): string {
 	// use `randomUUID` if possible

@@ -2,33 +2,33 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 declare function require(path: string): any;
 
 const markdownMathSetting = 'markdown.math';
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 	function isEnabled(): boolean {
-		const config = vscode.workspace.getConfiguration('markdown');
+		const config = docode.workspace.getConfiguration('markdown');
 		return config.get<boolean>('math.enabled', true);
 	}
 
 	function getMacros(): { [key: string]: string } {
-		const config = vscode.workspace.getConfiguration('markdown');
+		const config = docode.workspace.getConfiguration('markdown');
 		return config.get<{ [key: string]: string }>('math.macros', {});
 	}
 
-	vscode.workspace.onDidChangeConfiguration(e => {
+	docode.workspace.onDidChangeConfiguration(e => {
 		if (e.affectsConfiguration(markdownMathSetting)) {
-			vscode.commands.executeCommand('markdown.api.reloadPlugins');
+			docode.commands.executeCommand('markdown.api.reloadPlugins');
 		}
 	}, undefined, context.subscriptions);
 
 	return {
 		extendMarkdownIt(md: any) {
 			if (isEnabled()) {
-				const katex = require('@vscode/markdown-it-katex').default;
+				const katex = require('@docode/markdown-it-katex').default;
 				const settingsMacros = getMacros();
 				const options = {
 					enableFencedBlocks: true,

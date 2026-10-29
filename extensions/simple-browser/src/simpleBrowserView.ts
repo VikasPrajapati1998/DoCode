@@ -3,28 +3,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Disposable } from './dispose';
 import { generateUuid } from './uuid';
 
 
 export interface ShowOptions {
 	readonly preserveFocus?: boolean;
-	readonly viewColumn?: vscode.ViewColumn;
+	readonly viewColumn?: docode.ViewColumn;
 }
 
 export class SimpleBrowserView extends Disposable {
 
 	public static readonly viewType = 'simpleBrowser.view';
-	private static readonly title = vscode.l10n.t("Simple Browser");
+	private static readonly title = docode.l10n.t("Simple Browser");
 
-	private static getWebviewLocalResourceRoots(extensionUri: vscode.Uri): readonly vscode.Uri[] {
+	private static getWebviewLocalResourceRoots(extensionUri: docode.Uri): readonly docode.Uri[] {
 		return [
-			vscode.Uri.joinPath(extensionUri, 'media')
+			docode.Uri.joinPath(extensionUri, 'media')
 		];
 	}
 
-	private static getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+	private static getWebviewOptions(extensionUri: docode.Uri): docode.WebviewOptions {
 		return {
 			enableScripts: true,
 			enableForms: true,
@@ -32,18 +32,18 @@ export class SimpleBrowserView extends Disposable {
 		};
 	}
 
-	private readonly _webviewPanel: vscode.WebviewPanel;
+	private readonly _webviewPanel: docode.WebviewPanel;
 
-	private readonly _onDidDispose = this._register(new vscode.EventEmitter<void>());
+	private readonly _onDidDispose = this._register(new docode.EventEmitter<void>());
 	public readonly onDispose = this._onDidDispose.event;
 
 	public static create(
-		extensionUri: vscode.Uri,
+		extensionUri: docode.Uri,
 		url: string,
 		showOptions?: ShowOptions
 	): SimpleBrowserView {
-		const webview = vscode.window.createWebviewPanel(SimpleBrowserView.viewType, SimpleBrowserView.title, {
-			viewColumn: showOptions?.viewColumn ?? vscode.ViewColumn.Active,
+		const webview = docode.window.createWebviewPanel(SimpleBrowserView.viewType, SimpleBrowserView.title, {
+			viewColumn: showOptions?.viewColumn ?? docode.ViewColumn.Active,
 			preserveFocus: showOptions?.preserveFocus
 		}, {
 			retainContextWhenHidden: true,
@@ -53,17 +53,17 @@ export class SimpleBrowserView extends Disposable {
 	}
 
 	public static restore(
-		extensionUri: vscode.Uri,
+		extensionUri: docode.Uri,
 		url: string,
-		webviewPanel: vscode.WebviewPanel,
+		webviewPanel: docode.WebviewPanel,
 	): SimpleBrowserView {
 		return new SimpleBrowserView(extensionUri, url, webviewPanel);
 	}
 
 	private constructor(
-		private readonly extensionUri: vscode.Uri,
+		private readonly extensionUri: docode.Uri,
 		url: string,
-		webviewPanel: vscode.WebviewPanel,
+		webviewPanel: docode.WebviewPanel,
 	) {
 		super();
 
@@ -74,8 +74,8 @@ export class SimpleBrowserView extends Disposable {
 			switch (e.type) {
 				case 'openExternal':
 					try {
-						const url = vscode.Uri.parse(e.url);
-						vscode.env.openExternal(url);
+						const url = docode.Uri.parse(e.url);
+						docode.env.openExternal(url);
 					} catch {
 						// Noop
 					}
@@ -87,9 +87,9 @@ export class SimpleBrowserView extends Disposable {
 			this.dispose();
 		}));
 
-		this._register(vscode.workspace.onDidChangeConfiguration(e => {
+		this._register(docode.workspace.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('simpleBrowser.focusLockIndicator.enabled')) {
-				const configuration = vscode.workspace.getConfiguration('simpleBrowser');
+				const configuration = docode.workspace.getConfiguration('simpleBrowser');
 				this._webviewPanel.webview.postMessage({
 					type: 'didChangeFocusLockIndicatorEnabled',
 					focusLockEnabled: configuration.get<boolean>('focusLockIndicator.enabled', true)
@@ -111,7 +111,7 @@ export class SimpleBrowserView extends Disposable {
 	}
 
 	private getHtml(url: string) {
-		const configuration = vscode.workspace.getConfiguration('simpleBrowser');
+		const configuration = docode.workspace.getConfiguration('simpleBrowser');
 
 		const nonce = generateUuid();
 
@@ -144,15 +144,15 @@ export class SimpleBrowserView extends Disposable {
 				<header class="header">
 					<nav class="controls">
 						<button
-							title="${vscode.l10n.t("Back")}"
+							title="${docode.l10n.t("Back")}"
 							class="back-button icon"><i class="codicon codicon-arrow-left"></i></button>
 
 						<button
-							title="${vscode.l10n.t("Forward")}"
+							title="${docode.l10n.t("Forward")}"
 							class="forward-button icon"><i class="codicon codicon-arrow-right"></i></button>
 
 						<button
-							title="${vscode.l10n.t("Reload")}"
+							title="${docode.l10n.t("Reload")}"
 							class="reload-button icon"><i class="codicon codicon-refresh"></i></button>
 					</nav>
 
@@ -160,12 +160,12 @@ export class SimpleBrowserView extends Disposable {
 
 					<nav class="controls">
 						<button
-							title="${vscode.l10n.t("Open in browser")}"
+							title="${docode.l10n.t("Open in browser")}"
 							class="open-external-button icon"><i class="codicon codicon-link-external"></i></button>
 					</nav>
 				</header>
 				<div class="content">
-					<div class="iframe-focused-alert">${vscode.l10n.t("Focus Lock")}</div>
+					<div class="iframe-focused-alert">${docode.l10n.t("Focus Lock")}</div>
 					<iframe sandbox="allow-scripts allow-forms allow-same-origin allow-downloads"></iframe>
 				</div>
 
@@ -174,11 +174,11 @@ export class SimpleBrowserView extends Disposable {
 			</html>`;
 	}
 
-	private extensionResourceUrl(...parts: string[]): vscode.Uri {
-		return this._webviewPanel.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, ...parts));
+	private extensionResourceUrl(...parts: string[]): docode.Uri {
+		return this._webviewPanel.webview.asWebviewUri(docode.Uri.joinPath(this.extensionUri, ...parts));
 	}
 }
 
-function escapeAttribute(value: string | vscode.Uri): string {
+function escapeAttribute(value: string | docode.Uri): string {
 	return value.toString().replace(/"/g, '&quot;');
 }

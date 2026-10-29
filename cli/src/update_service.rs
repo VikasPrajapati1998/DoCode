@@ -8,7 +8,7 @@ use std::{fmt, path::Path};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-	constants::VSCODE_CLI_UPDATE_ENDPOINT,
+	constants::DOCODE_CLI_UPDATE_ENDPOINT,
 	log, options,
 	util::{
 		errors::{wrap, AnyError, CodeError, WrappedError},
@@ -57,12 +57,12 @@ fn quality_download_segment(quality: options::Quality) -> &'static str {
 }
 
 fn get_update_endpoint() -> Result<String, CodeError> {
-	if let Ok(url) = std::env::var("VSCODE_CLI_UPDATE_URL") {
+	if let Ok(url) = std::env::var("DOCODE_CLI_UPDATE_URL") {
 		if !url.is_empty() {
 			return Ok(url);
 		}
 	}
-	VSCODE_CLI_UPDATE_ENDPOINT
+	DOCODE_CLI_UPDATE_ENDPOINT
 		.map(|s| s.to_string())
 		.ok_or(CodeError::UpdatesNotConfigured("no service url"))
 }

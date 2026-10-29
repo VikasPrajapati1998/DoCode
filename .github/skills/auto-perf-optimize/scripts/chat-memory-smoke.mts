@@ -24,7 +24,7 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { setTimeout as timeout } from 'node:timers/promises';
-import { StopWatch } from '../../../../src/vs/base/common/stopwatch.ts';
+import { StopWatch } from '../../../../src/do/base/common/stopwatch.ts';
 import { prepareUserDataProfile } from './userDataProfile.mts';
 
 const root = path.resolve(import.meta.dirname, '..', '..', '..', '..');
@@ -243,7 +243,7 @@ function launchCode(dirs: { userDataDir: string; extensionDir: string }): Launch
 	const failedBeforeConnect = new Promise<Error>(resolve => failBeforeConnect = resolve);
 	const child = spawn(codeScript, args, {
 		cwd: root,
-		env: options.skipPrelaunch ? { ...process.env, VSCODE_SKIP_PRELAUNCH: '1' } : process.env,
+		env: options.skipPrelaunch ? { ...process.env, DOCODE_SKIP_PRELAUNCH: '1' } : process.env,
 		detached: options.keepOpen,
 		shell: process.platform === 'win32',
 		stdio: options.keepOpen ? 'ignore' : options.verbose ? 'inherit' : ['ignore', 'pipe', 'pipe'],
@@ -825,7 +825,7 @@ function parseIntegerArg(flag: string, value: string, min: number): number {
 }
 
 function printHelp(): void {
-	const tmp = path.join(os.tmpdir(), 'vscode-chat-memory-smoke');
+	const tmp = path.join(os.tmpdir(), 'docode-chat-memory-smoke');
 	console.log([
 		'Usage: node .github/skills/auto-perf-optimize/scripts/chat-memory-smoke.mts [options]',
 		'',
@@ -841,7 +841,7 @@ function printHelp(): void {
 		'  --no-heap-snapshots             Only record small heap-size metrics',
 		'  --heap-snapshot-label <label>   Only snapshot matching sample labels. Repeatable or comma-separated',
 		'  --reuse                         Attach to an already-running --enable-smoke-test-driver window',
-		'  --skip-prelaunch                Set VSCODE_SKIP_PRELAUNCH=1 for the launched Code process',
+		'  --skip-prelaunch                Set DOCODE_SKIP_PRELAUNCH=1 for the launched Code process',
 		'  --temporary-user-data           Use an output-local clean user-data-dir and delete it when the run completes',
 		'  --seed-user-data-dir <path>     Copy a logged-in profile into a fresh target user-data-dir before launch',
 		'  --keep-user-data                Preserve the generated temporary user-data-dir',

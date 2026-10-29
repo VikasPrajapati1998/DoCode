@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import TelemetryReporter from '@vscode/extension-telemetry';
+import * as docode from 'docode';
+import TelemetryReporter from '@docode/extension-telemetry';
 import { Keychain } from './common/keychain';
 import { GitHubServer, IGitHubServer, IGitHubToken } from './githubServer';
 import { EntraTokenExchangeError, EntraTokenExchangeFailure, IEntraRenewedToken } from './entraTokenExchange';
@@ -19,8 +19,8 @@ import { TIMED_OUT_ERROR, USER_CANCELLATION_ERROR } from './common/errors';
 import { GitHubSignInProvider, isSignInProvider } from './flows';
 import { getEnterpriseUriKey } from './common/enterpriseStorage';
 
-// `vscode` doesn't publicly export `UriComponents`, so derive the exact shape from `Uri.from`.
-type UriComponents = Parameters<typeof vscode.Uri.from>[0];
+// `docode` doesn't publicly export `UriComponents`, so derive the exact shape from `Uri.from`.
+type UriComponents = Parameters<typeof docode.Uri.from>[0];
 
 interface SessionData {
 	id: string;
@@ -39,7 +39,7 @@ interface SessionData {
 
 /** A session held only for the life of this process, and how long its token lasts. */
 interface ITransientSession {
-	readonly session: vscode.AuthenticationSession;
+	readonly session: docode.AuthenticationSession;
 	/** Absolute time, in ms since the epoch, after which the token stops working. */
 	readonly expiresAt: number;
 }
@@ -64,7 +64,7 @@ export enum AuthProviderType {
 	githubEnterprise = 'github-enterprise'
 }
 
-interface GitHubAuthenticationProviderOptions extends vscode.AuthenticationProviderSessionOptions {
+interface GitHubAuthenticationProviderOptions extends docode.AuthenticationProviderSessionOptions {
 	/**
 	 * This is specific to GitHub and is used to determine which sign-in provider to use.
 	 * If not provided, the default (GitHub) is used which shows all options.
@@ -103,15 +103,15 @@ function isGitHubAuthenticationProviderOptions(object: unknown): object is GitHu
 	return true;
 }
 
-export class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements vscode.UriHandler {
+export class UriEventHandler extends docode.EventEmitter<docode.Uri> implements docode.UriHandler {
 	private readonly _pendingNonces = new Map<string, string[]>();
-	private readonly _codeExchangePromises = new Map<string, { promise: Promise<string>; cancel: vscode.EventEmitter<void> }>();
+	private readonly _codeExchangePromises = new Map<string, { promise: Promise<string>; cancel: docode.EventEmitter<void> }>();
 
-	public handleUri(uri: vscode.Uri) {
+	public handleUri(uri: docode.Uri) {
 		this.fire(uri);
 	}
 
-	public async waitForCode(logger: Log, scopes: string, nonce: string, token: vscode.CancellationToken, baseUri: vscode.Uri) {
+	public async waitForCode(logger: Log, scopes: string, nonce: string, token: docode.CancellationToken, baseUri: docode.Uri) {
 		const scopeKey = `${baseUri.toString()} ${scopes}`;
 		const existingNonces = this._pendingNonces.get(scopeKey) || [];
 		this._pendingNonces.set(scopeKey, [...existingNonces, nonce]);
@@ -135,7 +135,7 @@ export class UriEventHandler extends vscode.EventEmitter<vscode.Uri> implements 
 		}
 	}
 
-	private handleEvent: (logger: Log, scopes: string) => PromiseAdapter<vscode.Uri, string> =
+	private handleEvent: (logger: Log, scopes: string) => PromiseAdapter<docode.Uri, string> =
 		(logger: Log, scopes) => (uri, resolve, reject) => {
 			const query = new URLSearchParams(uri.query);
 			const code = query.get('code');
@@ -169,8 +169,8 @@ function generateSessionId(): string {
 }
 
 /** Holds authentication sessions and token flows for one GitHub instance. */
-export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscode.Disposable {
-	private readonly _sessionChangeEmitter = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
+export class GitHubSessionEngine implements docode.AuthenticationProvider, docode.Disposable {
+	private readonly _sessionChangeEmitter = new docode.EventEmitter<docode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
 	private readonly _logger: Log;
 	private readonly _githubServer: IGitHubServer;
 	private readonly _microsoft: MicrosoftAuthentication;
@@ -179,10 +179,10 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	private readonly _accountLinks: AccountLinks;
 	private readonly _accountLabelSuffix: string | undefined;
 	private readonly _accountsSeen = new Set<string>();
-	private readonly _disposable: vscode.Disposable | undefined;
+	private readonly _disposable: docode.Disposable | undefined;
 
 	/** The sessions backed by the Keychain, and therefore shared with other windows. */
-	private _persistedSessionsPromise: Promise<vscode.AuthenticationSession[]>;
+	private _persistedSessionsPromise: Promise<docode.AuthenticationSession[]>;
 	/**
 	 * The sessions that only exist in this process, by id, each with the time its token runs out.
 	 *
@@ -193,9 +193,9 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 */
 	private readonly _transientSessions = new Map<string, ITransientSession>();
 	/** Renewals in flight, by session id, so concurrent callers share one exchange. */
-	private readonly _renewals = new Map<string, Promise<vscode.AuthenticationSession | undefined>>();
+	private readonly _renewals = new Map<string, Promise<docode.AuthenticationSession | undefined>>();
 	/** Restores in flight, by {@link restoreKey}, so concurrent callers share one exchange. */
-	private readonly _restores = new Map<string, Promise<vscode.AuthenticationSession | undefined>>();
+	private readonly _restores = new Map<string, Promise<docode.AuthenticationSession | undefined>>();
 	/**
 	 * The restores that have been tried and could not be done, by {@link restoreKey}.
 	 *
@@ -215,9 +215,9 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	private _microsoftGeneration = 0;
 
 	constructor(
-		private readonly context: vscode.ExtensionContext,
+		private readonly context: docode.ExtensionContext,
 		uriHandler: UriEventHandler,
-		ghesUri?: vscode.Uri,
+		ghesUri?: docode.Uri,
 		storageKey?: string
 	) {
 		const { aiKey } = context.extension.packageJSON as { name: string; version: string; aiKey: string };
@@ -254,7 +254,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 			return sessions;
 		});
 
-		this._disposable = vscode.Disposable.from(
+		this._disposable = docode.Disposable.from(
 			this._telemetryReporter,
 			this._sessionChangeEmitter,
 			this._logger,
@@ -262,7 +262,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 			// The two sides of the Microsoft account list moving. Signing in makes a restore that was
 			// impossible a moment ago possible, so whatever we gave up on is worth another try.
 			// Signing out leaves sessions that cannot renew, so they go.
-			vscode.authentication.onDidChangeSessions(async e => {
+			docode.authentication.onDidChangeSessions(async e => {
 				if (e.provider.id === MICROSOFT_PROVIDER_ID) {
 					this._microsoftGeneration++;
 					this._restoresTried.clear();
@@ -278,7 +278,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/** Every session held only by this process, whether or not its token is still any good. */
-	private get transientSessions(): vscode.AuthenticationSession[] {
+	private get transientSessions(): docode.AuthenticationSession[] {
 		const now = Date.now();
 		return [...this._transientSessions.values()].map(held => ({
 			...held.session,
@@ -291,7 +291,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	}
 
 	/** Returns locally held sessions without restoring or renewing tokens. */
-	async getCachedSessions(): Promise<readonly vscode.AuthenticationSession[]> {
+	async getCachedSessions(): Promise<readonly docode.AuthenticationSession[]> {
 		return [...await this._persistedSessionsPromise, ...this.transientSessions];
 	}
 
@@ -304,7 +304,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		return `${name}${this._accountLabelSuffix ?? ''}`;
 	}
 
-	async getSessions(scopes: string[] | undefined, options?: vscode.AuthenticationProviderSessionOptions): Promise<vscode.AuthenticationSession[]> {
+	async getSessions(scopes: string[] | undefined, options?: docode.AuthenticationProviderSessionOptions): Promise<docode.AuthenticationSession[]> {
 		const probe = (options as IWorkbenchProbeOptions | undefined)?.[WORKBENCH_ENTRA_EXCHANGE_PROBE];
 		if (probe !== undefined) {
 			return await this.probeMicrosoftLink(probe);
@@ -318,7 +318,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		// Narrowed to what the caller asked for before anything looks at the clock, so that we only
 		// ever renew or evict a session somebody actually wants.
 		const candidates = [...await this._persistedSessionsPromise, ...this.transientSessions];
-		const matchesServer = (session: vscode.AuthenticationSession) => !options?.authorizationServer
+		const matchesServer = (session: docode.AuthenticationSession) => !options?.authorizationServer
 			|| !!session.authorizationServer && getEnterpriseUriKey(session.authorizationServer) === getEnterpriseUriKey(options.authorizationServer);
 		const wanted = candidates.filter(session =>
 			matchesServer(session)
@@ -339,7 +339,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * account: it has no access token, and it is never persisted, published or announced through
 	 * {@link onDidChangeSessions}.
 	 */
-	private async probeMicrosoftLink(probe: unknown): Promise<vscode.AuthenticationSession[]> {
+	private async probeMicrosoftLink(probe: unknown): Promise<docode.AuthenticationSession[]> {
 		const subjectTokens = (probe as { subjectTokens?: unknown } | null)?.subjectTokens;
 		if (!Array.isArray(subjectTokens) || !subjectTokens.every(token => typeof token === 'string' && token)) {
 			throw new Error('The Microsoft link probe requires a list of subject tokens.');
@@ -375,9 +375,9 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 */
 	private async restore(
 		scopes: readonly string[],
-		account: vscode.AuthenticationSessionAccountInformation | undefined,
-		already: readonly vscode.AuthenticationSession[]
-	): Promise<vscode.AuthenticationSession[]> {
+		account: docode.AuthenticationSessionAccountInformation | undefined,
+		already: readonly docode.AuthenticationSession[]
+	): Promise<docode.AuthenticationSession[]> {
 		// A row whose account already answered this request needs nothing minting for it. The check
 		// is per account rather than across all of them, so one account having a session does not
 		// keep a second linked account signed out.
@@ -408,7 +408,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * called often and by more than one caller at a time, and two exchanges would mint two tokens
 	 * and publish two sessions where one is wanted.
 	 */
-	private restoreOne(link: IAccountLink, scopes: readonly string[]): Promise<vscode.AuthenticationSession | undefined> {
+	private restoreOne(link: IAccountLink, scopes: readonly string[]): Promise<docode.AuthenticationSession | undefined> {
 		const key = this.restoreKey(link, scopes);
 		let restore = this._restores.get(key);
 		if (!restore) {
@@ -418,7 +418,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		return restore;
 	}
 
-	private async restoreNow(link: IAccountLink, scopes: readonly string[], key: string): Promise<vscode.AuthenticationSession | undefined> {
+	private async restoreNow(link: IAccountLink, scopes: readonly string[], key: string): Promise<docode.AuthenticationSession | undefined> {
 		const generation = this._microsoftGeneration;
 		const microsoftAccount = (await this._microsoft.getAccounts())
 			.find(candidate => candidate.label === link.microsoftAccountLabel);
@@ -482,10 +482,10 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * When persisted tokens start expiring too, they will need an expiry of their own here and
 	 * {@link renewNow} will need to branch on how a given session renews.
 	 */
-	private async stillGood(wanted: readonly vscode.AuthenticationSession[]): Promise<vscode.AuthenticationSession[]> {
+	private async stillGood(wanted: readonly docode.AuthenticationSession[]): Promise<docode.AuthenticationSession[]> {
 		const now = Date.now();
-		const usable: vscode.AuthenticationSession[] = [];
-		const stale: vscode.AuthenticationSession[] = [];
+		const usable: docode.AuthenticationSession[] = [];
+		const stale: docode.AuthenticationSession[] = [];
 		for (const session of wanted) {
 			// No transient entry means a persisted session, and nothing persisted carries an expiry.
 			const held = this._transientSessions.get(session.id);
@@ -504,8 +504,8 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		}
 
 		const renewed = await Promise.all(stale.map(session => this.renew(session)));
-		const expired: vscode.AuthenticationSession[] = [];
-		const retained: vscode.AuthenticationSession[] = [];
+		const expired: docode.AuthenticationSession[] = [];
+		const retained: docode.AuthenticationSession[] = [];
 		for (let index = 0; index < stale.length; index++) {
 			if (renewed[index]) {
 				continue;
@@ -531,8 +531,8 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * in-memory ones: a read must not rewrite the Keychain, and no persisted session carries an
 	 * expiry today anyway.
 	 */
-	private evict(sessions: readonly vscode.AuthenticationSession[], reason: string): void {
-		const removed: vscode.AuthenticationSession[] = [];
+	private evict(sessions: readonly docode.AuthenticationSession[], reason: string): void {
+		const removed: docode.AuthenticationSession[] = [];
 		for (const session of sessions) {
 			if (this._transientSessions.delete(session.id)) {
 				removed.push(session);
@@ -574,7 +574,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * Concurrent calls for one session share a single exchange. `getSessions` is called often, and
 	 * by more than one caller at a time, and two exchanges would mint two tokens where one is wanted.
 	 */
-	private renew(session: vscode.AuthenticationSession): Promise<vscode.AuthenticationSession | undefined> {
+	private renew(session: docode.AuthenticationSession): Promise<docode.AuthenticationSession | undefined> {
 		let renewal = this._renewals.get(session.id);
 		if (!renewal) {
 			renewal = this.renewNow(session).finally(() => this._renewals.delete(session.id));
@@ -588,7 +588,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * way back to a working token. GitHub's token exchange endpoint silently ignores
 	 * `offline_access`, so such a session never also holds a refresh token to spend instead.
 	 */
-	private async renewNow(session: vscode.AuthenticationSession): Promise<vscode.AuthenticationSession | undefined> {
+	private async renewNow(session: docode.AuthenticationSession): Promise<docode.AuthenticationSession | undefined> {
 		const generation = this._microsoftGeneration;
 		// Which Microsoft identity this GitHub account was reached through. Renewing against any
 		// other one hands back a token for a different person, so no account means no renewal.
@@ -648,7 +648,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		return false;
 	}
 
-	private async afterSessionLoad(session: vscode.AuthenticationSession): Promise<void> {
+	private async afterSessionLoad(session: docode.AuthenticationSession): Promise<void> {
 		// We only want to fire a telemetry if we haven't seen this account yet in this session.
 		if (!this._accountsSeen.has(session.account.id)) {
 			this._accountsSeen.add(session.account.id);
@@ -673,8 +673,8 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		this._persistedSessionsPromise = this.readSessions();
 		const storedSessions = await this._persistedSessionsPromise;
 
-		const added: vscode.AuthenticationSession[] = [];
-		const removed: vscode.AuthenticationSession[] = [];
+		const added: docode.AuthenticationSession[] = [];
+		const removed: docode.AuthenticationSession[] = [];
 
 		storedSessions.forEach(session => {
 			const matchesExisting = previousSessions.some(s => s.id === session.id);
@@ -700,7 +700,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		}
 	}
 
-	private async readSessions(): Promise<vscode.AuthenticationSession[]> {
+	private async readSessions(): Promise<docode.AuthenticationSession[]> {
 		let sessionData: SessionData[];
 		try {
 			this._logger.info('Reading sessions from keychain...');
@@ -728,7 +728,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		let seenNumberAccountId: boolean = false;
 		// TODO: eventually remove this Set because we should only have one session per set of scopes.
 		const scopesSeen = new Set<string>();
-		const sessionPromises = sessionData.map(async (session: SessionData): Promise<vscode.AuthenticationSession | undefined> => {
+		const sessionPromises = sessionData.map(async (session: SessionData): Promise<docode.AuthenticationSession | undefined> => {
 			// For GitHub scope list, order doesn't matter so we immediately sort the scopes
 			const scopesStr = [...session.scopes].sort().join(' ');
 			let userInfo: IGitHubUserInfo | undefined;
@@ -756,8 +756,8 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 				accountId = userInfo?.id ?? '<unknown>';
 			}
 			const icon = session.account?.icon
-				? vscode.Uri.from(session.account.icon)
-				: userInfo?.avatarUrl ? vscode.Uri.parse(userInfo.avatarUrl) : undefined;
+				? docode.Uri.from(session.account.icon)
+				: userInfo?.avatarUrl ? docode.Uri.parse(userInfo.avatarUrl) : undefined;
 			return {
 				id: session.id,
 				account: {
@@ -772,14 +772,14 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 				scopes: session.scopes,
 				accessToken: session.accessToken,
 				authorizationServer: session.authorizationServer
-					? vscode.Uri.from(session.authorizationServer)
-					: vscode.Uri.joinPath(this._githubServer.getFallbackBaseUri(), '/login/oauth')
+					? docode.Uri.from(session.authorizationServer)
+					: docode.Uri.joinPath(this._githubServer.getFallbackBaseUri(), '/login/oauth')
 			};
 		});
 
 		const verifiedSessions = (await Promise.allSettled(sessionPromises))
 			.filter(p => p.status === 'fulfilled')
-			.map(p => (p as PromiseFulfilledResult<vscode.AuthenticationSession | undefined>).value)
+			.map(p => (p as PromiseFulfilledResult<docode.AuthenticationSession | undefined>).value)
 			.filter(<T>(p?: T): p is T => Boolean(p));
 
 		this._logger.info(`Got ${verifiedSessions.length} verified sessions.`);
@@ -791,7 +791,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		return verifiedSessions;
 	}
 
-	private async storeSessions(sessions: vscode.AuthenticationSession[]): Promise<void> {
+	private async storeSessions(sessions: docode.AuthenticationSession[]): Promise<void> {
 		this._logger.info(`Storing ${sessions.length} sessions...`);
 		this._persistedSessionsPromise = Promise.resolve(sessions);
 		await this._keychain.setToken(JSON.stringify(sessions.map(session => ({
@@ -801,7 +801,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		this._logger.info(`Stored ${sessions.length} sessions!`);
 	}
 
-	public async createSession(scopes: string[], options?: GitHubAuthenticationProviderOptions): Promise<vscode.AuthenticationSession> {
+	public async createSession(scopes: string[], options?: GitHubAuthenticationProviderOptions): Promise<docode.AuthenticationSession> {
 		try {
 			// For GitHub scope list, order doesn't matter so we use a sorted scope to determine
 			// if we've got a session already.
@@ -841,7 +841,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 			this.afterSessionLoad(session);
 
 			const sessionIndex = sessions.findIndex(s => s.account.id === session.account.id && arrayEquals([...s.scopes].sort(), sortedScopes));
-			const removed = new Array<vscode.AuthenticationSession>();
+			const removed = new Array<docode.AuthenticationSession>();
 			if (sessionIndex > -1) {
 				removed.push(...sessions.splice(sessionIndex, 1, session));
 			} else {
@@ -870,7 +870,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 			*/
 			this._telemetryReporter?.sendTelemetryEvent('loginFailed');
 
-			vscode.window.showErrorMessage(vscode.l10n.t('Sign in failed: {0}', `${e}`), { notificationId: 'githubAuthentication.signIn.failed' });
+			docode.window.showErrorMessage(docode.l10n.t('Sign in failed: {0}', `${e}`), { notificationId: 'githubAuthentication.signIn.failed' });
 			this._logger.error(e);
 			throw e;
 		}
@@ -880,7 +880,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * Exchanges a Microsoft Entra sign in for a GitHub token and publishes it as a session that
 	 * lives for the lifetime of this process only. The token is never written to the Keychain.
 	 */
-	private async createMicrosoftSession(scopes: string[], gitHubAccountLabel: string | undefined, authorizationServer?: vscode.Uri): Promise<vscode.AuthenticationSession> {
+	private async createMicrosoftSession(scopes: string[], gitHubAccountLabel: string | undefined, authorizationServer?: docode.Uri): Promise<docode.AuthenticationSession> {
 		const exchanged = await this._githubServer.loginWithMicrosoft(scopes, {
 			microsoftAccount: await this.rememberedMicrosoftAccount(gitHubAccountLabel)
 		});
@@ -892,7 +892,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		return session;
 	}
 
-	private storeTransientSession(session: vscode.AuthenticationSession, expiresAfter: number): vscode.AuthenticationSession {
+	private storeTransientSession(session: docode.AuthenticationSession, expiresAfter: number): docode.AuthenticationSession {
 		const result = { ...session, expiresAfter };
 		this._transientSessions.set(result.id, { session: result, expiresAt: Date.now() + expiresAfter });
 		return result;
@@ -907,14 +907,14 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * findable by the wrong lookup or by none. The Entra token, and the fact that a session came
 	 * from Microsoft at all, are never encoded here.
 	 */
-	private sessionFor(account: IGitHubUserInfo, token: IGitHubToken, scopes: string[]): vscode.AuthenticationSession {
+	private sessionFor(account: IGitHubUserInfo, token: IGitHubToken, scopes: string[]): docode.AuthenticationSession {
 		return {
 			id: generateSessionId(),
 			accessToken: token.token,
 			account: {
 				label: this.accountLabel(account.accountName),
 				id: account.id,
-				icon: account.avatarUrl ? vscode.Uri.parse(account.avatarUrl) : undefined
+				icon: account.avatarUrl ? docode.Uri.parse(account.avatarUrl) : undefined
 			},
 			scopes,
 			authorizationServer: token.authorizationServer
@@ -933,7 +933,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * share a label and keeps whichever it saw first, so the id it reports for a label is not the
 	 * one we would have stored.
 	 */
-	private async rememberedMicrosoftAccount(gitHubAccountLabel: string | undefined): Promise<vscode.AuthenticationSessionAccountInformation | undefined> {
+	private async rememberedMicrosoftAccount(gitHubAccountLabel: string | undefined): Promise<docode.AuthenticationSessionAccountInformation | undefined> {
 		if (!gitHubAccountLabel) {
 			return undefined;
 		}
@@ -951,7 +951,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 	 * can share a row, and a token running out has to leave the row behind so that the next sign in
 	 * still knows where to look.
 	 */
-	private async forgetAccountLinkIfSignedOut(account: vscode.AuthenticationSessionAccountInformation): Promise<void> {
+	private async forgetAccountLinkIfSignedOut(account: docode.AuthenticationSessionAccountInformation): Promise<void> {
 		const remaining = [...await this._persistedSessionsPromise, ...this.transientSessions];
 		const name = this.accountName(account.label);
 		if (!remaining.some(session => this.accountName(session.account.label) === name)) {
@@ -959,13 +959,13 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 		}
 	}
 
-	private checkAuthorizationServer(token: IGitHubToken, authorizationServer: vscode.Uri | undefined): void {
+	private checkAuthorizationServer(token: IGitHubToken, authorizationServer: docode.Uri | undefined): void {
 		if (authorizationServer && getEnterpriseUriKey(token.authorizationServer) !== getEnterpriseUriKey(authorizationServer)) {
-			throw new Error(vscode.l10n.t('The GitHub session does not belong to the requested authorization server.'));
+			throw new Error(docode.l10n.t('The GitHub session does not belong to the requested authorization server.'));
 		}
 	}
 
-	private async tokenToSession(token: IGitHubToken, scopes: string[], authorizationServer?: vscode.Uri): Promise<vscode.AuthenticationSession> {
+	private async tokenToSession(token: IGitHubToken, scopes: string[], authorizationServer?: docode.Uri): Promise<docode.AuthenticationSession> {
 		this.checkAuthorizationServer(token, authorizationServer);
 		const userInfo = await this._githubServer.getUserInfo(token.token);
 		return this.sessionFor(userInfo, token, scopes);
@@ -1010,7 +1010,7 @@ export class GitHubSessionEngine implements vscode.AuthenticationProvider, vscod
 			*/
 			this._telemetryReporter?.sendTelemetryEvent('logoutFailed');
 
-			vscode.window.showErrorMessage(vscode.l10n.t('Sign out failed: {0}', `${e}`), { notificationId: 'githubAuthentication.signOut.failed' });
+			docode.window.showErrorMessage(docode.l10n.t('Sign out failed: {0}', `${e}`), { notificationId: 'githubAuthentication.signOut.failed' });
 			this._logger.error(e);
 			throw e;
 		}

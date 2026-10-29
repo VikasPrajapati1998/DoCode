@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import 'mocha';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ElectronServiceConfigurationProvider } from '../../configuration/configuration.electron';
 import { register } from '../../languageFeatures/tsconfig';
 import { getSafeNotificationMessage } from '../../utils/notification';
@@ -35,7 +35,7 @@ suite('Notification security', () => {
 	test('invalid Node paths retain ordinary details but not command links', () => {
 		const provider = new ElectronServiceConfigurationProvider();
 		const validatePath = Reflect.get(provider, 'validatePath') as (nodePath: string | null) => string | null;
-		const warning = sinon.stub(vscode.window, 'showWarningMessage').resolves(undefined);
+		const warning = sinon.stub(docode.window, 'showWarningMessage').resolves(undefined);
 		const paths = [
 			path.resolve('missing-node-for-notification-test'),
 			path.resolve('missing-[Open](command:test.noop)'),
@@ -56,14 +56,14 @@ suite('Notification security', () => {
 	});
 
 	test('unresolved configuration links do not turn the referenced name into another command', async () => {
-		const commandRegistration = sinon.stub(vscode.commands, 'registerCommand').returns(new vscode.Disposable(() => { }));
+		const commandRegistration = sinon.stub(docode.commands, 'registerCommand').returns(new docode.Disposable(() => { }));
 		const registration = register();
-		const error = sinon.stub(vscode.window, 'showErrorMessage').resolves(undefined);
+		const error = sinon.stub(docode.window, 'showErrorMessage').resolves(undefined);
 		const values = ['missing-configuration-for-notification-test', 'missing-[Open](command:test.noop)', 'missing-\\[Open\\](CoMmAnD:test.noop)'];
 		try {
 			for (const extendsValue of values) {
 				await commandRegistration.firstCall.args[1]({
-					resourceUri: vscode.Uri.file(path.resolve('tsconfig.json')).toJSON(),
+					resourceUri: docode.Uri.file(path.resolve('tsconfig.json')).toJSON(),
 					extendsValue,
 					linkType: 0,
 				});

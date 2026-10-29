@@ -1,0 +1,1 @@
+{"version":3,"file":"ripgrep.js","sourceRoot":"","sources":["../../src/lib/ripgrep.ts"],"names":[],"mappings":";AAAA,uCAAuC;AACvC,kCAAkC;;;AAElC,SAAgB,qBAAqB,CAAC,MAAc;IAChD,2EAA2E;IAC3E,OAAO,MAAM;SACR,KAAK,CAAC,iBAAiB,CAAC;SACxB,MAAM,CAAC,QAAQ,CAAC,EAAE,CAAC,QAAQ,CAAC,MAAM,GAAG,CAAC,CAAC;SACvC,IAAI,EAAE,CAAC;AAChB,CAAC;AAND,sDAMC"}

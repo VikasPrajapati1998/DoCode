@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 // Verify the vendored codex app-server protocol client
-// (src/vs/platform/agentHost/node/codex/protocol/generated/**) is byte-for-byte what the
+// (src/do/platform/agentHost/node/codex/protocol/generated/**) is byte-for-byte what the
 // generation script produces for the codex version pinned in the repo-root package.json
 // devDependencies (@openai/codex). Guards against hand-edited or stale generated files:
 // the committed client must be reproducible by `npm run codex:gen-protocol`.

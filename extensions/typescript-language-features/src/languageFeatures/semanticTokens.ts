@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import * as Proto from '../tsServer/protocol/protocol';
 import { ClientCapability, ITypeScriptServiceClient } from '../typescriptService';
@@ -20,21 +20,21 @@ export function register(
 		requireSomeCapability(client, ClientCapability.Semantic),
 	], () => {
 		const provider = new DocumentSemanticTokensProvider(client);
-		return vscode.languages.registerDocumentRangeSemanticTokensProvider(selector.semantic, provider, provider.getLegend());
+		return docode.languages.registerDocumentRangeSemanticTokensProvider(selector.semantic, provider, provider.getLegend());
 	});
 }
 
-class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider, vscode.DocumentRangeSemanticTokensProvider {
+class DocumentSemanticTokensProvider implements docode.DocumentSemanticTokensProvider, docode.DocumentRangeSemanticTokensProvider {
 
 	constructor(
 		private readonly client: ITypeScriptServiceClient
 	) { }
 
-	public getLegend(): vscode.SemanticTokensLegend {
-		return new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
+	public getLegend(): docode.SemanticTokensLegend {
+		return new docode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 	}
 
-	public async provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SemanticTokens | null> {
+	public async provideDocumentSemanticTokens(document: docode.TextDocument, token: docode.CancellationToken): Promise<docode.SemanticTokens | null> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file || document.getText().length > CONTENT_LENGTH_LIMIT) {
 			return null;
@@ -42,7 +42,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		return this.provideSemanticTokens(document, { file, start: 0, length: document.getText().length }, token);
 	}
 
-	public async provideDocumentRangeSemanticTokens(document: vscode.TextDocument, range: vscode.Range, token: vscode.CancellationToken): Promise<vscode.SemanticTokens | null> {
+	public async provideDocumentRangeSemanticTokens(document: docode.TextDocument, range: docode.Range, token: docode.CancellationToken): Promise<docode.SemanticTokens | null> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file || (document.offsetAt(range.end) - document.offsetAt(range.start) > CONTENT_LENGTH_LIMIT)) {
 			return null;
@@ -53,7 +53,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		return this.provideSemanticTokens(document, { file, start, length }, token);
 	}
 
-	private async provideSemanticTokens(document: vscode.TextDocument, requestArg: Proto.EncodedSemanticClassificationsRequestArgs, token: vscode.CancellationToken): Promise<vscode.SemanticTokens | null> {
+	private async provideSemanticTokens(document: docode.TextDocument, requestArg: Proto.EncodedSemanticClassificationsRequestArgs, token: docode.CancellationToken): Promise<docode.SemanticTokens | null> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return null;
@@ -81,12 +81,12 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 			// as the new request will come in right after our response, we first wait for the document activity to stop
 			await waitForDocumentChangesToEnd(document);
 
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 
 		const tokenSpan = response.body.spans;
 
-		const builder = new vscode.SemanticTokensBuilder();
+		const builder = new docode.SemanticTokensBuilder();
 		for (let i = 0; i < tokenSpan.length;) {
 			const offset = tokenSpan[i++];
 			const length = tokenSpan[i++];
@@ -114,7 +114,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 	}
 }
 
-function waitForDocumentChangesToEnd(document: vscode.TextDocument) {
+function waitForDocumentChangesToEnd(document: docode.TextDocument) {
 	let version = document.version;
 	return new Promise<void>((resolve) => {
 		const iv = setInterval(_ => {

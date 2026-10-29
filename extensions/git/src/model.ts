@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { workspace, WorkspaceFoldersChangeEvent, Uri, window, Event, EventEmitter, QuickPickItem, Disposable, SourceControl, SourceControlResourceGroup, TextEditor, Memento, commands, LogOutputChannel, l10n, ProgressLocation, WorkspaceFolder, ThemeIcon, ResourceTrustRequestOptions } from 'vscode';
-import TelemetryReporter from '@vscode/extension-telemetry';
+import { workspace, WorkspaceFoldersChangeEvent, Uri, window, Event, EventEmitter, QuickPickItem, Disposable, SourceControl, SourceControlResourceGroup, TextEditor, Memento, commands, LogOutputChannel, l10n, ProgressLocation, WorkspaceFolder, ThemeIcon, ResourceTrustRequestOptions } from 'docode';
+import TelemetryReporter from '@docode/extension-telemetry';
 import { IRepositoryResolver, Repository, RepositoryState } from './repository';
 import { memoize, sequentialize, debounce } from './decorators';
 import { dispose, anyEvent, filterEvent, isDescendant, Limiter, pathEquals, toDisposable, eventToPromise } from './util';
@@ -1210,7 +1210,7 @@ export class Model implements IRepositoryResolver, IBranchProtectionProviderRegi
 			commands.executeCommand('git.manageUnsafeRepositories');
 		} else if (choice === learnMore) {
 			// Learn More
-			commands.executeCommand('vscode.open', Uri.parse('https://aka.ms/vscode-git-unsafe-repository'));
+			commands.executeCommand('docode.open', Uri.parse('https://aka.ms/vscode-git-unsafe-repository'));
 		}
 	}
 

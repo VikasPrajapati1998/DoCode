@@ -3,13 +3,13 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path="../../src/typings/vscode-globals-product.d.ts" />
+/// <reference path="../../src/typings/docode-globals-product.d.ts" />
 
-import { enableHotReload } from '../../src/vs/base/common/hotReload.ts';
-import { getSingletonServiceDescriptors, InstantiationType, registerSingleton } from '../../src/vs/platform/instantiation/common/extensions.ts';
-import { IWebWorkerService } from '../../src/vs/platform/webWorker/browser/webWorkerService.ts';
+import { enableHotReload } from '../../src/do/base/common/hotReload.ts';
+import { getSingletonServiceDescriptors, InstantiationType, registerSingleton } from '../../src/do/platform/instantiation/common/extensions.ts';
+import { IWebWorkerService } from '../../src/do/platform/webWorker/browser/webWorkerService.ts';
 // eslint-disable-next-line local/code-no-standalone-editor
-import { StandaloneWebWorkerService } from '../../src/vs/editor/standalone/browser/services/standaloneWebWorkerService.ts';
+import { StandaloneWebWorkerService } from '../../src/do/editor/standalone/browser/services/standaloneWebWorkerService.ts';
 import './style.css';
 
 enableHotReload();
@@ -27,5 +27,5 @@ descriptors.push = function (item: any) {
 	return originalPush.call(this, item);
 };
 
-globalThis._VSCODE_DISABLE_CSS_IMPORT_MAP = true;
-globalThis._VSCODE_USE_RELATIVE_IMPORTS = true;
+globalThis._DOCODE_DISABLE_CSS_IMPORT_MAP = true;
+globalThis._DOCODE_USE_RELATIVE_IMPORTS = true;

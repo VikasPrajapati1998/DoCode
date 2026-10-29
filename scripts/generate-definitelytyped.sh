@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -eq 0 ]; then
-	echo "Pass in a version like ./scripts/generate-vscode-dts.sh 1.30."
+	echo "Pass in a version like ./scripts/generate-docode-dts.sh 1.30."
 	echo "Failed to generate index.d.ts."
 	exit 1
 fi
@@ -22,10 +22,10 @@ header="// Type definitions for Visual Studio Code ${1}
  * See https://code.visualstudio.com/api for more information
  */"
 
-if [ -f ./src/vscode-dts/vscode.d.ts ]; then
+if [ -f ./src/docode-dts/docode.d.ts ]; then
 	echo "$header" > index.d.ts
-	sed "1,4d" ./src/vscode-dts/vscode.d.ts >> index.d.ts
+	sed "1,4d" ./src/docode-dts/docode.d.ts >> index.d.ts
 	echo "Generated index.d.ts for version ${1}."
 else
-	echo "Can't find ./src/vscode-dts/vscode.d.ts. Run this script at vscode root."
+	echo "Can't find ./src/docode-dts/docode.d.ts. Run this script at docode root."
 fi

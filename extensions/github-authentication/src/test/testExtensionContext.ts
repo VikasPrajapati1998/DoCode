@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TestMemento } from './testMemento';
 import { TestSecretStorage } from './testSecretStorage';
 
-export function createTestExtensionContext(subscriptions: vscode.Disposable[], secrets: TestSecretStorage, state = new TestMemento()): vscode.ExtensionContext {
-	const extension = vscode.extensions.getExtension('vscode.github-authentication');
+export function createTestExtensionContext(subscriptions: docode.Disposable[], secrets: TestSecretStorage, state = new TestMemento()): docode.ExtensionContext {
+	const extension = docode.extensions.getExtension('docode.github-authentication');
 	assert.ok(extension);
-	const storageUri = vscode.Uri.parse('test-storage:/github-authentication');
+	const storageUri = docode.Uri.parse('test-storage:/github-authentication');
 	return {
 		subscriptions,
 		workspaceState: state,
@@ -20,15 +20,15 @@ export function createTestExtensionContext(subscriptions: vscode.Disposable[], s
 		extension,
 		extensionUri: extension.extensionUri,
 		extensionPath: extension.extensionPath,
-		extensionMode: vscode.ExtensionMode.Test,
+		extensionMode: docode.ExtensionMode.Test,
 		storageUri: undefined,
 		storagePath: undefined,
 		globalStorageUri: storageUri,
 		globalStoragePath: storageUri.fsPath,
 		logUri: storageUri,
 		logPath: storageUri.fsPath,
-		asAbsolutePath: relativePath => vscode.Uri.joinPath(extension.extensionUri, relativePath).fsPath,
-		get environmentVariableCollection(): vscode.GlobalEnvironmentVariableCollection { throw new Error('Unexpected environment access'); },
-		get languageModelAccessInformation(): vscode.LanguageModelAccessInformation { throw new Error('Unexpected language model access'); }
+		asAbsolutePath: relativePath => docode.Uri.joinPath(extension.extensionUri, relativePath).fsPath,
+		get environmentVariableCollection(): docode.GlobalEnvironmentVariableCollection { throw new Error('Unexpected environment access'); },
+		get languageModelAccessInformation(): docode.LanguageModelAccessInformation { throw new Error('Unexpected language model access'); }
 	};
 }

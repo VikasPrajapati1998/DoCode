@@ -79,17 +79,17 @@ export function getRuntimeVersion(): string {
 }
 
 /** Strict subset of VS Code build platforms the dictation runtime can target. */
-export type VscodeBuildPlatform = 'darwin' | 'linux' | 'win32';
+export type DocodeBuildPlatform = 'darwin' | 'linux' | 'win32';
 
-/** Runtime whitelist mirroring `VscodeBuildPlatform`, for CLI guards. */
-export const KNOWN_VSCODE_PLATFORMS: ReadonlySet<string> = new Set<VscodeBuildPlatform>([
+/** Runtime whitelist mirroring `DocodeBuildPlatform`, for CLI guards. */
+export const KNOWN_DOCODE_PLATFORMS: ReadonlySet<string> = new Set<DocodeBuildPlatform>([
 	'darwin', 'linux', 'win32',
 ]);
 
 /**
  * The set of `<platform>-<arch>` targets Foundry Local ships a native runtime
  * for. Mirrors `FOUNDRY_LOCAL_SUPPORTED_PLATFORMS` in
- * `src/vs/platform/localTranscription/node/foundryLocalRuntime.ts` and the
+ * `src/do/platform/localTranscription/node/foundryLocalRuntime.ts` and the
  * `SUPPORTED_TARGETS` runtime gate — keep the three in sync.
  */
 export const SUPPORTED_TARGETS: ReadonlySet<string> = new Set([
@@ -110,11 +110,11 @@ export const SUPPORTED_TARGETS: ReadonlySet<string> = new Set([
  * The legacy Alpine x64 encoding (`{platform: 'linux', arch: 'alpine'}`) and any
  * real `alpine` platform return `undefined`: the native libraries are glibc-linked.
  */
-export function getRuntimeTargetForBuild(vscodePlatform: string, arch: string): string | undefined {
-	if (vscodePlatform === 'alpine' || arch === 'alpine' || arch === 'musl') {
+export function getRuntimeTargetForBuild(docodePlatform: string, arch: string): string | undefined {
+	if (docodePlatform === 'alpine' || arch === 'alpine' || arch === 'musl') {
 		return undefined;
 	}
-	const target = `${vscodePlatform}-${arch}`;
+	const target = `${docodePlatform}-${arch}`;
 	return SUPPORTED_TARGETS.has(target) ? target : undefined;
 }
 
@@ -133,9 +133,9 @@ export function getRuntimeTargetForBuild(vscodePlatform: string, arch: string): 
  *     Silicon — even though only the `darwin-arm64` job builds/uploads the
  *     payload. So `darwin-x64` stamps but does not produce.
  *   - non-publish product builds: packaging strips the SDK's native payload
- *     (`getFoundryLocalExcludeFilter` in `gulpfile.vscode.ts`), so a packaged
+ *     (`getFoundryLocalExcludeFilter` in `gulpfile.docode.ts`), so a packaged
  *     build with no stamp would have no loadable runtime. Stamping regardless
- *     of `VSCODE_PUBLISH` gives the packaged app a usable CDN source; the payload
+ *     of `DOCODE_PUBLISH` gives the packaged app a usable CDN source; the payload
  *     for that version is uploaded (idempotently) by publish runs. Local
  *     dev-from-source (which never runs `produce.ts`) uses the complete
  *     `node_modules` payload.
@@ -143,12 +143,12 @@ export function getRuntimeTargetForBuild(vscodePlatform: string, arch: string): 
  * Returns `false` for platforms/arches that can never host dictation (armhf,
  * Alpine/musl, web) so their `product.json` stays clean.
  */
-export function shouldStampRuntime(vscodePlatform: string, arch: string): boolean {
-	if (getRuntimeTargetForBuild(vscodePlatform, arch)) {
+export function shouldStampRuntime(docodePlatform: string, arch: string): boolean {
+	if (getRuntimeTargetForBuild(docodePlatform, arch)) {
 		return true;
 	}
 	// The Universal macOS x64 slice must match its arm64 sibling's stamp.
-	return vscodePlatform === 'darwin' && arch === 'x64';
+	return docodePlatform === 'darwin' && arch === 'x64';
 }
 
 /**
@@ -197,7 +197,7 @@ export function parseFlags(argv: readonly string[]): Map<string, string> {
 /**
  * The `product.dictationRuntime` entry, written by `produce.ts` and read by the
  * gulpfiles' `packageTask`. Shape matches `IDictationRuntimeProductConfig` in
- * `src/vs/base/common/product.ts`.
+ * `src/do/base/common/product.ts`.
  */
 export interface IDictationRuntimeResult {
 	readonly version: string;

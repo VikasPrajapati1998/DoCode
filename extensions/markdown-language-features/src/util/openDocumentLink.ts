@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as lsp from 'vscode-languageclient';
 import { MdLanguageClient } from '../client/client';
 import * as proto from '../client/protocol';
@@ -30,7 +30,7 @@ export class MdLinkOpener {
 	 * Resolves a link without opening it, returning `undefined` when no target exists.
 	 * Absolute non-file URIs bypass the Markdown language service.
 	 */
-	public async resolveDocumentLink(linkText: string, fromResource: vscode.Uri): Promise<proto.ResolvedDocumentLinkTarget | undefined> {
+	public async resolveDocumentLink(linkText: string, fromResource: docode.Uri): Promise<proto.ResolvedDocumentLinkTarget | undefined> {
 		const absoluteUri = getAbsoluteUri(linkText);
 		if (absoluteUri && absoluteUri.scheme !== 'file') {
 			return { kind: 'external', uri: absoluteUri };
@@ -41,7 +41,7 @@ export class MdLinkOpener {
 	/**
 	 * Resolves and opens a Markdown link, doing nothing when it cannot be resolved.
 	 */
-	public async openDocumentLink(linkText: string, fromResource: vscode.Uri, viewColumn?: vscode.ViewColumn): Promise<void> {
+	public async openDocumentLink(linkText: string, fromResource: docode.Uri, viewColumn?: docode.ViewColumn): Promise<void> {
 		const resolved = await this.resolveDocumentLink(linkText, fromResource);
 		await this.openResolvedDocumentLink(linkText, fromResource, resolved, viewColumn);
 	}
@@ -52,15 +52,15 @@ export class MdLinkOpener {
 	 */
 	public async openResolvedDocumentLink(
 		linkText: string,
-		fromResource: vscode.Uri,
+		fromResource: docode.Uri,
 		resolved: proto.ResolvedDocumentLinkTarget | undefined,
-		viewColumn?: vscode.ViewColumn,
+		viewColumn?: docode.ViewColumn,
 	): Promise<void> {
 		if (!resolved) {
 			return;
 		}
 
-		let uri = vscode.Uri.from(resolved.uri);
+		let uri = docode.Uri.from(resolved.uri);
 		let rangeSelection = resolved.kind === 'file' ? getRangeFromPositionOrRange(resolved.positionOrRange) : undefined;
 		if (resolved.kind === 'file' && !rangeSelection) {
 			if (uri.fragment) {
@@ -96,13 +96,13 @@ export class MdLinkOpener {
 				return;
 
 			case 'folder':
-				return vscode.commands.executeCommand('revealInExplorer', uri);
+				return docode.commands.executeCommand('revealInExplorer', uri);
 
 			case 'file': {
 				// If no explicit viewColumn is given, check if the editor is already open in a tab
 				if (typeof viewColumn === 'undefined') {
-					for (const tab of vscode.window.tabGroups.all.flatMap(x => x.tabs)) {
-						if (tab.input instanceof vscode.TabInputText) {
+					for (const tab of docode.window.tabGroups.all.flatMap(x => x.tabs)) {
+						if (tab.input instanceof docode.TabInputText) {
 							if (tab.input.uri.fsPath === uri.fsPath) {
 								viewColumn = tab.group.viewColumn;
 								break;
@@ -111,10 +111,10 @@ export class MdLinkOpener {
 					}
 				}
 
-				return vscode.commands.executeCommand('vscode.open', uri, {
+				return docode.commands.executeCommand('docode.open', uri, {
 					selection: rangeSelection,
 					viewColumn: viewColumn ?? getViewColumn(fromResource),
-				} satisfies vscode.TextDocumentShowOptions);
+				} satisfies docode.TextDocumentShowOptions);
 			}
 		}
 	}
@@ -124,7 +124,7 @@ export class MdLinkOpener {
  * Converts a language-server position or range to a VS Code range.
  * Returns `undefined` for absent targets or positions with invalid coordinates.
  */
-export function getRangeFromPositionOrRange(positionOrRange: lsp.Position | lsp.Range | undefined): vscode.Range | undefined {
+export function getRangeFromPositionOrRange(positionOrRange: lsp.Position | lsp.Range | undefined): docode.Range | undefined {
 	if (!positionOrRange) {
 		return undefined;
 	}
@@ -134,7 +134,7 @@ export function getRangeFromPositionOrRange(positionOrRange: lsp.Position | lsp.
 	if (!isValidPosition(range.start) || !isValidPosition(range.end)) {
 		return undefined;
 	}
-	return new vscode.Range(
+	return new docode.Range(
 		range.start.line,
 		range.start.character,
 		range.end.line,
@@ -147,24 +147,24 @@ function isValidPosition(position: lsp.Position): boolean {
 		&& Number.isInteger(position.character) && position.character >= 0;
 }
 
-async function openExternal(uri: vscode.Uri): Promise<void> {
+async function openExternal(uri: docode.Uri): Promise<void> {
 	if (uri.scheme === 'http' || uri.scheme === 'https') {
-		await vscode.env.openExternal(uri, { allowContributedOpeners: true });
+		await docode.env.openExternal(uri, { allowContributedOpeners: true });
 	} else {
-		await vscode.commands.executeCommand('vscode.open', uri);
+		await docode.commands.executeCommand('docode.open', uri);
 	}
 }
 
 /**
  * Parses URI-like absolute links while leaving Windows drive paths unresolved.
  */
-export function getAbsoluteUri(linkText: string): vscode.Uri | undefined {
+export function getAbsoluteUri(linkText: string): docode.Uri | undefined {
 	return !/^[a-z]:[\\/]/i.test(linkText) && /^[a-z][a-z0-9+.-]*:/i.test(linkText)
-		? vscode.Uri.parse(linkText, true)
+		? docode.Uri.parse(linkText, true)
 		: undefined;
 }
 
-function getSelectionFromLocationFragment(fragment: string): vscode.Range | undefined {
+function getSelectionFromLocationFragment(fragment: string): docode.Range | undefined {
 	const match = /^L?(\d+)(?:,(\d+))?(?:-L?(\d+)(?:,(\d+))?)?$/i.exec(fragment);
 	if (!match) {
 		return undefined;
@@ -199,12 +199,12 @@ function getSelectionFromLocationFragment(fragment: string): vscode.Range | unde
 		}
 	}
 
-	const start = new vscode.Position(normalizedStartLine - 1, Math.max(0, normalizedStartColumn - 1));
+	const start = new docode.Position(normalizedStartLine - 1, Math.max(0, normalizedStartColumn - 1));
 	const end = typeof normalizedEndLine === 'number'
-		? new vscode.Position(normalizedEndLine - 1, Math.max(0, normalizedEndColumn - 1))
+		? new docode.Position(normalizedEndLine - 1, Math.max(0, normalizedEndColumn - 1))
 		: start;
 
-	return new vscode.Range(start, end);
+	return new docode.Range(start, end);
 }
 
 function getLocationFragmentFromLinkText(linkText: string): string | undefined {
@@ -230,14 +230,14 @@ function getLocationFragmentFromLinkText(linkText: string): string | undefined {
 	return undefined;
 }
 
-function getViewColumn(resource: vscode.Uri): vscode.ViewColumn {
-	const config = vscode.workspace.getConfiguration('markdown', resource);
+function getViewColumn(resource: docode.Uri): docode.ViewColumn {
+	const config = docode.workspace.getConfiguration('markdown', resource);
 	const openLinks = config.get<OpenMarkdownLinks>('links.openLocation', OpenMarkdownLinks.currentGroup);
 	switch (openLinks) {
 		case OpenMarkdownLinks.beside:
-			return vscode.ViewColumn.Beside;
+			return docode.ViewColumn.Beside;
 		case OpenMarkdownLinks.currentGroup:
 		default:
-			return vscode.ViewColumn.Active;
+			return docode.ViewColumn.Active;
 	}
 }

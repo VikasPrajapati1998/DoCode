@@ -24,7 +24,7 @@ let documentVersion = 0;
 let documentResource = settings.settings.source;
 let lineChanges = settings.settings.lineChanges;
 
-const vscode = acquireVsCodeApi();
+const docode = acquireVsCodeApi();
 
 const onDiffScroll = (mappedLine: number) => {
 	scrollDisabledCount = 1;
@@ -45,7 +45,7 @@ interface State {
 	fragment?: string;
 }
 
-const originalState: State = vscode.getState() ?? {};
+const originalState: State = docode.getState() ?? {};
 const state: State = {
 	...originalState,
 	...getData<Partial<State>>('data-state')
@@ -58,9 +58,9 @@ if (typeof originalState.scrollProgress !== 'undefined'
 }
 
 // Make sure to sync VS Code state here
-vscode.setState(state);
+docode.setState(state);
 
-const messaging = createPosterForVsCode(vscode, settings);
+const messaging = createPosterForVsCode(docode, settings);
 
 window.cspAlerter.setPoster(messaging);
 window.styleLoadingMonitor.setPoster(messaging);
@@ -129,7 +129,7 @@ onceDocumentLoaded(() => {
 					fragment = settings.settings.fragment;
 				}
 				state.fragment = undefined;
-				vscode.setState(state);
+				docode.setState(state);
 
 				const element = getLineElementForFragment(fragment, documentVersion);
 				if (element) {
@@ -191,7 +191,7 @@ function addImageContexts() {
 		const imageSource = img.getAttribute('data-src');
 		const isLocalFile = imageSource && !(isOfScheme(Schemes.http, imageSource) || isOfScheme(Schemes.https, imageSource));
 		const webviewSection = isLocalFile ? 'localImage' : 'image';
-		img.setAttribute('data-vscode-context', JSON.stringify({ webviewSection, id: img.id, 'preventDefaultContextMenuItems': true, resource: documentResource, imageSource }));
+		img.setAttribute('data-docode-context', JSON.stringify({ webviewSection, id: img.id, 'preventDefaultContextMenuItems': true, resource: documentResource, imageSource }));
 	}
 }
 
@@ -410,7 +410,7 @@ window.addEventListener('message', async event => {
 
 			++documentVersion;
 
-			window.dispatchEvent(new CustomEvent('vscode.markdown.updateContent'));
+			window.dispatchEvent(new CustomEvent('docode.markdown.updateContent'));
 			addImageContexts();
 			addCodeBlockCopyButtons();
 			applyLineChanges(lineChanges);
@@ -730,7 +730,7 @@ document.addEventListener('dblclick', event => {
 	}
 });
 
-const passThroughLinkSchemes = ['http:', 'https:', 'mailto:', 'vscode:', 'vscode-insiders:'];
+const passThroughLinkSchemes = ['http:', 'https:', 'mailto:', 'docode:', 'docode-insiders:'];
 
 document.addEventListener('click', event => {
 	if (!event) {
@@ -777,7 +777,7 @@ window.addEventListener('scroll', throttle(() => {
 	const line = getEditorLineNumberForPageOffset(window.scrollY, documentVersion);
 	if (typeof line === 'number' && !isNaN(line)) {
 		state.line = line;
-		vscode.setState(state);
+		docode.setState(state);
 		messaging.postMessage('revealLine', { line });
 		diffScrollSyncManager?.broadcastScroll(line);
 	}
@@ -785,7 +785,7 @@ window.addEventListener('scroll', throttle(() => {
 
 function updateScrollProgress() {
 	state.scrollProgress = window.scrollY / document.body.clientHeight;
-	vscode.setState(state);
+	docode.setState(state);
 }
 
 

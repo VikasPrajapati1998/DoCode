@@ -7,10 +7,10 @@ import { join, resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 
 const rootPath = resolve(import.meta.dirname, '..', '..', '..');
-const vscodePath = join(rootPath, 'vscode');
-const distroPath = join(rootPath, 'vscode-distro');
+const docodePath = join(rootPath, 'docode');
+const distroPath = join(rootPath, 'docode-distro');
 const commit = execSync('git rev-parse HEAD', { cwd: distroPath, encoding: 'utf8' }).trim();
-const packageJsonPath = join(vscodePath, 'package.json');
+const packageJsonPath = join(docodePath, 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
 
 packageJson.distro = commit;

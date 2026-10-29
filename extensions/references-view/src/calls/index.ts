@@ -3,18 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { SymbolsTree } from '../tree';
 import { ContextKey } from '../utils';
 import { CallItem, CallsDirection, CallsTreeInput } from './model';
 
-export function register(tree: SymbolsTree, context: vscode.ExtensionContext): void {
+export function register(tree: SymbolsTree, context: docode.ExtensionContext): void {
 
 	const direction = new RichCallsDirection(context.workspaceState, CallsDirection.Incoming);
 
 	function showCallHierarchy() {
-		if (vscode.window.activeTextEditor) {
-			const input = new CallsTreeInput(new vscode.Location(vscode.window.activeTextEditor.document.uri, vscode.window.activeTextEditor.selection.active), direction.value);
+		if (docode.window.activeTextEditor) {
+			const input = new CallsTreeInput(new docode.Location(docode.window.activeTextEditor.document.uri, docode.window.activeTextEditor.selection.active), direction.value);
 			tree.setInput(input);
 		}
 	}
@@ -25,7 +25,7 @@ export function register(tree: SymbolsTree, context: vscode.ExtensionContext): v
 		let newInput: CallsTreeInput | undefined;
 		const oldInput = tree.getInput();
 		if (anchor instanceof CallItem) {
-			newInput = new CallsTreeInput(new vscode.Location(anchor.item.uri, anchor.item.selectionRange.start), direction.value);
+			newInput = new CallsTreeInput(new docode.Location(anchor.item.uri, anchor.item.selectionRange.start), direction.value);
 		} else if (oldInput instanceof CallsTreeInput) {
 			newInput = new CallsTreeInput(oldInput.location, direction.value);
 		}
@@ -35,10 +35,10 @@ export function register(tree: SymbolsTree, context: vscode.ExtensionContext): v
 	}
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('references-view.showCallHierarchy', showCallHierarchy),
-		vscode.commands.registerCommand('references-view.showOutgoingCalls', (item: CallItem | unknown) => setCallsDirection(CallsDirection.Outgoing, item)),
-		vscode.commands.registerCommand('references-view.showIncomingCalls', (item: CallItem | unknown) => setCallsDirection(CallsDirection.Incoming, item)),
-		vscode.commands.registerCommand('references-view.removeCallItem', removeCallItem)
+		docode.commands.registerCommand('references-view.showCallHierarchy', showCallHierarchy),
+		docode.commands.registerCommand('references-view.showOutgoingCalls', (item: CallItem | unknown) => setCallsDirection(CallsDirection.Outgoing, item)),
+		docode.commands.registerCommand('references-view.showIncomingCalls', (item: CallItem | unknown) => setCallsDirection(CallsDirection.Incoming, item)),
+		docode.commands.registerCommand('references-view.removeCallItem', removeCallItem)
 	);
 }
 
@@ -55,7 +55,7 @@ class RichCallsDirection {
 	private _ctxMode = new ContextKey<'showIncoming' | 'showOutgoing'>('references-view.callHierarchyMode');
 
 	constructor(
-		private _mem: vscode.Memento,
+		private _mem: docode.Memento,
 		private _value: CallsDirection = CallsDirection.Outgoing,
 	) {
 		const raw = _mem.get<number>(RichCallsDirection._key);

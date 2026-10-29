@@ -12,7 +12,7 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.externalUriOpener.d.ts",
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.externalUriOpener.d.ts",
 	]
 }

@@ -76,7 +76,7 @@ suite('osProxyResolver', () => {
 	});
 
 	test('materializes a missing target platform package', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-os-proxy-resolver-platform-test-'));
+		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-os-proxy-resolver-platform-test-'));
 		const nodeModulesRoot = path.join(repoRoot, 'node_modules');
 		try {
 			fs.mkdirSync(nodeModulesRoot, { recursive: true });

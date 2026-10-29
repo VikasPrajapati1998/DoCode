@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CommentModeController, CommentsModel, CommentsView, EditorController, EditorModel, EditorView, GutterMarker, OffsetRange, Selection, StringEdit, StringReplacement, StringValue, commands, findNodeOffsetById, vscodeHostKeyboardProfile, vscodeLocalKeyboardProfile, type CodeBlockAstNode, type LinkPresentationKind } from '@vscode/markdown-editor';
-import type { IframeEmbeddedEditorHostTransport, IframeEmbeddedEditorProvider, ResolvedIframeEmbeddedEditor } from '@vscode/markdown-editor/web-editors';
-import { Disposable, autorun, observableValue, transaction } from '@vscode/observables';
-import { HubRpcConnection } from '@vscode/hubrpc';
+import { CommentModeController, CommentsModel, CommentsView, EditorController, EditorModel, EditorView, GutterMarker, OffsetRange, Selection, StringEdit, StringReplacement, StringValue, commands, findNodeOffsetById, docodeHostKeyboardProfile, docodeLocalKeyboardProfile, type CodeBlockAstNode, type LinkPresentationKind } from '@docode/markdown-editor';
+import type { IframeEmbeddedEditorHostTransport, IframeEmbeddedEditorProvider, ResolvedIframeEmbeddedEditor } from '@docode/markdown-editor/web-editors';
+import { Disposable, autorun, observableValue, transaction } from '@docode/observables';
+import { HubRpcConnection } from '@docode/hubrpc';
 import 'katex/dist/katex.min.css';
-import '@vscode/markdown-editor/editor.css';
-import '@vscode/markdown-editor/themes/vscode-default.css';
-import '@vscode/markdown-editor/commentInput.css';
-import '@vscode/markdown-editor/commentWidget.css';
+import '@docode/markdown-editor/editor.css';
+import '@docode/markdown-editor/themes/docode-default.css';
+import '@docode/markdown-editor/commentInput.css';
+import '@docode/markdown-editor/commentWidget.css';
 import './markdownEditor.css';
 import { WebviewSyntaxHighlighter } from './syntaxHighlighter';
 import { WebviewLinkPresentationProvider } from './linkPresentationProvider';
@@ -138,7 +138,7 @@ class Editor extends Disposable {
 	#commentsView: CommentsView | undefined;
 	/** Whether the workbench feedback store currently accepts new comments for this resource. */
 	readonly #acceptsComments = observableValue<boolean>('acceptsComments', false);
-	readonly #vscode = acquireVsCodeApi();
+	readonly #docode = acquireVsCodeApi();
 	readonly #connection: HubRpcConnection;
 	readonly #transport: MarkdownEditorRpcTransport;
 	readonly #host: MarkdownEditorHost;
@@ -151,13 +151,13 @@ class Editor extends Disposable {
 		this.#scrollHost = host;
 		this.#taskProgressProvider = createTaskProgressProvider(this.model, initialState.taskProgressLabels);
 
-		const messageSecret = document.querySelector<HTMLMetaElement>('meta[name="vscode-markdown-editor-message-secret"]')?.content;
+		const messageSecret = document.querySelector<HTMLMetaElement>('meta[name="docode-markdown-editor-message-secret"]')?.content;
 		if (!messageSecret) {
 			throw new Error('Missing Markdown editor message secret');
 		}
 		this.#transport = new MarkdownEditorRpcTransport(
 			messageSecret,
-			message => this.#vscode.postMessage(message),
+			message => this.#docode.postMessage(message),
 			listener => {
 				const onMessage = (event: MessageEvent): void => listener(event.data);
 				window.addEventListener('message', onMessage);
@@ -364,7 +364,7 @@ class Editor extends Disposable {
 
 	#createView(host: HTMLElement, content: string, highlightActiveBlock: boolean): void {
 		const model = this.model;
-		const scriptNonce = document.querySelector<HTMLMetaElement>('meta[name="vscode-markdown-editor-script-nonce"]')?.content;
+		const scriptNonce = document.querySelector<HTMLMetaElement>('meta[name="docode-markdown-editor-script-nonce"]')?.content;
 		const iframeBootstrapUrl = new URL(location.href);
 		// Nested frames must use the empty webview bootstrap, not the restricted index.html entrypoint.
 		iframeBootstrapUrl.pathname = '/fake.html';
@@ -378,7 +378,7 @@ class Editor extends Disposable {
 			})),
 			onDidChange: () => this.#view?.refreshEmbeddedCodeEditors(),
 		}, async () => {
-			const { VirtualizedIframeEmbeddedEditorFactory } = await import('@vscode/markdown-editor/web-editors');
+			const { VirtualizedIframeEmbeddedEditorFactory } = await import('@docode/markdown-editor/web-editors');
 			return options => new VirtualizedIframeEmbeddedEditorFactory(options);
 		}, error => {
 			console.error('Markdown editor loading embedded editors failed', error);
@@ -393,7 +393,7 @@ class Editor extends Disposable {
 		const savedViewState = this.#getViewState();
 
 		const view = this._register(new EditorView(model, {
-			classNames: ['md-theme-vscode-default'],
+			classNames: ['md-theme-docode-default'],
 			highlightActiveBlock,
 			presentation: model.readonlyMode.get() ? 'reading' : 'editing',
 			syntaxHighlighter: this.#syntaxHighlighter,
@@ -429,8 +429,8 @@ class Editor extends Disposable {
 		// from the Edit menu, dirty state and hot exit.
 		this.#controller = this._register(new EditorController(model, view, {
 			clipboardStrategy: this.#imagePaste = this._register(new ImagePasteController(model, view, this.#host, () => this.#editEpoch)),
-			keyboardProfile: vscodeLocalKeyboardProfile,
-			forwardedKeyboardProfile: vscodeHostKeyboardProfile,
+			keyboardProfile: docodeLocalKeyboardProfile,
+			forwardedKeyboardProfile: docodeHostKeyboardProfile,
 			historyStrategy: {
 				undo: () => this.#send('history undo', this.#host.history({ command: 'undo' })),
 				redo: () => this.#send('history redo', this.#host.history({ command: 'redo' })),
@@ -632,11 +632,11 @@ class Editor extends Disposable {
 	}
 
 	#getViewState(): PersistedViewState {
-		return (this.#vscode.getState() as PersistedViewState | undefined) ?? {};
+		return (this.#docode.getState() as PersistedViewState | undefined) ?? {};
 	}
 
 	#patchViewState(patch: PersistedViewState): void {
-		this.#vscode.setState({ ...this.#getViewState(), ...patch });
+		this.#docode.setState({ ...this.#getViewState(), ...patch });
 	}
 
 	#restoreScroll(host: HTMLElement, scrollTop: number | undefined): void {
@@ -655,7 +655,7 @@ class Editor extends Disposable {
 }
 
 function readInitialState(): InitialState {
-	const element = document.getElementById('vscode-markdown-editor-initial-state');
+	const element = document.getElementById('docode-markdown-editor-initial-state');
 	if (!(element instanceof HTMLMetaElement)) {
 		throw new Error('Markdown editor initial state was not found.');
 	}

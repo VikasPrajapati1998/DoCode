@@ -43,13 +43,13 @@ use super::CommandContext;
 /// backend's lifecycle. Unless `--foreground` is passed, the foreground
 /// `code agent host` invocation re-execs itself detached with this
 /// variable set so the supervisor outlives the user's terminal.
-const SUPERVISOR_ENV: &str = "VSCODE_AGENT_HOST_SUPERVISOR";
+const SUPERVISOR_ENV: &str = "DOCODE_AGENT_HOST_SUPERVISOR";
 /// Single-line sentinel the supervisor prints once the listener is bound,
 /// its registry entry is published, and the banner has been flushed. The
 /// foreground process watches for this on the detached supervisor's stdout
 /// and then exits. Not printed when the supervisor runs with
 /// `--foreground`, since there is no parent waiting on it.
-const SUPERVISOR_READY_LINE: &str = "__VSCODE_AGENT_HOST_READY__";
+const SUPERVISOR_READY_LINE: &str = "__DOCODE_AGENT_HOST_READY__";
 /// Cap on how long the foreground waits for the supervisor to become
 /// ready before giving up and surfacing a failure.
 const SUPERVISOR_READY_TIMEOUT: Duration = Duration::from_secs(5 * 60);
@@ -322,7 +322,7 @@ async fn run_supervisor(mut ctx: CommandContext, mut args: AgentHostArgs) -> Res
 	// Eagerly resolve the latest version so the first connection is fast,
 	// and kick off the background update loop. Skip when using a dev
 	// override since updates don't apply.
-	if option_env!("VSCODE_CLI_OVERRIDE_SERVER_PATH").is_none() {
+	if option_env!("DOCODE_CLI_OVERRIDE_SERVER_PATH").is_none() {
 		match manager.get_latest_release().await {
 			Ok(release) => {
 				if let Err(e) = manager.ensure_downloaded(&release).await {

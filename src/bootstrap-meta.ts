@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createRequire } from 'node:module';
-import type { IProductConfiguration } from './vs/base/common/product.js';
+import type { IProductConfiguration } from './do/base/common/product.js';
 
 const require = createRequire(import.meta.url);
 
@@ -19,7 +19,7 @@ if (pkgObj['BUILD_INSERT_PACKAGE_CONFIGURATION']) {
 }
 
 let productOverridesObj = {};
-if (process.env['VSCODE_DEV']) {
+if (process.env['DOCODE_DEV']) {
 	try {
 		productOverridesObj = require('../product.overrides.json');
 		productObj = Object.assign(productObj, productOverridesObj);

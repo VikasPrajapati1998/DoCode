@@ -5,7 +5,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TypeScriptServiceConfiguration } from '../configuration/configuration';
 import { RelativeWorkspacePathResolver } from '../utils/relativePathResolver';
 import { API } from './api';
@@ -63,12 +63,12 @@ export class DiskTypeScriptVersionProvider implements ITypeScriptVersionProvider
 	}
 
 	public get bundledVersion(): TypeScriptVersion {
-		const version = this.getContributedVersion(TypeScriptVersionSource.Bundled, 'vscode.typescript-language-features', ['..', 'node_modules']);
+		const version = this.getContributedVersion(TypeScriptVersionSource.Bundled, 'docode.typescript-language-features', ['..', 'node_modules']);
 		if (version) {
 			return version;
 		}
 
-		vscode.window.showErrorMessage(vscode.l10n.t("DoCode\'s tsserver was deleted by another application such as a misbehaving virus detection tool. Please reinstall DoCode."));
+		docode.window.showErrorMessage(docode.l10n.t("DoCode\'s tsserver was deleted by another application such as a misbehaving virus detection tool. Please reinstall DoCode."));
 		throw new Error('Could not find bundled tsserver.js');
 	}
 
@@ -78,7 +78,7 @@ export class DiskTypeScriptVersionProvider implements ITypeScriptVersionProvider
 
 	private getContributedVersion(source: TypeScriptVersionSource, extensionId: string, pathToTs: readonly string[]): TypeScriptVersion | undefined {
 		try {
-			const extension = vscode.extensions.getExtension(extensionId);
+			const extension = docode.extensions.getExtension(extensionId);
 			if (extension) {
 				const serverPath = path.join(extension.extensionPath, ...pathToTs, 'typescript', 'lib', 'tsserver.js');
 				const bundledVersion = new TypeScriptVersion(source, serverPath, DiskTypeScriptVersionProvider.getApiVersion(serverPath), '');
@@ -128,14 +128,14 @@ export class DiskTypeScriptVersionProvider implements ITypeScriptVersionProvider
 	}
 
 	private loadTypeScriptVersionsFromPath(source: TypeScriptVersionSource, relativePath: string): TypeScriptVersion[] {
-		if (!vscode.workspace.workspaceFolders) {
+		if (!docode.workspace.workspaceFolders) {
 			return [];
 		}
 
 		const versions: TypeScriptVersion[] = [];
-		for (const root of vscode.workspace.workspaceFolders) {
+		for (const root of docode.workspace.workspaceFolders) {
 			let label: string = relativePath;
-			if (vscode.workspace.workspaceFolders.length > 1) {
+			if (docode.workspace.workspaceFolders.length > 1) {
 				label = path.join(root.name, relativePath);
 			}
 
@@ -152,7 +152,7 @@ export class DiskTypeScriptVersionProvider implements ITypeScriptVersionProvider
 		}
 
 		// Allow TS developers to provide custom version
-		const tsdkVersion = vscode.workspace.getConfiguration().get<string | undefined>('typescript.tsdk_version', undefined);
+		const tsdkVersion = docode.workspace.getConfiguration().get<string | undefined>('typescript.tsdk_version', undefined);
 		if (tsdkVersion) {
 			return API.fromVersionString(tsdkVersion);
 		}

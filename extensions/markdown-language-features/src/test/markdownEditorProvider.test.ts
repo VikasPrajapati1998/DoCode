@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MarkdownContributions } from '../markdownExtensions';
 import { MarkdownPreviewLineDiffProvider } from '../preview/lineDiff';
 import { computeMarkdownEditorEdit, getInDocumentLinkTargetRange, getMarkdownCodeBlockEditorApiV1, getMarkdownCodeBlockEditorApiV2, isSupportedMarkdownCodeBlockEditorApiVersion, lineRangesToGutterMarkers, readMarkdownEditorEdit } from '../preview/markdownEditorProvider';
@@ -31,14 +31,14 @@ suite('Markdown editor links', () => {
 	});
 
 	test('maps sequential LF webview edits onto a CRLF document', () => {
-		const resource = vscode.Uri.file('/workspace/readme.md');
-		const first = computeMarkdownEditorEdit(resource, 'ab\r\n', vscode.EndOfLine.CRLF, 'ab\r\n', {
+		const resource = docode.Uri.file('/workspace/readme.md');
+		const first = computeMarkdownEditorEdit(resource, 'ab\r\n', docode.EndOfLine.CRLF, 'ab\r\n', {
 			start: 1,
 			endExclusive: 1,
 			text: '\n',
 			editEpoch: 0,
 		});
-		const second = first && computeMarkdownEditorEdit(resource, first.expectedDocumentText, vscode.EndOfLine.CRLF, first.nextWebviewText, {
+		const second = first && computeMarkdownEditorEdit(resource, first.expectedDocumentText, docode.EndOfLine.CRLF, first.nextWebviewText, {
 			start: 2,
 			endExclusive: 2,
 			text: 'x',
@@ -73,7 +73,7 @@ suite('Markdown editor links', () => {
 	});
 
 	test('maps only positioned links within the current document to source ranges', async () => {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: '# First\n\n## Target\n' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: '# First\n\n## Target\n' });
 		const targetPosition = { line: 2, character: 0 };
 
 		assert.deepStrictEqual({
@@ -116,20 +116,20 @@ suite('Markdown editor links', () => {
 			}),
 		}, {
 			currentDocument: {
-				start: document.offsetAt(new vscode.Position(2, 0)),
-				endExclusive: document.offsetAt(new vscode.Position(2, 9)),
-				selectionStart: document.offsetAt(new vscode.Position(2, 0)),
+				start: document.offsetAt(new docode.Position(2, 0)),
+				endExclusive: document.offsetAt(new docode.Position(2, 9)),
+				selectionStart: document.offsetAt(new docode.Position(2, 0)),
 			},
 			otherDocument: undefined,
 			currentDocumentRange: {
-				start: document.offsetAt(new vscode.Position(2, 0)),
-				endExclusive: document.offsetAt(new vscode.Position(2, 6)),
-				selectionStart: document.offsetAt(new vscode.Position(2, 0)),
+				start: document.offsetAt(new docode.Position(2, 0)),
+				endExclusive: document.offsetAt(new docode.Position(2, 6)),
+				selectionStart: document.offsetAt(new docode.Position(2, 0)),
 			},
 			currentDocumentColumn: {
-				start: document.offsetAt(new vscode.Position(2, 0)),
-				endExclusive: document.offsetAt(new vscode.Position(2, 9)),
-				selectionStart: document.offsetAt(new vscode.Position(2, 3)),
+				start: document.offsetAt(new docode.Position(2, 0)),
+				endExclusive: document.offsetAt(new docode.Position(2, 9)),
+				selectionStart: document.offsetAt(new docode.Position(2, 3)),
 			},
 			currentDocumentDifferentEol: {
 				start: 11,
@@ -202,8 +202,8 @@ suite('Markdown editor diff', () => {
 		},
 	]) {
 		test(`computes gutter markers for ${name} without changing preview indicators`, async () => {
-			const originalDocument = await vscode.workspace.openTextDocument({ language: 'markdown', content: original });
-			const modifiedDocument = await vscode.workspace.openTextDocument({ language: 'markdown', content: modified });
+			const originalDocument = await docode.workspace.openTextDocument({ language: 'markdown', content: original });
+			const modifiedDocument = await docode.workspace.openTextDocument({ language: 'markdown', content: modified });
 			const provider = new MarkdownPreviewLineDiffProvider(originalDocument, modifiedDocument);
 			const changes = await provider.getChangedLineRanges();
 			const previewChanges = await provider.getModifiedLineChanges();
@@ -217,11 +217,11 @@ suite('Markdown editor diff', () => {
 	}
 
 	test('maps modified-side line changes to quick diff gutter markers', async () => {
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: 'one\ntwo changed\nthree added\nfour\n' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: 'one\ntwo changed\nthree added\nfour\n' });
 		const changes = [
-			{ originalRange: new vscode.Range(1, 0, 2, 0), modifiedRange: new vscode.Range(1, 0, 2, 0) },
-			{ originalRange: new vscode.Range(2, 0, 2, 0), modifiedRange: new vscode.Range(2, 0, 3, 0) },
-			{ originalRange: new vscode.Range(3, 0, 4, 0), modifiedRange: new vscode.Range(3, 0, 3, 0) },
+			{ originalRange: new docode.Range(1, 0, 2, 0), modifiedRange: new docode.Range(1, 0, 2, 0) },
+			{ originalRange: new docode.Range(2, 0, 2, 0), modifiedRange: new docode.Range(2, 0, 3, 0) },
+			{ originalRange: new docode.Range(3, 0, 4, 0), modifiedRange: new docode.Range(3, 0, 3, 0) },
 		];
 
 		assert.deepStrictEqual(lineRangesToGutterMarkers(document, changes), [
@@ -328,7 +328,7 @@ suite('Markdown code block editor API versioning', () => {
 function readCodeBlockEditorProviders(source: unknown, runtimeKey?: string, presentation?: unknown) {
 	const extension = {
 		id: 'test.markdown-code-block-editor',
-		extensionUri: vscode.Uri.file('/test/markdown-code-block-editor'),
+		extensionUri: docode.Uri.file('/test/markdown-code-block-editor'),
 		packageJSON: {
 			version: '1.0.0',
 			contributes: {
@@ -341,6 +341,6 @@ function readCodeBlockEditorProviders(source: unknown, runtimeKey?: string, pres
 				}],
 			},
 		},
-	} as vscode.Extension<unknown>;
+	} as docode.Extension<unknown>;
 	return MarkdownContributions.fromExtension(extension).codeBlockEditorProviders;
 }

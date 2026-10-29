@@ -15,7 +15,7 @@ import { bundleDevTunnelsWeb, devTunnelsWebOutDir } from '../devTunnelsWeb.ts';
 suite('Dev Tunnels browser bundle source maps', () => {
 	for (const minify of [false, true]) {
 		test(`preserves scoped output and ${minify ? 'CDN' : 'local'} maps`, async t => {
-			const outDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-sdk-maps-'));
+			const outDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-sdk-maps-'));
 			t.after(() => fs.promises.rm(outDir, { recursive: true, force: true }));
 			const neighbor = path.join(outDir, 'neighbor.js');
 			const sentinel = '// An unrelated output must remain byte-for-byte.\r\n';

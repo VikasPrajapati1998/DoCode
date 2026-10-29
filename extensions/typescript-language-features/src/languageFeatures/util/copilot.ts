@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command } from '../../commands/commandManager';
 import { nulToken } from '../../utils/cancellation';
 import type * as Proto from '../../tsServer/protocol/protocol';
@@ -69,8 +69,8 @@ export class EditorChatFollowUp implements Command {
 							expand.action.changes.flatMap((c) => c.textChanges)
 						)
 						: expand.range;
-		const initialSelection = initialRange ? new vscode.Selection(initialRange.start, initialRange.end) : undefined;
-		await vscode.commands.executeCommand('vscode.editorChat.start', {
+		const initialSelection = initialRange ? new docode.Selection(initialRange.start, initialRange.end) : undefined;
+		await docode.commands.executeCommand('docode.editorChat.start', {
 			initialRange,
 			initialSelection,
 			message,
@@ -80,7 +80,7 @@ export class EditorChatFollowUp implements Command {
 }
 export interface EditorChatFollowUp_Args {
 	readonly message: string;
-	readonly document: vscode.TextDocument;
+	readonly document: docode.TextDocument;
 	readonly expand: Expand;
 	readonly action: {
 		readonly type: 'refactor';
@@ -95,9 +95,9 @@ export class CompositeCommand implements Command {
 	public static readonly ID = '_typescript.compositeCommand';
 	public readonly id = CompositeCommand.ID;
 
-	public async execute(...commands: vscode.Command[]): Promise<void> {
+	public async execute(...commands: docode.Command[]): Promise<void> {
 		for (const command of commands) {
-			await vscode.commands.executeCommand(
+			await docode.commands.executeCommand(
 				command.command,
 				...(command.arguments ?? [])
 			);
@@ -106,15 +106,15 @@ export class CompositeCommand implements Command {
 }
 
 export type Expand =
-	| { kind: 'none'; readonly range: vscode.Range }
-	| { kind: 'navtree-function'; readonly pos: vscode.Position }
+	| { kind: 'none'; readonly range: docode.Range }
+	| { kind: 'navtree-function'; readonly pos: docode.Position }
 	| { kind: 'refactor-info'; readonly refactor: Proto.RefactorEditInfo }
 	| { kind: 'code-action'; readonly action: Proto.CodeAction };
 
 function findScopeEndLineFromNavTreeWorker(
 	startLine: number,
 	navigationTree: Proto.NavigationTree[]
-): vscode.Range | undefined {
+): docode.Range | undefined {
 	for (const node of navigationTree) {
 		const range = typeConverters.Range.fromTextSpan(node.spans[0]);
 		if (startLine === range.start.line) {
@@ -132,7 +132,7 @@ function findScopeEndLineFromNavTreeWorker(
 
 async function findScopeEndLineFromNavTree(
 	client: ITypeScriptServiceClient,
-	document: vscode.TextDocument,
+	document: docode.TextDocument,
 	startLine: number
 ) {
 	const filepath = client.toOpenTsFilePath(document);
@@ -152,9 +152,9 @@ async function findScopeEndLineFromNavTree(
 
 async function findEditScope(
 	client: ITypeScriptServiceClient,
-	document: vscode.TextDocument,
+	document: docode.TextDocument,
 	edits: Proto.CodeEdit[]
-): Promise<vscode.Range> {
+): Promise<docode.Range> {
 	let first = typeConverters.Position.fromLocation(edits[0].start);
 	let firstEdit = edits[0];
 	let lastEdit = edits[0];
@@ -184,5 +184,5 @@ async function findEditScope(
 		document,
 		end.line
 	);
-	return new vscode.Range(start, expandEnd?.end ?? end);
+	return new docode.Range(start, expandEnd?.end ?? end);
 }

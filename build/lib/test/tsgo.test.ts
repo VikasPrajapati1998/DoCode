@@ -16,7 +16,7 @@ suite('tsgo completion callbacks', () => {
 	let project: string;
 
 	before(async () => {
-		root = await fs.mkdtemp(path.join(os.tmpdir(), 'vscode-tsgo-completion-'));
+		root = await fs.mkdtemp(path.join(os.tmpdir(), 'docode-tsgo-completion-'));
 		project = path.join(root, 'tsconfig.json');
 		await fs.writeFile(project, JSON.stringify({
 			compilerOptions: { types: [], target: 'es2024' },

@@ -188,9 +188,9 @@ const CONTENT_SCENARIOS = {
 			const b = new ScenarioBuilder();
 			b.emit('Here is the complete implementation:\n\n```typescript\n');
 			b.stream([
-				'import { Disposable, DisposableStore } from "vs/base/common/lifecycle";\n',
-				'import { Emitter, Event } from "vs/base/common/event";\n',
-				'import { URI } from "vs/base/common/uri";\n\n',
+				'import { Disposable, DisposableStore } from "do/base/common/lifecycle";\n',
+				'import { Emitter, Event } from "do/base/common/event";\n',
+				'import { URI } from "do/base/common/uri";\n\n',
 			], 10);
 			for (let i = 0; i < 40; i++) {
 				b.stream([
@@ -227,18 +227,18 @@ const CONTENT_SCENARIOS = {
 		description: '32 file references with line links',
 		chunks: (() => {
 			const files = [
-				'src/vs/workbench/contrib/chat/browser/chatListRenderer.ts',
-				'src/vs/workbench/contrib/chat/common/chatService/chatServiceImpl.ts',
-				'src/vs/workbench/contrib/chat/browser/widget/input/chatInputPart.ts',
-				'src/vs/workbench/contrib/chat/common/chatPerf.ts',
-				'src/vs/base/common/lifecycle.ts',
-				'src/vs/base/common/event.ts',
-				'src/vs/platform/instantiation/common/instantiation.ts',
-				'src/vs/workbench/services/extensions/common/abstractExtensionService.ts',
-				'src/vs/workbench/api/common/extHostLanguageModels.ts',
-				'src/vs/workbench/contrib/chat/common/languageModels.ts',
-				'src/vs/editor/browser/widget/codeEditor/editor.ts',
-				'src/vs/workbench/browser/parts/editor/editorGroupView.ts',
+				'src/do/workbench/contrib/chat/browser/chatListRenderer.ts',
+				'src/do/workbench/contrib/chat/common/chatService/chatServiceImpl.ts',
+				'src/do/workbench/contrib/chat/browser/widget/input/chatInputPart.ts',
+				'src/do/workbench/contrib/chat/common/chatPerf.ts',
+				'src/do/base/common/lifecycle.ts',
+				'src/do/base/common/event.ts',
+				'src/do/platform/instantiation/common/instantiation.ts',
+				'src/do/workbench/services/extensions/common/abstractExtensionService.ts',
+				'src/do/workbench/api/common/extHostLanguageModels.ts',
+				'src/do/workbench/contrib/chat/common/languageModels.ts',
+				'src/do/editor/browser/widget/codeEditor/editor.ts',
+				'src/do/workbench/browser/parts/editor/editorGroupView.ts',
 			];
 			const b = new ScenarioBuilder();
 			b.emit('I found references to the disposable pattern across the following files:\n\n');
@@ -249,12 +249,12 @@ const CONTENT_SCENARIOS = {
 					`Line ${line}: uses \`DisposableStore\` with ${Math.floor(Math.random() * 10) + 1} registrations\n`,
 				], 15);
 			}
-			b.wait(10, '\nAdditionally, the following files import from `vs/base/common/lifecycle`:\n\n');
+			b.wait(10, '\nAdditionally, the following files import from `do/base/common/lifecycle`:\n\n');
 			for (let i = 0; i < 20; i++) {
 				const depth = ['base', 'platform', 'editor', 'workbench'][i % 4];
 				const area = ['common', 'browser', 'node', 'electron-browser'][i % 4];
 				const name = ['service', 'provider', 'contribution', 'handler', 'manager'][i % 5];
-				const file = `src/vs/${depth}/${area}/${name}${i}.ts`;
+				const file = `src/do/${depth}/${area}/${name}${i}.ts`;
 				b.stream([
 					`- [${file}](${file}#L${i * 10 + 5})`,
 					` -- imports \`Disposable\`, \`DisposableStore\`\n`,
@@ -308,7 +308,7 @@ const TOOL_CALL_SCENARIOS = {
 						chunks: new ScenarioBuilder()
 							.wait(20, '## Analysis of VS Code Base Utilities\n\n')
 							.stream([
-								'I read 8 core utility files from `src/vs/base/common/`. Here is a summary:\n\n',
+								'I read 8 core utility files from `src/do/base/common/`. Here is a summary:\n\n',
 								'### lifecycle.ts\n',
 								'The `Disposable` base class provides the standard lifecycle pattern. Components register cleanup ',
 								'handlers via `this._register()` which are automatically disposed when the parent is disposed.\n\n',
@@ -384,9 +384,9 @@ const TOOL_CALL_SCENARIOS = {
 							.stream([
 								'I read 3 files and applied edits to 2 of them:\n\n',
 								'### Files read:\n',
-								'1. `src/vs/base/common/lifecycle.ts` — Disposable pattern and lifecycle management\n',
-								'2. `src/vs/base/common/event.ts` — Event emitter and observer pattern\n',
-								'3. `src/vs/base/common/errors.ts` — Error handling utilities\n\n',
+								'1. `src/do/base/common/lifecycle.ts` — Disposable pattern and lifecycle management\n',
+								'2. `src/do/base/common/event.ts` — Event emitter and observer pattern\n',
+								'3. `src/do/base/common/errors.ts` — Error handling utilities\n\n',
 								'### Edits applied:\n',
 								'1. **lifecycle.ts** — Updated the benchmark marker comment\n',
 								'2. **event.ts** — Updated the benchmark marker comment\n\n',

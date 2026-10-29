@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { LoopbackAuthServer } from '../../node/authServer';
-import { env } from 'vscode';
+import { env } from 'docode';
 
 suite('LoopbackAuthServer', () => {
 	let server: LoopbackAuthServer;

@@ -5,7 +5,7 @@
 
 /**
  * Shared definition of the Copilot "policy" endpoints that
- * `DefaultAccountService` (src/vs/workbench/services/accounts/browser/defaultAccount.ts)
+ * `DefaultAccountService` (src/do/workbench/services/accounts/browser/defaultAccount.ts)
  * calls, together with sample response bodies. This is the single source of
  * truth shared by the Node server (route table + default state) and the browser
  * GUI (endpoint tabs + preset dropdown), exported UMD-style so it loads in both
@@ -198,7 +198,7 @@ declare var MOCK_POLICY_ENDPOINTS: EndpointDef[];
 					status: 200,
 					body: {
 						extraKnownMarketplaces: {
-							'vscode-team-kit': {
+							'docode-team-kit': {
 								source: {
 									source: 'github',
 									repo: 'microsoft/vscode-team-kit'
@@ -242,7 +242,7 @@ declare var MOCK_POLICY_ENDPOINTS: EndpointDef[];
 					status: 466,
 					body: {
 						error_code: 'client_update_required',
-						client_id: 'vscode',
+						client_id: 'docode',
 						client_version: '1.132.0',
 						minimum_client_version: '1.133.0'
 					}

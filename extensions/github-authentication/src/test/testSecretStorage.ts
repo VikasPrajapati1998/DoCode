@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
-export class TestSecretStorage implements vscode.SecretStorage, vscode.Disposable {
+export class TestSecretStorage implements docode.SecretStorage, docode.Disposable {
 	private readonly values = new Map<string, string>();
-	private readonly changes = new vscode.EventEmitter<vscode.SecretStorageChangeEvent>();
+	private readonly changes = new docode.EventEmitter<docode.SecretStorageChangeEvent>();
 	readonly onDidChange = this.changes.event;
 
 	async keys(): Promise<string[]> { return [...this.values.keys()]; }

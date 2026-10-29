@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { commands, Disposable, ExtensionContext, extensions, l10n, LogLevel, LogOutputChannel, window } from 'vscode';
-import { TelemetryReporter } from '@vscode/extension-telemetry';
+import { commands, Disposable, ExtensionContext, extensions, l10n, LogLevel, LogOutputChannel, window } from 'docode';
+import TelemetryReporter from '@docode/extension-telemetry';
 import { GithubRemoteSourceProvider } from './remoteSourceProvider.js';
 import type { API, GitExtension } from './typings/git.d.ts';
 import { registerCommands } from './commands.js';
@@ -15,7 +15,7 @@ import { GitBaseExtension } from './typings/git-base.js';
 import { GithubRemoteSourcePublisher } from './remoteSourcePublisher.js';
 import { GitHubBranchProtectionProviderManager } from './branchProtection.js';
 import { GitHubCanonicalUriProvider } from './canonicalUriProvider.js';
-import { VscodeDevShareProvider } from './shareProviders.js';
+import { DocodeDevShareProvider } from './shareProviders.js';
 import { GitHubSourceControlHistoryItemDetailsProvider } from './historyItemDetailsProvider.js';
 import { OctokitService } from './auth.js';
 
@@ -66,7 +66,7 @@ function initializeGitBaseExtension(): Disposable {
 		}
 	};
 
-	const gitBaseExtension = extensions.getExtension<GitBaseExtension>('vscode.git-base')!.exports;
+	const gitBaseExtension = extensions.getExtension<GitBaseExtension>('docode.git-base')!.exports;
 	disposables.add(gitBaseExtension.onDidChangeEnablement(onDidChangeGitBaseExtensionEnablement));
 	onDidChangeGitBaseExtensionEnablement(gitBaseExtension.enabled);
 
@@ -91,7 +91,7 @@ function setGitHubContext(gitAPI: API, disposables: DisposableStore) {
 function initializeGitExtension(context: ExtensionContext, octokitService: OctokitService, telemetryReporter: TelemetryReporter, logger: LogOutputChannel): Disposable {
 	const disposables = new DisposableStore();
 
-	let gitExtension = extensions.getExtension<GitExtension>('vscode.git');
+	let gitExtension = extensions.getExtension<GitExtension>('docode.git');
 
 	const initialize = () => {
 		gitExtension!.activate()
@@ -107,7 +107,7 @@ function initializeGitExtension(context: ExtensionContext, octokitService: Octok
 						disposables.add(gitAPI.registerRemoteSourcePublisher(new GithubRemoteSourcePublisher(gitAPI)));
 						disposables.add(gitAPI.registerSourceControlHistoryItemDetailsProvider(new GitHubSourceControlHistoryItemDetailsProvider(gitAPI, octokitService, logger)));
 						disposables.add(new GitHubCanonicalUriProvider(gitAPI));
-						disposables.add(new VscodeDevShareProvider(gitAPI));
+						disposables.add(new DocodeDevShareProvider(gitAPI));
 						setGitHubContext(gitAPI, disposables);
 
 						commands.executeCommand('setContext', 'git-base.gitEnabled', true);
@@ -125,8 +125,8 @@ function initializeGitExtension(context: ExtensionContext, octokitService: Octok
 		initialize();
 	} else {
 		const listener = extensions.onDidChange(() => {
-			if (!gitExtension && extensions.getExtension<GitExtension>('vscode.git')) {
-				gitExtension = extensions.getExtension<GitExtension>('vscode.git');
+			if (!gitExtension && extensions.getExtension<GitExtension>('docode.git')) {
+				gitExtension = extensions.getExtension<GitExtension>('docode.git');
 				initialize();
 				listener.dispose();
 			}

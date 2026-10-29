@@ -91,7 +91,7 @@ export function prepareCloudSandbox(overrides: Partial<SandboxSetupOptions> = {}
 
 	const required = requiredVersion.split('.').map(Number);
 	const current = nodeVersion.split('.').map(Number);
-	const directory = path.join(home, '.local', 'share', 'vscode-cloud-sandbox');
+	const directory = path.join(home, '.local', 'share', 'docode-cloud-sandbox');
 	const nodeDirectory = path.join(directory, `node-v${requiredVersion}-linux-${arch}`);
 	const node = path.join(nodeDirectory, 'bin', 'node');
 	if (options.nodeExecutable !== node && current[0] === required[0] && (current[1] > required[1] || (current[1] === required[1] && current[2] >= required[2]))) {
@@ -157,7 +157,7 @@ export function prepareCloudSandbox(overrides: Partial<SandboxSetupOptions> = {}
 		if (destination === target) {
 			continue;
 		}
-		const temporaryLink = path.join(destinationDirectory, `.${executable}-vscode-cloud-${process.pid}`);
+		const temporaryLink = path.join(destinationDirectory, `.${executable}-docode-cloud-${process.pid}`);
 		fs.symlinkSync(target, temporaryLink);
 		try {
 			fs.renameSync(temporaryLink, destination);

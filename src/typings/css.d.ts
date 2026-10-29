@@ -5,5 +5,5 @@
 
 
 // Recognize all CSS files as valid module imports
-declare module "vs/css!*" { }
+declare module "do/css!*" { }
 declare module "*.css" { }

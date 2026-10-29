@@ -7,7 +7,7 @@ import {
 	TaskDefinition, Task, TaskGroup, WorkspaceFolder, RelativePattern, ShellExecution, Uri, workspace,
 	TaskProvider, TextDocument, tasks, TaskScope, QuickPickItem, window, Position, ExtensionContext, env,
 	ShellQuotedString, ShellQuoting, commands, Location, CancellationTokenSource, l10n
-} from 'vscode';
+} from 'docode';
 import * as path from 'path';
 import * as fs from 'fs';
 import minimatch from 'minimatch';
@@ -16,7 +16,7 @@ import { findPreferredPM } from './preferred-pm';
 import { readScripts } from './readScripts';
 import { getSafeNotificationMessage } from './notification';
 
-const excludeRegex = new RegExp('^(node_modules|.vscode-test)$', 'i');
+const excludeRegex = new RegExp('^(node_modules|.docode-test)$', 'i');
 
 export interface INpmTaskDefinition extends TaskDefinition {
 	script: string;
@@ -78,7 +78,7 @@ export class NpmTaskProvider implements TaskProvider {
 			} else {
 				task = await createScriptRunnerTask(this.context, kind.script, _task.scope, packageJsonUri);
 			}
-			// VSCode requires that task.definition must not change between resolutions
+			// DoCode requires that task.definition must not change between resolutions
 			// We need to restore task.definition to its original value
 			task.definition = kind;
 			return task;
@@ -197,7 +197,7 @@ async function* findNpmPackages(): AsyncGenerator<Uri> {
 	for (const folder of folders) {
 		if (isAutoDetectionEnabled(folder) && !excludeRegex.test(Utils.basename(folder.uri))) {
 			const relativePattern = new RelativePattern(folder, '**/package.json');
-			const paths = await workspace.findFiles(relativePattern, '**/{node_modules,.vscode-test}/**');
+			const paths = await workspace.findFiles(relativePattern, '**/{node_modules,.docode-test}/**');
 			for (const path of paths) {
 				if (!isExcluded(folder, path) && !visitedPackageJsonFiles.has(path.fsPath)) {
 					yield path;

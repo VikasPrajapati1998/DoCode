@@ -1,0 +1,22 @@
+{
+	"original": {
+		"content": "import { assertIsDefined } from 'do/base/common/types';\nimport { IInstantiationService, ServicesAccessor } from 'do/platform/instantiation/common/instantiation';\nimport { MenuId, Action2, IAction2Options, IMenuService, SubmenuItemAction } from 'do/platform/actions/common/actions';\nimport { createActionViewItem } from 'do/platform/actions/browser/menuEntryActionViewItem';\nimport { parseLinkedText } from 'do/base/common/linkedText';\nimport { IOpenerService } from 'do/platform/opener/common/opener';",
+		"fileName": "./1.tst"
+	},
+	"modified": {
+		"content": "import { assertIsDefined } from 'do/base/common/types';\nimport { IInstantiationService, ServicesAccessor } from 'do/platform/instantiation/common/instantiation';\nimport { MenuId, Action2, IAction2Options, SubmenuItemAction } from 'do/platform/actions/common/actions';\nimport { createActionViewItem } from 'do/platform/actions/browser/menuEntryActionViewItem';\nimport { parseLinkedText } from 'do/base/common/linkedText';\nimport { IOpenerService } from 'do/platform/opener/common/opener';",
+		"fileName": "./2.tst"
+	},
+	"diffs": [
+		{
+			"originalRange": "[3,4)",
+			"modifiedRange": "[3,4)",
+			"innerChanges": [
+				{
+					"originalRange": "[3,44 -> 3,58]",
+					"modifiedRange": "[3,44 -> 3,44]"
+				}
+			]
+		}
+	]
+}

@@ -5,7 +5,7 @@
 
 import { PublicClientApplication, AccountInfo, SilentFlowRequest, AuthenticationResult, InteractiveRequest, LogLevel, RefreshTokenRequest, BrokerOptions, DeviceCodeRequest } from '@azure/msal-node';
 import { NativeBrokerPlugin } from '@azure/msal-node-extensions';
-import { Disposable, SecretStorage, LogOutputChannel, window, ProgressLocation, l10n, EventEmitter, workspace, env, Uri, UIKind } from 'vscode';
+import { Disposable, SecretStorage, LogOutputChannel, window, ProgressLocation, l10n, EventEmitter, workspace, env, Uri, UIKind } from 'docode';
 import { DeferredPromise, raceCancellationAndTimeoutError } from '../common/async';
 import { SecretStorageCachePlugin } from '../common/cachePlugin';
 import { MsalLoggerOptions } from '../common/loggerOptions';

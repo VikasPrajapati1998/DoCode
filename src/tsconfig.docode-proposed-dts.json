@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.docode-dts.json",
+	"include": [
+		"docode-dts/docode.d.ts",
+		"docode-dts/docode.proposed.*.d.ts",
+	]
+}

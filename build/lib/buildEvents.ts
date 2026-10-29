@@ -40,8 +40,8 @@ export class BuildLifecycle {
 	}
 
 	private _emit(event: { event: 'start' } | { event: 'finish'; success: boolean }): void {
-		if (process.env.VSCODE_BUILD_EVENTS === '1') {
-			console.log(JSON.stringify({ type: 'vscode.build', version: 1, ...event }));
+		if (process.env.DOCODE_BUILD_EVENTS === '1') {
+			console.log(JSON.stringify({ type: 'docode.build', version: 1, ...event }));
 		}
 	}
 }

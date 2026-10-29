@@ -73,14 +73,14 @@ if defined SHOW_HELP (
 	echo Available suites:
 	echo   api-folder, api-workspace, colorize, terminal-suggest, typescript,
 	echo   markdown, emmet, git, git-base, ipynb, notebook-renderers,
-	echo   configuration-editing, github-authentication, copilot, css, html, json
+	echo   configuration-editing, github-authentication, css, html, json
 	echo.
 	echo All other options are forwarded to the node.js test runner ^(see scripts\test.bat --help^).
 	echo Note: extra options are not forwarded to extension host suites ^(--suite mode^).
 	echo.
 	echo Examples:
 	echo   %~nx0
-	echo   %~nx0 --run src\vs\editor\test\browser\controller.integrationTest.ts
+	echo   %~nx0 --run src\do\editor\test\browser\controller.integrationTest.ts
 	echo   %~nx0 --grep "some test name"
 	echo   %~nx0 --runGlob "**\*.integrationTest.js"
 	echo   %~nx0 --suite git                             # run only Git tests
@@ -102,46 +102,46 @@ if defined ONLY_EXTENSION_HOST_TESTS if defined HAS_FILTER (
 	exit /b 1
 )
 
-set VSCODEUSERDATADIR=%TEMP%\vscodeuserfolder-%RANDOM%-%TIME:~6,2%
-set VSCODECRASHDIR=%SCRIPT_DIR%\..\.build\crashes
-set VSCODELOGSDIR=%SCRIPT_DIR%\..\.build\logs\integration-tests
+set DOCODEUSERDATADIR=%TEMP%\docodeuserfolder-%RANDOM%-%TIME:~6,2%
+set DOCODECRASHDIR=%SCRIPT_DIR%\..\.build\crashes
+set DOCODELOGSDIR=%SCRIPT_DIR%\..\.build\logs\integration-tests
 
 :: Seed user settings to disable OS notifications (dock bounce, toast, etc.)
-if not exist "%VSCODEUSERDATADIR%\User" mkdir "%VSCODEUSERDATADIR%\User"
+if not exist "%DOCODEUSERDATADIR%\User" mkdir "%DOCODEUSERDATADIR%\User"
 (
 echo {
 echo 	"chat.notifyWindowOnConfirmation": "off",
 echo 	"chat.notifyWindowOnResponseReceived": "off"
 echo }
-) > "%VSCODEUSERDATADIR%\User\settings.json"
+) > "%DOCODEUSERDATADIR%\User\settings.json"
 
 :: Figure out which Electron to use for running tests
 if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 	chcp 65001
 	set INTEGRATION_TEST_ELECTRON_PATH=.\scripts\code.bat
-	set VSCODE_BUILD_BUILTIN_EXTENSIONS_SILENCE_PLEASE=1
+	set DOCODE_BUILD_BUILTIN_EXTENSIONS_SILENCE_PLEASE=1
 
 	echo Running integration tests out of sources.
 ) else (
-	set VSCODE_CLI=1
+	set DOCODE_CLI=1
 	set ELECTRON_ENABLE_LOGGING=1
 
 	echo Running integration tests with '%INTEGRATION_TEST_ELECTRON_PATH%' as build.
 )
 
-echo Storing crash reports into '%VSCODECRASHDIR%'.
-echo Storing log files into '%VSCODELOGSDIR%'.
+echo Storing crash reports into '%DOCODECRASHDIR%'.
+echo Storing log files into '%DOCODELOGSDIR%'.
 
 
 :: Validate --suite filter matches at least one known suite
 if defined SUITE_FILTER (
 	set "_any_match="
-	for %%s in (api-folder api-workspace colorize terminal-suggest typescript markdown emmet git git-base ipynb notebook-renderers configuration-editing github-authentication copilot css html json) do (
+	for %%s in (api-folder api-workspace colorize terminal-suggest typescript markdown emmet git git-base ipynb notebook-renderers configuration-editing github-authentication css html json) do (
 		call :should_run_suite %%s && set "_any_match=1"
 	)
 	if not defined _any_match (
 		echo Error: no suites match filter '%SUITE_FILTER%'
-		echo Available suites: api-folder api-workspace colorize terminal-suggest typescript markdown emmet git git-base ipynb notebook-renderers configuration-editing github-authentication copilot css html json
+		echo Available suites: api-folder api-workspace colorize terminal-suggest typescript markdown emmet git git-base ipynb notebook-renderers configuration-editing github-authentication css html json
 		goto :failed
 	)
 )
@@ -153,7 +153,7 @@ if defined SUITE_FILTER goto skip_nodejs_tests
 if defined ONLY_EXTENSION_HOST_TESTS goto skip_nodejs_tests
 echo.
 echo ### node.js integration tests
-call node --input-type=module -e "import { getAgentHostTestProfile } from './src/vs/platform/agentHost/test/node/agentHostTestProfile.ts'; console.log('Agent Host test profile:', getAgentHostTestProfile(), '(' + (process.env.AGENT_HOST_TEST_PROFILE_REASON ?? 'default') + ')');"
+call node --input-type=module -e "import { getAgentHostTestProfile } from './src/do/platform/agentHost/test/node/agentHostTestProfile.ts'; console.log('Agent Host test profile:', getAgentHostTestProfile(), '(' + (process.env.AGENT_HOST_TEST_PROFILE_REASON ?? 'default') + ')');"
 if errorlevel 1 goto :failed
 if defined RUN_GLOB (
 	call .\scripts\test.bat %*
@@ -170,12 +170,12 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 if not defined SUITE_FILTER if defined HAS_FILTER (
 	echo.
 	echo Filter active, skipping extension host tests.
-	rmdir /s /q "%VSCODEUSERDATADIR%" 2>nul
+	rmdir /s /q "%DOCODEUSERDATADIR%" 2>nul
 	exit /b 0
 )
 
 if defined ONLY_NODE_TESTS (
-	rmdir /s /q "%VSCODEUSERDATADIR%" 2>nul
+	rmdir /s /q "%DOCODEUSERDATADIR%" 2>nul
 	exit /b 0
 )
 
@@ -185,19 +185,19 @@ if defined ONLY_NODE_TESTS (
 :: Forward grep pattern to extension test runners
 if defined GREP_PATTERN set "MOCHA_GREP=%GREP_PATTERN%"
 
-set API_TESTS_EXTRA_ARGS=--disable-telemetry --disable-experiments --skip-welcome --skip-release-notes --crash-reporter-directory=%VSCODECRASHDIR% --logsPath=%VSCODELOGSDIR% --no-cached-data --disable-updates --use-inmemory-secretstorage --disable-extensions --disable-workspace-trust --user-data-dir=%VSCODEUSERDATADIR%
+set API_TESTS_EXTRA_ARGS=--disable-telemetry --disable-experiments --skip-welcome --skip-release-notes --crash-reporter-directory=%DOCODECRASHDIR% --logsPath=%DOCODELOGSDIR% --no-cached-data --disable-updates --use-inmemory-secretstorage --disable-extensions --disable-workspace-trust --user-data-dir=%DOCODEUSERDATADIR%
 
 call :should_run_suite api-folder || goto skip_api_folder
 echo.
 echo ### API tests (folder)
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %SCRIPT_DIR%\..\extensions\vscode-api-tests\testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=%SCRIPT_DIR%\..\extensions\vscode-api-tests --extensionTestsPath=%SCRIPT_DIR%\..\extensions\vscode-api-tests\out\singlefolder-tests %API_TESTS_EXTRA_ARGS%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %SCRIPT_DIR%\..\extensions\docode-api-tests\testWorkspace --enable-proposed-api=docode.docode-api-tests --extensionDevelopmentPath=%SCRIPT_DIR%\..\extensions\docode-api-tests --extensionTestsPath=%SCRIPT_DIR%\..\extensions\docode-api-tests\out\singlefolder-tests %API_TESTS_EXTRA_ARGS%
 if %errorlevel% neq 0 exit /b %errorlevel%
 :skip_api_folder
 
 call :should_run_suite api-workspace || goto skip_api_workspace
 echo.
 echo ### API tests (workspace)
-call "%INTEGRATION_TEST_ELECTRON_PATH%" %SCRIPT_DIR%\..\extensions\vscode-api-tests\testworkspace.code-workspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=%SCRIPT_DIR%\..\extensions\vscode-api-tests --extensionTestsPath=%SCRIPT_DIR%\..\extensions\vscode-api-tests\out\workspace-tests %API_TESTS_EXTRA_ARGS%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" %SCRIPT_DIR%\..\extensions\docode-api-tests\testworkspace.code-workspace --enable-proposed-api=docode.docode-api-tests --extensionDevelopmentPath=%SCRIPT_DIR%\..\extensions\docode-api-tests --extensionTestsPath=%SCRIPT_DIR%\..\extensions\docode-api-tests\out\workspace-tests %API_TESTS_EXTRA_ARGS%
 if %errorlevel% neq 0 exit /b %errorlevel%
 :skip_api_workspace
 
@@ -205,9 +205,9 @@ call :should_run_suite colorize || goto skip_colorize
 echo.
 echo ### Colorize tests
 if defined GREP_PATTERN (
-	call npm run test-extension -- -l vscode-colorize-tests --grep "%GREP_PATTERN%"
+	call npm run test-extension -- -l docode-colorize-tests --grep "%GREP_PATTERN%"
 ) else (
-	call npm run test-extension -- -l vscode-colorize-tests
+	call npm run test-extension -- -l docode-colorize-tests
 )
 if %errorlevel% neq 0 exit /b %errorlevel%
 :skip_colorize
@@ -216,9 +216,9 @@ call :should_run_suite terminal-suggest || goto skip_terminal_suggest
 echo.
 echo ### Terminal Suggest tests
 if defined GREP_PATTERN (
-	call npm run test-extension -- -l terminal-suggest --enable-proposed-api=vscode.vscode-api-tests --grep "%GREP_PATTERN%"
+	call npm run test-extension -- -l terminal-suggest --enable-proposed-api=docode.docode-api-tests --grep "%GREP_PATTERN%"
 ) else (
-	call npm run test-extension -- -l terminal-suggest --enable-proposed-api=vscode.vscode-api-tests
+	call npm run test-extension -- -l terminal-suggest --enable-proposed-api=docode.docode-api-tests
 )
 if %errorlevel% neq 0 exit /b %errorlevel%
 :skip_terminal_suggest
@@ -313,17 +313,6 @@ if defined GREP_PATTERN (
 if %errorlevel% neq 0 exit /b %errorlevel%
 :skip_github_authentication
 
-call :should_run_suite copilot || goto skip_copilot
-echo.
-echo ### Copilot tests
-if defined GREP_PATTERN (
-	call npm run test-extension -- -l copilot --grep "%GREP_PATTERN%"
-) else (
-	call npm run test-extension -- -l copilot
-)
-if %errorlevel% neq 0 exit /b %errorlevel%
-:skip_copilot
-
 :: Tests standalone (CommonJS)
 
 call :should_run_suite css || goto skip_css
@@ -350,7 +339,7 @@ if %errorlevel% neq 0 goto :failed
 
 :: Cleanup
 
-rmdir /s /q "%VSCODEUSERDATADIR%"
+rmdir /s /q "%DOCODEUSERDATADIR%"
 
 popd
 
@@ -369,7 +358,7 @@ for %%p in (%_filter%) do (
 exit /b 1
 
 :failed
-if defined VSCODEUSERDATADIR rmdir /s /q "%VSCODEUSERDATADIR%" 2>nul
+if defined DOCODEUSERDATADIR rmdir /s /q "%DOCODEUSERDATADIR%" 2>nul
 popd
 endlocal
 exit /b 1

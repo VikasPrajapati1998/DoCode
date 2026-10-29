@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
-export class GitCommitFoldingProvider implements vscode.FoldingRangeProvider {
+export class GitCommitFoldingProvider implements docode.FoldingRangeProvider {
 
 	provideFoldingRanges(
-		document: vscode.TextDocument,
-		_context: vscode.FoldingContext,
-		_token: vscode.CancellationToken
-	): vscode.ProviderResult<vscode.FoldingRange[]> {
-		const ranges: vscode.FoldingRange[] = [];
+		document: docode.TextDocument,
+		_context: docode.FoldingContext,
+		_token: docode.CancellationToken
+	): docode.ProviderResult<docode.FoldingRange[]> {
+		const ranges: docode.FoldingRange[] = [];
 
 		let commentBlockStart: number | undefined;
 		let currentDiffStart: number | undefined;
@@ -27,7 +27,7 @@ export class GitCommitFoldingProvider implements vscode.FoldingRangeProvider {
 				if (currentDiffStart !== undefined) {
 					// Only create fold if there are at least 2 lines
 					if (i - currentDiffStart > 1) {
-						ranges.push(new vscode.FoldingRange(currentDiffStart, i - 1));
+						ranges.push(new docode.FoldingRange(currentDiffStart, i - 1));
 					}
 					currentDiffStart = undefined;
 				}
@@ -40,10 +40,10 @@ export class GitCommitFoldingProvider implements vscode.FoldingRangeProvider {
 				if (commentBlockStart !== undefined) {
 					// Only create fold if there are at least 2 lines
 					if (i - commentBlockStart > 1) {
-						ranges.push(new vscode.FoldingRange(
+						ranges.push(new docode.FoldingRange(
 							commentBlockStart,
 							i - 1,
-							vscode.FoldingRangeKind.Comment
+							docode.FoldingRangeKind.Comment
 						));
 					}
 					commentBlockStart = undefined;
@@ -56,7 +56,7 @@ export class GitCommitFoldingProvider implements vscode.FoldingRangeProvider {
 				if (currentDiffStart !== undefined) {
 					// Only create fold if there are at least 2 lines
 					if (i - currentDiffStart > 1) {
-						ranges.push(new vscode.FoldingRange(currentDiffStart, i - 1));
+						ranges.push(new docode.FoldingRange(currentDiffStart, i - 1));
 					}
 				}
 				// Start new diff block
@@ -69,10 +69,10 @@ export class GitCommitFoldingProvider implements vscode.FoldingRangeProvider {
 		// If comment block extends to end of document
 		if (commentBlockStart !== undefined) {
 			if (document.lineCount - commentBlockStart > 1) {
-				ranges.push(new vscode.FoldingRange(
+				ranges.push(new docode.FoldingRange(
 					commentBlockStart,
 					document.lineCount - 1,
-					vscode.FoldingRangeKind.Comment
+					docode.FoldingRangeKind.Comment
 				));
 			}
 		}
@@ -80,7 +80,7 @@ export class GitCommitFoldingProvider implements vscode.FoldingRangeProvider {
 		// If diff block extends to end of document
 		if (currentDiffStart !== undefined) {
 			if (document.lineCount - currentDiffStart > 1) {
-				ranges.push(new vscode.FoldingRange(
+				ranges.push(new docode.FoldingRange(
 					currentDiffStart,
 					document.lineCount - 1
 				));

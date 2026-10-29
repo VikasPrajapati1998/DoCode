@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { PluginManager } from './tsServer/plugins';
 
 class ApiV0 {
 	public constructor(
-		public readonly onCompletionAccepted: vscode.Event<vscode.CompletionItem & { metadata?: any }>,
+		public readonly onCompletionAccepted: docode.Event<docode.CompletionItem & { metadata?: any }>,
 		private readonly _pluginManager: PluginManager,
 	) { }
 
@@ -22,7 +22,7 @@ export interface Api {
 }
 
 export function getExtensionApi(
-	onCompletionAccepted: vscode.Event<vscode.CompletionItem>,
+	onCompletionAccepted: docode.Event<docode.CompletionItem>,
 	pluginManager: PluginManager,
 ): Api {
 	return {

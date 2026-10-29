@@ -7,7 +7,7 @@ import * as cp from 'child_process';
 import { StringDecoder } from 'string_decoder';
 import which from 'which';
 import * as path from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ThrottledDelayer } from './utils/async';
 import { getSafeNotificationMessage } from './utils/notification';
 
@@ -93,8 +93,8 @@ export default class PHPValidationProvider {
 	private config: IPhpConfig | undefined;
 	private loadConfigP: Promise<void>;
 
-	private documentListener: vscode.Disposable | null = null;
-	private diagnosticCollection?: vscode.DiagnosticCollection;
+	private documentListener: docode.Disposable | null = null;
+	private diagnosticCollection?: docode.DiagnosticCollection;
 	private delayers?: { [key: string]: ThrottledDelayer<void> };
 
 	constructor() {
@@ -103,13 +103,13 @@ export default class PHPValidationProvider {
 		this.loadConfigP = this.loadConfiguration();
 	}
 
-	public activate(subscriptions: vscode.Disposable[]) {
-		this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
+	public activate(subscriptions: docode.Disposable[]) {
+		this.diagnosticCollection = docode.languages.createDiagnosticCollection();
 		subscriptions.push(this);
-		subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => this.loadConfigP = this.loadConfiguration()));
+		subscriptions.push(docode.workspace.onDidChangeConfiguration(() => this.loadConfigP = this.loadConfiguration()));
 
-		vscode.workspace.onDidOpenTextDocument(this.triggerValidate, this, subscriptions);
-		vscode.workspace.onDidCloseTextDocument((textDocument) => {
+		docode.workspace.onDidOpenTextDocument(this.triggerValidate, this, subscriptions);
+		docode.workspace.onDidCloseTextDocument((textDocument) => {
 			this.diagnosticCollection!.delete(textDocument.uri);
 			if (this.delayers) {
 				delete this.delayers[textDocument.uri.toString()];
@@ -135,7 +135,7 @@ export default class PHPValidationProvider {
 	}
 
 	private async loadConfiguration(): Promise<void> {
-		const section = vscode.workspace.getConfiguration();
+		const section = docode.workspace.getConfiguration();
 		const oldExecutable = this.config?.executable;
 		this.validationEnabled = section.get<boolean>(Setting.Enable, true);
 
@@ -157,24 +157,24 @@ export default class PHPValidationProvider {
 		this.diagnosticCollection!.clear();
 		if (this.validationEnabled) {
 			if (this.config.trigger === RunTrigger.onType) {
-				this.documentListener = vscode.workspace.onDidChangeTextDocument((e) => {
+				this.documentListener = docode.workspace.onDidChangeTextDocument((e) => {
 					this.triggerValidate(e.document);
 				});
 			} else {
-				this.documentListener = vscode.workspace.onDidSaveTextDocument(this.triggerValidate, this);
+				this.documentListener = docode.workspace.onDidSaveTextDocument(this.triggerValidate, this);
 			}
 			// Configuration has changed. Reevaluate all documents.
-			vscode.workspace.textDocuments.forEach(this.triggerValidate, this);
+			docode.workspace.textDocuments.forEach(this.triggerValidate, this);
 		}
 	}
 
-	private async triggerValidate(textDocument: vscode.TextDocument): Promise<void> {
+	private async triggerValidate(textDocument: docode.TextDocument): Promise<void> {
 		await this.loadConfigP;
 		if (textDocument.languageId !== 'php' || this.pauseValidation || !this.validationEnabled) {
 			return;
 		}
 
-		if (vscode.workspace.isTrusted) {
+		if (docode.workspace.isTrusted) {
 			const key = textDocument.uri.toString();
 			let delayer = this.delayers![key];
 			if (!delayer) {
@@ -185,11 +185,11 @@ export default class PHPValidationProvider {
 		}
 	}
 
-	private doValidate(textDocument: vscode.TextDocument): Promise<void> {
+	private doValidate(textDocument: docode.TextDocument): Promise<void> {
 		return new Promise<void>(resolve => {
 			const executable = this.config!.executable;
 			if (!executable) {
-				this.showErrorMessage(vscode.l10n.t("Cannot validate since a PHP installation could not be found. Use the setting 'php.validate.executablePath' to configure the PHP executable."));
+				this.showErrorMessage(docode.l10n.t("Cannot validate since a PHP installation could not be found. Use the setting 'php.validate.executablePath' to configure the PHP executable."));
 				this.pauseValidation = true;
 				resolve();
 				return;
@@ -202,21 +202,21 @@ export default class PHPValidationProvider {
 			}
 
 			const decoder = new LineDecoder();
-			const diagnostics: vscode.Diagnostic[] = [];
+			const diagnostics: docode.Diagnostic[] = [];
 			const processLine = (line: string) => {
 				const matches = line.match(PHPValidationProvider.MatchExpression);
 				if (matches) {
 					const message = matches[1];
 					const line = parseInt(matches[3]) - 1;
-					const diagnostic: vscode.Diagnostic = new vscode.Diagnostic(
-						new vscode.Range(line, 0, line, 2 ** 31 - 1), // See https://github.com/microsoft/vscode/issues/80288#issuecomment-650636442 for discussion
+					const diagnostic: docode.Diagnostic = new docode.Diagnostic(
+						new docode.Range(line, 0, line, 2 ** 31 - 1), // See https://github.com/microsoft/vscode/issues/80288#issuecomment-650636442 for discussion
 						message
 					);
 					diagnostics.push(diagnostic);
 				}
 			};
 
-			const options = (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) ? { cwd: vscode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
+			const options = (docode.workspace.workspaceFolders && docode.workspace.workspaceFolders[0]) ? { cwd: docode.workspace.workspaceFolders[0].uri.fsPath } : undefined;
 			let args: string[];
 			if (this.config!.trigger === RunTrigger.onSave) {
 				args = PHPValidationProvider.FileArgs.slice(0);
@@ -264,12 +264,12 @@ export default class PHPValidationProvider {
 		let message: string | null = null;
 		if (error.code === 'ENOENT') {
 			if (this.config!.executable) {
-				message = vscode.l10n.t("Cannot validate since {0} is not a valid php executable. Use the setting 'php.validate.executablePath' to configure the PHP executable.", executable);
+				message = docode.l10n.t("Cannot validate since {0} is not a valid php executable. Use the setting 'php.validate.executablePath' to configure the PHP executable.", executable);
 			} else {
-				message = vscode.l10n.t("Cannot validate since no PHP executable is set. Use the setting 'php.validate.executablePath' to configure the PHP executable.");
+				message = docode.l10n.t("Cannot validate since no PHP executable is set. Use the setting 'php.validate.executablePath' to configure the PHP executable.");
 			}
 		} else {
-			message = error.message ? error.message : vscode.l10n.t("Failed to run php using path: {0}. Reason is unknown.", executable);
+			message = error.message ? error.message : docode.l10n.t("Failed to run php using path: {0}. Reason is unknown.", executable);
 		}
 		if (!message) {
 			return;
@@ -279,16 +279,16 @@ export default class PHPValidationProvider {
 	}
 
 	private async showErrorMessage(message: string): Promise<void> {
-		const openSettings = vscode.l10n.t("Open Settings");
+		const openSettings = docode.l10n.t("Open Settings");
 		const safeMessage = getSafeNotificationMessage(
 			message,
-			vscode.l10n.t("PHP validation could not be started. Use the setting 'php.validate.executablePath' to configure the PHP executable."),
+			docode.l10n.t("PHP validation could not be started. Use the setting 'php.validate.executablePath' to configure the PHP executable."),
 		);
 		if (safeMessage !== message) {
 			console.error(message);
 		}
-		if (await vscode.window.showInformationMessage(safeMessage, openSettings) === openSettings) {
-			vscode.commands.executeCommand('workbench.action.openSettings', Setting.ExecutablePath);
+		if (await docode.window.showInformationMessage(safeMessage, openSettings) === openSettings) {
+			docode.commands.executeCommand('workbench.action.openSettings', Setting.ExecutablePath);
 		}
 	}
 }
@@ -300,7 +300,7 @@ interface IPhpConfig {
 }
 
 async function getConfig(): Promise<IPhpConfig> {
-	const section = vscode.workspace.getConfiguration();
+	const section = docode.workspace.getConfiguration();
 
 	let executable: string | undefined;
 	let executableIsUserDefined: boolean | undefined;
@@ -317,9 +317,9 @@ async function getConfig(): Promise<IPhpConfig> {
 	}
 
 	if (executable && !path.isAbsolute(executable)) {
-		const first = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0];
+		const first = docode.workspace.workspaceFolders && docode.workspace.workspaceFolders[0];
 		if (first) {
-			executable = vscode.Uri.joinPath(first.uri, executable).fsPath;
+			executable = docode.Uri.joinPath(first.uri, executable).fsPath;
 		} else {
 			executable = undefined;
 		}

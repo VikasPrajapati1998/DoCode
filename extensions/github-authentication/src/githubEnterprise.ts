@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { CANCELLATION_ERROR } from './common/errors';
 import { enterpriseUrisSetting } from './common/enterpriseConfiguration';
 import { getEnterpriseStorageKey, getEnterpriseUriKey, migrateEnterpriseStorage } from './common/enterpriseStorage';
@@ -11,11 +11,11 @@ import { GitHubSessionEngine, UriEventHandler } from './github';
 
 interface EnterpriseHost {
 	readonly key: string;
-	readonly uri: vscode.Uri;
-	readonly authorizationServer: vscode.Uri;
+	readonly uri: docode.Uri;
+	readonly authorizationServer: docode.Uri;
 	readonly engine: GitHubSessionEngine;
-	readonly listener: vscode.Disposable;
-	readonly initialChanges: Map<string, vscode.AuthenticationSession | undefined>;
+	readonly listener: docode.Disposable;
+	readonly initialChanges: Map<string, docode.AuthenticationSession | undefined>;
 }
 
 function disposeHost(host: EnterpriseHost): void {
@@ -24,7 +24,7 @@ function disposeHost(host: EnterpriseHost): void {
 	host.initialChanges.clear();
 }
 
-function reconcileInitialSessions(host: EnterpriseHost, sessions: readonly vscode.AuthenticationSession[]): vscode.AuthenticationSession[] {
+function reconcileInitialSessions(host: EnterpriseHost, sessions: readonly docode.AuthenticationSession[]): docode.AuthenticationSession[] {
 	const current = new Map(sessions.map(session => [session.id, session]));
 	for (const [id, session] of host.initialChanges) {
 		if (session) {
@@ -37,21 +37,21 @@ function reconcileInitialSessions(host: EnterpriseHost, sessions: readonly vscod
 	return [...current.values()];
 }
 
-export class GitHubEnterpriseAuthenticationProvider implements vscode.AuthenticationProvider, vscode.Disposable {
-	private readonly _onDidChangeSessions = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
+export class GitHubEnterpriseAuthenticationProvider implements docode.AuthenticationProvider, docode.Disposable {
+	private readonly _onDidChangeSessions = new docode.EventEmitter<docode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
 	readonly onDidChangeSessions = this._onDidChangeSessions.event;
 	private _hosts = new Map<string, EnterpriseHost>();
-	private readonly _disposeCancellation = new vscode.CancellationTokenSource();
+	private readonly _disposeCancellation = new docode.CancellationTokenSource();
 	private _pendingUpdate: Promise<void> = Promise.resolve();
-	private _registration: vscode.Disposable | undefined;
-	private _configurationError = vscode.l10n.t('Configure {0} before signing in to GitHub Enterprise.', enterpriseUrisSetting);
+	private _registration: docode.Disposable | undefined;
+	private _configurationError = docode.l10n.t('Configure {0} before signing in to GitHub Enterprise.', enterpriseUrisSetting);
 
 	constructor(
-		private readonly _context: vscode.ExtensionContext,
+		private readonly _context: docode.ExtensionContext,
 		private readonly _uriHandler: UriEventHandler
 	) { }
 
-	update(uris: readonly vscode.Uri[], options?: { readonly error?: string; readonly legacyUri?: vscode.Uri }): Promise<void> {
+	update(uris: readonly docode.Uri[], options?: { readonly error?: string; readonly legacyUri?: docode.Uri }): Promise<void> {
 		const update = async () => {
 			try {
 				await this.applyConfiguration(uris, options);
@@ -74,17 +74,17 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 		}
 	}
 
-	private async applyConfiguration(uris: readonly vscode.Uri[], options?: { readonly error?: string; readonly legacyUri?: vscode.Uri }): Promise<void> {
+	private async applyConfiguration(uris: readonly docode.Uri[], options?: { readonly error?: string; readonly legacyUri?: docode.Uri }): Promise<void> {
 		this.throwIfDisposed();
 		const keys = [...new Set(uris.map(getEnterpriseUriKey))].sort();
 		const addedKeys = keys.filter(key => !this._hosts.has(key));
 		const retired = [...this._hosts.values()].filter(host => !keys.includes(host.key));
-		this._configurationError = options?.error ?? vscode.l10n.t('Configure {0} before signing in to GitHub Enterprise.', enterpriseUrisSetting);
+		this._configurationError = options?.error ?? docode.l10n.t('Configure {0} before signing in to GitHub Enterprise.', enterpriseUrisSetting);
 		if (this._registration && !addedKeys.length && !retired.length) {
 			return;
 		}
 		for (const key of addedKeys) {
-			await migrateEnterpriseStorage(this._context, vscode.Uri.parse(key), uris, options?.legacyUri);
+			await migrateEnterpriseStorage(this._context, docode.Uri.parse(key), uris, options?.legacyUri);
 			this.throwIfDisposed();
 		}
 		const created = this.createHosts(addedKeys);
@@ -118,13 +118,13 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 	}
 
 	private createHost(key: string): EnterpriseHost {
-		const uri = vscode.Uri.parse(key);
+		const uri = docode.Uri.parse(key);
 		const engine = new GitHubSessionEngine(this._context, this._uriHandler, uri, getEnterpriseStorageKey(uri));
-		const initialChanges = new Map<string, vscode.AuthenticationSession | undefined>();
+		const initialChanges = new Map<string, docode.AuthenticationSession | undefined>();
 		const host: EnterpriseHost = {
 			key,
 			uri,
-			authorizationServer: vscode.Uri.joinPath(uri, '/login/oauth'),
+			authorizationServer: docode.Uri.joinPath(uri, '/login/oauth'),
 			engine,
 			initialChanges,
 			listener: engine.onDidChangeSessions(event => {
@@ -141,7 +141,7 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 		return host;
 	}
 
-	private commitHosts(keys: readonly string[], created: readonly EnterpriseHost[], retired: readonly EnterpriseHost[], event: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent): void {
+	private commitHosts(keys: readonly string[], created: readonly EnterpriseHost[], retired: readonly EnterpriseHost[], event: docode.AuthenticationProviderAuthenticationSessionsChangeEvent): void {
 		const added = new Map(created.map(host => [host.key, host]));
 		this._hosts = new Map(keys.map(key => [key, added.get(key) ?? this._hosts.get(key)!]));
 		this.registerProvider();
@@ -153,7 +153,7 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 
 	private registerProvider(): void {
 		this._registration?.dispose();
-		this._registration = vscode.authentication.registerAuthenticationProvider('github-enterprise', 'GitHub Enterprise', this, {
+		this._registration = docode.authentication.registerAuthenticationProvider('github-enterprise', 'GitHub Enterprise', this, {
 			supportsMultipleAccounts: true,
 			supportedAuthorizationServers: [...this._hosts.values()].map(host => host.authorizationServer)
 		});
@@ -161,11 +161,11 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 
 	private throwIfDisposed(): void {
 		if (this._disposeCancellation.token.isCancellationRequested) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 	}
 
-	async getSessions(scopes?: readonly string[], options: vscode.AuthenticationProviderSessionOptions = {}): Promise<vscode.AuthenticationSession[]> {
+	async getSessions(scopes?: readonly string[], options: docode.AuthenticationProviderSessionOptions = {}): Promise<docode.AuthenticationSession[]> {
 		const host = await this.resolveHost(options);
 		const candidates = host ? [host] : [...this._hosts.values()];
 		const sessions = await Promise.all(candidates.map(async candidate => {
@@ -178,7 +178,7 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 		return sessions.flat();
 	}
 
-	async createSession(scopes: readonly string[], options: vscode.AuthenticationProviderSessionOptions = {}): Promise<vscode.AuthenticationSession> {
+	async createSession(scopes: readonly string[], options: docode.AuthenticationProviderSessionOptions = {}): Promise<docode.AuthenticationSession> {
 		let host = await this.resolveHost(options);
 		if (!host) {
 			const hosts = [...this._hosts.values()];
@@ -188,9 +188,9 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 			if (hosts.length === 1) {
 				host = hosts[0];
 			} else {
-				const selected = await vscode.window.showQuickPick(hosts.map(host => ({ label: host.uri.toString(true), host })), {
-					title: vscode.l10n.t('Sign in to GitHub Enterprise'),
-					placeHolder: vscode.l10n.t('Select the GitHub Enterprise instance to sign in to'),
+				const selected = await docode.window.showQuickPick(hosts.map(host => ({ label: host.uri.toString(true), host })), {
+					title: docode.l10n.t('Sign in to GitHub Enterprise'),
+					placeHolder: docode.l10n.t('Select the GitHub Enterprise instance to sign in to'),
 					ignoreFocusOut: true
 				});
 				if (!selected) {
@@ -213,22 +213,22 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 			}
 		}
 		if (!matches.length) {
-			throw new Error(vscode.l10n.t('The GitHub Enterprise session does not belong to a configured instance.'));
+			throw new Error(docode.l10n.t('The GitHub Enterprise session does not belong to a configured instance.'));
 		}
 		if (matches.length > 1) {
-			throw new Error(vscode.l10n.t('The GitHub Enterprise session ID matches more than one configured instance.'));
+			throw new Error(docode.l10n.t('The GitHub Enterprise session ID matches more than one configured instance.'));
 		}
 		this.requireConfiguredHost(matches[0]);
 		await matches[0].engine.removeSession(id);
 	}
 
-	private async resolveHost(options: vscode.AuthenticationProviderSessionOptions): Promise<EnterpriseHost | undefined> {
+	private async resolveHost(options: docode.AuthenticationProviderSessionOptions): Promise<EnterpriseHost | undefined> {
 		let serverHost: EnterpriseHost | undefined;
 		if (options.authorizationServer) {
 			const key = getEnterpriseUriKey(options.authorizationServer);
 			serverHost = [...this._hosts.values()].find(host => getEnterpriseUriKey(host.authorizationServer) === key);
 			if (!serverHost) {
-				throw new Error(vscode.l10n.t('The requested GitHub Enterprise authorization server is not configured.'));
+				throw new Error(docode.l10n.t('The requested GitHub Enterprise authorization server is not configured.'));
 			}
 		}
 		const accountHosts: EnterpriseHost[] = [];
@@ -242,14 +242,14 @@ export class GitHubEnterpriseAuthenticationProvider implements vscode.Authentica
 			}
 		}
 		if (serverHost && accountHosts.length && !accountHosts.includes(serverHost)) {
-			throw new Error(vscode.l10n.t('The GitHub Enterprise account and authorization server belong to different instances.'));
+			throw new Error(docode.l10n.t('The GitHub Enterprise account and authorization server belong to different instances.'));
 		}
 		return serverHost ?? (accountHosts.length === 1 ? accountHosts[0] : undefined);
 	}
 
 	private requireConfiguredHost(host: EnterpriseHost): void {
 		if (this._hosts.get(getEnterpriseUriKey(host.uri)) !== host) {
-			throw new Error(vscode.l10n.t('The selected GitHub Enterprise instance is no longer configured.'));
+			throw new Error(docode.l10n.t('The selected GitHub Enterprise instance is no longer configured.'));
 		}
 	}
 

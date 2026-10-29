@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.changes-action-view-item {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	cursor: pointer;
+	padding: 0 4px;
+	border-radius: var(--docode-cornerRadius-small);
+}
+
+.changes-action-view-item:hover {
+	background-color: var(--docode-toolbar-hoverBackground);
+}
+
+.changes-action-view-item .changes-action-icon {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	font-size: 14px;
+}
+
+.changes-action-view-item .changes-action-added {
+	color: var(--docode-gitDecoration-addedResourceForeground);
+}
+
+.changes-action-view-item .changes-action-removed {
+	color: var(--docode-gitDecoration-deletedResourceForeground);
+}

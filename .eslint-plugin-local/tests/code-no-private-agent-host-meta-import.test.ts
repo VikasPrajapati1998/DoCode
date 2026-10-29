@@ -14,16 +14,16 @@ RuleTester.describe = suite;
 RuleTester.it = test;
 
 const repositoryRoot = posix.normalize(`${import.meta.dirname.replace(/\\/g, '/')}/../..`);
-const metadataDirectory = 'src/vs/platform/agentHost/common/meta';
-const metadataAlias = 'vs/platform/agentHost/common/meta';
+const metadataDirectory = 'src/do/platform/agentHost/common/meta';
+const metadataAlias = 'do/platform/agentHost/common/meta';
 const featureFiles = [
-	'src/vs/platform/agentHost/node/copilot/copilotAgentSession.ts',
-	'src/vs/platform/agentHost/common/state/sessionState.ts',
-	'src/vs/workbench/contrib/chat/browser/agentSessions/agentHost/stateToProgressAdapter.ts',
-	'src/vs/sessions/contrib/providers/agentHost/browser/baseAgentHostSessionsProvider.ts',
-	'src/vs/base/common/feature.ts',
+	'src/do/platform/agentHost/node/copilot/copilotAgentSession.ts',
+	'src/do/platform/agentHost/common/state/sessionState.ts',
+	'src/do/workbench/contrib/chat/browser/agentSessions/agentHost/stateToProgressAdapter.ts',
+	'src/do/sessions/contrib/providers/agentHost/browser/baseAgentHostSessionsProvider.ts',
+	'src/do/base/common/feature.ts',
 ];
-const privateDirectories = ['copilotd', 'vscode'];
+const privateDirectories = ['copilotd', 'docode'];
 const importForms = [
 	{ name: 'value import', code: (source: string) => `import { metadata } from '${source}';` },
 	{ name: 'side-effect import', code: (source: string) => `import '${source}';` },
@@ -66,7 +66,7 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-pr
 			},
 			{
 				name: `${directory} parsing test`,
-				filename: `${repositoryRoot}/src/vs/platform/agentHost/test/common/metadata.test.ts`,
+				filename: `${repositoryRoot}/src/do/platform/agentHost/test/common/metadata.test.ts`,
 				code: `import { metadata } from '${metadataAlias}/${directory}/copilotdMetadata.js';`,
 			},
 			{
@@ -82,15 +82,15 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-pr
 		]),
 		...[
 			`${metadataAlias}/copilotd.ts`,
-			`${metadataAlias}/vscode.js`,
+			`${metadataAlias}/docode.js`,
 			`${metadataAlias}/copilotdata/reader.js`,
-			`${metadataAlias}/vscodeExtra/reader.js`,
-			'vs/platform/agentHost/node/copilot/provider.js',
-			'vs/platform/agentHost/node/vscode/provider.js',
-			'vs/workbench/contrib/copilotd/reader.js',
-			'vs/workbench/contrib/vscode/reader.js',
-			'vs/platform/other/common/meta/copilotd/reader.js',
-			'vs/platform/agentHost/common/metadata/vscode/reader.js',
+			`${metadataAlias}/docodeExtra/reader.js`,
+			'do/platform/agentHost/node/copilot/provider.js',
+			'do/platform/agentHost/node/docode/provider.js',
+			'do/workbench/contrib/copilotd/reader.js',
+			'do/workbench/contrib/docode/reader.js',
+			'do/platform/other/common/meta/copilotd/reader.js',
+			'do/platform/agentHost/common/metadata/docode/reader.js',
 			`${metadataAlias}/copilotd/../agentToolCallMeta.js`,
 		].map(source => ({
 			name: `unrestricted path ${source}`,
@@ -109,12 +109,12 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-pr
 		},
 		{
 			name: 'Windows top-level adapter',
-			filename: String.raw`C:\repo\src\vs\platform\agentHost\common\meta\agentToolCallMeta.ts`,
+			filename: String.raw`C:\repo\src\do\platform\agentHost\common\meta\agentToolCallMeta.ts`,
 			code: `import type { Metadata } from './copilotd/copilotdMetadata.js';`,
 		},
 		{
 			name: 'Windows private implementation',
-			filename: String.raw`C:\repo\src\vs\platform\agentHost\common\meta\vscode\reader.ts`,
+			filename: String.raw`C:\repo\src\do\platform\agentHost\common\meta\docode\reader.ts`,
 			code: `import { metadata } from './nested/reader.js';`,
 		},
 	],
@@ -164,7 +164,7 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-pr
 			},
 			{
 				name: `${directory} cross-private import`,
-				filename: `${repositoryRoot}/${metadataDirectory}/${directory === 'vscode' ? 'copilotd' : 'vscode'}/reader.ts`,
+				filename: `${repositoryRoot}/${metadataDirectory}/${directory === 'docode' ? 'copilotd' : 'docode'}/reader.ts`,
 				code: `import type { Metadata } from '../${directory}/copilotdMetadata.js';`,
 				errors: errors(directory),
 			},
@@ -177,37 +177,37 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-no-pr
 		]),
 		{
 			name: 'Windows feature relative import',
-			filename: String.raw`C:\repo\src\vs\platform\agentHost\node\copilot\copilotAgentSession.ts`,
+			filename: String.raw`C:\repo\src\do\platform\agentHost\node\copilot\copilotAgentSession.ts`,
 			code: `import type { Metadata } from '../../common/meta/copilotd/copilotdMetadata.js';`,
 			errors: errors('copilotd'),
 		},
 		{
 			name: 'Windows feature namespace import',
-			filename: String.raw`C:\repo\src\vs\sessions\contrib\providers\agentHost\browser\provider.ts`,
-			code: `import * as metadata from '${metadataAlias}/vscode/reader.js';`,
-			errors: errors('vscode'),
+			filename: String.raw`C:\repo\src\do\sessions\contrib\providers\agentHost\browser\provider.ts`,
+			code: `import * as metadata from '${metadataAlias}/docode/reader.js';`,
+			errors: errors('docode'),
 		},
 		{
 			name: 'Windows separators in relative import',
-			filename: String.raw`C:\repo\src\vs\platform\agentHost\node\copilot\copilotAgentSession.ts`,
+			filename: String.raw`C:\repo\src\do\platform\agentHost\node\copilot\copilotAgentSession.ts`,
 			code: String.raw`import type { Metadata } from '..\\..\\common\\meta\\copilotd\\copilotdMetadata.js';`,
 			errors: errors('copilotd'),
 		},
 		{
 			name: 'Windows absolute import',
 			filename: `${repositoryRoot}/${featureFiles[0]}`,
-			code: String.raw`import 'C:\\repo\\src\\vs\\platform\\agentHost\\common\\meta\\vscode\\reader.js';`,
-			errors: errors('vscode'),
+			code: String.raw`import 'C:\\repo\\src\\do\\platform\\agentHost\\common\\meta\\docode\\reader.js';`,
+			errors: errors('docode'),
 		},
 		{
 			name: 'test-like directory is not a test exemption',
-			filename: `${repositoryRoot}/src/vs/platform/agentHost/contest/reader.ts`,
-			code: `import '${metadataAlias}/vscode/reader.js';`,
-			errors: errors('vscode'),
+			filename: `${repositoryRoot}/src/do/platform/agentHost/contest/reader.ts`,
+			code: `import '${metadataAlias}/docode/reader.js';`,
+			errors: errors('docode'),
 		},
 		{
 			name: 'feature test suffix outside test directory is not an exemption',
-			filename: `${repositoryRoot}/src/vs/platform/agentHost/node/feature.test.ts`,
+			filename: `${repositoryRoot}/src/do/platform/agentHost/node/feature.test.ts`,
 			code: `import '${metadataAlias}/copilotd/copilotdMetadata.js';`,
 			errors: errors('copilotd'),
 		},

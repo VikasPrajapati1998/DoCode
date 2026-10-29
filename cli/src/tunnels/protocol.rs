@@ -5,7 +5,7 @@
 use std::collections::HashMap;
 
 use crate::{
-	constants::{PROTOCOL_VERSION, VSCODE_CLI_VERSION},
+	constants::{PROTOCOL_VERSION, DOCODE_CLI_VERSION},
 	options::Quality,
 	update_service::Platform,
 };
@@ -243,7 +243,7 @@ pub struct VersionResponse {
 impl Default for VersionResponse {
 	fn default() -> Self {
 		Self {
-			version: VSCODE_CLI_VERSION.unwrap_or("dev"),
+			version: DOCODE_CLI_VERSION.unwrap_or("dev"),
 			protocol_version: PROTOCOL_VERSION,
 		}
 	}

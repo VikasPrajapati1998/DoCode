@@ -5,7 +5,7 @@
 
 import 'mocha';
 import { deepStrictEqual, strictEqual } from 'node:assert';
-import type { MarkdownString } from 'vscode';
+import type { MarkdownString } from 'docode';
 import { PathExecutableCache } from '../../env/pathExecutableCache';
 import { WindowsExecutableExtensionsCache, windowsDefaultExecutableExtensions } from '../../helpers/executable';
 

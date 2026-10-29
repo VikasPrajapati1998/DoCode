@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { CommandManager } from './commands/commandManager';
 import { IExperimentationTelemetryReporter } from './experimentTelemetryReporter';
 import { OngoingRequestCancellerFactory } from './tsServer/cancellation';
@@ -21,7 +21,7 @@ import { Logger } from './logging/logger';
 import { PluginManager } from './tsServer/plugins';
 
 export function createLazyClientHost(
-	context: vscode.ExtensionContext,
+	context: docode.ExtensionContext,
 	onCaseInsensitiveFileSystem: boolean,
 	services: {
 		pluginManager: PluginManager;
@@ -35,7 +35,7 @@ export function createLazyClientHost(
 		experimentTelemetryReporter: IExperimentationTelemetryReporter | undefined;
 		logger: Logger;
 	},
-	onCompletionAccepted: (item: vscode.CompletionItem) => void,
+	onCompletionAccepted: (item: docode.CompletionItem) => void,
 ): Lazy<TypeScriptServiceClientHost> {
 	return new Lazy(() => {
 		return new TypeScriptServiceClientHost(
@@ -52,8 +52,8 @@ export function lazilyActivateClient(
 	pluginManager: PluginManager,
 	activeJsTsEditorTracker: ActiveJsTsEditorTracker,
 	onActivate: () => Promise<void> = () => Promise.resolve(),
-): vscode.Disposable {
-	const disposables: vscode.Disposable[] = [];
+): docode.Disposable {
+	const disposables: docode.Disposable[] = [];
 
 	const supportedLanguage = [
 		...standardLanguageDescriptions.map(x => x.languageIds),
@@ -61,7 +61,7 @@ export function lazilyActivateClient(
 	].flat();
 
 	let hasActivated = false;
-	const maybeActivate = (textDocument: vscode.TextDocument): boolean => {
+	const maybeActivate = (textDocument: docode.TextDocument): boolean => {
 		if (!hasActivated && isSupportedDocument(supportedLanguage, textDocument)) {
 			hasActivated = true;
 
@@ -77,23 +77,23 @@ export function lazilyActivateClient(
 		return false;
 	};
 
-	const didActivate = vscode.workspace.textDocuments.some(maybeActivate);
+	const didActivate = docode.workspace.textDocuments.some(maybeActivate);
 	if (!didActivate) {
-		const openListener = vscode.workspace.onDidOpenTextDocument(doc => {
+		const openListener = docode.workspace.onDidOpenTextDocument(doc => {
 			if (maybeActivate(doc)) {
 				openListener.dispose();
 			}
 		}, undefined, disposables);
 	}
 
-	return new vscode.Disposable(() => {
+	return new docode.Disposable(() => {
 		disposables.forEach(d => d.dispose());
 	});
 }
 
 function isSupportedDocument(
 	supportedLanguage: readonly string[],
-	document: vscode.TextDocument
+	document: docode.TextDocument
 ): boolean {
 	return (supportedLanguage.indexOf(document.languageId) >= 0 || isJsConfigOrTsConfigFileName(document.fileName))
 		&& !fileSchemes.disabledSchemes.has(document.uri.scheme);

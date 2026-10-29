@@ -24,7 +24,7 @@ switch (process.platform) {
 	default: throw new Error(`Unsupported platform: ${process.platform}`);
 }
 
-const arch = process.env.VSCODE_ARCH || process.arch;
+const arch = process.env.DOCODE_ARCH || process.arch;
 
 /**
  * Copy native MSAL runtime binaries to the output directory.
@@ -59,7 +59,7 @@ run({
 	srcDir,
 	outdir: outDir,
 	additionalOptions: {
-		external: ['vscode', 'electron', './msal-node-runtime'],
+		external: ['docode', 'electron', './msal-node-runtime'],
 		alias: {
 			'keytar': path.resolve(import.meta.dirname, 'packageMocks', 'keytar', 'index.js'),
 		},

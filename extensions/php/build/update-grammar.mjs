@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 //@ts-check
 
-import * as vscodeGrammarUpdater from 'vscode-grammar-updater';
+import * as docodeGrammarUpdater from 'vscode-grammar-updater';
 
 function adaptInjectionScope(grammar) {
 	// we're using the HTML grammar from https://github.com/textmate/html.tmbundle which has moved away from source.js.embedded.html
@@ -68,8 +68,8 @@ function fixBadRegex(grammar) {
 	}
 }
 
-vscodeGrammarUpdater.update('KapitanOczywisty/language-php', 'grammars/php.cson', './syntaxes/php.tmLanguage.json', fixBadRegex);
-vscodeGrammarUpdater.update('KapitanOczywisty/language-php', 'grammars/html.cson', './syntaxes/html.tmLanguage.json', grammar => {
+docodeGrammarUpdater.update('KapitanOczywisty/language-php', 'grammars/php.cson', './syntaxes/php.tmLanguage.json', fixBadRegex);
+docodeGrammarUpdater.update('KapitanOczywisty/language-php', 'grammars/html.cson', './syntaxes/html.tmLanguage.json', grammar => {
 	adaptInjectionScope(grammar);
 	includeDerivativeHtml(grammar);
 });

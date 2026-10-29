@@ -29,7 +29,7 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 		'--disable-experiments',
 		'--no-cached-data',
 		'--disable-updates',
-		'--disable-extension=vscode.vscode-api-tests',
+		'--disable-extension=docode.docode-api-tests',
 		`--crash-reporter-directory=${crashesPath}`,
 		'--disable-workspace-trust',
 		`--logsPath=${logsPath}`
@@ -61,16 +61,16 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 			throw new Error('Workspace path is required when running remote');
 		}
 		// Replace workspace path with URI
-		args[0] = `--${workspacePath.endsWith('.code-workspace') ? 'file' : 'folder'}-uri=vscode-remote://test+test/${URI.file(workspacePath).path}`;
+		args[0] = `--${workspacePath.endsWith('.code-workspace') ? 'file' : 'folder'}-uri=docode-remote://test+test/${URI.file(workspacePath).path}`;
 
 		if (codePath) {
 			if (!extensionsPath) {
 				throw new Error('Extensions path is required when running against a build at the moment.');
 			}
 			// running against a build: copy the test resolver extension
-			await measureAndLog(() => copyExtension(root, extensionsPath, 'vscode-test-resolver'), 'copyExtension(vscode-test-resolver)', logger);
+			await measureAndLog(() => copyExtension(root, extensionsPath, 'docode-test-resolver'), 'copyExtension(docode-test-resolver)', logger);
 		}
-		args.push('--enable-proposed-api=vscode.vscode-test-resolver');
+		args.push('--enable-proposed-api=docode.docode-test-resolver');
 		if (userDataDir) {
 			const remoteDataDir = `${userDataDir}-server`;
 			fs.mkdirSync(remoteDataDir, { recursive: true });
@@ -80,7 +80,7 @@ export async function resolveElectronConfiguration(options: LaunchOptions): Prom
 		// Exercise the remote server's exit diagnostics (see `installServerProcessExitDiagnostics`
 		// in server-main.ts) so unexpected server exits are explained in the captured logs,
 		// even when running smoke tests locally (where `isCI` is false).
-		env.VSCODE_SERVER_EXIT_DIAGNOSTICS = '1';
+		env.DOCODE_SERVER_EXIT_DIAGNOSTICS = '1';
 		if (options.verbose) {
 			env.TESTRESOLVER_LOG_LEVEL = 'trace';
 		}
@@ -199,7 +199,7 @@ export function getBuildProductPath(root: string): string {
 			return join(root, 'Contents', 'Resources', 'app', 'product.json');
 		case 'win32':
 			// On Windows the built app may nest the payload inside a subdirectory
-			// (e.g. VSCode-win32-x64), so search for product.json rather than
+			// (e.g. DoCode-win32-x64), so search for product.json rather than
 			// assuming it lives directly under the root.
 			return findFilePath(root, join('resources', 'app', 'product.json'));
 		default:

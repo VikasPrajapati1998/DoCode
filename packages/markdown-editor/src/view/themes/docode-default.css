@@ -1,0 +1,412 @@
+/*
+ * DoCode markdown theme — default preview variant (`md-theme-docode-default`).
+ *
+ * One of two `--docode-*`-variable-driven themes. This variant mirrors VS
+ * Code's own markdown *preview* stylesheet
+ * (`markdown-language-features/media/markdown.css`): a 14px base with a 22px
+ * line box, headings underlined with a 1px rule, a 5px blockquote bar, and
+ * code blocks framed by a 1px border on the editor's code-block background.
+ * Its heading scale is moderately reduced to better fit narrower editor panes.
+ * The sibling `docode-github.css` (`md-theme-docode-github`) instead mirrors
+ * GitHub's layout (16px base, badge-style inline code, zebra tables).
+ *
+ * Both themes are *variable-driven*: every color is `var(--docode-*, …)` so the
+ * editor adopts whatever DoCode color theme is active WITHOUT the editor
+ * knowing anything about DoCode. They share the same `--md-tok-*` token
+ * palette, so only layout/typography differs between the two.
+ *
+ * Apply it via the editor `classNames` option:
+ *
+ *     new EditorView(model, { classNames: ['md-theme-docode-default'] });
+ *
+ * In a real webview DoCode injects the `--docode-*` custom properties onto the
+ * document root and sets a body theme class, so this theme just works. In the
+ * Component Explorer the same variables are supplied by a snapshot stylesheet
+ * scoped under a `.docode-theme.<id>` wrapper (see `fixture/docodeThemes`).
+ *
+ * Fallbacks: each `var()` carries a light-palette fallback so the theme stays
+ * legible even with no `--docode-*` variables present at all. Every selector is
+ * scoped under the theme class, so importing this file never affects the global
+ * page or any editor that did not opt in.
+ */
+
+.md-editor.md-theme-docode-default {
+    --md-iframe-background: var(--docode-editor-background, #fff);
+    --md-iframe-foreground: var(--docode-descriptionForeground, #616161);
+    --md-iframe-border: var(--docode-editorWidget-border, var(--docode-widget-border, #e5e5e5));
+    --md-iframe-hover-background: var(--docode-toolbar-hoverBackground, rgba(128, 128, 128, 0.12));
+    --md-iframe-focus-border: var(--docode-focusBorder, #007acc);
+    font-family: var(--markdown-font-family, -apple-system, BlinkMacSystemFont,
+            'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif);
+    font-size: var(--markdown-font-size, 14px);
+    line-height: var(--markdown-line-height, 1.572);
+    color: var(--docode-editor-foreground, #1f2328);
+    word-wrap: break-word;
+    /*
+     * Active-block highlight (defined theme-agnostically in editor.css) follows
+     * the DoCode surface color so it stays a subtle inset on both light and
+     * dark color themes instead of a fixed light-grey box.
+     */
+    --md-block-active-background: var(--docode-editorWidget-background, #f8f8f8);
+    /*
+     * Cursor color: editor.css paints `.md-cursor` with `--md-cursor-background`
+     * (theme-agnostic, black fallback); map it to the DoCode cursor color so it
+     * stays visible on dark color themes.
+     */
+    --md-cursor-background: var(--docode-editorCursor-foreground, #000);
+    --md-whitespace-foreground: var(--docode-editorWhitespace-foreground, #b0b0b0);
+    --md-html-comment-foreground: var(--docode-descriptionForeground, #616161);
+    --md-html-comment-hover-foreground: var(--docode-editor-foreground, #1f2328);
+    --md-html-comment-font-family: var(--docode-editor-font-family, ui-monospace, SFMono-Regular,
+            'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace);
+    --md-readonly-background: var(--docode-button-secondaryBackground,
+            var(--docode-editorWidget-background, #f3f3f3));
+    --md-readonly-background-hover: var(--docode-button-secondaryHoverBackground,
+            var(--docode-button-secondaryBackground,
+                var(--docode-editorWidget-background, #e9e9e9)));
+    --md-readonly-foreground: var(--docode-button-secondaryForeground,
+            var(--docode-editorWidget-foreground, #444));
+    --md-readonly-border: var(--docode-button-secondaryBorder,
+            var(--docode-button-border,
+                var(--docode-contrastBorder, var(--docode-editorWidget-border, #b8b8b8))));
+    --md-readonly-border-hover: var(--docode-button-secondaryBorder,
+            var(--docode-button-border,
+                var(--docode-contrastBorder, var(--docode-editorWidget-border, #8d8d8d))));
+    --md-readonly-accent: var(--docode-button-background, rgb(45, 92, 180));
+    --md-readonly-accent-foreground: var(--docode-button-foreground, #fff);
+    --md-find-widget-background: var(--docode-editorWidget-background, #f3f3f3);
+    --md-find-widget-foreground: var(--docode-editorWidget-foreground, #222);
+    --md-find-widget-border: var(--docode-editorWidget-border, #c8c8c8);
+    --md-find-widget-shadow: var(--docode-widget-shadow, rgba(0, 0, 0, 0.2));
+    --md-find-input-background: var(--docode-input-background, #fff);
+    --md-find-input-foreground: var(--docode-input-foreground, #222);
+    --md-find-placeholder-foreground: var(--docode-input-placeholderForeground, #767676);
+    --md-find-input-caret: var(--docode-editorCursor-foreground, currentColor);
+    --md-find-input-border: var(--docode-input-border, #cecece);
+    --md-find-count-foreground: var(--docode-editorWidget-foreground, #222);
+    --md-find-focus-border: var(--docode-focusBorder, #007fd4);
+    --md-find-button-hover-background: var(--docode-inputOption-hoverBackground, rgba(128, 128, 128, 0.18));
+    --md-find-disabled-foreground: var(--docode-disabledForeground, rgba(97, 97, 97, 0.5));
+    --md-find-editor-background: var(--docode-editor-background, #ffffff);
+    --md-find-match-background: var(--docode-editor-findMatchHighlightBackground, rgba(234, 92, 0, 0.33));
+    --md-find-current-background: var(--docode-editor-findMatchBackground, #a8ac94);
+    --md-find-current-border: var(--docode-editor-findMatchBorder,
+            color-mix(in srgb, var(--docode-editorWidget-foreground, #616161) 55%,
+                var(--docode-editor-findMatchBackground, #a8ac94)));
+    --md-find-option-background: var(--docode-inputOption-activeBackground, #007acc);
+    --md-find-option-border: color-mix(in srgb,
+            var(--docode-focusBorder, #007acc) 70%,
+            var(--docode-inputOption-activeForeground, #000000));
+    --md-find-option-foreground: var(--docode-inputOption-activeForeground, #fff);
+    --md-find-error-border: var(--docode-inputValidation-errorBorder, #be1100);
+    --md-find-error-foreground: var(--docode-errorForeground, #a1260d);
+    --md-separator-color: color-mix(in srgb,
+            var(--docode-textSeparator-foreground, #d1d9e0) 60%, transparent);
+    --md-inline-code-background: color-mix(in srgb,
+            var(--docode-textPreformat-background, #818b981f) 60%, transparent);
+}
+
+.docode-high-contrast .md-editor.md-theme-docode-default,
+.docode-high-contrast-light .md-editor.md-theme-docode-default {
+    --md-separator-color: var(--docode-textSeparator-foreground, currentColor);
+    --md-inline-code-background: var(--docode-textPreformat-background, #818b981f);
+}
+
+.md-theme-docode-default .md-heading {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.md-theme-docode-default h1.md-heading {
+    font-size: 1.75em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--md-separator-color);
+}
+
+.md-theme-docode-default h2.md-heading {
+    font-size: 1.4em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--md-separator-color);
+}
+
+.md-theme-docode-default h3.md-heading {
+    font-size: 1.2em;
+}
+
+.md-theme-docode-default h4.md-heading {
+    font-size: 1em;
+}
+
+.md-theme-docode-default h5.md-heading {
+    font-size: 0.875em;
+}
+
+.md-theme-docode-default h6.md-heading {
+    font-size: 0.85em;
+}
+
+.md-theme-docode-default .md-paragraph {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+/*
+ * Preview blockquotes keep the normal foreground color (no dimming) and use a
+ * thick 5px rule with the DoCode blockquote surface tint.
+ */
+.md-theme-docode-default .md-blockquote {
+    margin: 0 0 16px 0;
+    padding: 0 16px 0 12px;
+    /* The left padding the `>` gutter hangs in (matches padding-left). */
+    --md-blockquote-pad: 12px;
+    background-color: var(--docode-textBlockQuote-background, transparent);
+    border-left: 5px solid var(--docode-textBlockQuote-border, #d1d9e0);
+    border-radius: 2px;
+}
+
+.md-theme-docode-default .md-list {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding-left: 2em;
+    /* The per-level indentation step the list gutter fills (matches padding-left). */
+    --md-list-indent-step: 2em;
+}
+
+/* Preview renders thematic breaks as a thin 1px rule rather than a thick bar. */
+.md-theme-docode-default .md-thematic-break {
+    height: 0;
+    padding: 0;
+    margin: 24px 0;
+    border: 0;
+    border-bottom: 1px solid var(--md-separator-color);
+}
+
+.md-theme-docode-default a {
+    color: var(--docode-textLink-foreground, #0969da);
+    text-decoration: none;
+}
+
+.md-theme-docode-default a:hover {
+    text-decoration: underline;
+}
+
+.md-theme-docode-default strong {
+    font-weight: 600;
+}
+
+/*
+ * Inline code. Preview keeps inline code at the body font size (1em) on a
+ * softened DoCode preformat surface, with only a small inset — no GitHub-style
+ * badge.
+ */
+.md-theme-docode-default :not(pre)>code {
+    font-family: var(--docode-editor-font-family, ui-monospace, SFMono-Regular,
+            'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace);
+    font-size: 1em;
+    line-height: 1.357em;
+    padding: 1px 3px;
+    margin: 0;
+    color: var(--docode-textPreformat-foreground, inherit);
+    background-color: var(--md-inline-code-background);
+    border-radius: 4px;
+    white-space: break-spaces;
+}
+
+/* Fenced code block: framed by a 1px border, preview-style. */
+.md-theme-docode-default .md-code-block-container {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.md-theme-docode-default .md-code-block {
+    margin-top: 0;
+    margin-bottom: 16px;
+    padding: 6px 10px;
+    line-height: 1.357;
+    background-color: var(--docode-textCodeBlock-background, #f6f8fa);
+    border: 1px solid var(--docode-widget-border, #d1d9e0);
+    border-radius: 3px;
+}
+
+.md-theme-docode-default .md-code-block-container > .md-code-block {
+    margin: 0;
+}
+
+.md-theme-docode-default .md-code-block code {
+    font-family: var(--docode-editor-font-family, ui-monospace, SFMono-Regular,
+            'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace);
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+}
+
+/*
+ * Syntax-highlight token colors. Driven by `--md-tok-*` custom properties so
+ * the explorer (or any embedder) can supply a palette matched to the active
+ * color theme. Fallbacks are the DoCode light theme palette.
+ */
+.md-theme-docode-default .md-code-block .tok-keyword {
+    color: var(--md-tok-keyword, #0000ff);
+}
+
+.md-theme-docode-default .md-code-block .tok-string {
+    color: var(--md-tok-string, #a31515);
+}
+
+.md-theme-docode-default .md-code-block .tok-comment {
+    color: var(--md-tok-comment, #008000);
+}
+
+.md-theme-docode-default .md-code-block .tok-number {
+    color: var(--md-tok-number, #098658);
+}
+
+.md-theme-docode-default .md-code-block .tok-regexp {
+    color: var(--md-tok-regexp, #811f3f);
+}
+
+.md-theme-docode-default .md-code-block .tok-type {
+    color: var(--md-tok-type, #267f99);
+}
+
+.md-theme-docode-default .md-code-block .tok-annotation {
+    color: var(--md-tok-annotation, #267f99);
+}
+
+.md-theme-docode-default .md-code-block .tok-tag {
+    color: var(--md-tok-tag, #800000);
+}
+
+.md-theme-docode-default .md-code-block .tok-attribute {
+    color: var(--md-tok-attribute, #e50000);
+}
+
+.md-theme-docode-default .md-code-block .tok-delimiter {
+    color: var(--md-tok-delimiter, inherit);
+}
+
+/*
+ * Display math has no container styling (KaTeX renders it inline-centered).
+ * Keep only the block spacing; horizontal scroll comes from the base sheet.
+ */
+.md-theme-docode-default .md-math-block {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+/*
+ * KaTeX renders inline math at 1.21em with its own (larger) line-height, which
+ * would inflate the surrounding line box. Collapse it so the rendered math fits
+ * the text line and the paragraph height stays identical active vs inactive.
+ */
+.md-theme-docode-default .md-inline-math .katex {
+    line-height: 1;
+}
+
+.md-theme-docode-default .md-table-wrapper {
+    /* Block spacing lives on the wrapper (the scroll/BFC box) so it collapses
+       with siblings as before; the inner table has no margin of its own. */
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.md-theme-docode-default .md-table {
+    border-collapse: collapse;
+    width: auto;
+}
+
+.md-theme-docode-default .md-table th,
+.md-theme-docode-default .md-table td {
+    padding: 5px 10px;
+    border: 1px solid var(--docode-editorWidget-border, #d1d9e0);
+    text-align: left;
+}
+
+/*
+ * The editor renders every cell as <td> in a flat <table> of <tr> (no
+ * <thead>/<tbody>/<th>). Row order is: header, delimiter row, body rows.
+ */
+.md-theme-docode-default .md-table tr:first-child td {
+    font-weight: 600;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+/* Active: reclaim the header's extra spacing to host the delimiter row. */
+.md-theme-docode-default .md-table.md-block-active tr:first-child td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.md-theme-docode-default .md-table tr:nth-child(even):not(.md-table-delimiter-row) {
+    background-color: var(--docode-textCodeBlock-background, #f6f8fa);
+}
+
+/*
+ * The delimiter row (`| --- | --- |`) is editor source shown only while
+ * editing; render it borderless with no vertical padding so it occupies just
+ * the compact space reclaimed from the header.
+ */
+.md-theme-docode-default .md-table-delimiter-row td {
+    border: 0;
+    padding: 0 10px;
+    background: transparent;
+}
+
+/*
+ * Active table: the source `|` pipes ARE the outline. Drop the HTML cell
+ * borders (kept as transparent so the 1px box geometry — and thus the table's
+ * height and first-text X — is unchanged) and clear the zebra fill so the
+ * table reads as plain source.
+ */
+.md-theme-docode-default .md-table.md-block-active td {
+    border-color: transparent;
+}
+
+.md-theme-docode-default .md-table.md-block-active tr:nth-child(even):not(.md-table-delimiter-row) td {
+    background-color: transparent;
+}
+
+/*
+ * Shift each cell's leading pipe onto its left gridline (where the border was)
+ * and the last cell's closing pipe onto the right gridline. `position:
+ * relative` moves only the painted glyph by the cell's horizontal padding;
+ * siblings and the glue's reserved width are untouched, so active/inactive
+ * height and first-text X stay pixel-identical.
+ */
+.md-theme-docode-default .md-table.md-block-active td>.md-glue-tableCellGlue:first-child,
+.md-theme-docode-default .md-table.md-block-active .md-table-delimiter-row td>.md-marker-tableDelimiter {
+    position: relative;
+    left: -10px;
+}
+
+/*
+ * The last cell's closing `|` floats right after the (left-aligned) cell text.
+ * Pin it to the column's right gridline (the cell's border edge, 10px past the
+ * content box) so the right outline is a straight line. `top: auto` keeps the
+ * pipe on the content line (the shared editor.css rule takes it out of flow);
+ * the previous `top: 0` floated it to the cell's top edge, so on tall/wrapping
+ * rows it no longer lined up with the in-flow leading pipes.
+ */
+.md-theme-docode-default .md-table.md-block-active td:last-child {
+    position: relative;
+}
+
+.md-theme-docode-default .md-table.md-block-active td:last-child>.md-glue-tableCellGlue:last-child {
+    position: absolute;
+    right: 0;
+    top: auto;
+}
+
+/*
+ * The delimiter row's last cell carries its closing `|` as a separate
+ * `tableDelimiterClose` marker; pin it to the same right gridline as the body
+ * rows' closing pipe so the last column's outline stays straight.
+ */
+.md-theme-docode-default .md-table.md-block-active .md-table-delimiter-row td:last-child>.md-marker-tableDelimiterClose {
+    position: absolute;
+    right: 0;
+    top: auto;
+}

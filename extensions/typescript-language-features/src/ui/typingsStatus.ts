@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ITypeScriptServiceClient } from '../typescriptService';
 import { readUnifiedConfig } from '../utils/configuration';
 import { Disposable } from '../utils/dispose';
@@ -81,9 +81,9 @@ export class AtaProgressReporter extends Disposable {
 			});
 		});
 
-		vscode.window.withProgress({
-			location: vscode.ProgressLocation.Window,
-			title: vscode.l10n.t("Fetching data for better TypeScript IntelliSense")
+		docode.window.withProgress({
+			location: docode.ProgressLocation.Window,
+			title: docode.l10n.t("Fetching data for better TypeScript IntelliSense")
 		}, () => promise);
 	}
 
@@ -97,18 +97,18 @@ export class AtaProgressReporter extends Disposable {
 
 	private async onTypesInstallerInitializationFailed() {
 		if (readUnifiedConfig<boolean>('tsserver.checkNpmIsInstalled', true, { fallbackSection: 'typescript', fallbackSubSectionNameOverride: 'check.npmIsInstalled' })) {
-			const dontShowAgain: vscode.MessageItem = {
-				title: vscode.l10n.t("Don't Show Again"),
+			const dontShowAgain: docode.MessageItem = {
+				title: docode.l10n.t("Don't Show Again"),
 			};
-			const selected = await vscode.window.showWarningMessage(
-				vscode.l10n.t(
+			const selected = await docode.window.showWarningMessage(
+				docode.l10n.t(
 					"Could not install typings files for JavaScript language features. Please ensure that NPM is installed, or configure 'js/ts.tsserver.npm.path' in your user settings. Alternatively, check the [documentation]({0}) to learn more.",
 					'https://go.microsoft.com/fwlink/?linkid=847635'
 				),
 				dontShowAgain);
 
 			if (selected === dontShowAgain) {
-				vscode.workspace.getConfiguration('js/ts').update('tsserver.checkNpmIsInstalled', false, true);
+				docode.workspace.getConfiguration('js/ts').update('tsserver.checkNpmIsInstalled', false, true);
 			}
 		}
 	}

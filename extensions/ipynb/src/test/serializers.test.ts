@@ -6,7 +6,7 @@
 import * as sinon from 'sinon';
 import type * as nbformat from '@jupyterlab/nbformat';
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { jupyterCellOutputToCellOutput, jupyterNotebookModelToNotebookData } from '../deserializers';
 import { createMarkdownCellFromNotebookCell, getCellMetadata } from '../serializers';
 
@@ -20,7 +20,7 @@ function deepStripProperties(obj: any, props: string[]) {
 	}
 }
 suite(`ipynb serializer`, () => {
-	let disposables: vscode.Disposable[] = [];
+	let disposables: docode.Disposable[] = [];
 	setup(() => {
 		disposables = [];
 	});
@@ -56,17 +56,17 @@ suite(`ipynb serializer`, () => {
 		const notebook = jupyterNotebookModelToNotebookData({ cells }, 'python');
 		assert.ok(notebook);
 
-		const expectedCodeCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, 'print(1)', 'python');
+		const expectedCodeCell = new docode.NotebookCellData(docode.NotebookCellKind.Code, 'print(1)', 'python');
 		expectedCodeCell.outputs = [];
 		expectedCodeCell.metadata = { execution_count: 10, metadata: {} };
 		expectedCodeCell.executionSummary = { executionOrder: 10 };
 
-		const expectedCodeCell2 = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, 'print(2)', 'python');
+		const expectedCodeCell2 = new docode.NotebookCellData(docode.NotebookCellKind.Code, 'print(2)', 'python');
 		expectedCodeCell2.outputs = [];
 		expectedCodeCell2.metadata = { execution_count: null, metadata: {} };
 		expectedCodeCell2.executionSummary = {};
 
-		const expectedMarkdownCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Markup, '# HEAD', 'markdown');
+		const expectedMarkdownCell = new docode.NotebookCellData(docode.NotebookCellKind.Markup, '# HEAD', 'markdown');
 		expectedMarkdownCell.outputs = [];
 		expectedMarkdownCell.metadata = {
 			metadata: {}
@@ -100,7 +100,7 @@ suite(`ipynb serializer`, () => {
 
 		// First cell with execution count
 		const cell1 = notebook.cells[0];
-		assert.strictEqual(cell1.kind, vscode.NotebookCellKind.Code);
+		assert.strictEqual(cell1.kind, docode.NotebookCellKind.Code);
 		assert.strictEqual(cell1.value, 'print(1)');
 		assert.strictEqual(cell1.languageId, 'python');
 		assert.ok(cell1.metadata);
@@ -109,7 +109,7 @@ suite(`ipynb serializer`, () => {
 
 		// Second cell without execution count
 		const cell2 = notebook.cells[1];
-		assert.strictEqual(cell2.kind, vscode.NotebookCellKind.Code);
+		assert.strictEqual(cell2.kind, docode.NotebookCellKind.Code);
 		assert.strictEqual(cell2.value, 'print(2)');
 		assert.strictEqual(cell2.languageId, 'python');
 		assert.ok(cell2.metadata);
@@ -118,13 +118,13 @@ suite(`ipynb serializer`, () => {
 
 		// Markdown cell
 		const cell3 = notebook.cells[2];
-		assert.strictEqual(cell3.kind, vscode.NotebookCellKind.Markup);
+		assert.strictEqual(cell3.kind, docode.NotebookCellKind.Markup);
 		assert.strictEqual(cell3.value, '# HEAD');
 		assert.strictEqual(cell3.languageId, 'markdown');
 	});
 
 	test('Serialize', async () => {
-		const markdownCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Markup, '# header1', 'markdown');
+		const markdownCell = new docode.NotebookCellData(docode.NotebookCellKind.Markup, '# header1', 'markdown');
 		markdownCell.metadata = {
 			attachments: {
 				'image.png': {
@@ -150,7 +150,7 @@ suite(`ipynb serializer`, () => {
 			}
 		});
 
-		const markdownCell2 = new vscode.NotebookCellData(vscode.NotebookCellKind.Markup, '# header1', 'markdown');
+		const markdownCell2 = new docode.NotebookCellData(docode.NotebookCellKind.Markup, '# header1', 'markdown');
 		markdownCell2.metadata = {
 			id: '123',
 			metadata: {
@@ -185,7 +185,7 @@ suite(`ipynb serializer`, () => {
 	suite('Outputs', () => {
 		function validateCellOutputTranslation(
 			outputs: nbformat.IOutput[],
-			expectedOutputs: vscode.NotebookCellOutput[],
+			expectedOutputs: docode.NotebookCellOutput[],
 			propertiesToExcludeFromComparison: string[] = []
 		) {
 			const cells: nbformat.ICell[] = [
@@ -227,10 +227,10 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr('Error')], {
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stderr('Error')], {
 						outputType: 'stream'
 					}),
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout('NoError')], {
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout('NoError')], {
 						outputType: 'stream'
 					})
 				]
@@ -251,7 +251,7 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout('Line1\n\nLine3\nLine4')], {
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout('Line1\n\nLine3\nLine4')], {
 						outputType: 'stream'
 					})
 				]
@@ -272,7 +272,7 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout('Hello\nHello\nHello\nHello\nHello\nHello\n')], {
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout('Hello\nHello\nHello\nHello\nHello\nHello\n')], {
 						outputType: 'stream'
 					})
 				]
@@ -299,7 +299,7 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout(['Epoch 1/5\n',
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout(['Epoch 1/5\n',
 						'...\n',
 						'Epoch 2/5\n',
 						'...\n',
@@ -336,7 +336,7 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr(['Epoch 1/5\n',
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stderr(['Epoch 1/5\n',
 						'...\n',
 						'Epoch 2/5\n',
 						'...\n',
@@ -364,8 +364,8 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput(
-						[vscode.NotebookCellOutputItem.stderr('\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
+					new docode.NotebookCellOutput(
+						[docode.NotebookCellOutputItem.stderr('\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
 						{
 							outputType: 'stream'
 						}
@@ -384,7 +384,7 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr('1 is < 2')], {
+					new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stderr('1 is < 2')], {
 						outputType: 'stream'
 					})
 				]
@@ -401,8 +401,8 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput(
-						[vscode.NotebookCellOutputItem.stderr('1 is < 2\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
+					new docode.NotebookCellOutput(
+						[docode.NotebookCellOutputItem.stderr('1 is < 2\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
 						{
 							outputType: 'stream'
 						}
@@ -422,9 +422,9 @@ suite(`ipynb serializer`, () => {
 					}
 				],
 				[
-					new vscode.NotebookCellOutput(
+					new docode.NotebookCellOutput(
 						[
-							vscode.NotebookCellOutputItem.error({
+							docode.NotebookCellOutputItem.error({
 								name: 'Error Name',
 								message: 'Error Value',
 								stack: ['stack1', 'stack2', 'stack3'].join('\n')
@@ -470,8 +470,8 @@ suite(`ipynb serializer`, () => {
 							}
 						],
 						[
-							new vscode.NotebookCellOutput(
-								[new vscode.NotebookCellOutputItem(Buffer.from('Hello World!', 'utf8'), 'text/plain')],
+							new docode.NotebookCellOutput(
+								[new docode.NotebookCellOutputItem(Buffer.from('Hello World!', 'utf8'), 'text/plain')],
 								{
 									outputType: output_type,
 									metadata: {}, // display_data & execute_result always have metadata.
@@ -497,10 +497,10 @@ suite(`ipynb serializer`, () => {
 							}
 						],
 						[
-							new vscode.NotebookCellOutput(
+							new docode.NotebookCellOutput(
 								[
-									new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png'),
-									new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/jpeg')
+									new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png'),
+									new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/jpeg')
 								],
 								{
 									executionCount: 1,
@@ -528,8 +528,8 @@ suite(`ipynb serializer`, () => {
 							}
 						],
 						[
-							new vscode.NotebookCellOutput(
-								[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+							new docode.NotebookCellOutput(
+								[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 								{
 									executionCount: 1,
 									metadata: {
@@ -558,8 +558,8 @@ suite(`ipynb serializer`, () => {
 							}
 						],
 						[
-							new vscode.NotebookCellOutput(
-								[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+							new docode.NotebookCellOutput(
+								[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 								{
 									executionCount: 1,
 									metadata: {
@@ -588,8 +588,8 @@ suite(`ipynb serializer`, () => {
 							}
 						],
 						[
-							new vscode.NotebookCellOutput(
-								[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+							new docode.NotebookCellOutput(
+								[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 								{
 									executionCount: 1,
 									metadata: {
@@ -619,8 +619,8 @@ suite(`ipynb serializer`, () => {
 							}
 						],
 						[
-							new vscode.NotebookCellOutput(
-								[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+							new docode.NotebookCellOutput(
+								[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 								{
 									executionCount: 1,
 									metadata: {

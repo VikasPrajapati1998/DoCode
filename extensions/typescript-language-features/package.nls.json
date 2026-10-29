@@ -258,7 +258,7 @@
 	"configuration.suggest.completeJSDocs.unifiedDeprecationMessage": "This setting is deprecated. Use `#js/ts.suggest.jsdoc.enabled#` instead.",
 	"configuration.tsserver.useVsCodeWatcher": "Use DoCode's file watchers instead of TypeScript's. Requires using TypeScript 5.4+ in the workspace.",
 	"configuration.tsserver.watchOptions": "Configure which watching strategies should be used to keep track of files and directories.",
-	"configuration.tsserver.watchOptions.vscode": "Use DoCode's file watchers instead of TypeScript's. Requires using TypeScript 5.4+ in the workspace.",
+	"configuration.tsserver.watchOptions.docode": "Use DoCode's file watchers instead of TypeScript's. Requires using TypeScript 5.4+ in the workspace.",
 	"configuration.tsserver.watchOptions.watchFile": "Strategy for how individual files are watched.",
 	"configuration.tsserver.watchOptions.watchFile.fixedChunkSizePolling": "Polls files in chunks at regular interval.",
 	"configuration.tsserver.watchOptions.watchFile.fixedPollingInterval": "Check every file for changes several times a second at a fixed interval.",

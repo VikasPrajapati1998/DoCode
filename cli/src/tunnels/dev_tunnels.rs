@@ -69,30 +69,30 @@ fn tunnel_correlation_id(
 fn tunnel_management_client(log: &log::Logger) -> TunnelClientBuilder {
 	let session_id = tunnel_correlation_id(
 		log,
-		"VSCODE_TUNNEL_SESSION_ID",
-		std::env::var("VSCODE_TUNNEL_SESSION_ID"),
+		"DOCODE_TUNNEL_SESSION_ID",
+		std::env::var("DOCODE_TUNNEL_SESSION_ID"),
 		*TUNNEL_SESSION_ID,
 	);
 	let operation_id = tunnel_correlation_id(
 		log,
-		"VSCODE_TUNNEL_OPERATION_ID",
-		std::env::var("VSCODE_TUNNEL_OPERATION_ID"),
+		"DOCODE_TUNNEL_OPERATION_ID",
+		std::env::var("DOCODE_TUNNEL_OPERATION_ID"),
 		uuid::Uuid::new_v4(),
 	);
 	let mut client = new_tunnel_management(&TUNNEL_SERVICE_USER_AGENT);
 	client.additional_headers(vec![
 		(
-			HeaderName::from_static("x-tunnels-vscode-session-id"),
+			HeaderName::from_static("x-tunnels-docode-session-id"),
 			session_id,
 		),
 		(
-			HeaderName::from_static("x-tunnels-vscode-client-operation-id"),
+			HeaderName::from_static("x-tunnels-docode-client-operation-id"),
 			operation_id,
 		),
 	]);
 	client.additional_headers_provider(|| {
 		vec![(
-			HeaderName::from_static("x-tunnels-vscode-client-request-id"),
+			HeaderName::from_static("x-tunnels-docode-client-request-id"),
 			HeaderValue::from_str(&uuid::Uuid::new_v4().to_string()).unwrap(),
 		)]
 	});
@@ -328,9 +328,9 @@ impl ActiveTunnel {
 	}
 }
 
-const VSCODE_CLI_TUNNEL_TAG: &str = "vscode-server-launcher";
-const VSCODE_CLI_FORWARDING_TAG: &str = "vscode-port-forward";
-const OWNED_TUNNEL_TAGS: &[&str] = &[VSCODE_CLI_TUNNEL_TAG, VSCODE_CLI_FORWARDING_TAG];
+const DOCODE_CLI_TUNNEL_TAG: &str = "docode-server-launcher";
+const DOCODE_CLI_FORWARDING_TAG: &str = "docode-port-forward";
+const OWNED_TUNNEL_TAGS: &[&str] = &[DOCODE_CLI_TUNNEL_TAG, DOCODE_CLI_FORWARDING_TAG];
 const MAX_TUNNEL_NAME_LENGTH: usize = 20;
 
 fn get_host_token_from_tunnel(tunnel: &Tunnel) -> String {
@@ -399,7 +399,7 @@ impl DevTunnels {
 			log: log.clone(),
 			client: client.into(),
 			launcher_tunnel: PersistedState::new(paths.root().join("port_forwarding_tunnel.json")),
-			tag: VSCODE_CLI_FORWARDING_TAG,
+			tag: DOCODE_CLI_FORWARDING_TAG,
 		}
 	}
 
@@ -417,7 +417,7 @@ impl DevTunnels {
 			log: log.clone(),
 			client: client.into(),
 			launcher_tunnel: PersistedState::new(paths.root().join("code_tunnel.json")),
-			tag: VSCODE_CLI_TUNNEL_TAG,
+			tag: DOCODE_CLI_TUNNEL_TAG,
 		}
 	}
 
@@ -1396,7 +1396,7 @@ mod test {
 		assert_eq!(
 			tunnel_correlation_id(
 				&log::Logger::test(),
-				"VSCODE_TUNNEL_SESSION_ID",
+				"DOCODE_TUNNEL_SESSION_ID",
 				Ok(session_id.to_string()),
 				uuid::Uuid::new_v4(),
 			),
@@ -1411,7 +1411,7 @@ mod test {
 			assert_eq!(
 				tunnel_correlation_id(
 					&log::Logger::test(),
-					"VSCODE_TUNNEL_SESSION_ID",
+					"DOCODE_TUNNEL_SESSION_ID",
 					Ok(value.to_string()),
 					fallback,
 				),
@@ -1431,9 +1431,9 @@ mod test {
 				.map(|(name, _)| name.as_str())
 				.collect::<Vec<_>>(),
 			vec![
-				"x-tunnels-vscode-session-id",
-				"x-tunnels-vscode-client-operation-id",
-				"x-tunnels-vscode-client-request-id",
+				"x-tunnels-docode-session-id",
+				"x-tunnels-docode-client-operation-id",
+				"x-tunnels-docode-client-request-id",
 			]
 		);
 		for (_, value) in &first {

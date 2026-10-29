@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.monaco-workbench .part.editor .session-changes-editor-label.monaco-decoration-badge::after {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-width: var(--docode-spacing-size160);
+	height: var(--docode-spacing-size160);
+	padding: 0 var(--docode-spacing-size40);
+	margin: auto 0 auto var(--docode-spacing-size40);
+	border: var(--docode-strokeThickness) solid var(--docode-contrastBorder, transparent);
+	border-radius: var(--docode-cornerRadius-small);
+	background-color: var(--docode-agentsBadge-background);
+	color: var(--docode-agentsBadge-foreground);
+	font-size: var(--docode-fontSize-label3);
+	font-weight: var(--docode-fontWeight-semiBold);
+	opacity: 1;
+}

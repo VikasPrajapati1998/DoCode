@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import * as sinon from 'sinon';
 import { Environment } from '@azure/ms-rest-azure-env';
-import { ExtensionContext, window, workspace } from 'vscode';
+import { ExtensionContext, window, workspace } from 'docode';
 import { initMicrosoftSovereignCloudAuthProvider } from '../../extension';
 import { UriEventHandler } from '../../UriEventHandler';
 import { getSafeNotificationMessage } from '../notification';

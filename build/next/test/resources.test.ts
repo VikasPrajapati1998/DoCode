@@ -17,7 +17,7 @@ import { optimizeSvgFiles } from '../svg.ts';
 import { applyIncrementalClientChanges, copyFile } from '../transpile.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../../..');
-const preDirectory = 'vs/workbench/contrib/webview/browser/pre';
+const preDirectory = 'do/workbench/contrib/webview/browser/pre';
 const serviceWorkerPath = `${preDirectory}/service-worker.js`;
 const targets: BuildTarget[] = ['desktop', 'server', 'server-web', 'web'];
 const webviewTargets: BuildTarget[] = ['desktop', 'server-web', 'web'];
@@ -48,8 +48,8 @@ suite('production resources', () => {
 			const { srcDir, outDir } = await createFixture(t);
 			const otherScriptPath = `${preDirectory}/another-script.js`;
 			const htmlPath = `${preDirectory}/index.html`;
-			const svgPath = 'vs/workbench/browser/media/code-icon.svg';
-			const shellPath = 'vs/base/node/cpuUsage.sh';
+			const svgPath = 'do/workbench/browser/media/code-icon.svg';
+			const shellPath = 'do/base/node/cpuUsage.sh';
 			const html = '<!DOCTYPE html>\r\n<p>Leave this alone</p>\r\n';
 			const svg = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M 0 0 L 1 1"/></svg>';
 			await writeFile(srcDir, serviceWorkerPath, script);
@@ -59,7 +59,7 @@ suite('production resources', () => {
 			await writeFile(srcDir, svgPath, svg);
 			await writeFile(srcDir, shellPath, '#!/bin/sh\nexit 0\n');
 
-			const untouchedOutputs = ['vs/workbench/workbench.desktop.main.js', 'already.min.js', 'nls.messages.js'];
+			const untouchedOutputs = ['do/workbench/workbench.desktop.main.js', 'already.min.js', 'nls.messages.js'];
 			for (const file of untouchedOutputs) {
 				await writeFile(outDir, file, '// Previously emitted output\nvar alreadyMinified=1;\n');
 			}
@@ -109,7 +109,7 @@ suite('production resources', () => {
 	for (const minify of [false, true]) {
 		test(`SVG finishing preserves copied JavaScript and its source map (minify: ${minify})`, async t => {
 			const { srcDir, outDir } = await createFixture(t);
-			const svgPath = 'vs/workbench/browser/media/code-icon.svg';
+			const svgPath = 'do/workbench/browser/media/code-icon.svg';
 			const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect x="0" y="0" width="16" height="16" fill="#ff0000"/></svg>';
 			await writeFile(srcDir, serviceWorkerPath, script);
 			await writeFile(srcDir, svgPath, svg);
@@ -311,7 +311,7 @@ export const url = import.meta.url;
 });
 
 async function createFixture(t: TestContext) {
-	const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-resources-test-'));
+	const root = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-resources-test-'));
 	t.after(() => fs.promises.rm(root, { recursive: true, force: true }));
 	await writeFile(root, 'package.json', '{"type":"module"}');
 	await writeFile(root, 'tsconfig.json', '{"compilerOptions":{"alwaysStrict":true}}');

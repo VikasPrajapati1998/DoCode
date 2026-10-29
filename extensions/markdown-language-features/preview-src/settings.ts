@@ -21,7 +21,7 @@ export interface PreviewSettings {
 }
 
 export function getRawData(key: string): string {
-	const element = document.getElementById('vscode-markdown-preview-data');
+	const element = document.getElementById('docode-markdown-preview-data');
 	if (element) {
 		const data = element.getAttribute(key);
 		if (data) {

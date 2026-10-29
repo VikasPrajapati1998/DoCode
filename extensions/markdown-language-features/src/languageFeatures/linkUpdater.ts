@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as picomatch from 'picomatch';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TextDocumentEdit } from 'vscode-languageclient';
 import { Utils } from 'vscode-uri';
 import { MdLanguageClient } from '../client/client';
@@ -27,8 +27,8 @@ const enum UpdateLinksOnFileMoveSetting {
 }
 
 interface RenameAction {
-	readonly oldUri: vscode.Uri;
-	readonly newUri: vscode.Uri;
+	readonly oldUri: docode.Uri;
+	readonly newUri: docode.Uri;
 }
 
 class UpdateLinksOnFileRenameHandler extends Disposable {
@@ -43,7 +43,7 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 		super();
 		this.#client = client;
 
-		this._register(vscode.workspace.onDidRenameFiles(async (e) => {
+		this._register(docode.workspace.onDidRenameFiles(async (e) => {
 			await Promise.all(e.files.map(async (rename) => {
 				if (await this.#shouldParticipateInLinkUpdate(rename.newUri)) {
 					this.#pendingRenames.add(rename);
@@ -52,9 +52,9 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 
 			if (this.#pendingRenames.size) {
 				this.#delayer.trigger(() => {
-					vscode.window.withProgress({
-						location: vscode.ProgressLocation.Window,
-						title: vscode.l10n.t("Checking for Markdown links to update")
+					docode.window.withProgress({
+						location: docode.ProgressLocation.Window,
+						title: docode.l10n.t("Checking for Markdown links to update")
 					}, () => this.#flushRenames());
 				});
 			}
@@ -69,17 +69,17 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 
 		if (result?.edit.size) {
 			if (await this.#confirmActionWithUser(result.resourcesBeingRenamed)) {
-				await vscode.workspace.applyEdit(result.edit);
+				await docode.workspace.applyEdit(result.edit);
 			}
 		}
 	}
 
-	async #confirmActionWithUser(newResources: readonly vscode.Uri[]): Promise<boolean> {
+	async #confirmActionWithUser(newResources: readonly docode.Uri[]): Promise<boolean> {
 		if (!newResources.length) {
 			return false;
 		}
 
-		const config = vscode.workspace.getConfiguration('markdown', newResources[0]);
+		const config = docode.workspace.getConfiguration('markdown', newResources[0]);
 		const setting = config.get<UpdateLinksOnFileMoveSetting>(settingNames.enabled);
 		switch (setting) {
 			case UpdateLinksOnFileMoveSetting.Prompt:
@@ -91,8 +91,8 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 				return false;
 		}
 	}
-	async #shouldParticipateInLinkUpdate(newUri: vscode.Uri): Promise<boolean> {
-		const config = vscode.workspace.getConfiguration('markdown', newUri);
+	async #shouldParticipateInLinkUpdate(newUri: docode.Uri): Promise<boolean> {
+		const config = docode.workspace.getConfiguration('markdown', newUri);
 		const setting = config.get<UpdateLinksOnFileMoveSetting>(settingNames.enabled);
 		if (setting === UpdateLinksOnFileMoveSetting.Never) {
 			return false;
@@ -107,40 +107,40 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 			}
 		}
 
-		const stat = await vscode.workspace.fs.stat(newUri);
-		if (stat.type === vscode.FileType.Directory) {
+		const stat = await docode.workspace.fs.stat(newUri);
+		if (stat.type === docode.FileType.Directory) {
 			return config.get<boolean>(settingNames.enableForDirectories, true);
 		}
 
 		return false;
 	}
 
-	async #promptUser(newResources: readonly vscode.Uri[]): Promise<boolean> {
+	async #promptUser(newResources: readonly docode.Uri[]): Promise<boolean> {
 		if (!newResources.length) {
 			return false;
 		}
 
-		const rejectItem: vscode.MessageItem = {
-			title: vscode.l10n.t("No"),
+		const rejectItem: docode.MessageItem = {
+			title: docode.l10n.t("No"),
 			isCloseAffordance: true,
 		};
 
-		const acceptItem: vscode.MessageItem = {
-			title: vscode.l10n.t("Yes"),
+		const acceptItem: docode.MessageItem = {
+			title: docode.l10n.t("Yes"),
 		};
 
-		const alwaysItem: vscode.MessageItem = {
-			title: vscode.l10n.t("Always"),
+		const alwaysItem: docode.MessageItem = {
+			title: docode.l10n.t("Always"),
 		};
 
-		const neverItem: vscode.MessageItem = {
-			title: vscode.l10n.t("Never"),
+		const neverItem: docode.MessageItem = {
+			title: docode.l10n.t("Never"),
 		};
 
-		const choice = await vscode.window.showInformationMessage(
+		const choice = await docode.window.showInformationMessage(
 			newResources.length === 1
-				? vscode.l10n.t("Update Markdown links for '{0}'?", Utils.basename(newResources[0]))
-				: this.#getConfirmMessage(vscode.l10n.t("Update Markdown links for the following {0} files?", newResources.length), newResources), {
+				? docode.l10n.t("Update Markdown links for '{0}'?", Utils.basename(newResources[0]))
+				: this.#getConfirmMessage(docode.l10n.t("Update Markdown links for the following {0} files?", newResources.length), newResources), {
 			modal: true,
 		}, rejectItem, acceptItem, alwaysItem, neverItem);
 
@@ -152,7 +152,7 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 				return false;
 			}
 			case alwaysItem: {
-				const config = vscode.workspace.getConfiguration('markdown', newResources[0]);
+				const config = docode.workspace.getConfiguration('markdown', newResources[0]);
 				config.update(
 					settingNames.enabled,
 					UpdateLinksOnFileMoveSetting.Always,
@@ -160,7 +160,7 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 				return true;
 			}
 			case neverItem: {
-				const config = vscode.workspace.getConfiguration('markdown', newResources[0]);
+				const config = docode.workspace.getConfiguration('markdown', newResources[0]);
 				config.update(
 					settingNames.enabled,
 					UpdateLinksOnFileMoveSetting.Never,
@@ -173,16 +173,16 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 		}
 	}
 
-	async #getEditsForFileRename(renames: readonly RenameAction[], token: vscode.CancellationToken): Promise<{ edit: vscode.WorkspaceEdit; resourcesBeingRenamed: vscode.Uri[] } | undefined> {
+	async #getEditsForFileRename(renames: readonly RenameAction[], token: docode.CancellationToken): Promise<{ edit: docode.WorkspaceEdit; resourcesBeingRenamed: docode.Uri[] } | undefined> {
 		const result = await this.#client.getEditForFileRenames(renames.map(rename => ({ oldUri: rename.oldUri.toString(), newUri: rename.newUri.toString() })), token);
 		if (!result?.edit.documentChanges?.length) {
 			return undefined;
 		}
 
-		const workspaceEdit = new vscode.WorkspaceEdit();
+		const workspaceEdit = new docode.WorkspaceEdit();
 
 		for (const change of result.edit.documentChanges as TextDocumentEdit[]) {
-			const uri = vscode.Uri.parse(change.textDocument.uri);
+			const uri = docode.Uri.parse(change.textDocument.uri);
 			for (const edit of change.edits) {
 				workspaceEdit.replace(uri, convertRange(edit.range), edit.newText);
 			}
@@ -190,11 +190,11 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 
 		return {
 			edit: workspaceEdit,
-			resourcesBeingRenamed: result.participatingRenames.map(x => vscode.Uri.parse(x.newUri)),
+			resourcesBeingRenamed: result.participatingRenames.map(x => docode.Uri.parse(x.newUri)),
 		};
 	}
 
-	#getConfirmMessage(start: string, resourcesToConfirm: readonly vscode.Uri[]): string {
+	#getConfirmMessage(start: string, resourcesToConfirm: readonly docode.Uri[]): string {
 		const MAX_CONFIRM_FILES = 10;
 
 		const paths = [start];
@@ -203,9 +203,9 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 
 		if (resourcesToConfirm.length > MAX_CONFIRM_FILES) {
 			if (resourcesToConfirm.length - MAX_CONFIRM_FILES === 1) {
-				paths.push(vscode.l10n.t("...1 additional file not shown"));
+				paths.push(docode.l10n.t("...1 additional file not shown"));
 			} else {
-				paths.push(vscode.l10n.t("...{0} additional files not shown", resourcesToConfirm.length - MAX_CONFIRM_FILES));
+				paths.push(docode.l10n.t("...{0} additional files not shown", resourcesToConfirm.length - MAX_CONFIRM_FILES));
 			}
 		}
 
@@ -213,20 +213,20 @@ class UpdateLinksOnFileRenameHandler extends Disposable {
 		return paths.join('\n');
 	}
 
-	#getConfigTargetScope(config: vscode.WorkspaceConfiguration, settingsName: string): vscode.ConfigurationTarget {
+	#getConfigTargetScope(config: docode.WorkspaceConfiguration, settingsName: string): docode.ConfigurationTarget {
 		const inspected = config.inspect(settingsName);
 		if (inspected?.workspaceFolderValue) {
-			return vscode.ConfigurationTarget.WorkspaceFolder;
+			return docode.ConfigurationTarget.WorkspaceFolder;
 		}
 
 		if (inspected?.workspaceValue) {
-			return vscode.ConfigurationTarget.Workspace;
+			return docode.ConfigurationTarget.Workspace;
 		}
 
-		return vscode.ConfigurationTarget.Global;
+		return docode.ConfigurationTarget.Global;
 	}
 }
 
-export function registerUpdateLinksOnRename(client: MdLanguageClient): vscode.Disposable {
+export function registerUpdateLinksOnRename(client: MdLanguageClient): docode.Disposable {
 	return new UpdateLinksOnFileRenameHandler(client);
 }

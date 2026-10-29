@@ -52,11 +52,11 @@ suite('NLS JavaScript messages', () => {
 
 		const generated = await Promise.all(directories.map(async outDir => {
 			const javascript = await fs.promises.readFile(path.join(outDir, 'nls.messages.js'), 'utf8');
-			const context = { _VSCODE_NLS_MESSAGES: [] as string[] };
+			const context = { _DOCODE_NLS_MESSAGES: [] as string[] };
 			vm.runInNewContext(javascript, context);
 			return {
 				ascii: !/[^\x00-\x7f]/.test(javascript),
-				messages: Array.from(context._VSCODE_NLS_MESSAGES),
+				messages: Array.from(context._DOCODE_NLS_MESSAGES),
 				json: await fs.promises.readFile(path.join(outDir, 'nls.messages.json'), 'utf8'),
 				keysJson: await fs.promises.readFile(path.join(outDir, 'nls.keys.json'), 'utf8'),
 				metadataJson: await fs.promises.readFile(path.join(outDir, 'nls.metadata.json'), 'utf8'),

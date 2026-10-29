@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as Proto from '../tsServer/protocol/protocol';
 import { readUnifiedConfig } from '../utils/configuration';
 import * as objects from '../utils/objects';
@@ -67,7 +67,7 @@ export class ImplicitProjectConfiguration {
 	public readonly strictFunctionTypes: boolean;
 	public readonly strict: boolean;
 
-	constructor(configuration: vscode.WorkspaceConfiguration) {
+	constructor(configuration: docode.WorkspaceConfiguration) {
 		this.target = ImplicitProjectConfiguration.readTarget(configuration);
 		this.module = ImplicitProjectConfiguration.readModule(configuration);
 		this.checkJs = ImplicitProjectConfiguration.readCheckJs(configuration);
@@ -81,15 +81,15 @@ export class ImplicitProjectConfiguration {
 		return objects.equals(this, other);
 	}
 
-	private static readTarget(configuration: vscode.WorkspaceConfiguration): string | undefined {
+	private static readTarget(configuration: docode.WorkspaceConfiguration): string | undefined {
 		return configuration.get<string>('js/ts.implicitProjectConfig.target');
 	}
 
-	private static readModule(configuration: vscode.WorkspaceConfiguration): string | undefined {
+	private static readModule(configuration: docode.WorkspaceConfiguration): string | undefined {
 		return configuration.get<string>('js/ts.implicitProjectConfig.module');
 	}
 
-	private static readCheckJs(configuration: vscode.WorkspaceConfiguration): boolean | undefined {
+	private static readCheckJs(configuration: docode.WorkspaceConfiguration): boolean | undefined {
 		const inspect = configuration.inspect<boolean>('js/ts.implicitProjectConfig.checkJs');
 		if (this.hasValue(inspect)) {
 			return configuration.get<boolean>('js/ts.implicitProjectConfig.checkJs');
@@ -97,23 +97,23 @@ export class ImplicitProjectConfiguration {
 		return undefined;
 	}
 
-	private static readExperimentalDecorators(configuration: vscode.WorkspaceConfiguration): boolean {
+	private static readExperimentalDecorators(configuration: docode.WorkspaceConfiguration): boolean {
 		return configuration.get<boolean>('js/ts.implicitProjectConfig.experimentalDecorators', false);
 	}
 
-	private static readImplicitStrictNullChecks(configuration: vscode.WorkspaceConfiguration): boolean {
+	private static readImplicitStrictNullChecks(configuration: docode.WorkspaceConfiguration): boolean {
 		return configuration.get<boolean>('js/ts.implicitProjectConfig.strictNullChecks', true);
 	}
 
-	private static readImplicitStrictFunctionTypes(configuration: vscode.WorkspaceConfiguration): boolean {
+	private static readImplicitStrictFunctionTypes(configuration: docode.WorkspaceConfiguration): boolean {
 		return configuration.get<boolean>('js/ts.implicitProjectConfig.strictFunctionTypes', true);
 	}
 
-	private static readImplicitStrict(configuration: vscode.WorkspaceConfiguration): boolean {
+	private static readImplicitStrict(configuration: docode.WorkspaceConfiguration): boolean {
 		return configuration.get<boolean>('js/ts.implicitProjectConfig.strict', true);
 	}
 
-	private static hasValue(inspect: ReturnType<vscode.WorkspaceConfiguration['inspect']>): boolean {
+	private static hasValue(inspect: ReturnType<docode.WorkspaceConfiguration['inspect']>): boolean {
 		if (inspect === undefined) {
 			return false;
 		}
@@ -170,14 +170,14 @@ export interface ServiceConfigurationProvider {
 	loadFromWorkspace(): TypeScriptServiceConfiguration;
 }
 
-const vscodeWatcherName = 'vscode';
-type vscodeWatcherName = typeof vscodeWatcherName;
+const docodeWatcherName = 'docode';
+type docodeWatcherName = typeof docodeWatcherName;
 
 
 export abstract class BaseServiceConfigurationProvider implements ServiceConfigurationProvider {
 
 	public loadFromWorkspace(): TypeScriptServiceConfiguration {
-		const configuration = vscode.workspace.getConfiguration();
+		const configuration = docode.workspace.getConfiguration();
 		return {
 			locale: this.readLocale(),
 			globalTsdk: this.readGlobalTsdk(configuration),
@@ -208,10 +208,10 @@ export abstract class BaseServiceConfigurationProvider implements ServiceConfigu
 		};
 	}
 
-	protected abstract readGlobalTsdk(configuration: vscode.WorkspaceConfiguration): string | null;
-	protected abstract readLocalTsdk(configuration: vscode.WorkspaceConfiguration): string | null;
-	protected abstract readLocalNodePath(configuration: vscode.WorkspaceConfiguration): string | null;
-	protected abstract readGlobalNodePath(configuration: vscode.WorkspaceConfiguration): string | null;
+	protected abstract readGlobalTsdk(configuration: docode.WorkspaceConfiguration): string | null;
+	protected abstract readLocalTsdk(configuration: docode.WorkspaceConfiguration): string | null;
+	protected abstract readLocalNodePath(configuration: docode.WorkspaceConfiguration): string | null;
+	protected abstract readGlobalNodePath(configuration: docode.WorkspaceConfiguration): string | null;
 
 	protected readTsServerLogLevel(): TsServerLogLevel {
 		const setting = readUnifiedConfig<string>('tsserver.log', 'off', { fallbackSection: 'typescript' });
@@ -226,7 +226,7 @@ export abstract class BaseServiceConfigurationProvider implements ServiceConfigu
 		return readUnifiedConfig<string | null>('tsserver.npm.path', null, { fallbackSection: 'typescript', fallbackSubSectionNameOverride: 'npm' });
 	}
 
-	protected readDisableAutomaticTypeAcquisition(configuration: vscode.WorkspaceConfiguration): boolean {
+	protected readDisableAutomaticTypeAcquisition(configuration: docode.WorkspaceConfiguration): boolean {
 		const enabled = readUnifiedConfig<boolean | undefined>('tsserver.automaticTypeAcquisition.enabled', undefined, { fallbackSection: 'typescript' });
 		if (enabled !== undefined) {
 			return !enabled;
@@ -240,7 +240,7 @@ export abstract class BaseServiceConfigurationProvider implements ServiceConfigu
 		return !value || value === 'auto' ? null : value;
 	}
 
-	protected readUseSyntaxServer(configuration: vscode.WorkspaceConfiguration): SyntaxServerConfiguration {
+	protected readUseSyntaxServer(configuration: docode.WorkspaceConfiguration): SyntaxServerConfiguration {
 		const value = readUnifiedConfig<string | undefined>('tsserver.useSyntaxServer', undefined, { fallbackSection: 'typescript' });
 		switch (value) {
 			case 'never': return SyntaxServerConfiguration.Never;
@@ -268,7 +268,7 @@ export abstract class BaseServiceConfigurationProvider implements ServiceConfigu
 		return readUnifiedConfig<boolean>('tsserver.experimental.enableProjectDiagnostics', false, { fallbackSection: 'typescript' });
 	}
 
-	private readUseVsCodeWatcher(configuration: vscode.WorkspaceConfiguration): boolean {
+	private readUseVsCodeWatcher(configuration: docode.WorkspaceConfiguration): boolean {
 		const watcherExcludes = configuration.get<Record<string, boolean>>('files.watcherExclude') ?? {};
 		if (
 			watcherExcludes['**/node_modules/*/**'] === true || // VS Code default prior to 1.94.x
@@ -290,12 +290,12 @@ export abstract class BaseServiceConfigurationProvider implements ServiceConfigu
 			return experimentalConfig.workspaceFolderValue;
 		}
 
-		return readUnifiedConfig<Proto.WatchOptions | vscodeWatcherName>('tsserver.watchOptions', vscodeWatcherName, { fallbackSection: 'typescript' }) === vscodeWatcherName;
+		return readUnifiedConfig<Proto.WatchOptions | docodeWatcherName>('tsserver.watchOptions', docodeWatcherName, { fallbackSection: 'typescript' }) === docodeWatcherName;
 	}
 
 	private readWatchOptions(): Proto.WatchOptions | undefined {
-		const watchOptions = readUnifiedConfig<Proto.WatchOptions | vscodeWatcherName | undefined>('tsserver.watchOptions', undefined, { fallbackSection: 'typescript' });
-		if (!watchOptions || watchOptions === vscodeWatcherName) {
+		const watchOptions = readUnifiedConfig<Proto.WatchOptions | docodeWatcherName | undefined>('tsserver.watchOptions', undefined, { fallbackSection: 'typescript' });
+		if (!watchOptions || watchOptions === docodeWatcherName) {
 			return undefined;
 		}
 

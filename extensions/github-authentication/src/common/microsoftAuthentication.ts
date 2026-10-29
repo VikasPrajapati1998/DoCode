@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 /**
  * The Microsoft authentication provider contributed by VS Code. We deliberately go through the
@@ -21,7 +21,7 @@ const ENTRA_GITHUB_AUDIENCE_SCOPE = '12f6db80-0741-4a7e-b9c5-b85d737b3a31/.defau
 /** A Microsoft Entra access token and the account it was issued to. */
 export interface IMicrosoftToken {
 	readonly token: string;
-	readonly account: vscode.AuthenticationSessionAccountInformation;
+	readonly account: docode.AuthenticationSessionAccountInformation;
 }
 
 /** How to acquire a token: with the user in front of it, or without involving them at all. */
@@ -32,7 +32,7 @@ export type IMicrosoftTokenRequest =
 		/** Starts a brand new sign in, forgetting whichever account was remembered as preferred. */
 		readonly forceNewSession: boolean;
 		/** The identity to mint the token for, when the caller knows which one it needs. */
-		readonly account?: vscode.AuthenticationSessionAccountInformation;
+		readonly account?: docode.AuthenticationSessionAccountInformation;
 	}
 	/**
 	 * Shows nothing, and takes no for an answer. This is what a background renewal needs: the user
@@ -42,12 +42,12 @@ export type IMicrosoftTokenRequest =
 	| {
 		readonly silent: true;
 		/** Required: a silent acquisition has no picker to fall back on. */
-		readonly account: vscode.AuthenticationSessionAccountInformation;
+		readonly account: docode.AuthenticationSessionAccountInformation;
 	};
 
 /**
  * The Microsoft accounts this extension can reach. Everything that talks to the built-in provider
- * goes through here, so a test drives the whole flow without stubbing `vscode.authentication`.
+ * goes through here, so a test drives the whole flow without stubbing `docode.authentication`.
  */
 export interface IMicrosoftAuthentication {
 	/**
@@ -56,25 +56,25 @@ export interface IMicrosoftAuthentication {
 	 */
 	getToken(request: IMicrosoftTokenRequest): Promise<IMicrosoftToken | undefined>;
 	/** The Microsoft accounts the user is currently signed in to. */
-	getAccounts(): Promise<readonly vscode.AuthenticationSessionAccountInformation[]>;
+	getAccounts(): Promise<readonly docode.AuthenticationSessionAccountInformation[]>;
 }
 
 export class MicrosoftAuthentication implements IMicrosoftAuthentication {
 
 	async getToken(request: IMicrosoftTokenRequest): Promise<IMicrosoftToken | undefined> {
-		const session = await vscode.authentication.getSession(
+		const session = await docode.authentication.getSession(
 			MICROSOFT_PROVIDER_ID,
 			[ENTRA_GITHUB_AUDIENCE_SCOPE],
 			optionsFor(request));
 		return session && { token: session.accessToken, account: session.account };
 	}
 
-	async getAccounts(): Promise<readonly vscode.AuthenticationSessionAccountInformation[]> {
-		return await vscode.authentication.getAccounts(MICROSOFT_PROVIDER_ID);
+	async getAccounts(): Promise<readonly docode.AuthenticationSessionAccountInformation[]> {
+		return await docode.authentication.getAccounts(MICROSOFT_PROVIDER_ID);
 	}
 }
 
-function optionsFor(request: IMicrosoftTokenRequest): vscode.AuthenticationGetSessionOptions {
+function optionsFor(request: IMicrosoftTokenRequest): docode.AuthenticationGetSessionOptions {
 	// `silent` cannot be combined with `createIfNone` or anything else that prompts, which is the
 	// whole point of it: the request either resolves from what the provider already has or not at all.
 	if (request.silent) {

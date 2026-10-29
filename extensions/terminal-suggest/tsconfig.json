@@ -17,8 +17,8 @@
 	"include": [
 		"src/**/*",
 		"src/completions/index.d.ts",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.terminalCompletionProvider.d.ts",
-		"../../src/vscode-dts/vscode.proposed.terminalShellEnv.d.ts"
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.terminalCompletionProvider.d.ts",
+		"../../src/docode-dts/docode.proposed.terminalShellEnv.d.ts"
 	]
 }

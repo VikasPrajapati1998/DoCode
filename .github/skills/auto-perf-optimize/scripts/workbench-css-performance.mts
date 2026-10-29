@@ -103,8 +103,8 @@ await main();
 async function main(): Promise<void> {
 	const outputDir = path.resolve(options.outputDir);
 	const workspace = path.resolve(options.workspace);
-	const userDataDir = path.join(os.tmpdir(), `vscode-css-perf-${process.pid}`);
-	const extensionsDir = path.join(os.tmpdir(), `vscode-css-perf-ext-${process.pid}`);
+	const userDataDir = path.join(os.tmpdir(), `docode-css-perf-${process.pid}`);
+	const extensionsDir = path.join(os.tmpdir(), `docode-css-perf-ext-${process.pid}`);
 	const summary: Summary = {
 		createdAt: new Date().toISOString(),
 		options: {
@@ -482,7 +482,7 @@ function launchCode(userDataDir: string, extensionsDir: string, workspace: strin
 	const failedBeforeConnect = new Promise<Error>(resolve => failBeforeConnect = resolve);
 	const args = [
 		'.',
-		'--disable-extension=vscode.vscode-api-tests',
+		'--disable-extension=docode.docode-api-tests',
 		'--enable-smoke-test-driver',
 		'--disable-workspace-trust',
 		`--remote-debugging-port=${options.port}`,
@@ -499,8 +499,8 @@ function launchCode(userDataDir: string, extensionsDir: string, workspace: strin
 		env: {
 			...process.env,
 			NODE_ENV: 'development',
-			VSCODE_DEV: '1',
-			VSCODE_CLI: '1',
+			DOCODE_DEV: '1',
+			DOCODE_CLI: '1',
 			ELECTRON_ENABLE_LOGGING: '1',
 			ELECTRON_ENABLE_STACK_DUMPING: '1',
 		},

@@ -28,8 +28,8 @@ The clone is **slim**: workspace storage, browser caches, file history, cached V
 - A VS Code checkout with `node_modules/` installed (`npm install` if missing — do **not** symlink from a sibling worktree; that breaks builds in subtle ways).
 - A VS Code checkout with sources built. Run `npm run compile` once (one-shot) or `npm run watch` for incremental rebuilds. Both build the full client **and** all built-in extensions under `extensions/`. You must build the full product to run successfully, building just the client is not enough.
   - The launcher compiles only when outputs are missing; it does **not** detect stale dependencies or `out/` files. After pulling, switching branches, or changing dependency manifests, run `npm install` when needed and rebuild before launching.
-- An authenticated Code OSS profile is recommended but not required. By default the launcher tries to seed from `~/.vscode-oss-dev` on macOS/Linux or `$env:USERPROFILE\.vscode-oss-dev` on Windows, which is the user-data-dir the repo's `launch.json` configs use. Only pass `--source-user-data-dir <path>` (or set `$CODE_OSS_DEV_AUTHED_USER_DATA_DIR`) when you specifically want to seed from a different profile (e.g. your regular `~/Library/Application Support/Code` install). If the source profile is missing, the launcher continues with an empty isolated profile.
-- `@playwright/cli` available (it's a devDependency in the vscode repo - `npm install` then use `npx @playwright/cli`).
+- An authenticated Code OSS profile is recommended but not required. By default the launcher tries to seed from `~/.docode-oss-dev` on macOS/Linux or `$env:USERPROFILE\.docode-oss-dev` on Windows, which is the user-data-dir the repo's `launch.json` configs use. Only pass `--source-user-data-dir <path>` (or set `$CODE_OSS_DEV_AUTHED_USER_DATA_DIR`) when you specifically want to seed from a different profile (e.g. your regular `~/Library/Application Support/Code` install). If the source profile is missing, the launcher continues with an empty isolated profile.
+- `@playwright/cli` available (it's a devDependency in the docode repo - `npm install` then use `npx @playwright/cli`).
 - For debugger work: `dap-cli` on `PATH`. If debugger support would be useful but the `dap-cli` skill is not present, prompt the user to install it from https://github.com/roblourens/dap-cli.
 - CSS selectors are internal implementation details. If a selector-based `eval` stops working, take a fresh `snapshot`, inspect the current DOM, and update the selector rather than assuming an old one still applies.
 - Code OSS cannot be launched or driven from a sandboxed agent terminal. On Windows the sandbox either cannot start without local network access or the launcher fails with `[launch.ps1] Access is denied`; enabling local network access alone is not enough. If your shell tool can request unsandboxed execution, use that for the launcher, `@playwright/cli`, and cleanup. Otherwise, before launching, ask the user once to turn off terminal sandboxing for this session (Permissions picker → "Sandboxing for terminal") and continue after they confirm.
@@ -53,7 +53,7 @@ SESSION_TITLE=<title-from-get_current_session>
 "$LAUNCH" --agents --session-title "$SESSION_TITLE"
 "$LAUNCH" -- <workspace-path>                # forward extra args to code.sh
 "$LAUNCH" --source-user-data-dir <path>      # pick a specific authed profile
-"$LAUNCH" --repo <vscode-repo-root>          # if not run from the repo
+"$LAUNCH" --repo <docode-repo-root>          # if not run from the repo
 "$LAUNCH" --clone-extensions                 # start with a copy of the source extensions/ (~few seconds)
 "$LAUNCH" --full                             # skip slim excludes; copy everything
 "$LAUNCH" --skip-prelaunch                   # reuse already-current build outputs
@@ -70,7 +70,7 @@ $sessionTitle = '<title-from-get_current_session>'
 & $launch --agents --session-title $sessionTitle
 & $launch -- --use-mock-keychain               # forward extra args to code.bat
 & $launch --source-user-data-dir C:\path\to\profile
-& $launch --repo C:\path\to\vscode
+& $launch --repo C:\path\to\docode
 & $launch --clone-extensions
 & $launch --full
 & $launch --skip-prelaunch
@@ -92,12 +92,12 @@ If the user has signed in, continue with the current isolated launch. If they ch
 
 ```bash
 BOOTSTRAP=<dir-of-this-SKILL.md>/scripts/bootstrap/bootstrap-profile.sh
-"$BOOTSTRAP" --repo <vscode-repo-root>
+"$BOOTSTRAP" --repo <docode-repo-root>
 ```
 
 ```powershell
 $bootstrap = Join-Path $skillDir 'scripts\bootstrap\bootstrap-profile.ps1'
-& $bootstrap -Repo <vscode-repo-root>
+& $bootstrap -Repo <docode-repo-root>
 ```
 
 If the failed launch used a custom `--source-user-data-dir`, pass the same path as `--user-data-dir <path>` on macOS/Linux or `-UserDataDir <path>` on Windows.
@@ -124,18 +124,18 @@ The exclude list mirrors the one used by VS Code's own perf-test skill (`.github
 
 #### Windows authentication
 
-Windows has no shared per-app keychain for these secrets, so they live in files on disk - but **not all in the user-data-dir**. The GitHub session is stored at `StorageScope.APPLICATION_SHARED` *only on Windows* (see `useSharedStorage` and `CROSS_APP_SHARED_SECRET_KEYS` in `src/vs/platform/secrets/common/secrets.ts`), which puts the two halves of the credential in **different directories**:
+Windows has no shared per-app keychain for these secrets, so they live in files on disk - but **not all in the user-data-dir**. The GitHub session is stored at `StorageScope.APPLICATION_SHARED` *only on Windows* (see `useSharedStorage` and `CROSS_APP_SHARED_SECRET_KEYS` in `src/do/platform/secrets/common/secrets.ts`), which puts the two halves of the credential in **different directories**:
 
 | Piece | Location |
 |---|---|
 | Encrypted GitHub session blob | `<shared-data-dir>/sharedStorage/state.vscdb` |
 | DPAPI-wrapped decryption key (`os_crypt.encrypted_key`) | `<user-data-dir>/Local State` |
 
-The launcher therefore seeds **both**: it copies the source profile *and* copies the source shared-data-dir into the run's throwaway `shared-data` dir. The source resolves the same way `IEnvironmentService.appSharedDataHome` does - `$env:CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR` if set, else `$env:VSCODE_PORTABLE\shared-data` when running portable, else `~/<product.sharedDataFolderName>` (i.e. `%USERPROFILE%\.vscode-oss-shared`). It also verifies `Local State`, `machineid`, and `Network` survived the profile copy, and warns on stderr if neither database holds a GitHub session.
+The launcher therefore seeds **both**: it copies the source profile *and* copies the source shared-data-dir into the run's throwaway `shared-data` dir. The source resolves the same way `IEnvironmentService.appSharedDataHome` does - `$env:CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR` if set, else `$env:DOCODE_PORTABLE\shared-data` when running portable, else `~/<product.sharedDataFolderName>` (i.e. `%USERPROFILE%\.docode-oss-shared`). It also verifies `Local State`, `machineid`, and `Network` survived the profile copy, and warns on stderr if neither database holds a GitHub session.
 
 > This asymmetry is invisible on macOS/Linux, where the same token lands inside the profile. A Windows-only "always signed out" symptom is a shared-data-dir problem, **not** a profile problem: signing in against the source profile writes a perfectly good session, but before this seeding existed every launch handed Code OSS an empty shared dir and threw it away.
 
-The bootstrap script writes the session blob to `%USERPROFILE%\.vscode-oss-shared` and the key to the profile's `Local State`; later launches copy both and inherit the session.
+The bootstrap script writes the session blob to `%USERPROFILE%\.docode-oss-shared` and the key to the profile's `Local State`; later launches copy both and inherit the session.
 
 > Profiles that predate the `APPLICATION_SHARED` migration can still hold the secret in `User/globalStorage/state.vscdb`. `ApplicationSharedStorageMain` registers application storage as a read fallback, so those profiles authenticate even with no shared-data-dir present - which is why a missing shared dir is reported as a fact rather than assumed fatal.
 
@@ -428,8 +428,8 @@ To set breakpoints in VS Code source while the window is running, attach `dap-cl
 
 - **Extension host** (most common - Copilot Chat extension, built-in extensions, your own extension under development) -> `extHostPort`
 - **Main process** (Electron lifecycle, window/menu wiring, IPC) -> `mainPort`
-- **Local agent host** (`src/vs/platform/agentHost/node/...`, agent session lifecycle, AHP wiring, Claude/Copilot agent providers) -> `agentHostPort`
-- **Renderer** (the workbench itself, `src/vs/workbench/...`) -> `cdpPort`
+- **Local agent host** (`src/do/platform/agentHost/node/...`, agent session lifecycle, AHP wiring, Claude/Copilot agent providers) -> `agentHostPort`
+- **Renderer** (the workbench itself, `src/do/workbench/...`) -> `cdpPort`
 
 You can run `@playwright/cli` and `dap-cli` against the **same window simultaneously** - drive the UI with one terminal, hit a breakpoint and inspect state in another.
 
@@ -491,4 +491,4 @@ Code OSS is a full Electron app and easily eats 1-4 GB. Always clean up.
 - **`launch.sh` exits non-zero with a log tail** - either pre-launch failed, `code.sh` died before CDP came up, or CDP never opened within 90s. The tail printed to stderr is from `runDir/code.log` - read it to diagnose.
 - **Snapshot shows the wrong page or no expected controls** - use `tab-list`, switch with `tab-select <index>` if needed, then re-snapshot before interacting.
 - **CLI typing commands complete but the input stays empty** - run `playwrightScripts/focus-chat-input.ts`, use `press` or clipboard paste rather than `fill` / `type`, and verify the input state before sending.
-- **Auth missing in the launched window** - use the [missing sign-in flow](#handle-a-missing-sign-in) so the user can either finish signing into the current isolated window or choose to bootstrap the persistent source profile. **On Windows, check the shared-data-dir first**: the GitHub session blob lives in `%USERPROFILE%\.vscode-oss-shared\sharedStorage\state.vscdb`, not in the profile. The launcher logs `copying shared data: <src> -> <dst>` on stderr when it finds it, and warns `no shared-data-dir at <path>` when it doesn't.
+- **Auth missing in the launched window** - use the [missing sign-in flow](#handle-a-missing-sign-in) so the user can either finish signing into the current isolated window or choose to bootstrap the persistent source profile. **On Windows, check the shared-data-dir first**: the GitHub session blob lives in `%USERPROFILE%\.docode-oss-shared\sharedStorage\state.vscdb`, not in the profile. The launcher logs `copying shared data: <src> -> <dst>` on stderr when it finds it, and warns `no shared-data-dir at <path>` when it doesn't.

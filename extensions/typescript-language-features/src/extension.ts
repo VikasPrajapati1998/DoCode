@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import VsCodeTelemetryReporter from '@vscode/extension-telemetry';
+import VsCodeTelemetryReporter from '@docode/extension-telemetry';
 import * as fs from 'fs';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Api, getExtensionApi } from './api';
 import { CommandManager } from './commands/commandManager';
 import { DisableTsgoCommand, tsNativeExtensionIds } from './commands/useTsgo';
@@ -30,12 +30,12 @@ import { conditionalRegistration, requireGlobalUnifiedConfig, requireHasVsCodeEx
 import { DisposableStore } from './utils/dispose';
 
 export function activate(
-	context: vscode.ExtensionContext
+	context: docode.ExtensionContext
 ): Api {
 	const pluginManager = new PluginManager();
 	context.subscriptions.push(pluginManager);
 
-	const onCompletionAccepted = new vscode.EventEmitter<vscode.CompletionItem>();
+	const onCompletionAccepted = new docode.EventEmitter<docode.CompletionItem>();
 	context.subscriptions.push(onCompletionAccepted);
 
 	const logDirectoryProvider = new NodeLogDirectoryProvider(context);

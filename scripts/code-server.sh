@@ -11,7 +11,7 @@ function code() {
 	pushd $ROOT
 
 	# Get electron, compile, built-in extensions
-	if [[ -z "${VSCODE_SKIP_PRELAUNCH}" ]]; then
+	if [[ -z "${DOCODE_SKIP_PRELAUNCH}" ]]; then
 		node build/lib/preLaunch.ts
 	fi
 
@@ -24,7 +24,7 @@ function code() {
 	popd
 
 	NODE_ENV=development \
-	VSCODE_DEV=1 \
+	DOCODE_DEV=1 \
 	$NODE $ROOT/scripts/code-server.js "$@"
 }
 

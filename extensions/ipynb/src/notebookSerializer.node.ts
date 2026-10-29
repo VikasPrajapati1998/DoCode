@@ -3,20 +3,20 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DeferredPromise, generateUuid } from './helper';
 import { NotebookSerializerBase } from './notebookSerializer';
 
 export class NotebookSerializer extends NotebookSerializerBase {
-	private experimentalSave = vscode.workspace.getConfiguration('ipynb').get('experimental.serialization', true);
+	private experimentalSave = docode.workspace.getConfiguration('ipynb').get('experimental.serialization', true);
 	private worker?: import('node:worker_threads').Worker;
 	private tasks = new Map<string, DeferredPromise<Uint8Array>>();
 
-	constructor(context: vscode.ExtensionContext) {
+	constructor(context: docode.ExtensionContext) {
 		super(context);
-		context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(e => {
+		context.subscriptions.push(docode.workspace.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('ipynb.experimental.serialization')) {
-				this.experimentalSave = vscode.workspace.getConfiguration('ipynb').get('experimental.serialization', true);
+				this.experimentalSave = docode.workspace.getConfiguration('ipynb').get('experimental.serialization', true);
 			}
 		}));
 	}
@@ -30,7 +30,7 @@ export class NotebookSerializer extends NotebookSerializerBase {
 		super.dispose();
 	}
 
-	public override async serializeNotebook(data: vscode.NotebookData, token: vscode.CancellationToken): Promise<Uint8Array> {
+	public override async serializeNotebook(data: docode.NotebookData, token: docode.CancellationToken): Promise<Uint8Array> {
 		if (this.disposed) {
 			return new Uint8Array(0);
 		}
@@ -51,7 +51,7 @@ export class NotebookSerializer extends NotebookSerializerBase {
 		}
 		const { Worker } = await import('node:worker_threads');
 		const outputDir = getOutputDir(this.context);
-		this.worker = new Worker(vscode.Uri.joinPath(this.context.extensionUri, outputDir, 'notebookSerializerWorker.js').fsPath, {});
+		this.worker = new Worker(docode.Uri.joinPath(this.context.extensionUri, outputDir, 'notebookSerializerWorker.js').fsPath, {});
 		this.worker.on('exit', (exitCode) => {
 			if (!this.disposed) {
 				console.error(`IPynb Notebook Serializer Worker exited unexpectedly`, exitCode);
@@ -72,7 +72,7 @@ export class NotebookSerializer extends NotebookSerializerBase {
 		});
 		return this.worker;
 	}
-	private async serializeViaWorker(data: vscode.NotebookData): Promise<Uint8Array> {
+	private async serializeViaWorker(data: docode.NotebookData): Promise<Uint8Array> {
 		const worker = await this.startWorker();
 		const id = generateUuid();
 
@@ -85,7 +85,7 @@ export class NotebookSerializer extends NotebookSerializerBase {
 }
 
 
-function getOutputDir(context: vscode.ExtensionContext): string {
+function getOutputDir(context: docode.ExtensionContext): string {
 	const main = context.extension.packageJSON.main as string;
 	return main.indexOf('/dist/') !== -1 ? 'dist' : 'out';
 }

@@ -36,8 +36,8 @@ pub struct ImportSpec {
 	/// as a grammar that a test reads. It refers to nothing unless the path exists, and never to
 	/// a package.
 	pub root: bool,
-	/// For the folder that a computed path starts in, such as `vs/.../test/node` in
-	/// `` `vs/.../test/node/${name}.txt` ``: the static start and end of the path in that folder
+	/// For the folder that a computed path starts in, such as `do/.../test/node` in
+	/// `` `do/.../test/node/${name}.txt` ``: the static start and end of the path in that folder
 	/// (`""` and `".txt"`). The code reads the data files of the folder that match them.
 	pub data: Option<(String, String)>,
 }

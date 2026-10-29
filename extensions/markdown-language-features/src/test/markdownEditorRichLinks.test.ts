@@ -4,39 +4,39 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { autorun, derived, observableValue } from '@vscode/observables';
+import { autorun, derived, observableValue } from '@docode/observables';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getGitCommitPresentation, GitLinkPresentationResolver, normalizeGitRemoteUrl, resolveGitCommitHref } from '../preview/linkPresentation/gitLinkPresentationResolver';
 import { createAsyncLinkPresentation, ImmutableLinkPresentationCache } from '../preview/linkPresentation/linkPresentationResolver';
 import { LinkPresentationService } from '../preview/linkPresentation/linkPresentationService';
 
 suite('Markdown editor rich links', () => {
 	test('resolves repository hints relative to the authoritative Markdown document', () => {
-		const resolve = (href: string, source: vscode.Uri) =>
+		const resolve = (href: string, source: docode.Uri) =>
 			new URL(resolveGitCommitHref(href, source)).searchParams.get('path');
 		const href = 'commit:1234567?path=../../my%20repo';
 		assert.deepStrictEqual([
-			resolve(href, vscode.Uri.parse('file:///workspace/notes/daily/note.md')),
-			resolve(href, vscode.Uri.parse('file:///other/notes/daily/note.md')),
-			resolve(href, vscode.Uri.parse('vscode-remote://ssh-remote+host/workspace/notes/daily/note.md')),
-			resolve('commit:1234567?path=/repo', vscode.Uri.parse('vscode-remote://ssh-remote+host/notes/note.md')),
-			resolve('commit:1234567?path=file%3A%2F%2F%2Frepo', vscode.Uri.parse('file:///notes/note.md')),
+			resolve(href, docode.Uri.parse('file:///workspace/notes/daily/note.md')),
+			resolve(href, docode.Uri.parse('file:///other/notes/daily/note.md')),
+			resolve(href, docode.Uri.parse('docode-remote://ssh-remote+host/workspace/notes/daily/note.md')),
+			resolve('commit:1234567?path=/repo', docode.Uri.parse('docode-remote://ssh-remote+host/notes/note.md')),
+			resolve('commit:1234567?path=file%3A%2F%2F%2Frepo', docode.Uri.parse('file:///notes/note.md')),
 		], [
 			'file:///workspace/my%20repo',
 			'file:///other/my%20repo',
-			'vscode-remote://ssh-remote%2Bhost/workspace/my%20repo',
-			'vscode-remote://ssh-remote%2Bhost/repo',
+			'docode-remote://ssh-remote%2Bhost/workspace/my%20repo',
+			'docode-remote://ssh-remote%2Bhost/repo',
 			'file:///repo',
 		]);
-		assert.strictEqual(resolveGitCommitHref('https://example.com/resource?path=../repo', vscode.Uri.file('note.md')), 'https://example.com/resource?path=../repo');
+		assert.strictEqual(resolveGitCommitHref('https://example.com/resource?path=../repo', docode.Uri.file('note.md')), 'https://example.com/resource?path=../repo');
 		assert.strictEqual(resolveGitCommitHref(href), href);
 	});
 
 	test('canonicalizes Windows repository hints without losing query or fragment', () => {
 		const href = 'commit:1234567?path=D%3A%5Crepos%5Cmy%20repo&other=value#details';
 		const resolved = new URL(resolveGitCommitHref(href));
-		assert.strictEqual(vscode.Uri.parse(resolved.searchParams.get('path')!).fsPath, 'd:\\repos\\my repo');
+		assert.strictEqual(docode.Uri.parse(resolved.searchParams.get('path')!).fsPath, 'd:\\repos\\my repo');
 		assert.strictEqual(resolved.searchParams.get('other'), 'value');
 		assert.strictEqual(resolved.hash, '#details');
 	});
@@ -54,7 +54,7 @@ suite('Markdown editor rich links', () => {
 	});
 
 	test('supports local and forge Git commit links', () => {
-		const refresh = new vscode.EventEmitter<void>();
+		const refresh = new docode.EventEmitter<void>();
 		const resolver = new GitLinkPresentationResolver(new ImmutableLinkPresentationCache());
 		try {
 			const context = {
@@ -103,22 +103,22 @@ suite('Markdown editor rich links', () => {
 	});
 
 	test('opens a hinted repository for metadata and never falls back to a different repository', async () => {
-		const refresh = new vscode.EventEmitter<void>();
-		const rootUri = vscode.Uri.file('D:\\repos\\hinted');
-		const opened: vscode.Uri[] = [];
+		const refresh = new docode.EventEmitter<void>();
+		const rootUri = docode.Uri.file('D:\\repos\\hinted');
+		const opened: docode.Uri[] = [];
 		let unrelatedLookups = 0;
 		const repository = {
 			rootUri,
 			state: { remotes: [{ fetchUrl: 'https://github.com/owner/repo.git' }] },
 			getCommit: async (ref: string) => ({ hash: ref, message: 'Hinted commit', shortStat: { insertions: 3, deletions: 2 } }),
 		};
-		const repositoriesChanged = new vscode.EventEmitter<typeof repository>();
+		const repositoriesChanged = new docode.EventEmitter<typeof repository>();
 		const resolver = new GitLinkPresentationResolver(new ImmutableLinkPresentationCache(), async () => ({
 			enabled: true,
 			getAPI: () => ({
 				repositories: [{
 					...repository,
-					rootUri: vscode.Uri.file('D:\\repos\\other'),
+					rootUri: docode.Uri.file('D:\\repos\\other'),
 					getCommit: async (ref: string) => {
 						unrelatedLookups++;
 						return { hash: ref, message: 'Wrong commit' };
@@ -165,7 +165,7 @@ suite('Markdown editor rich links', () => {
 	});
 
 	test('owns async resolution through observable lifetime', () => {
-		const refresh = new vscode.EventEmitter<void>();
+		const refresh = new docode.EventEmitter<void>();
 		let resolveCount = 0;
 		const presentation = createAsyncLinkPresentation(
 			'https://example.com/resource',
@@ -275,7 +275,7 @@ suite('Markdown editor rich links', () => {
 	});
 
 	test('keeps a restored presentation visible while loading in the background', async () => {
-		const requestRefresh = new vscode.EventEmitter<void>();
+		const requestRefresh = new docode.EventEmitter<void>();
 		let completeRefresh!: (value: { kind: 'issue'; title: string }) => void;
 		const refresh = new Promise<{ kind: 'issue'; title: string }>(resolve => completeRefresh = resolve);
 		const presentation = createAsyncLinkPresentation(
@@ -304,7 +304,7 @@ suite('Markdown editor rich links', () => {
 	});
 
 	test('does not mark a fresh presentation loading during background refresh', async () => {
-		const requestRefresh = new vscode.EventEmitter<void>();
+		const requestRefresh = new docode.EventEmitter<void>();
 		let resolveCount = 0;
 		let completeRefresh!: (value: { kind: 'issue'; title: string }) => void;
 		const presentation = createAsyncLinkPresentation(

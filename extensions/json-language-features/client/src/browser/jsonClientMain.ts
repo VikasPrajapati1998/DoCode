@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, ExtensionContext, Uri, l10n, window } from 'vscode';
+import { Disposable, ExtensionContext, Uri, l10n, window } from 'docode';
 import { LanguageClientOptions } from 'vscode-languageclient';
 import { startClient, LanguageClientConstructor, SchemaRequestService, AsyncDisposable, languageServerDescription } from '../jsonClient';
 import { LanguageClient } from 'vscode-languageclient/browser';

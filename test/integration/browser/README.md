@@ -12,7 +12,7 @@ Make sure to run the following commands to compile and install dependencies:
 
     scripts/test-integration.[sh|bat]
 
-All integration tests run in an Electron instance. You can specify to run the tests against a real build by setting the environment variables `INTEGRATION_TEST_ELECTRON_PATH` and `VSCODE_REMOTE_SERVER_PATH` (if you want to include remote tests).
+All integration tests run in an Electron instance. You can specify to run the tests against a real build by setting the environment variables `INTEGRATION_TEST_ELECTRON_PATH` and `DOCODE_REMOTE_SERVER_PATH` (if you want to include remote tests).
 
 ## Run (inside browser)
 
@@ -26,4 +26,4 @@ Add the `--debug` flag to see a browser window with the tests running.
 
 ## Debug
 
-All integration tests can be run and debugged from within VSCode (both Electron and Web) simply by selecting the related launch configuration and running them.
+All integration tests can be run and debugged from within DoCode (both Electron and Web) simply by selecting the related launch configuration and running them.

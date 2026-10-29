@@ -15,7 +15,7 @@ AppUpdatesURL=https://code.visualstudio.com/
 DefaultGroupName={#NameLong}
 AllowNoIcons=yes
 OutputDir={#OutputDir}
-OutputBaseFilename=VSCodeSetup
+OutputBaseFilename=DoCodeSetup
 Compression=lzma
 SolidCompression=yes
 AppMutex={code:GetAppMutex}
@@ -39,10 +39,6 @@ WizardStyle=modern
 // to shutdown VS Code. We rely on the fact that the update signals
 // that VS Code is ready to be shutdown, so we're good to use `force` here.
 CloseApplications=force
-
-#ifdef Sign
-SignTool=esrp
-#endif
 
 #if "user" == InstallTarget
 DefaultDirName={userpf}\{#DirName}
@@ -1921,7 +1917,7 @@ begin
   until Length(Text)=0;
 end;
 
-function NeedsAddToPath(VSCode: string): boolean;
+function NeedsAddToPath(DoCode: string): boolean;
 var
   OrigPath: string;
 begin
@@ -1930,25 +1926,25 @@ begin
     Result := True;
     exit;
   end;
-  Result := Pos(';' + VSCode + ';', ';' + OrigPath + ';') = 0;
+  Result := Pos(';' + DoCode + ';', ';' + OrigPath + ';') = 0;
 end;
 
-function AddToPath(VSCode: string): string;
+function AddToPath(DoCode: string): string;
 var
   OrigPath: string;
 begin
   RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', OrigPath)
 
   if (Length(OrigPath) > 0) and (OrigPath[Length(OrigPath)] = ';') then
-    Result := OrigPath + VSCode
+    Result := OrigPath + DoCode
   else
-    Result := OrigPath + ';' + VSCode
+    Result := OrigPath + ';' + DoCode
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   Path: string;
-  VSCodePath: string;
+  DoCodePath: string;
   Parts: TArrayOfString;
   NewPath: string;
   i: Integer;
@@ -1968,10 +1964,10 @@ begin
     exit;
   end;
   NewPath := '';
-  VSCodePath := ExpandConstant('{app}\bin')
+  DoCodePath := ExpandConstant('{app}\bin')
   Explode(Parts, Path, ';');
   for i:=0 to GetArrayLength(Parts)-1 do begin
-    if CompareText(Parts[i], VSCodePath) <> 0 then begin
+    if CompareText(Parts[i], DoCodePath) <> 0 then begin
       NewPath := NewPath + Parts[i];
 
       if i < GetArrayLength(Parts) - 1 then begin

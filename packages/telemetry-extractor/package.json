@@ -1,0 +1,20 @@
+{
+	"name": "@docode/telemetry-extractor",
+	"version": "1.20.5",
+	"description": "Extracts telemetry from DoCode",
+	"main": "out/index.js",
+	"typings": "docode-telemetry-extractor.d.ts",
+	"engines": {
+		"node": ">=18"
+	},
+	"bin": {
+		"docode-telemetry-extractor": "./out/extractor.js"
+	},
+	"author": "lramos15",
+	"license": "MIT",
+	"dependencies": {
+		"command-line-args": "^6.0.1",
+		"ts-morph": "^25.0.1",
+		"@docode/ripgrep-universal": "npm:@vscode/ripgrep-universal@^1.18.0"
+	}
+}

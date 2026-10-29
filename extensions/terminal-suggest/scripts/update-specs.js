@@ -182,7 +182,7 @@ const specSpecificReplaceStrings = new Map([
 		],
 		[
 			'icon: "fig://icon?type=git"',
-			'icon: "vscode://icon?type=11"'
+			'icon: "docode://icon?type=11"'
 		]
 	]],
 	['git', [

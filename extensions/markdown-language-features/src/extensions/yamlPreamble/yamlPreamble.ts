@@ -5,7 +5,7 @@
 
 import type MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token.mjs';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as yaml from 'yaml';
 import { escapeHtml } from '../../util/dom';
 
@@ -95,7 +95,7 @@ function renderFrontMatter(tokens: Token[], idx: number, options: MarkdownIt.Opt
 		return '';
 	}
 
-	const currentDocument = (env as { currentDocument?: vscode.Uri } | undefined)?.currentDocument;
+	const currentDocument = (env as { currentDocument?: docode.Uri } | undefined)?.currentDocument;
 	const style = getFrontMatterRenderStyle(currentDocument);
 
 	switch (style) {
@@ -109,8 +109,8 @@ function renderFrontMatter(tokens: Token[], idx: number, options: MarkdownIt.Opt
 	}
 }
 
-function getFrontMatterRenderStyle(resource: vscode.Uri | undefined): FrontMatterRenderStyle {
-	const config = vscode.workspace.getConfiguration('markdown', resource ?? null);
+function getFrontMatterRenderStyle(resource: docode.Uri | undefined): FrontMatterRenderStyle {
+	const config = docode.workspace.getConfiguration('markdown', resource ?? null);
 	const value = config.get<string>('preview.frontMatter', 'table');
 	switch (value) {
 		case 'codeBlock':
@@ -153,13 +153,13 @@ function renderAsTable(meta: IFrontMatterMeta): string {
 }
 
 function renderError(message: string): string {
-	const label = vscode.l10n.t('Failed to parse frontmatter');
+	const label = docode.l10n.t('Failed to parse frontmatter');
 	return `<div class="frontmatter-error" role="alert" ${frontMatterAttributes()}><strong>${escapeHtml(label)}</strong><pre>${escapeHtml(message)}</pre></div>\n`;
 }
 
 function frontMatterAttributes(): string {
-	const label = escapeHtml(vscode.l10n.t('Frontmatter'));
-	return `title="${label}" data-vscode-context='${escapeHtml(FRONT_MATTER_CONTEXT)}'`;
+	const label = escapeHtml(docode.l10n.t('Frontmatter'));
+	return `title="${label}" data-docode-context='${escapeHtml(FRONT_MATTER_CONTEXT)}'`;
 }
 
 interface IParseResult {

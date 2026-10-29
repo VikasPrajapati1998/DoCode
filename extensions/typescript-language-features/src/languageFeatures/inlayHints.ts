@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { LanguageDescription } from '../configuration/languageDescription';
 import { TelemetryReporter } from '../logging/telemetry';
@@ -19,11 +19,11 @@ import { conditionalRegistration, requireMinVersion, requireSomeCapability } fro
 
 const inlayHintSettingNames = Object.values(InlayHintSettingNames);
 
-class TypeScriptInlayHintsProvider extends Disposable implements vscode.InlayHintsProvider {
+class TypeScriptInlayHintsProvider extends Disposable implements docode.InlayHintsProvider {
 
 	public static readonly minVersion = API.v440;
 
-	private readonly _onDidChangeInlayHints = this._register(new vscode.EventEmitter<void>());
+	private readonly _onDidChangeInlayHints = this._register(new docode.EventEmitter<void>());
 	public readonly onDidChangeInlayHints = this._onDidChangeInlayHints.event;
 
 	private hasReportedTelemetry = false;
@@ -36,7 +36,7 @@ class TypeScriptInlayHintsProvider extends Disposable implements vscode.InlayHin
 	) {
 		super();
 
-		this._register(vscode.workspace.onDidChangeConfiguration(e => {
+		this._register(docode.workspace.onDidChangeConfiguration(e => {
 			if (inlayHintSettingNames.some(settingName =>
 				e.affectsConfiguration(unifiedConfigSection + '.' + settingName) ||
 				e.affectsConfiguration(language.id + '.' + settingName)
@@ -47,14 +47,14 @@ class TypeScriptInlayHintsProvider extends Disposable implements vscode.InlayHin
 
 		// When a JS/TS file changes, change inlay hints for all visible editors
 		// since changes in one file can effect the hints the others.
-		this._register(vscode.workspace.onDidChangeTextDocument(e => {
+		this._register(docode.workspace.onDidChangeTextDocument(e => {
 			if (language.languageIds.includes(e.document.languageId)) {
 				this._onDidChangeInlayHints.fire();
 			}
 		}));
 	}
 
-	async provideInlayHints(model: vscode.TextDocument, range: vscode.Range, token: vscode.CancellationToken): Promise<vscode.InlayHint[] | undefined> {
+	async provideInlayHints(model: docode.TextDocument, range: docode.Range, token: docode.CancellationToken): Promise<docode.InlayHint[] | undefined> {
 		const filepath = this.client.toOpenTsFilePath(model);
 		if (!filepath) {
 			return;
@@ -91,7 +91,7 @@ class TypeScriptInlayHintsProvider extends Disposable implements vscode.InlayHin
 		}
 
 		return response.body.map(hint => {
-			const result = new vscode.InlayHint(
+			const result = new docode.InlayHint(
 				Position.fromLocation(hint.position),
 				this.convertInlayHintText(hint),
 				fromProtocolInlayHintKind(hint.kind)
@@ -102,10 +102,10 @@ class TypeScriptInlayHintsProvider extends Disposable implements vscode.InlayHin
 		});
 	}
 
-	private convertInlayHintText(tsHint: Proto.InlayHintItem): string | vscode.InlayHintLabelPart[] {
+	private convertInlayHintText(tsHint: Proto.InlayHintItem): string | docode.InlayHintLabelPart[] {
 		if (tsHint.displayParts) {
-			return tsHint.displayParts.map((part): vscode.InlayHintLabelPart => {
-				const out = new vscode.InlayHintLabelPart(part.text);
+			return tsHint.displayParts.map((part): docode.InlayHintLabelPart => {
+				const out = new docode.InlayHintLabelPart(part.text);
 				if (part.span) {
 					out.location = Location.fromTextSpan(this.client.toResource(part.span.file), part.span);
 				}
@@ -117,16 +117,16 @@ class TypeScriptInlayHintsProvider extends Disposable implements vscode.InlayHin
 	}
 }
 
-function fromProtocolInlayHintKind(kind: Proto.InlayHintKind): vscode.InlayHintKind | undefined {
+function fromProtocolInlayHintKind(kind: Proto.InlayHintKind): docode.InlayHintKind | undefined {
 	switch (kind) {
-		case 'Parameter': return vscode.InlayHintKind.Parameter;
-		case 'Type': return vscode.InlayHintKind.Type;
+		case 'Parameter': return docode.InlayHintKind.Parameter;
+		case 'Type': return docode.InlayHintKind.Type;
 		case 'Enum': return undefined;
 		default: return undefined;
 	}
 }
 
-function areInlayHintsEnabledForFile(language: LanguageDescription, document: vscode.TextDocument) {
+function areInlayHintsEnabledForFile(language: LanguageDescription, document: docode.TextDocument) {
 	const preferences = getInlayHintsPreferences(document, language.id);
 
 	return preferences.includeInlayParameterNameHints === 'literals' ||
@@ -150,6 +150,6 @@ export function register(
 		requireSomeCapability(client, ClientCapability.Semantic),
 	], () => {
 		const provider = new TypeScriptInlayHintsProvider(language, client, fileConfigurationManager, telemetryReporter);
-		return vscode.languages.registerInlayHintsProvider(selector.semantic, provider);
+		return docode.languages.registerInlayHintsProvider(selector.semantic, provider);
 	});
 }

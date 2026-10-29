@@ -1,4 +1,4 @@
-.vscode/
+.docode/
 out/test/
 out/**/*.js.map
 src/
@@ -6,4 +6,4 @@ test/
 tsconfig.json
 .gitignore
 package-lock.json
-vscode-json-languageserver-*.tgz
+docode-json-languageserver-*.tgz

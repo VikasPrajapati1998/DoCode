@@ -78,7 +78,7 @@ for (const theme of [
 		const keyboardFocus = await getLinkStyles(page);
 		const focusBorder = await link.evaluate(element => {
 			const probe = document.createElement('span');
-			probe.style.color = 'var(--vscode-focusBorder)';
+			probe.style.color = 'var(--docode-focusBorder)';
 			element.appendChild(probe);
 			const color = getComputedStyle(probe).color;
 			probe.remove();

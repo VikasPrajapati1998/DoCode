@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MarkdownEditorRichLinkController } from '../preview/markdownEditorRichLinks';
 import type { RichLinkPresentationUpdate } from '../preview/markdownEditorProtocol';
 import { MdLinkOpener } from '../util/openDocumentLink';
@@ -13,28 +13,28 @@ import { MdLinkOpener } from '../util/openDocumentLink';
 suite('Markdown editor rich link subscriptions', () => {
 	let controller: MarkdownEditorRichLinkController;
 	let rulesDescriptor: PropertyDescriptor;
-	let createWatcher: typeof vscode.window.createLinkPresentationWatcher;
+	let createWatcher: typeof docode.window.createLinkPresentationWatcher;
 	let watchers: TestWatcher[];
 	let updates: RichLinkPresentationUpdate[];
 	let errors: unknown[];
 	const href = 'https://example.com/pull/1';
 
 	setup(async () => {
-		const descriptor = Object.getOwnPropertyDescriptor(vscode.window, 'linkPresentationRules');
+		const descriptor = Object.getOwnPropertyDescriptor(docode.window, 'linkPresentationRules');
 		assert.ok(descriptor);
 		rulesDescriptor = descriptor;
-		createWatcher = vscode.window.createLinkPresentationWatcher;
+		createWatcher = docode.window.createLinkPresentationWatcher;
 		watchers = [];
 		updates = [];
 		errors = [];
-		const rules: readonly vscode.LinkPresentationRule[] = [{ id: 'test', uriPattern: /^https:\/\/example\.com\//g, kind: 'session' }];
-		Object.defineProperty(vscode.window, 'linkPresentationRules', { configurable: true, get: () => rules });
-		vscode.window.createLinkPresentationWatcher = () => {
+		const rules: readonly docode.LinkPresentationRule[] = [{ id: 'test', uriPattern: /^https:\/\/example\.com\//g, kind: 'session' }];
+		Object.defineProperty(docode.window, 'linkPresentationRules', { configurable: true, get: () => rules });
+		docode.window.createLinkPresentationWatcher = () => {
 			const watcher = new TestWatcher({ kind: 'chat', title: 'Current title' });
 			watchers.push(watcher);
 			return watcher;
 		};
-		const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: '' });
+		const document = await docode.workspace.openTextDocument({ language: 'markdown', content: '' });
 		controller = new MarkdownEditorRichLinkController(
 			document,
 			new MdLinkOpener({ resolveLinkTarget: async () => undefined }),
@@ -45,8 +45,8 @@ suite('Markdown editor rich link subscriptions', () => {
 
 	teardown(() => {
 		controller?.dispose();
-		vscode.window.createLinkPresentationWatcher = createWatcher;
-		Object.defineProperty(vscode.window, 'linkPresentationRules', rulesDescriptor);
+		docode.window.createLinkPresentationWatcher = createWatcher;
+		Object.defineProperty(docode.window, 'linkPresentationRules', rulesDescriptor);
 	});
 
 	test('publishes a current snapshot and subsequent changes for each subscription', async () => {
@@ -110,7 +110,7 @@ suite('Markdown editor rich link subscriptions', () => {
 		controller.updateSubscriptions({ subscribe: [{ subscriptionId: 'unsupported', href: 'https://unsupported.example/' }], unsubscribe: [] });
 		await settle();
 		assert.deepStrictEqual(updates, [{ subscriptionId: 'unsupported', presentation: undefined }]);
-		vscode.window.createLinkPresentationWatcher = () => { throw new Error('Watcher failed'); };
+		docode.window.createLinkPresentationWatcher = () => { throw new Error('Watcher failed'); };
 		controller.updateSubscriptions({ subscribe: [{ subscriptionId: 'failed', href }], unsubscribe: [] });
 		await settle();
 		assert.deepStrictEqual(updates[1], { subscriptionId: 'failed', presentation: undefined });
@@ -130,14 +130,14 @@ suite('Markdown editor rich link subscriptions', () => {
 	});
 });
 
-class TestWatcher implements vscode.LinkPresentationWatcher {
-	private readonly _changes = new vscode.EventEmitter<void>();
+class TestWatcher implements docode.LinkPresentationWatcher {
+	private readonly _changes = new docode.EventEmitter<void>();
 	readonly onDidChangePresentation = this._changes.event;
 	disposed = false;
 
-	constructor(public presentation: vscode.LinkPresentationData) { }
+	constructor(public presentation: docode.LinkPresentationData) { }
 
-	update(presentation: vscode.LinkPresentationData): void {
+	update(presentation: docode.LinkPresentationData): void {
 		this.presentation = presentation;
 		this._changes.fire();
 	}

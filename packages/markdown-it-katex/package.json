@@ -1,0 +1,26 @@
+{
+	"name": "@docode/markdown-it-katex",
+	"version": "1.1.2",
+	"description": "Markdown-it plugin that provides DoCode's KaTeX support",
+	"main": "dist/index.js",
+	"types": "types.d.ts",
+	"files": [
+		"dist/index.js",
+		"types.d.ts"
+	],
+	"keywords": [
+		"markdown",
+		"KaTeX",
+		"math",
+		"LaTeX",
+		"markdown-it-plugin",
+		"markdown-it"
+	],
+	"author": {
+		"name": "Microsoft Corporation"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"katex": "^0.16.4"
+	}
+}

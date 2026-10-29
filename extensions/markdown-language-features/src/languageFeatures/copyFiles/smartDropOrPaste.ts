@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { IMdParser } from '../../markdownEngine';
 import { ITextDocument } from '../../types/textDocument';
 import { Schemes } from '../../util/schemes';
@@ -21,8 +21,8 @@ export async function shouldInsertMarkdownLinkByDefault(
 	parser: IMdParser,
 	document: ITextDocument,
 	pasteUrlSetting: InsertMarkdownLink,
-	ranges: readonly vscode.Range[],
-	token: vscode.CancellationToken
+	ranges: readonly docode.Range[],
+	token: docode.CancellationToken
 ): Promise<boolean> {
 	switch (pasteUrlSetting) {
 		case InsertMarkdownLink.Always: {
@@ -62,8 +62,8 @@ const textTokenTypes = new Set([
 async function shouldSmartPasteForSelection(
 	parser: IMdParser,
 	document: ITextDocument,
-	selectedRange: vscode.Range,
-	token: vscode.CancellationToken
+	selectedRange: docode.Range,
+	token: docode.CancellationToken
 ): Promise<boolean> {
 	// Disable for multi-line selections
 	if (selectedRange.start.line !== selectedRange.end.line) {
@@ -114,7 +114,7 @@ async function shouldSmartPasteForSelection(
 	}
 
 	// Run additional regex checks on the current line to check if we are inside an inline element
-	const line = document.getText(new vscode.Range(selectedRange.start.line, 0, selectedRange.start.line, Number.MAX_SAFE_INTEGER));
+	const line = document.getText(new docode.Range(selectedRange.start.line, 0, selectedRange.start.line, Number.MAX_SAFE_INTEGER));
 	for (const regex of smartPasteLineRegexes) {
 		for (const match of line.matchAll(regex.regex)) {
 			if (match.index === undefined) {
@@ -150,9 +150,9 @@ export function findValidUriInText(text: string): string | undefined {
 		return;
 	}
 
-	let uri: vscode.Uri;
+	let uri: docode.Uri;
 	try {
-		uri = vscode.Uri.parse(trimmedUrlList);
+		uri = docode.Uri.parse(trimmedUrlList);
 	} catch {
 		// Could not parse
 		return;

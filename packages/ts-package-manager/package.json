@@ -1,0 +1,16 @@
+{
+	"name": "@docode/ts-package-manager",
+	"version": "0.0.2",
+	"author": "Microsoft Corporation",
+	"license": "MIT",
+	"engines": {
+		"node": "*"
+	},
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist/**/*.js",
+		"dist/**/*.d.ts",
+		"node-maintainer/**/*"
+	]
+}

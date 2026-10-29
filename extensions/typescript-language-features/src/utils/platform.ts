@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 export function isWeb(): boolean {
-	return !(typeof process === 'object' && !!process.versions.node) && vscode.env.uiKind === vscode.UIKind.Web;
+	return !(typeof process === 'object' && !!process.versions.node) && docode.env.uiKind === docode.UIKind.Web;
 }
 
 export function isWebAndHasSharedArrayBuffers(): boolean {

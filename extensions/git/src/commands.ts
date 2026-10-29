@@ -5,8 +5,8 @@
 
 import * as os from 'os';
 import * as path from 'path';
-import { Command, commands, Disposable, MessageOptions, Position, QuickPickItem, Range, SourceControlResourceState, TextDocumentShowOptions, TextEditor, Uri, ViewColumn, window, workspace, WorkspaceEdit, WorkspaceFolder, TimelineItem, env, Selection, TextDocumentContentProvider, InputBoxValidationSeverity, TabInputText, TabInputTextMerge, QuickPickItemKind, TextDocument, LogOutputChannel, l10n, Memento, UIKind, QuickInputButton, ThemeIcon, SourceControlHistoryItem, SourceControl, InputBoxValidationMessage, Tab, TabInputNotebook, TabInputNotebookDiff, QuickInputButtonLocation, languages, SourceControlArtifact, ProgressLocation } from 'vscode';
-import TelemetryReporter from '@vscode/extension-telemetry';
+import { Command, commands, Disposable, MessageOptions, Position, QuickPickItem, Range, SourceControlResourceState, TextDocumentShowOptions, TextEditor, Uri, ViewColumn, window, workspace, WorkspaceEdit, WorkspaceFolder, TimelineItem, env, Selection, TextDocumentContentProvider, InputBoxValidationSeverity, TabInputText, TabInputTextMerge, QuickPickItemKind, TextDocument, LogOutputChannel, l10n, Memento, UIKind, QuickInputButton, ThemeIcon, SourceControlHistoryItem, SourceControl, InputBoxValidationMessage, Tab, TabInputNotebook, TabInputNotebookDiff, QuickInputButtonLocation, languages, SourceControlArtifact, ProgressLocation } from 'docode';
+import TelemetryReporter from '@docode/extension-telemetry';
 import type { CommitOptions, RemoteSourcePublisher, Remote, Branch, Ref } from './api/git';
 import { ForcePushMode, GitErrorCodes, RefType, Status } from './api/git.constants';
 import { Git, GitError, Repository as GitRepository, Stash, Worktree } from './git';
@@ -832,7 +832,7 @@ export class CommandCenter {
 			}
 
 			void commands.executeCommand(
-				'vscode.open',
+				'docode.open',
 				resource.resourceUri,
 				{ background: true, preview: false, }
 			);
@@ -1003,7 +1003,7 @@ export class CommandCenter {
 		const ref = selection.repository.HEAD?.upstream?.name;
 
 		if (uri !== undefined) {
-			let target = `${env.uriScheme}://vscode.git/clone?url=${encodeURIComponent(uri)}`;
+			let target = `${env.uriScheme}://docode.git/clone?url=${encodeURIComponent(uri)}`;
 			const isWeb = env.uiKind === UIKind.Web;
 			const isRemote = env.remoteName !== undefined;
 
@@ -1203,11 +1203,11 @@ export class CommandCenter {
 		const uri = Uri.file(repositoryPath);
 
 		if (result === open) {
-			commands.executeCommand('vscode.openFolder', uri);
+			commands.executeCommand('docode.openFolder', uri);
 		} else if (result === addToWorkspace) {
 			workspace.updateWorkspaceFolders(workspace.workspaceFolders!.length, 0, { uri });
 		} else if (result === openNewWindow) {
-			commands.executeCommand('vscode.openFolder', uri, true);
+			commands.executeCommand('docode.openFolder', uri, true);
 		} else {
 			await this.model.openRepository(repositoryPath);
 		}
@@ -1343,7 +1343,7 @@ export class CommandCenter {
 				viewColumn: ViewColumn.Active
 			};
 
-			await commands.executeCommand('vscode.open', uri, {
+			await commands.executeCommand('docode.open', uri, {
 				...opts,
 				override: arg instanceof Resource && arg.type === Status.BOTH_MODIFIED ? false : undefined
 			});
@@ -1413,7 +1413,7 @@ export class CommandCenter {
 			preview
 		};
 
-		return await commands.executeCommand<void>('vscode.open', HEAD, opts, title);
+		return await commands.executeCommand<void>('docode.open', HEAD, opts, title);
 	}
 
 	@command('git.openChange')
@@ -1481,7 +1481,7 @@ export class CommandCenter {
 
 		// Close active editor and open the renamed file
 		await commands.executeCommand('workbench.action.closeActiveEditor');
-		await commands.executeCommand('vscode.open', Uri.file(path.join(repository.root, to)), { viewColumn: ViewColumn.Active });
+		await commands.executeCommand('docode.open', Uri.file(path.join(repository.root, to)), { viewColumn: ViewColumn.Active });
 	}
 
 	@command('git.delete')
@@ -3799,7 +3799,7 @@ export class CommandCenter {
 		}
 
 		const uri = Uri.file(repository.root);
-		await commands.executeCommand('vscode.openFolder', uri, { forceReuseWindow: true });
+		await commands.executeCommand('docode.openFolder', uri, { forceReuseWindow: true });
 	}
 
 	@command('git.openWorktreeInNewWindow', { repository: true })
@@ -3809,7 +3809,7 @@ export class CommandCenter {
 		}
 
 		const uri = Uri.file(repository.root);
-		await commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+		await commands.executeCommand('docode.openFolder', uri, { forceNewWindow: true });
 	}
 
 	@command('git.graph.deleteTag', { repository: true })
@@ -4819,7 +4819,7 @@ export class CommandCenter {
 		}
 
 		return {
-			command: 'vscode.diff',
+			command: 'docode.diff',
 			title: l10n.t('Open Comparison'),
 			arguments: [toGitUri(uri, item.previousRef), item.ref === '' ? uri : toGitUri(uri, item.ref), title, options]
 		};
@@ -4935,7 +4935,7 @@ export class CommandCenter {
 
 
 		const title = l10n.t('{0} \u2194 {1}', leftTitle, rightTitle);
-		await commands.executeCommand('vscode.diff', selected.ref === '' ? uri : toGitUri(uri, selected.ref), item.ref === '' ? uri : toGitUri(uri, item.ref), title);
+		await commands.executeCommand('docode.diff', selected.ref === '' ? uri : toGitUri(uri, selected.ref), item.ref === '' ? uri : toGitUri(uri, item.ref), title);
 	}
 
 	@command('git.rebaseAbort', { repository: true })
@@ -5411,7 +5411,7 @@ export class CommandCenter {
 		}
 
 		const uri = Uri.file(artifact.id);
-		await commands.executeCommand('vscode.openFolder', uri, { forceReuseWindow: true });
+		await commands.executeCommand('docode.openFolder', uri, { forceReuseWindow: true });
 	}
 
 	@command('git.repositories.openWorktreeInNewWindow', { repository: true })
@@ -5421,7 +5421,7 @@ export class CommandCenter {
 		}
 
 		const uri = Uri.file(artifact.id);
-		await commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+		await commands.executeCommand('docode.openFolder', uri, { forceNewWindow: true });
 	}
 
 	@command('git.repositories.deleteWorktree', { repository: true })
@@ -5633,7 +5633,7 @@ export class CommandCenter {
 					case GitErrorCodes.NoUserNameConfigured:
 					case GitErrorCodes.NoUserEmailConfigured:
 						message = l10n.t('Make sure you configure your "user.name" and "user.email" in git.');
-						choices.set(l10n.t('Learn More'), () => commands.executeCommand('vscode.open', Uri.parse('https://aka.ms/vscode-setup-git')));
+						choices.set(l10n.t('Learn More'), () => commands.executeCommand('docode.open', Uri.parse('https://aka.ms/vscode-setup-git')));
 						break;
 					case GitErrorCodes.EmptyCommitMessage:
 						message = l10n.t('Commit operation was cancelled due to empty commit message.');

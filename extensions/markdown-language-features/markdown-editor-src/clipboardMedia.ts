@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { NativeClipboardData } from '@vscode/markdown-editor';
+import type { NativeClipboardData } from '@docode/markdown-editor';
 
 export const clipboardFormatsUnavailableMessage = 'The clipboard formats are not available to this editor. Try copying the media itself instead of its file.';
 

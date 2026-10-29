@@ -117,7 +117,7 @@ Organize scratchpad work into **dated subfolders** named `YYYY-MM-DD-short-descr
 
 **Start fresh.** Ignore any existing scratchpad subfolders from previous investigations. They belong to earlier sessions and their context, scripts, and findings are not relevant to your current task. Always create a new dated subfolder for your investigation.
 
-**Import path depth:** Scripts in dated subfolders are 6 levels below the repo root (`.github/skills/auto-perf-optimize/scratchpad/YYYY-MM-DD-name/script.mts`), not 4 like the checked-in `scripts/*.mts` runners. Adjust relative imports accordingly — use 5 `..` segments to reach the repo root from a dated subfolder (e.g., `'../../../../../src/vs/base/common/stopwatch.ts'`), and `'../../scripts/userDataProfile.mts'` to reach sibling checked-in scripts.
+**Import path depth:** Scripts in dated subfolders are 6 levels below the repo root (`.github/skills/auto-perf-optimize/scratchpad/YYYY-MM-DD-name/script.mts`), not 4 like the checked-in `scripts/*.mts` runners. Adjust relative imports accordingly — use 5 `..` segments to reach the repo root from a dated subfolder (e.g., `'../../../../../src/do/base/common/stopwatch.ts'`), and `'../../scripts/userDataProfile.mts'` to reach sibling checked-in scripts.
 
 Suggested watch loop for the bundled Chat runner:
 

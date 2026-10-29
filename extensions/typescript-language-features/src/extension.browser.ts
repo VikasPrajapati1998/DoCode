@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import VsCodeTelemetryReporter from '@vscode/extension-telemetry';
-import * as vscode from 'vscode';
+import VsCodeTelemetryReporter from '@docode/extension-telemetry';
+import * as docode from 'docode';
 import { Api, getExtensionApi } from './api';
 import { CommandManager } from './commands/commandManager';
 import { registerBaseCommands } from './commands/index';
@@ -44,14 +44,14 @@ class StaticVersionProvider implements ITypeScriptVersionProvider {
 	readonly localVersions = [];
 }
 
-export async function activate(context: vscode.ExtensionContext): Promise<Api> {
+export async function activate(context: docode.ExtensionContext): Promise<Api> {
 	const pluginManager = new PluginManager();
 	context.subscriptions.push(pluginManager);
 
 	const commandManager = new CommandManager();
 	context.subscriptions.push(commandManager);
 
-	const onCompletionAccepted = new vscode.EventEmitter<vscode.CompletionItem>();
+	const onCompletionAccepted = new docode.EventEmitter<docode.CompletionItem>();
 	context.subscriptions.push(onCompletionAccepted);
 
 	const activeJsTsEditorTracker = new ActiveJsTsEditorTracker();
@@ -60,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<Api> {
 	const versionProvider = new StaticVersionProvider(
 		new TypeScriptVersion(
 			TypeScriptVersionSource.Bundled,
-			vscode.Uri.joinPath(context.extensionUri, 'dist/browser/typescript/tsserver.web.js').toString(),
+			docode.Uri.joinPath(context.extensionUri, 'dist/browser/typescript/tsserver.web.js').toString(),
 			API.fromSimpleString('5.9.0')));
 
 	let experimentTelemetryReporter: IExperimentationTelemetryReporter | undefined;
@@ -106,18 +106,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<Api> {
 	return getExtensionApi(onCompletionAccepted.event, pluginManager);
 }
 
-async function startPreloadWorkspaceContentsIfNeeded(context: vscode.ExtensionContext, logger: Logger): Promise<void> {
+async function startPreloadWorkspaceContentsIfNeeded(context: docode.ExtensionContext, logger: Logger): Promise<void> {
 	if (!isWebAndHasSharedArrayBuffers()) {
 		return;
 	}
 
-	if (!vscode.workspace.workspaceFolders) {
+	if (!docode.workspace.workspaceFolders) {
 		return;
 	}
 
-	await Promise.all(vscode.workspace.workspaceFolders.map(async folder => {
+	await Promise.all(docode.workspace.workspaceFolders.map(async folder => {
 		const workspaceUri = folder.uri;
-		if (workspaceUri.scheme !== 'vscode-vfs' || !workspaceUri.authority.startsWith('github')) {
+		if (workspaceUri.scheme !== 'docode-vfs' || !workspaceUri.authority.startsWith('github')) {
 			logger.info(`Skipped pre loading workspace contents for repository ${workspaceUri?.toString()}`);
 			return;
 		}
@@ -137,12 +137,12 @@ class RemoteWorkspaceContentsPreloader extends Disposable {
 	private _preload: Promise<void> | undefined;
 
 	constructor(
-		private readonly workspaceUri: vscode.Uri,
+		private readonly workspaceUri: docode.Uri,
 		private readonly logger: Logger,
 	) {
 		super();
 
-		const fsWatcher = this._register(vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(workspaceUri, '*')));
+		const fsWatcher = this._register(docode.workspace.createFileSystemWatcher(new docode.RelativePattern(workspaceUri, '*')));
 		this._register(fsWatcher.onDidChange(uri => {
 			if (uri.toString() === workspaceUri.toString()) {
 				this._preload = undefined;

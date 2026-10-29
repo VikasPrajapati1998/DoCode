@@ -1,0 +1,8 @@
+.docode/**
+typings/**
+**/*.ts
+**/*.map
+.gitignore
+tsconfig*.json
+**/*.tsbuildinfo
+esbuild*.mts

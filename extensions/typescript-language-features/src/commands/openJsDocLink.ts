@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command } from './commandManager';
 
 export interface OpenJsDocLinkCommand_Args {
@@ -31,9 +31,9 @@ export class OpenJsDocLinkCommand implements Command {
 
 	public async execute(args: OpenJsDocLinkCommand_Args): Promise<void> {
 		const { line, character } = args.position;
-		const position = new vscode.Position(line, character);
-		await vscode.commands.executeCommand('vscode.open', vscode.Uri.from(args.file), {
-			selection: new vscode.Range(position, position),
-		} satisfies vscode.TextDocumentShowOptions);
+		const position = new docode.Position(line, character);
+		await docode.commands.executeCommand('docode.open', docode.Uri.from(args.file), {
+			selection: new docode.Range(position, position),
+		} satisfies docode.TextDocumentShowOptions);
 	}
 }

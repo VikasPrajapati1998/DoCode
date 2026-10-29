@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { AccountLinks } from '../common/accountLinks';
 import { AuthProviderType } from '../github';
 import { Log } from '../common/logger';
@@ -12,7 +12,7 @@ import { TestMemento } from './testMemento';
 
 const STORAGE_KEY = 'github.auth.microsoftAccountLinks';
 
-function account(id: string, label: string): vscode.AuthenticationSessionAccountInformation {
+function account(id: string, label: string): docode.AuthenticationSessionAccountInformation {
 	return { id, label };
 }
 

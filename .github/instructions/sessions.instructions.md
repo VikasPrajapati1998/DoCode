@@ -1,6 +1,6 @@
 ---
 description: Routes Agents Window work to its on-demand development skill.
-applyTo: src/vs/sessions/**
+applyTo: src/do/sessions/**
 ---
 
 # Agents Window

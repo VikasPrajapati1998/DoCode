@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import type { IframeEmbeddedEditorProvider, VirtualizedIframeEmbeddedEditorOptions } from '@vscode/markdown-editor/web-editors';
+import type { IframeEmbeddedEditorProvider, VirtualizedIframeEmbeddedEditorOptions } from '@docode/markdown-editor/web-editors';
 import { LazyCodeBlockEditorFactory } from '../preview/lazyCodeBlockEditorFactory';
 
 suite('Markdown editor lazy embedded editors', () => {

@@ -99,7 +99,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Known suite names (used for help text and validation)
-KNOWN_SUITES="api-folder api-workspace colorize terminal-suggest typescript markdown emmet git git-base ipynb notebook-renderers configuration-editing github-authentication copilot css html json"
+KNOWN_SUITES="api-folder api-workspace colorize terminal-suggest typescript markdown emmet git git-base ipynb notebook-renderers configuration-editing github-authentication css html json"
 
 if $HELP; then
 	echo "Usage: $0 [options]"
@@ -141,7 +141,7 @@ if $HELP; then
 	echo ""
 	echo "Examples:"
 	echo "  $0                                         # run all integration tests"
-	echo "  $0 --run src/vs/editor/test/browser/controller.integrationTest.ts"
+	echo "  $0 --run src/do/editor/test/browser/controller.integrationTest.ts"
 	echo "  $0 --grep 'some test name'"
 	echo "  $0 --runGlob '**/editor/**/*.integrationTest.js'"
 	echo "  $0 --suite git                             # run only Git tests"
@@ -182,13 +182,13 @@ should_run_suite() {
 	return 1
 }
 
-VSCODEUSERDATADIR=`mktemp -d 2>/dev/null`
-VSCODECRASHDIR=$ROOT/.build/crashes
-VSCODELOGSDIR=$ROOT/.build/logs/integration-tests
+DOCODEUSERDATADIR=`mktemp -d 2>/dev/null`
+DOCODECRASHDIR=$ROOT/.build/crashes
+DOCODELOGSDIR=$ROOT/.build/logs/integration-tests
 
 # Seed user settings to disable OS notifications (dock bounce, toast, etc.)
-mkdir -p "$VSCODEUSERDATADIR/User"
-cat > "$VSCODEUSERDATADIR/User/settings.json" <<EOF
+mkdir -p "$DOCODEUSERDATADIR/User"
+cat > "$DOCODEUSERDATADIR/User/settings.json" <<EOF
 {
 	"chat.notifyWindowOnConfirmation": "off",
 	"chat.notifyWindowOnResponseReceived": "off"
@@ -202,14 +202,14 @@ then
 
 	echo "Running integration tests out of sources."
 else
-	export VSCODE_CLI=1
+	export DOCODE_CLI=1
 	export ELECTRON_ENABLE_LOGGING=1
 
 	echo "Running integration tests with '$INTEGRATION_TEST_ELECTRON_PATH' as build."
 fi
 
-echo "Storing crash reports into '$VSCODECRASHDIR'."
-echo "Storing log files into '$VSCODELOGSDIR'."
+echo "Storing crash reports into '$DOCODECRASHDIR'."
+echo "Storing log files into '$DOCODELOGSDIR'."
 
 
 # Validate --suite filter matches at least one known suite
@@ -224,7 +224,7 @@ if [[ -n "$SUITE_FILTER" ]]; then
 	if [[ "$SUITE_MATCHED" == "false" ]]; then
 		echo "Error: no suites match filter '$SUITE_FILTER'"
 		echo "Available suites: $KNOWN_SUITES"
-		rm -rf -- "$VSCODEUSERDATADIR"
+		rm -rf -- "$DOCODEUSERDATADIR"
 		exit 1
 	fi
 fi
@@ -234,7 +234,7 @@ fi
 
 if [[ -z "$SUITE_FILTER" ]] && ! $ONLY_EXTENSION_HOST_TESTS; then
 	start_suite "node.js integration tests"
-	node --input-type=module -e "import { getAgentHostTestProfile } from './src/vs/platform/agentHost/test/node/agentHostTestProfile.ts'; console.log('Agent Host test profile:', getAgentHostTestProfile(), '(' + (process.env.AGENT_HOST_TEST_PROFILE_REASON ?? 'default') + ')');"
+	node --input-type=module -e "import { getAgentHostTestProfile } from './src/do/platform/agentHost/test/node/agentHostTestProfile.ts'; console.log('Agent Host test profile:', getAgentHostTestProfile(), '(' + (process.env.AGENT_HOST_TEST_PROFILE_REASON ?? 'default') + ')');"
 	if [[ -z "$RUN_GLOB" && -z "$RUN_FILE" ]]; then
 		# Agent Host E2E runs separately, in parallel isolated processes: scripts/test-agent-host-e2e.sh
 		./scripts/test.sh --runGlob "**/*.integrationTest.js" --excludeRunGlob "$AGENT_HOST_E2E_GLOB" "${EXTRA_ARGS[@]}"
@@ -247,12 +247,12 @@ fi
 if [[ -z "$SUITE_FILTER" ]] && $HAS_FILTER; then
 	echo ""
 	echo "Filter active, skipping extension host tests."
-	rm -rf -- "$VSCODEUSERDATADIR"
+	rm -rf -- "$DOCODEUSERDATADIR"
 	exit 0
 fi
 
 if $ONLY_NODE_TESTS; then
-	rm -rf -- "$VSCODEUSERDATADIR"
+	rm -rf -- "$DOCODEUSERDATADIR"
 	exit 0
 fi
 
@@ -266,7 +266,7 @@ if [[ -n "$GREP_PATTERN" ]]; then
 	GREP_ARGS=(--grep "$GREP_PATTERN")
 fi
 
-API_TESTS_EXTRA_ARGS="--disable-telemetry --disable-experiments --skip-welcome --skip-release-notes --crash-reporter-directory=$VSCODECRASHDIR --logsPath=$VSCODELOGSDIR --no-cached-data --disable-updates --use-inmemory-secretstorage --disable-extensions --disable-workspace-trust --user-data-dir=$VSCODEUSERDATADIR"
+API_TESTS_EXTRA_ARGS="--disable-telemetry --disable-experiments --skip-welcome --skip-release-notes --crash-reporter-directory=$DOCODECRASHDIR --logsPath=$DOCODELOGSDIR --no-cached-data --disable-updates --use-inmemory-secretstorage --disable-extensions --disable-workspace-trust --user-data-dir=$DOCODEUSERDATADIR"
 
 if [ -z "$INTEGRATION_TEST_APP_NAME" ]; then
 	kill_app() { true; }
@@ -276,25 +276,25 @@ fi
 
 if should_run_suite api-folder; then
 start_suite "API tests (folder)"
-"$INTEGRATION_TEST_ELECTRON_PATH" $ROOT/extensions/vscode-api-tests/testWorkspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/singlefolder-tests $API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $ROOT/extensions/docode-api-tests/testWorkspace --enable-proposed-api=docode.docode-api-tests --extensionDevelopmentPath=$ROOT/extensions/docode-api-tests --extensionTestsPath=$ROOT/extensions/docode-api-tests/out/singlefolder-tests $API_TESTS_EXTRA_ARGS
 kill_app
 fi
 
 if should_run_suite api-workspace; then
 start_suite "API tests (workspace)"
-"$INTEGRATION_TEST_ELECTRON_PATH" $ROOT/extensions/vscode-api-tests/testworkspace.code-workspace --enable-proposed-api=vscode.vscode-api-tests --extensionDevelopmentPath=$ROOT/extensions/vscode-api-tests --extensionTestsPath=$ROOT/extensions/vscode-api-tests/out/workspace-tests $API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $ROOT/extensions/docode-api-tests/testworkspace.code-workspace --enable-proposed-api=docode.docode-api-tests --extensionDevelopmentPath=$ROOT/extensions/docode-api-tests --extensionTestsPath=$ROOT/extensions/docode-api-tests/out/workspace-tests $API_TESTS_EXTRA_ARGS
 kill_app
 fi
 
 if should_run_suite colorize; then
 start_suite "Colorize tests"
-npm run test-extension -- -l vscode-colorize-tests "${GREP_ARGS[@]}"
+npm run test-extension -- -l docode-colorize-tests "${GREP_ARGS[@]}"
 kill_app
 fi
 
 if should_run_suite terminal-suggest; then
 start_suite "Terminal Suggest tests"
-npm run test-extension -- -l terminal-suggest --enable-proposed-api=vscode.vscode-api-tests "${GREP_ARGS[@]}"
+npm run test-extension -- -l terminal-suggest --enable-proposed-api=docode.docode-api-tests "${GREP_ARGS[@]}"
 kill_app
 fi
 
@@ -352,12 +352,6 @@ npm run test-extension -- -l github-authentication "${GREP_ARGS[@]}"
 kill_app
 fi
 
-if should_run_suite copilot; then
-start_suite "Copilot tests"
-npm run test-extension -- -l copilot "${GREP_ARGS[@]}"
-kill_app
-fi
-
 # Tests standalone (CommonJS)
 
 if should_run_suite css; then
@@ -378,4 +372,4 @@ fi
 
 # Cleanup
 
-rm -rf -- "$VSCODEUSERDATADIR"
+rm -rf -- "$DOCODEUSERDATADIR"

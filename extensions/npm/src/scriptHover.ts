@@ -9,7 +9,7 @@ import {
 	Hover, HoverProvider, MarkdownString, l10n, Position, ProviderResult,
 	tasks, TextDocument,
 	Uri, workspace
-} from 'vscode';
+} from 'docode';
 import { INpmScriptInfo, readScripts } from './readScripts';
 import {
 	createScriptRunnerTask,

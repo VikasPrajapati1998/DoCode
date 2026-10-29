@@ -3,28 +3,28 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { enterpriseUriSetting } from './enterpriseStorage';
 
 export const enterpriseUrisSetting = 'github-enterprise.uris';
 
-export function getEnterpriseUris(configuration: vscode.WorkspaceConfiguration, isWorkspaceTrusted: boolean): vscode.Uri[] {
+export function getEnterpriseUris(configuration: docode.WorkspaceConfiguration, isWorkspaceTrusted: boolean): docode.Uri[] {
 	const inspected = configuration.inspect<string[]>(enterpriseUrisSetting);
 	const hasPluralValue = inspected && (inspected.globalValue !== undefined || (isWorkspaceTrusted && (inspected.workspaceValue !== undefined || inspected.workspaceFolderValue !== undefined)));
 	const legacy = configuration.get<string>(enterpriseUriSetting);
 	const values = hasPluralValue ? configuration.get<string[]>(enterpriseUrisSetting) : legacy ? [legacy] : [];
 	if (!Array.isArray(values)) {
-		throw new Error(vscode.l10n.t('GitHub Enterprise URIs must be an array of instance URLs.'));
+		throw new Error(docode.l10n.t('GitHub Enterprise URIs must be an array of instance URLs.'));
 	}
 	return values.map(parseEnterpriseUri);
 }
 
-function parseEnterpriseUri(value: string): vscode.Uri {
+function parseEnterpriseUri(value: string): docode.Uri {
 	try {
 		if (typeof value !== 'string' || !value) {
 			throw new Error('Expected a non-empty URI');
 		}
-		const uri = vscode.Uri.parse(value, true);
+		const uri = docode.Uri.parse(value, true);
 		const url = new URL(uri.toString());
 		const hostname = url.hostname.replace(/\.$/, '');
 		const path = uri.path.replace(/\/+$/, '');
@@ -36,6 +36,6 @@ function parseEnterpriseUri(value: string): vscode.Uri {
 		}
 		return uri;
 	} catch {
-		throw new Error(vscode.l10n.t('Invalid GitHub Enterprise instance URI: {0}', String(value)));
+		throw new Error(docode.l10n.t('Invalid GitHub Enterprise instance URI: {0}', String(value)));
 	}
 }

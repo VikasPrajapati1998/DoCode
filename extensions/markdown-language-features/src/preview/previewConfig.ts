@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { equals } from '../util/arrays';
 
 export class MarkdownPreviewConfiguration {
-	public static getForResource(resource: vscode.Uri | null) {
+	public static getForResource(resource: docode.Uri | null) {
 		return new MarkdownPreviewConfiguration(resource);
 	}
 
@@ -29,10 +29,10 @@ export class MarkdownPreviewConfiguration {
 	public readonly fontFamily: string | undefined;
 	public readonly styles: readonly string[];
 
-	private constructor(resource: vscode.Uri | null) {
-		const editorConfig = vscode.workspace.getConfiguration('editor', resource);
-		const markdownConfig = vscode.workspace.getConfiguration('markdown', resource);
-		const markdownEditorConfig = vscode.workspace.getConfiguration('[markdown]', resource);
+	private constructor(resource: docode.Uri | null) {
+		const editorConfig = docode.workspace.getConfiguration('editor', resource);
+		const markdownConfig = docode.workspace.getConfiguration('markdown', resource);
+		const markdownEditorConfig = docode.workspace.getConfiguration('[markdown]', resource);
 
 		this.scrollBeyondLastLine = editorConfig.get<boolean>('scrollBeyondLastLine', false);
 
@@ -78,14 +78,14 @@ export class MarkdownPreviewConfigurationManager {
 	readonly #previewConfigurationsForWorkspaces = new Map<string, MarkdownPreviewConfiguration>();
 
 	public loadAndCacheConfiguration(
-		resource: vscode.Uri
+		resource: docode.Uri
 	): MarkdownPreviewConfiguration {
 		const config = MarkdownPreviewConfiguration.getForResource(resource);
 		this.#previewConfigurationsForWorkspaces.set(this.#getKey(resource), config);
 		return config;
 	}
 
-	public hasConfigurationChanged(resource: vscode.Uri): boolean {
+	public hasConfigurationChanged(resource: docode.Uri): boolean {
 		const key = this.#getKey(resource);
 		const currentConfig = this.#previewConfigurationsForWorkspaces.get(key);
 		const newConfig = MarkdownPreviewConfiguration.getForResource(resource);
@@ -93,9 +93,9 @@ export class MarkdownPreviewConfigurationManager {
 	}
 
 	#getKey(
-		resource: vscode.Uri
+		resource: docode.Uri
 	): string {
-		const folder = vscode.workspace.getWorkspaceFolder(resource);
+		const folder = docode.workspace.getWorkspaceFolder(resource);
 		return folder ? folder.uri.toString() : '';
 	}
 }

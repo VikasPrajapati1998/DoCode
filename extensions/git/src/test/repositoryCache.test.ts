@@ -6,7 +6,7 @@
 import 'mocha';
 import * as assert from 'assert';
 import { RepositoryCache } from '../repositoryCache';
-import { Event, EventEmitter, LogLevel, LogOutputChannel, Memento, Uri, WorkspaceFolder } from 'vscode';
+import { Event, EventEmitter, LogLevel, LogOutputChannel, Memento, Uri, WorkspaceFolder } from 'docode';
 
 class InMemoryMemento implements Memento {
 	private store = new Map<string, any>();

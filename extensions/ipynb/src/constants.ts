@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { DocumentSelector } from 'vscode';
+import type { DocumentSelector } from 'docode';
 
 export const defaultNotebookFormat = { major: 4, minor: 5 };
 export const ATTACHMENT_CLEANUP_COMMANDID = 'ipynb.cleanInvalidImageAttachment';
 
 export const JUPYTER_NOTEBOOK_MARKDOWN_SELECTOR: DocumentSelector = { notebookType: 'jupyter-notebook', language: 'markdown' };
 
-// Copied from NotebookCellKind.Markup as we cannot import it from vscode directly in worker threads.
+// Copied from NotebookCellKind.Markup as we cannot import it from docode directly in worker threads.
 export const NotebookCellKindMarkup = 1;
-// Copied from NotebookCellKind.Code as we cannot import it from vscode directly in worker threads.
+// Copied from NotebookCellKind.Code as we cannot import it from docode directly in worker threads.
 export const NotebookCellKindCode = 2;
 
 export enum CellOutputMimeTypes {

@@ -9,7 +9,7 @@ import * as os from 'os';
 import { isUpToDate, forceInstallMessage } from './installStateHash.ts';
 import { isCloudSandbox } from './cloudSandbox.ts';
 
-if (!process.env['VSCODE_SKIP_NODE_VERSION_CHECK']) {
+if (!process.env['DOCODE_SKIP_NODE_VERSION_CHECK']) {
 	// Get the running Node.js version
 	const nodeVersion = /^(\d+)\.(\d+)\.(\d+)/.exec(process.versions.node);
 	const majorNodeVersion = parseInt(nodeVersion![1]);
@@ -55,7 +55,7 @@ if (npmVersionMatch) {
 
 // Fast path: if nothing changed since last successful install, skip everything.
 // This makes `npm i` near-instant when dependencies haven't changed.
-if (!process.env['VSCODE_FORCE_INSTALL'] && isUpToDate()) {
+if (!process.env['DOCODE_FORCE_INSTALL'] && isUpToDate()) {
 	console.log(`\x1b[32mAll dependencies up to date.\x1b[0m ${forceInstallMessage}`);
 	process.exit(0);
 }

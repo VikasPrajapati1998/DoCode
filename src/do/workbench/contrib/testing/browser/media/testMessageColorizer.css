@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.test-output-peek-message-container {
+	.tstm-ansidec-1 {
+		font-weight: bold;
+	}
+	.tstm-ansidec-2 {
+		opacity: 0.7
+	}
+	.tstm-ansidec-3 {
+		font-style: italic;
+	}
+	.tstm-ansidec-4 {
+		text-decoration: underline;
+	}
+
+	.tstm-ansidec-fg30 { color: var(--docode-terminal-ansiBlack); }
+	.tstm-ansidec-fg31 { color: var(--docode-terminal-ansiRed); }
+	.tstm-ansidec-fg32 { color: var(--docode-terminal-ansiGreen); }
+	.tstm-ansidec-fg33 { color: var(--docode-terminal-ansiYellow); }
+	.tstm-ansidec-fg34 { color: var(--docode-terminal-ansiBlue); }
+	.tstm-ansidec-fg35 { color: var(--docode-terminal-ansiMagenta); }
+	.tstm-ansidec-fg36 { color: var(--docode-terminal-ansiCyan); }
+	.tstm-ansidec-fg37 { color: var(--docode-terminal-ansiWhite); }
+
+	.tstm-ansidec-fg90 { color: var(--docode-terminal-ansiBrightBlack); }
+	.tstm-ansidec-fg91 { color: var(--docode-terminal-ansiBrightRed); }
+	.tstm-ansidec-fg92 { color: var(--docode-terminal-ansiBrightGreen); }
+	.tstm-ansidec-fg93 { color: var(--docode-terminal-ansiBrightYellow); }
+	.tstm-ansidec-fg94 { color: var(--docode-terminal-ansiBrightBlue); }
+	.tstm-ansidec-fg95 { color: var(--docode-terminal-ansiBrightMagenta); }
+	.tstm-ansidec-fg96 { color: var(--docode-terminal-ansiBrightCyan); }
+	.tstm-ansidec-fg97 { color: var(--docode-terminal-ansiBrightWhite); }
+
+	.tstm-ansidec-bg30 { background-color: var(--docode-terminal-ansiBlack); }
+	.tstm-ansidec-bg31 { background-color: var(--docode-terminal-ansiRed); }
+	.tstm-ansidec-bg32 { background-color: var(--docode-terminal-ansiGreen); }
+	.tstm-ansidec-bg33 { background-color: var(--docode-terminal-ansiYellow); }
+	.tstm-ansidec-bg34 { background-color: var(--docode-terminal-ansiBlue); }
+	.tstm-ansidec-bg35 { background-color: var(--docode-terminal-ansiMagenta); }
+	.tstm-ansidec-bg36 { background-color: var(--docode-terminal-ansiCyan); }
+	.tstm-ansidec-bg37 { background-color: var(--docode-terminal-ansiWhite); }
+
+	.tstm-ansidec-bg100 { background-color: var(--docode-terminal-ansiBrightBlack); }
+	.tstm-ansidec-bg101 { background-color: var(--docode-terminal-ansiBrightRed); }
+	.tstm-ansidec-bg102 { background-color: var(--docode-terminal-ansiBrightGreen); }
+	.tstm-ansidec-bg103 { background-color: var(--docode-terminal-ansiBrightYellow); }
+	.tstm-ansidec-bg104 { background-color: var(--docode-terminal-ansiBrightBlue); }
+	.tstm-ansidec-bg105 { background-color: var(--docode-terminal-ansiBrightMagenta); }
+	.tstm-ansidec-bg106 { background-color: var(--docode-terminal-ansiBrightCyan); }
+	.tstm-ansidec-bg107 { background-color: var(--docode-terminal-ansiBrightWhite); }
+}

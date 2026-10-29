@@ -45,7 +45,7 @@ async function detect(files: readonly { filename: string; previous_filename?: st
 		},
 		rest: { pulls: { listFiles: {} } },
 	}, {
-		repo: { owner: 'microsoft', repo: 'vscode' },
+		repo: { owner: 'microsoft', repo: 'docode' },
 		issue: { number: 1 },
 		payload: { pull_request: { changed_files: expectedCount } },
 	}, {
@@ -97,14 +97,12 @@ function extensionsReadByCoreTests(): Map<string, string> {
 suite('Detect Changes', () => {
 	test('core test jobs run unless every change is one they cannot read', async () => {
 		const cases: [string, string[]][] = [
-			['src/vs/base/common/async.ts', ['true', 'true', 'true']],
-			['src/vs/workbench/contrib/chat/README.md', ['true', 'true', 'true']],
+			['src/do/base/common/async.ts', ['true', 'true', 'true']],
+			['src/do/workbench/contrib/chat/README.md', ['true', 'true', 'true']],
 			['test/smoke/README.md', ['true', 'true', 'true']],
 			['README.md', ['false', 'false', 'false']],
 			['.github/skills/unit-tests/SKILL.md', ['false', 'false', 'false']],
 			['cli/src/commands/tunnels.rs', ['false', 'false', 'false']],
-			['copilot_shim/src/main.rs', ['false', 'false', 'false']],
-			['extensions/copilot/src/extension/extension.ts', ['false', 'false', 'true']],
 			['extensions/git/src/repository.ts', ['false', 'true', 'true']],
 			['extensions/markdown-language-features/test-workspace/a.md', ['false', 'true', 'true']],
 			['extensions/theme-defaults/themes/dark_modern.json', ['true', 'true', 'true']],
@@ -125,18 +123,18 @@ suite('Detect Changes', () => {
 
 	test('every changed path must be one the tests cannot read', async () => {
 		assert.deepStrictEqual([
-			await detectCoreTests('extensions/copilot/package.json', 'README.md', 'cli/Cargo.toml'),
-			await detectCoreTests('extensions/copilot/package.json', 'extensions/git/package.json'),
-			await detectCoreTests('extensions/copilot/package.json', 'src/vs/base/common/async.ts'),
+			await detectCoreTests('README.md', 'cli/Cargo.toml'),
+			await detectCoreTests('extensions/git/package.json'),
+			await detectCoreTests('src/do/base/common/async.ts'),
 		], [
-			['false', 'false', 'true'],
+			['false', 'false', 'false'],
 			['false', 'true', 'true'],
 			['true', 'true', 'true'],
 		]);
 	});
 
 	test('both sides of a rename participate in selection', async () => {
-		const outputs = await detect([{ filename: 'docs/async.md', previous_filename: 'src/vs/base/common/async.ts' }]);
+		const outputs = await detect([{ filename: 'docs/async.md', previous_filename: 'src/do/base/common/async.ts' }]);
 		assert.deepStrictEqual(coreTestOutputs.map(output => outputs[output]), ['true', 'true', 'true']);
 	});
 
@@ -286,7 +284,7 @@ suite('Detect Changes', () => {
 
 	test('a job that the changes can skip has a name without expressions', () => {
 		// GitHub neither expands the matrix of a skipped job nor evaluates the expressions in its name, so a skipped
-		// "chat-lib tests (${{ matrix.os }})" job would report under that name.
+		// "tests (${{ matrix.os }})" job would report under that name.
 		const alwaysRun = ['${{ !cancelled() }}', '${{ always() }}'];
 		const workflows = ['pr.yml', 'pr-linux-test.yml', 'pr-darwin-test.yml', 'pr-win32-test.yml', 'pr-linux-cli-test.yml'];
 		assert.deepStrictEqual(workflows.flatMap(workflow => Object.entries(loadWorkflow(workflow).jobs)

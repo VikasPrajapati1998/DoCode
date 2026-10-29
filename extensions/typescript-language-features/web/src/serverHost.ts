@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ApiClient, FileStat, FileType, Requests } from '@vscode/sync-api-client';
-import { ClientConnection } from '@vscode/sync-api-common/browser';
+import { ApiClient, FileStat, FileType, Requests } from '@docode/sync-api-client';
+import { ClientConnection } from '@docode/sync-api-common/browser';
 import { basename } from 'path';
 import type * as ts from 'typescript/lib/tsserverlibrary';
 import { FileWatcherManager } from './fileWatcherManager';
@@ -51,7 +51,7 @@ function createServerHost(
 	exit: () => void,
 ): ServerHostWithImport {
 	const currentDirectory = '/';
-	const fs = apiClient?.vscode.workspace.fileSystem;
+	const fs = apiClient?.docode.workspace.fileSystem;
 
 	// Internals
 	const combinePaths = (ts as TsInternals).combinePaths;
@@ -116,7 +116,7 @@ function createServerHost(
 		newLine: '\n',
 		useCaseSensitiveFileNames: true,
 		write: s => {
-			apiClient?.vscode.terminal.write(s);
+			apiClient?.docode.terminal.write(s);
 		},
 		writeOutputIsTTY() {
 			return true;
@@ -152,7 +152,7 @@ function createServerHost(
 					return undefined;
 				}
 				try {
-					contents = fs.readFile(mapUri(uri, 'vscode-node-modules'));
+					contents = fs.readFile(mapUri(uri, 'docode-node-modules'));
 				} catch (e) {
 					return undefined;
 				}
@@ -173,7 +173,7 @@ function createServerHost(
 			} catch (_error) {
 				if (enabledExperimentalTypeAcquisition) {
 					try {
-						ret = fs.stat(mapUri(uri, 'vscode-node-modules')).size;
+						ret = fs.stat(mapUri(uri, 'docode-node-modules')).size;
 					} catch (_error) {
 					}
 				}
@@ -201,8 +201,8 @@ function createServerHost(
 			try {
 				fs.writeFile(uri, encoded);
 				const name = basename(uri.path);
-				if (uri.scheme !== 'vscode-global-typings' && (name === 'package.json' || name === 'package-lock.json' || name === 'package-lock.kdl')) {
-					fs.writeFile(mapUri(uri, 'vscode-node-modules'), encoded);
+				if (uri.scheme !== 'docode-global-typings' && (name === 'package.json' || name === 'package-lock.json' || name === 'package-lock.kdl')) {
+					fs.writeFile(mapUri(uri, 'docode-node-modules'), encoded);
 				}
 			} catch (error) {
 				console.error('fs.writeFile', { path, error });
@@ -238,7 +238,7 @@ function createServerHost(
 			} catch (_error) {
 				if (enabledExperimentalTypeAcquisition) {
 					try {
-						ret = fs.stat(mapUri(uri, 'vscode-node-modules')).type === FileType.File;
+						ret = fs.stat(mapUri(uri, 'docode-node-modules')).type === FileType.File;
 					} catch (_error) {
 					}
 				}
@@ -265,7 +265,7 @@ function createServerHost(
 			} catch (_error) {
 				if (enabledExperimentalTypeAcquisition) {
 					try {
-						stat = fs.stat(mapUri(uri, 'vscode-node-modules'));
+						stat = fs.stat(mapUri(uri, 'docode-node-modules'));
 					} catch (_error) {
 					}
 				}
@@ -323,7 +323,7 @@ function createServerHost(
 			} catch (_e) {
 				if (enabledExperimentalTypeAcquisition) {
 					try {
-						s = fs.stat(mapUri(uri, 'vscode-node-modules'));
+						s = fs.stat(mapUri(uri, 'docode-node-modules'));
 					} catch (_e) {
 					}
 				}
@@ -362,7 +362,7 @@ function createServerHost(
 		}
 
 		const isNm = looksLikeNodeModules(path)
-			&& !path.startsWith('/vscode-global-typings/')
+			&& !path.startsWith('/docode-global-typings/')
 			// Handle the case where a local folder has been opened in VS Code
 			// In these cases we do not want to use the mapped node_module
 			&& !path.startsWith('/file/');
@@ -380,7 +380,7 @@ function createServerHost(
 		}
 
 		if (isNm) {
-			uri = mapUri(uri, 'vscode-node-modules');
+			uri = mapUri(uri, 'docode-node-modules');
 		}
 		const out = [uri.scheme];
 		if (uri.authority) { out.push(uri.authority); }
@@ -413,7 +413,7 @@ function createServerHost(
 			entries = fs.readDirectory(uri);
 		} catch (_e) {
 			try {
-				entries = fs.readDirectory(mapUri(uri, 'vscode-node-modules'));
+				entries = fs.readDirectory(mapUri(uri, 'docode-node-modules'));
 			} catch (_e) {
 			}
 		}
@@ -452,7 +452,7 @@ export async function createSys(
 		await connection.serviceReady();
 
 		const apiClient = new ApiClient(connection);
-		const fs = apiClient.vscode.workspace.fileSystem;
+		const fs = apiClient.docode.workspace.fileSystem;
 		const sys = createServerHost(ts, logger, apiClient, args, watchManager, pathMapper, enabledExperimentalTypeAcquisition, onExit);
 		return { sys, fs };
 	} else {

@@ -1,0 +1,72 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* ---- Loading Overlay ---- */
+
+.sessions-loading-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--docode-editor-background);
+	transition: opacity 200ms ease-out;
+}
+
+.sessions-loading-overlay.sessions-loading-dismissed {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.agent-sessions-workbench .sessions-loading-overlay .sessions-loading-icon.codicon {
+	font-size: 112px;
+	color: var(--docode-foreground);
+	animation: sessions-loading-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes sessions-loading-pulse {
+	0%, 100% { opacity: 0.4; transform: scale(0.95); }
+	50%      { opacity: 1;   transform: scale(1.05); }
+}
+
+.monaco-reduce-motion .sessions-loading-overlay .sessions-loading-icon,
+.agent-sessions-workbench.monaco-reduce-motion .sessions-loading-overlay .sessions-loading-icon {
+	animation: none;
+	opacity: 0.7;
+}
+
+/* ---- Welcome and Sign-In Dialogs ---- */
+
+.chat-setup-dialog.sessions-main-welcome-dialog {
+
+	/* Icon spacing in vertical layout */
+	&.align-vertical .dialog-message-row > .dialog-icon.codicon {
+		margin-bottom: 12px;
+	}
+
+}
+
+.chat-setup-dialog.sessions-welcome-dialog .chat-setup-dialog-footer > .sessions-sign-in-dialog-action.monaco-text-button {
+	display: inline-flex;
+	width: auto;
+	margin: var(--docode-spacing-size80) auto 0;
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size40);
+	border: 0;
+	border-radius: var(--docode-cornerRadius-small);
+	background-color: transparent;
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-body2);
+	font-weight: var(--docode-fontWeight-regular);
+}
+
+.chat-setup-dialog.sessions-welcome-dialog .chat-setup-dialog-footer > .sessions-sign-in-dialog-action.monaco-text-button:hover {
+	background-color: var(--docode-toolbar-hoverBackground);
+	color: var(--docode-descriptionForeground);
+}
+
+.chat-setup-dialog.sessions-welcome-dialog .chat-setup-dialog-footer > .sessions-sign-in-dialog-action.monaco-text-button:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+}

@@ -1,13 +1,13 @@
 {
-	"name": "vscode-modern-icons",
+	"name": "docode-modern-icons",
 	"private": true,
 	"version": "1.0.0",
 	"displayName": "%displayName%",
 	"description": "%description%",
-	"publisher": "vscode",
+	"publisher": "docode",
 	"license": "MIT",
 	"engines": {
-		"vscode": "*"
+		"docode": "*"
 	},
 	"categories": [
 		"Themes"
@@ -15,9 +15,9 @@
 	"contributes": {
 		"iconThemes": [
 			{
-				"id": "vscode-modern-icons",
+				"id": "docode-modern-icons",
 				"label": "%themeLabel%",
-				"path": "./fileicons/vscode-modern-icons-icon-theme.json"
+				"path": "./fileicons/docode-modern-icons-icon-theme.json"
 			}
 		]
 	},

@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Log } from '../common/logger';
 import { AccountLinks } from '../common/accountLinks';
 import * as github from '../github';
@@ -17,17 +17,17 @@ import { createTestExtensionContext } from './testExtensionContext';
 const EngineConstructor = github.GitHubSessionEngine;
 
 class TestSessionEngine {
-	readonly changes = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
+	readonly changes = new docode.EventEmitter<docode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
 	readonly onDidChangeSessions = this.changes.event;
 	readonly instance = sinon.createStubInstance(EngineConstructor);
-	readonly reads: { scopes: readonly string[] | undefined; options: vscode.AuthenticationProviderSessionOptions | undefined }[] = [];
-	readonly creations: { scopes: readonly string[]; options: vscode.AuthenticationProviderSessionOptions | undefined }[] = [];
+	readonly reads: { scopes: readonly string[] | undefined; options: docode.AuthenticationProviderSessionOptions | undefined }[] = [];
+	readonly creations: { scopes: readonly string[]; options: docode.AuthenticationProviderSessionOptions | undefined }[] = [];
 	readonly removals: string[] = [];
 	disposed = false;
-	sessions: vscode.AuthenticationSession[];
+	sessions: docode.AuthenticationSession[];
 	private readonly initialized: Promise<void>;
 
-	constructor(readonly uri: vscode.Uri, readonly storageKey: string, secrets: TestSecretStorage, storedOnly: boolean) {
+	constructor(readonly uri: docode.Uri, readonly storageKey: string, secrets: TestSecretStorage, storedOnly: boolean) {
 		const accountLabelSuffix = ` - ${uri.authority}${uri.path.replace(/\/+$/, '')}`;
 		sinon.stub(this.instance, 'onDidChangeSessions').get(() => this.onDidChangeSessions);
 		this.instance.getSessions.callsFake((scopes, options) => this.getSessions(scopes, options));
@@ -38,36 +38,36 @@ class TestSessionEngine {
 		this.sessions = storedOnly ? [] : [{
 			id: `session-${uri.toString()}`,
 			accessToken: `fake-token-${uri.authority}`,
-			account: { id: '42', label: `octocat${accountLabelSuffix}`, icon: vscode.Uri.parse('https://avatars.example/42') },
+			account: { id: '42', label: `octocat${accountLabelSuffix}`, icon: docode.Uri.parse('https://avatars.example/42') },
 			scopes: ['repo'],
-			authorizationServer: vscode.Uri.joinPath(uri, '/login/oauth'),
+			authorizationServer: docode.Uri.joinPath(uri, '/login/oauth'),
 			expiresAfter: 60_000
 		}];
 		this.initialized = secrets.get(storageKey).then(value => {
 			if (value) {
-				const stored: vscode.AuthenticationSession[] = JSON.parse(value);
+				const stored: docode.AuthenticationSession[] = JSON.parse(value);
 				this.sessions = stored.map(session => ({
 					...session,
 					account: { ...session.account, label: `${session.account.label}${accountLabelSuffix}` },
-					authorizationServer: vscode.Uri.from(session.authorizationServer!)
+					authorizationServer: docode.Uri.from(session.authorizationServer!)
 				}));
 			}
 		});
 	}
 
-	async getCachedSessions(): Promise<readonly vscode.AuthenticationSession[]> {
+	async getCachedSessions(): Promise<readonly docode.AuthenticationSession[]> {
 		await this.initialized;
 		return this.sessions;
 	}
 
-	async getSessions(scopes: readonly string[] | undefined, options?: vscode.AuthenticationProviderSessionOptions): Promise<vscode.AuthenticationSession[]> {
+	async getSessions(scopes: readonly string[] | undefined, options?: docode.AuthenticationProviderSessionOptions): Promise<docode.AuthenticationSession[]> {
 		await this.initialized;
 		this.reads.push({ scopes, options });
 		return this.sessions.filter(session => (!scopes?.length || session.scopes.join(' ') === scopes.join(' ')) && (!options?.account || session.account.label === options.account.label)
 			&& (!options?.authorizationServer || session.authorizationServer?.toString() === options.authorizationServer.toString()));
 	}
 
-	async createSession(scopes: readonly string[], options?: vscode.AuthenticationProviderSessionOptions): Promise<vscode.AuthenticationSession> {
+	async createSession(scopes: readonly string[], options?: docode.AuthenticationProviderSessionOptions): Promise<docode.AuthenticationSession> {
 		this.creations.push({ scopes, options });
 		const session = { ...this.sessions[0], scopes };
 		this.changes.fire({ added: [session], removed: [], changed: [] });
@@ -88,12 +88,12 @@ class TestSessionEngine {
 }
 
 suite('GitHub Enterprise multi-host provider', () => {
-	const a = vscode.Uri.parse('https://a.example');
-	const b = vscode.Uri.parse('https://b.example/Deployment');
+	const a = docode.Uri.parse('https://a.example');
+	const b = docode.Uri.parse('https://b.example/Deployment');
 	let registration: sinon.SinonStub;
 	let picker: sinon.SinonStub;
-	const disposables: vscode.Disposable[] = [];
-	const constructions = new Map<vscode.ExtensionContext, { engines: TestSessionEngine[]; secrets: TestSecretStorage; storedOnly: boolean; failFor?: string }>();
+	const disposables: docode.Disposable[] = [];
+	const constructions = new Map<docode.ExtensionContext, { engines: TestSessionEngine[]; secrets: TestSecretStorage; storedOnly: boolean; failFor?: string }>();
 
 	setup(() => {
 		sinon.stub(github, 'GitHubSessionEngine').callsFake((context, _uriHandler, uri, storageKey) => {
@@ -106,13 +106,13 @@ suite('GitHub Enterprise multi-host provider', () => {
 			construction.engines.push(engine);
 			return engine.instance;
 		});
-		registration = sinon.stub(vscode.authentication, 'registerAuthenticationProvider').callsFake((_id, _label, provider) => provider.onDidChangeSessions(() => { }));
-		picker = sinon.stub(vscode.window, 'showQuickPick').rejects(new Error('Unexpected host picker'));
-		const logLevels = new vscode.EventEmitter<vscode.LogLevel>();
+		registration = sinon.stub(docode.authentication, 'registerAuthenticationProvider').callsFake((_id, _label, provider) => provider.onDidChangeSessions(() => { }));
+		picker = sinon.stub(docode.window, 'showQuickPick').rejects(new Error('Unexpected host picker'));
+		const logLevels = new docode.EventEmitter<docode.LogLevel>();
 		disposables.push(logLevels);
-		sinon.stub(vscode.window, 'createOutputChannel').returns({
+		sinon.stub(docode.window, 'createOutputChannel').returns({
 			name: 'Test',
-			logLevel: vscode.LogLevel.Info,
+			logLevel: docode.LogLevel.Info,
 			onDidChangeLogLevel: logLevels.event,
 			trace: sinon.stub(),
 			debug: sinon.stub(),
@@ -135,7 +135,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 		sinon.restore();
 	});
 
-	async function create(uris: readonly vscode.Uri[] = [a, b], state = new TestMemento(), secrets = new TestSecretStorage(), storedOnly = false) {
+	async function create(uris: readonly docode.Uri[] = [a, b], state = new TestMemento(), secrets = new TestSecretStorage(), storedOnly = false) {
 		disposables.push(secrets);
 		const factory: { engines: TestSessionEngine[]; secrets: TestSecretStorage; storedOnly: boolean; failFor?: string } = { engines: [], secrets, storedOnly };
 		const context = createTestExtensionContext(disposables, secrets, state);
@@ -156,7 +156,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 			providers: registration.getCalls().map(call => ({
 				id: call.args[0],
 				label: call.args[1],
-				servers: call.args[3].supportedAuthorizationServers.map((uri: vscode.Uri) => uri.toString())
+				servers: call.args[3].supportedAuthorizationServers.map((uri: docode.Uri) => uri.toString())
 			})),
 			accounts: all.map(session => session.account.label),
 			accountIds: all.map(session => session.account.id),
@@ -193,10 +193,10 @@ suite('GitHub Enterprise multi-host provider', () => {
 		const { provider, engines } = await create();
 		const selected = (await provider.getSessions())[1];
 		engines.forEach(engine => engine.reads.length = 0);
-		const mismatch = { account: selected.account, authorizationServer: vscode.Uri.joinPath(a, '/login/oauth') };
+		const mismatch = { account: selected.account, authorizationServer: docode.Uri.joinPath(a, '/login/oauth') };
 		await assert.rejects(provider.getSessions(['repo'], mismatch), /different instances/);
 		await assert.rejects(provider.createSession(['repo'], mismatch), /different instances/);
-		await assert.rejects(provider.getSessions(['repo'], { authorizationServer: vscode.Uri.parse('https://unknown.example/login/oauth') }), /not configured/);
+		await assert.rejects(provider.getSessions(['repo'], { authorizationServer: docode.Uri.parse('https://unknown.example/login/oauth') }), /not configured/);
 		assert.deepStrictEqual(engines.map(engine => ({ reads: engine.reads, creations: engine.creations })), [{ reads: [], creations: [] }, { reads: [], creations: [] }]);
 	});
 
@@ -217,7 +217,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 		assert.deepStrictEqual({
 			issuer: session.authorizationServer?.toString(),
 			creations: engines.map(engine => engine.creations.length),
-			labels: picker.firstCall.args[0].map((item: vscode.QuickPickItem) => item.label),
+			labels: picker.firstCall.args[0].map((item: docode.QuickPickItem) => item.label),
 			title: picker.firstCall.args[1].title
 		}, {
 			issuer: 'https://b.example/Deployment/login/oauth',
@@ -229,7 +229,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('cancelling the host picker starts no authentication flow or session event', async () => {
 		const { provider, engines } = await create();
-		const events: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
+		const events: docode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
 		disposables.push(provider.onDidChangeSessions(event => events.push(event)));
 		picker.resolves(undefined);
 		await assert.rejects(provider.createSession(['repo']), /Cancelled/);
@@ -267,7 +267,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	test('session events retain native identities and removal targets only their host', async () => {
 		const { provider, engines } = await create();
 		const selected = (await provider.getSessions())[1];
-		const events: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
+		const events: docode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
 		disposables.push(provider.onDidChangeSessions(event => events.push(event)));
 		engines[1].changes.fire({ added: [], removed: [], changed: [engines[1].sessions[0]] });
 		await provider.removeSession(selected.id);
@@ -304,7 +304,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	test('host count changes preserve labels and do not republish retained accounts', async () => {
 		const { provider, engines } = await create([a]);
 		const [original] = await provider.getSessions();
-		const changed: vscode.AuthenticationSession[] = [];
+		const changed: docode.AuthenticationSession[] = [];
 		disposables.push(provider.onDidChangeSessions(event => changed.push(...event.changed ?? [])));
 		const reads = engines[0].reads.length;
 		await provider.update([a, b]);
@@ -340,13 +340,13 @@ suite('GitHub Enterprise multi-host provider', () => {
 			const { provider, engines } = await create([a]);
 			const [previousPublished] = await provider.getSessions();
 			const previous = engines[0].sessions[0];
-			const snapshot = Promise.withResolvers<readonly vscode.AuthenticationSession[]>();
+			const snapshot = Promise.withResolvers<readonly docode.AuthenticationSession[]>();
 			const preparing = Promise.withResolvers<void>();
 			sinon.stub(engines[0], 'getCachedSessions').callsFake(() => {
 				preparing.resolve();
 				return snapshot.promise;
 			});
-			const events: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
+			const events: docode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
 			disposables.push(provider.onDidChangeSessions(event => events.push(event)));
 			const update = provider.update([b]);
 			await preparing.promise;
@@ -384,7 +384,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	test('reorder and equivalent spellings retain engines, registration and identities', async () => {
 		const { provider, engines } = await create();
 		const before = await provider.getSessions();
-		await provider.update([b, vscode.Uri.parse('https://A.EXAMPLE/'), a]);
+		await provider.update([b, docode.Uri.parse('https://A.EXAMPLE/'), a]);
 		assert.deepStrictEqual({
 			sessions: await provider.getSessions(),
 			created: engines.length,
@@ -394,7 +394,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	});
 
 	test('equivalent host aliases choose the same storage independent of their initial array order', async () => {
-		const alias = vscode.Uri.parse('https://A.EXAMPLE/');
+		const alias = docode.Uri.parse('https://A.EXAMPLE/');
 		const first = await create([a, alias]);
 		const second = await create([alias, a]);
 		assert.deepStrictEqual({
@@ -424,7 +424,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	test('configuration changes announce retired and restored sessions without disturbing retained hosts', async () => {
 		const { provider } = await create();
 		const original = await provider.getSessions();
-		const events: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
+		const events: docode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
 		disposables.push(provider.onDidChangeSessions(event => events.push(event)));
 		await provider.update([b]);
 		await provider.update([a, b]);
@@ -442,22 +442,22 @@ suite('GitHub Enterprise multi-host provider', () => {
 		const state = new TestMemento();
 		const secrets = new TestSecretStorage();
 		disposables.push(secrets);
-		const original = vscode.Uri.parse('https://tenant.example/Team/');
-		const alias = vscode.Uri.parse('https://tenant.example/Team');
+		const original = docode.Uri.parse('https://tenant.example/Team/');
+		const alias = docode.Uri.parse('https://tenant.example/Team');
 		const storageKey = 'tenant.example/Team/.ghes.auth';
 		const canonicalKey = 'https://tenant.example/Team.ghes.auth';
-		const session: vscode.AuthenticationSession = {
+		const session: docode.AuthenticationSession = {
 			id: 'saved',
 			account: { id: '42', label: 'octocat' },
 			accessToken: 'fake-stored-token',
 			scopes: ['repo'],
-			authorizationServer: vscode.Uri.joinPath(original, '/login/oauth')
+			authorizationServer: docode.Uri.joinPath(original, '/login/oauth')
 		};
 		await secrets.store(storageKey, JSON.stringify([session]));
 		const links = [{ gitHubAccountId: '42', gitHubAccountLabel: 'octocat', microsoftAccountLabel: 'mona@example.com' }];
 		await state.update(`${storageKey}.microsoftAccountLinks`, links);
 		const { provider, engines } = await create([], state, secrets, true);
-		const events: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
+		const events: docode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
 		disposables.push(provider.onDidChangeSessions(event => events.push(event)));
 		await provider.update([original, alias]);
 		assert.strictEqual(events[0].added?.[0].accessToken, session.accessToken);
@@ -476,7 +476,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 		const state = new TestMemento();
 		const storageKey = 'tenant.example/Team/.ghes.auth';
 		await state.update(`${storageKey}.microsoftAccountLinks`, [{ gitHubAccountId: '42', gitHubAccountLabel: 'octocat', microsoftAccountLabel: 'mona@example.com' }]);
-		const { engines } = await create([vscode.Uri.parse('https://tenant.example/Team'), vscode.Uri.parse('https://tenant.example/Team/')], state);
+		const { engines } = await create([docode.Uri.parse('https://tenant.example/Team'), docode.Uri.parse('https://tenant.example/Team/')], state);
 		assert.deepStrictEqual({
 			storageKey: engines[0].storageKey,
 			keys: state.keys()
@@ -490,7 +490,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 		const { provider, engines, factory } = await create([a]);
 		const before = await provider.getSessions();
 		factory.failFor = 'c.example';
-		await assert.rejects(provider.update([a, b, vscode.Uri.parse('https://c.example')]), /Engine initialization failed/);
+		await assert.rejects(provider.update([a, b, docode.Uri.parse('https://c.example')]), /Engine initialization failed/);
 		assert.deepStrictEqual({
 			sessions: await provider.getSessions(),
 			disposed: engines.map(engine => engine.disposed),
@@ -530,7 +530,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 		await started;
 		provider.dispose();
 		complete(undefined);
-		await assert.rejects(update, vscode.CancellationError);
+		await assert.rejects(update, docode.CancellationError);
 		assert.deepStrictEqual({ engines: engines.length, disposed: engines[0].disposed, registrations: registration.callCount }, { engines: 1, disposed: true, registrations: 1 });
 	});
 
@@ -550,7 +550,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('configuration updates do not depend on an extension-side registration readiness signal', async () => {
 		const { provider } = await create([a]);
-		registration.callsFake(() => new vscode.Disposable(() => { }));
+		registration.callsFake(() => new docode.Disposable(() => { }));
 		await provider.update([]);
 		await provider.update([b]);
 		assert.deepStrictEqual((await provider.getSessions()).map(session => session.authorizationServer!.toString()), ['https://b.example/Deployment/login/oauth']);
@@ -559,7 +559,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	test('removing a host does not announce a session twice after it was already signed out', async () => {
 		const { provider } = await create([a]);
 		const [session] = await provider.getSessions();
-		const events: vscode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
+		const events: docode.AuthenticationProviderAuthenticationSessionsChangeEvent[] = [];
 		disposables.push(provider.onDidChangeSessions(event => events.push(event)));
 		await provider.removeSession(session.id);
 		await provider.update([]);
@@ -567,9 +567,9 @@ suite('GitHub Enterprise multi-host provider', () => {
 	});
 
 	test('canonical storage identifiers are independent of URI spelling and restart', async () => {
-		const { provider, engines, state } = await create([vscode.Uri.parse('https://GHE.EXAMPLE:8443/Team/')]);
+		const { provider, engines, state } = await create([docode.Uri.parse('https://GHE.EXAMPLE:8443/Team/')]);
 		const before = await provider.getSessions();
-		const restarted = await create([vscode.Uri.parse('https://ghe.example:8443/Team')], state);
+		const restarted = await create([docode.Uri.parse('https://ghe.example:8443/Team')], state);
 		assert.deepStrictEqual({
 			storageKeys: [...engines, ...restarted.engines].map(engine => engine.storageKey),
 			reloaded: await restarted.provider.getSessions()
@@ -578,7 +578,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('an equivalent deprecated URI does not change the canonical key or become a default host', async () => {
 		const { provider, engines } = await create([]);
-		await provider.update([a, vscode.Uri.parse('https://ghe.example/Team')], { legacyUri: vscode.Uri.parse('https://GHE.EXAMPLE/Team/') });
+		await provider.update([a, docode.Uri.parse('https://ghe.example/Team')], { legacyUri: docode.Uri.parse('https://GHE.EXAMPLE/Team/') });
 		assert.deepStrictEqual({
 			storageKeys: engines.map(engine => engine.storageKey),
 			accounts: (await provider.getSessions()).map(session => session.account.label)
@@ -589,7 +589,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	});
 
 	test('different schemes never share a keychain even though legacy keys omitted the scheme', async () => {
-		const http = vscode.Uri.parse('http://a.example');
+		const http = docode.Uri.parse('http://a.example');
 		const first = await create([http, a]);
 		const second = await create([a]);
 		await second.provider.update([http, a]);
@@ -602,8 +602,8 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('a session from another issuer cannot satisfy an explicitly selected server', async () => {
 		const { provider, engines } = await create();
-		engines[0].sessions[0] = { ...engines[0].sessions[0], authorizationServer: vscode.Uri.joinPath(b, '/login/oauth') };
-		assert.deepStrictEqual(await provider.getSessions(['repo'], { authorizationServer: vscode.Uri.joinPath(a, '/login/oauth') }), []);
+		engines[0].sessions[0] = { ...engines[0].sessions[0], authorizationServer: docode.Uri.joinPath(b, '/login/oauth') };
+		assert.deepStrictEqual(await provider.getSessions(['repo'], { authorizationServer: docode.Uri.joinPath(a, '/login/oauth') }), []);
 	});
 
 	test('an empty or invalid configuration exposes no sessions and interactive creation explains the problem', async () => {
@@ -627,10 +627,10 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('a read completing after its host was removed cannot publish a retired session', async () => {
 		const { provider, engines } = await create();
-		let complete!: (sessions: vscode.AuthenticationSession[]) => void;
-		const pending = new Promise<vscode.AuthenticationSession[]>(resolve => complete = resolve);
+		let complete!: (sessions: docode.AuthenticationSession[]) => void;
+		const pending = new Promise<docode.AuthenticationSession[]>(resolve => complete = resolve);
 		sinon.stub(engines[1], 'getSessions').returns(pending);
-		const read = provider.getSessions(['repo'], { authorizationServer: vscode.Uri.joinPath(b, '/login/oauth') });
+		const read = provider.getSessions(['repo'], { authorizationServer: docode.Uri.joinPath(b, '/login/oauth') });
 		await provider.update([a]);
 		complete(engines[1].sessions);
 		assert.deepStrictEqual(await read, []);
@@ -638,10 +638,10 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('a login completing after its host was removed is not returned as a configured session', async () => {
 		const { provider, engines } = await create();
-		let complete!: (session: vscode.AuthenticationSession) => void;
-		const pending = new Promise<vscode.AuthenticationSession>(resolve => complete = resolve);
+		let complete!: (session: docode.AuthenticationSession) => void;
+		const pending = new Promise<docode.AuthenticationSession>(resolve => complete = resolve);
 		sinon.stub(engines[1], 'createSession').returns(pending);
-		const login = provider.createSession(['repo'], { authorizationServer: vscode.Uri.joinPath(b, '/login/oauth') });
+		const login = provider.createSession(['repo'], { authorizationServer: docode.Uri.joinPath(b, '/login/oauth') });
 		await provider.update([a]);
 		complete(engines[1].sessions[0]);
 		await assert.rejects(login, /no longer configured/);
@@ -650,7 +650,7 @@ suite('GitHub Enterprise multi-host provider', () => {
 	test('disposal releases a preparing engine and prevents in-flight and queued updates from registering', async () => {
 		const { provider, engines } = await create([a]);
 		const preparing = Promise.withResolvers<void>();
-		const pending = Promise.withResolvers<vscode.AuthenticationSession[]>();
+		const pending = Promise.withResolvers<docode.AuthenticationSession[]>();
 		sinon.stub(TestSessionEngine.prototype, 'getSessions').callsFake(() => {
 			preparing.resolve();
 			return pending.promise;
@@ -662,8 +662,8 @@ suite('GitHub Enterprise multi-host provider', () => {
 		const disposedBeforeCompletion = engines.map(engine => engine.disposed);
 		pending.resolve(engines[1].sessions);
 		await Promise.all([
-			assert.rejects(update, vscode.CancellationError),
-			assert.rejects(queued, vscode.CancellationError)
+			assert.rejects(update, docode.CancellationError),
+			assert.rejects(queued, docode.CancellationError)
 		]);
 		assert.deepStrictEqual({
 			disposedBeforeCompletion,
@@ -699,18 +699,18 @@ suite('GitHub Enterprise multi-host provider', () => {
 
 	test('simultaneous OAuth callbacks for identical scopes remain isolated by host', async () => {
 		const clock = sinon.useFakeTimers();
-		disposables.push(new vscode.Disposable(() => clock.restore()));
+		disposables.push(new docode.Disposable(() => clock.restore()));
 		const handler = new github.UriEventHandler();
-		const cancellation = new vscode.CancellationTokenSource();
+		const cancellation = new docode.CancellationTokenSource();
 		const logger = new Log(github.AuthProviderType.githubEnterprise);
 		disposables.push(handler, cancellation, logger);
 		const received: string[] = [];
 		const first = handler.waitForCode(logger, 'repo', 'nonce-a', cancellation.token, a).then(code => received.push(`a:${code}`));
 		const second = handler.waitForCode(logger, 'repo', 'nonce-b', cancellation.token, b).then(code => received.push(`b:${code}`));
-		handler.handleUri(vscode.Uri.parse('vscode://vscode.github-authentication/did-authenticate?nonce=nonce-b&code=code-b'));
+		handler.handleUri(docode.Uri.parse('docode://docode.github-authentication/did-authenticate?nonce=nonce-b&code=code-b'));
 		await second;
 		assert.deepStrictEqual(received, ['b:code-b']);
-		handler.handleUri(vscode.Uri.parse('vscode://vscode.github-authentication/did-authenticate?nonce=nonce-a&code=code-a'));
+		handler.handleUri(docode.Uri.parse('docode://docode.github-authentication/did-authenticate?nonce=nonce-a&code=code-a'));
 		await first;
 		assert.deepStrictEqual(received, ['b:code-b', 'a:code-a']);
 	});

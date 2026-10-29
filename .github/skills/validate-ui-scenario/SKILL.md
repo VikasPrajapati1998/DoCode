@@ -50,7 +50,7 @@ Every target runs with its own profile and extensions directory, so your extensi
 
 ## Write the scenario
 
-Save the file next to the run it produces, for example `.build/vscode-playwright-mcp/<issue>.cjs`. The **`.cjs`** extension matters: this package is an ES module package, so a CommonJS scenario named `.js` fails to load. An ES module scenario with a default export works too.
+Save the file next to the run it produces, for example `.build/docode-playwright-mcp/<issue>.cjs`. The **`.cjs`** extension matters: this package is an ES module package, so a CommonJS scenario named `.js` fails to load. An ES module scenario with a default export works too.
 
 ```js
 const os = require('os');
@@ -80,7 +80,7 @@ const COLLECT_TITLES = `(async () => {
 })()`;
 
 module.exports = {
-	id: 'vscode-250159-settings-search',
+	id: 'docode-250159-settings-search',
 	title: 'Settings search matches across title and description',
 	source: 'https://github.com/microsoft/vscode/issues/250159',
 	workspacePath,
@@ -152,7 +152,7 @@ node test/scenario/out/runScenario.js <scenario.cjs>
 
 Exit code `0` means every step passed, `1` means the run failed or was aborted, `2` a usage error.
 
-Evidence is written to `.build/vscode-playwright-mcp/evidence/<run-id>/`:
+Evidence is written to `.build/docode-playwright-mcp/evidence/<run-id>/`:
 
 | File | Contents |
 |------|----------|
@@ -194,7 +194,7 @@ User: "/validate-ui-scenario reproduce https://github.com/microsoft/vscode/issue
 1. Confirm `ffmpeg`/`ffprobe` are available; if not, say so and give the install command before running, so the user is not surprised by a video without step titles.
 2. Read the issue and identify the observable claim: searching `chat confirm` in the Settings editor should match **Max Requests**, whose description mentions confirmation.
 3. Add a baseline step (`max requests` finds the setting) so a failure cannot be explained by the setting being missing from the build.
-4. Write `.build/vscode-playwright-mcp/issue-250159.cjs` and run it with no target flag, which uses the installed Insiders; read the printed report path.
+4. Write `.build/docode-playwright-mcp/issue-250159.cjs` and run it with no target flag, which uses the installed Insiders; read the printed report path.
 5. Report the outcome per step, link `report.html`, and attach `videos/annotated.mp4`.
 
 The run fails at the search step, and that is the answer: the issue reproduces. Report it as a successful reproduction, not as a broken scenario.

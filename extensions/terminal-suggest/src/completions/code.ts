@@ -220,7 +220,7 @@ export const extensionManagementOptions = (cliName: string): Fig.Option[] => [
 	{
 		name: '--install-extension',
 		description:
-			`Installs or updates an extension. The argument is either an extension id or a path to a VSIX. The identifier of an extension is '\${ publisher }.\${ name }'. Use '--force' argument to update to latest version. To install a specific version provide '@\${version}'. For example: 'vscode.csharp@1.2.3'`,
+			`Installs or updates an extension. The argument is either an extension id or a path to a VSIX. The identifier of an extension is '\${ publisher }.\${ name }'. Use '--force' argument to update to latest version. To install a specific version provide '@\${version}'. For example: 'docode.csharp@1.2.3'`,
 		args: {
 			name: 'extension-id[@version] | path-to-vsix',
 			generators: [
@@ -271,7 +271,7 @@ export const troubleshootingOptions = (cliName: string): Fig.Option[] => [
 	},
 	{
 		name: '--log',
-		description: `Log level to use. Default is 'info'. Allowed values are 'critical', 'error', 'warn', 'info', 'debug', 'trace', 'off'. You can also configure the log level of an extension by passing extension id and log level in the following format: '{publisher}.{name}:{logLevel}'. For example: 'vscode.csharp:trace'. Can receive one or more such entries.`,
+		description: `Log level to use. Default is 'info'. Allowed values are 'critical', 'error', 'warn', 'info', 'debug', 'trace', 'off'. You can also configure the log level of an extension by passing extension id and log level in the following format: '{publisher}.{name}:{logLevel}'. For example: 'docode.csharp:trace'. Can receive one or more such entries.`,
 		isRepeatable: true,
 		args: {
 			name: 'level',

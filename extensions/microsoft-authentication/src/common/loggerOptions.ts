@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { LogLevel as MsalLogLevel } from '@azure/msal-node';
-import { env, LogLevel, LogOutputChannel } from 'vscode';
+import { env, LogLevel, LogOutputChannel } from 'docode';
 import { MicrosoftAuthenticationTelemetryReporter } from './telemetryReporter';
 
 export class MsalLoggerOptions {

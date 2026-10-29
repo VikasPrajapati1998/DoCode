@@ -11,7 +11,7 @@ const outDir = path.join(import.meta.dirname, 'media');
 run({
 	entryPoints: {
 		'index': path.join(srcDir, 'index.ts'),
-		'codicon': path.join(import.meta.dirname, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.css'),
+		'codicon': path.join(import.meta.dirname, 'node_modules', '@docode', 'codicons', 'dist', 'codicon.css'),
 	},
 	srcDir,
 	outdir: outDir,

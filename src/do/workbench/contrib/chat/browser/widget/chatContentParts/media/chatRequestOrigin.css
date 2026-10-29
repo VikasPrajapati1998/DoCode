@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.chat-request-origin {
+	align-self: flex-end;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size20);
+	max-width: 90%;
+	width: fit-content;
+	margin-block-end: var(--docode-spacing-size20);
+	padding: var(--docode-spacing-size60) var(--docode-spacing-size120);
+	background-color: var(--docode-chat-requestBubbleBackground);
+	border-radius: var(--docode-cornerRadius-large);
+	color: var(--docode-descriptionForeground);
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.chat-request-origin.hidden {
+	display: none;
+}
+
+.chat-request-origin.has-no-quote {
+	padding-block: var(--docode-spacing-size40);
+}
+
+.chat-request-origin.delegation {
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size40);
+	background-color: transparent;
+	border-radius: var(--docode-cornerRadius-small);
+}
+
+.chat-request-origin:hover {
+	background-color: var(--docode-chat-requestBubbleHoverBackground);
+}
+
+.hc-black .chat-request-origin,
+.hc-light .chat-request-origin {
+	border: var(--docode-strokeThickness) dotted var(--docode-focusBorder);
+}
+
+.chat-request-origin:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: var(--docode-spacing-size20);
+}
+
+.chat-request-origin-header {
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size40);
+	min-width: 0;
+	font-size: var(--docode-fontSize-label2);
+	font-weight: var(--docode-fontWeight-regular);
+}
+
+.chat-request-origin-icon {
+	flex: 0 0 auto;
+	font-size: var(--docode-codiconFontSize-compact);
+}
+
+.chat-request-origin-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.chat-request-origin-quote {
+	display: -webkit-box;
+	overflow: hidden;
+	font-size: var(--docode-fontSize-label3);
+	font-weight: var(--docode-fontWeight-regular);
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	word-break: break-word;
+}

@@ -16,10 +16,10 @@ const rawCoveragePath = join(coverageRoot, 'raw');
 const reportPath = join(coverageRoot, 'report');
 const summaryPath = join(reportPath, 'coverage-summary.json');
 const observedSurfacePath = join(coverageRoot, 'protocol-surface', 'observed.json');
-const e2eRoot = join(repoRoot, 'src', 'vs', 'platform', 'agentHost', 'test', 'node', 'e2e');
+const e2eRoot = join(repoRoot, 'src', 'do', 'platform', 'agentHost', 'test', 'node', 'e2e');
 const statsPath = join(e2eRoot, 'coverage', 'summary.json');
 const surfaceStatsPath = join(e2eRoot, 'coverage', 'protocol-surface.json');
-const protocolRoot = join(repoRoot, 'src', 'vs', 'platform', 'agentHost', 'common', 'state', 'protocol');
+const protocolRoot = join(repoRoot, 'src', 'do', 'platform', 'agentHost', 'common', 'state', 'protocol');
 const metricNames = ['statements', 'branches', 'functions', 'lines'] as const;
 
 type MetricName = typeof metricNames[number];
@@ -82,13 +82,13 @@ function main(): void {
 		'--reporter', 'html',
 		'--reporter', 'lcov',
 		'--reporter', 'json-summary',
-		'--include', 'out/vs/platform/agentHost/common/**/*.js',
-		'--include', 'out/vs/platform/agentHost/node/**/*.js',
-		'--exclude', 'out/vs/platform/agentHost/**/test/**',
-		'--exclude', 'out/vs/platform/agentHost/**/*.test.js',
-		'--exclude', 'out/vs/platform/agentHost/**/*.integrationTest.js',
-		'--exclude', 'out/vs/platform/agentHost/common/state/protocol/channels-*/{actions,commands,notifications,state}.js',
-		'--exclude', 'out/vs/platform/agentHost/common/state/protocol/common/state.js',
+		'--include', 'out/do/platform/agentHost/common/**/*.js',
+		'--include', 'out/do/platform/agentHost/node/**/*.js',
+		'--exclude', 'out/do/platform/agentHost/**/test/**',
+		'--exclude', 'out/do/platform/agentHost/**/*.test.js',
+		'--exclude', 'out/do/platform/agentHost/**/*.integrationTest.js',
+		'--exclude', 'out/do/platform/agentHost/common/state/protocol/channels-*/{actions,commands,notifications,state}.js',
+		'--exclude', 'out/do/platform/agentHost/common/state/protocol/common/state.js',
 	], environment);
 
 	writeStats();
@@ -158,8 +158,8 @@ function writeStats(): void {
 		scope: {
 			loadedFilesOnly: true,
 			include: [
-				'src/vs/platform/agentHost/common/**/*.ts',
-				'src/vs/platform/agentHost/node/**/*.ts',
+				'src/do/platform/agentHost/common/**/*.ts',
+				'src/do/platform/agentHost/node/**/*.ts',
 			],
 			suites: ['conformance', 'claude', 'codex', 'copilotcli'],
 		},
@@ -173,7 +173,7 @@ function writeStats(): void {
 function toSourcePath(filePath: string): string {
 	const absolutePath = isAbsolute(filePath) ? filePath : resolve(repoRoot, filePath);
 	const repoRelativePath = relative(repoRoot, absolutePath).split(sep).join('/');
-	if (!/^src\/vs\/platform\/agentHost\/(?:common|node)\/.+\.ts$/.test(repoRelativePath) || repoRelativePath.includes('/test/')) {
+	if (!/^src\/do\/platform\/agentHost\/(?:common|node)\/.+\.ts$/.test(repoRelativePath) || repoRelativePath.includes('/test/')) {
 		throw new Error(`Unexpected file in agent host E2E coverage: ${filePath}`);
 	}
 	return repoRelativePath;
@@ -258,7 +258,7 @@ function writeProtocolSurfaceStats(): void {
 	const stats = {
 		version: 1,
 		scope: {
-			source: 'src/vs/platform/agentHost/common/state/protocol',
+			source: 'src/do/platform/agentHost/common/state/protocol',
 			note: 'A symbol is "covered" when an E2E test sends or receives it; this does not measure how deeply its semantics are asserted.',
 		},
 		commands: buildSurfaceGroup(declaredCommands(), observed.commands),

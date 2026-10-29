@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Log } from './logger';
 
 /**
@@ -69,7 +69,7 @@ export class AccountLinks {
 	private readonly _unlinkedButStillStored = new Set<string>();
 
 	constructor(
-		private readonly memento: vscode.Memento,
+		private readonly memento: docode.Memento,
 		private readonly storageKey: string,
 		private readonly logger: Log
 	) { }
@@ -99,7 +99,7 @@ export class AccountLinks {
 	 * side. Both sides are matched by label, so a GitHub account that has been renamed leaves its old
 	 * row behind rather than overwriting it; the Microsoft half of the row is what clears that up.
 	 */
-	async link(microsoftAccountLabel: string, gitHubAccount: vscode.AuthenticationSessionAccountInformation): Promise<void> {
+	async link(microsoftAccountLabel: string, gitHubAccount: docode.AuthenticationSessionAccountInformation): Promise<void> {
 		const kept = this.links.filter(link =>
 			link.gitHubAccountLabel !== gitHubAccount.label && link.microsoftAccountLabel !== microsoftAccountLabel);
 		// The user has just agreed to this account again, which is the one thing that undoes an

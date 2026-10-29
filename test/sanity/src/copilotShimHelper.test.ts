@@ -17,7 +17,7 @@ const helperPath = path.join(repositoryRoot, 'resources/linux/copilot-link.sh');
 type Edition = 'code' | 'code-insiders';
 
 /**
- * What an edition's shim reports for `--vscode-shim policy`. `unknown` is an older shim without the command.
+ * What an edition's shim reports for `--docode-shim policy`. `unknown` is an older shim without the command.
  */
 type ShimPolicy = 'allowed' | 'disabled' | 'unknown';
 
@@ -57,7 +57,7 @@ function runScenario(shell: string, scenario: IScenario): IOutcome {
 			if (policy) {
 				fs.mkdirSync(path.dirname(targets[edition]));
 				// The stub records any standard input it receives, which must never be the package manager's.
-				fs.writeFileSync(targets[edition], `#!/bin/sh\n[ "$1 $2" = "--vscode-shim policy" ] || exit 99\ncat >> "${root}/stdin"\nexit ${shimPolicyExitCodes[policy]}\n`, { mode: 0o755 });
+				fs.writeFileSync(targets[edition], `#!/bin/sh\n[ "$1 $2" = "--docode-shim policy" ] || exit 99\ncat >> "${root}/stdin"\nexit ${shimPolicyExitCodes[policy]}\n`, { mode: 0o755 });
 			}
 		}
 
@@ -78,10 +78,10 @@ function runScenario(shell: string, scenario: IScenario): IOutcome {
 			? `db_get() { case " ${scenario.declined.join(' ')} " in *" \${1%%/*} "*) RET=false ;; *) RET=true ;; esac; }\n`
 			: '';
 		const script = `. "${helperPath}"
-vscode_copilot_link_path="${linkPath}"
-vscode_copilot_link_code_target="${targets.code}"
-vscode_copilot_link_code_insiders_target="${targets['code-insiders']}"
-${debconf}vscode_copilot_link ${scenario.action} ${scenario.edition}
+docode_copilot_link_path="${linkPath}"
+docode_copilot_link_code_target="${targets.code}"
+docode_copilot_link_code_insiders_target="${targets['code-insiders']}"
+${debconf}docode_copilot_link ${scenario.action} ${scenario.edition}
 `;
 		const result = spawnSync(shell, ['-c', script], { input: 'debconf-protocol-reply\n', encoding: 'utf8' });
 		assert.strictEqual(result.error, undefined, `${shell} failed to start: ${result.error}`);
@@ -95,7 +95,7 @@ ${debconf}vscode_copilot_link ${scenario.action} ${scenario.edition}
 		} else if (stat) {
 			link = 'foreign-file';
 		}
-		return { link, warned: result.stderr.includes('warning: vscode_copilot_link:') };
+		return { link, warned: result.stderr.includes('warning: docode_copilot_link:') };
 	} finally {
 		fs.rmSync(root, { recursive: true, force: true });
 	}

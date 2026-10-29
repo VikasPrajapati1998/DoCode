@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { basename, extname } from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { CommandManager } from './commands/commandManager';
 import { DocumentSelector } from './configuration/documentSelector';
 import * as fileSchemes from './configuration/fileSchemes';
@@ -31,11 +31,11 @@ export default class LanguageProvider extends Disposable {
 		private readonly telemetryReporter: TelemetryReporter,
 		private readonly typingsStatus: TypingsStatus,
 		private readonly fileConfigurationManager: FileConfigurationManager,
-		private readonly onCompletionAccepted: (item: vscode.CompletionItem) => void,
+		private readonly onCompletionAccepted: (item: docode.CompletionItem) => void,
 	) {
 		super();
 
-		const scope: vscode.ConfigurationScope = { languageId: this.description.languageIds[0] };
+		const scope: docode.ConfigurationScope = { languageId: this.description.languageIds[0] };
 
 		const validateConfig = this._register(new UnifiedConfigValue<boolean>('validate.enabled', true, { scope, fallbackSection: this.id, fallbackSubSectionNameOverride: 'validate.enable' }));
 		this.updateValidate(validateConfig.getValue());
@@ -49,8 +49,8 @@ export default class LanguageProvider extends Disposable {
 	}
 
 	private get documentSelector(): DocumentSelector {
-		const semantic: vscode.DocumentFilter[] = [];
-		const syntax: vscode.DocumentFilter[] = [];
+		const semantic: docode.DocumentFilter[] = [];
+		const syntax: docode.DocumentFilter[] = [];
 		for (const language of this.description.languageIds) {
 			syntax.push({ language });
 			for (const scheme of fileSchemes.getSemanticSupportedSchemes()) {
@@ -99,16 +99,16 @@ export default class LanguageProvider extends Disposable {
 		]);
 	}
 
-	public handlesUri(resource: vscode.Uri): boolean {
+	public handlesUri(resource: docode.Uri): boolean {
 		const ext = extname(resource.path).slice(1).toLowerCase();
 		return this.description.standardFileExtensions.includes(ext) || this.handlesConfigFile(resource);
 	}
 
-	public handlesDocument(doc: vscode.TextDocument): boolean {
+	public handlesDocument(doc: docode.TextDocument): boolean {
 		return this.description.languageIds.includes(doc.languageId) || this.handlesConfigFile(doc.uri);
 	}
 
-	private handlesConfigFile(resource: vscode.Uri) {
+	private handlesConfigFile(resource: docode.Uri) {
 		const base = basename(resource.fsPath);
 		return !!base && (!!this.description.configFilePattern && this.description.configFilePattern.test(base));
 	}
@@ -139,9 +139,9 @@ export default class LanguageProvider extends Disposable {
 
 	public diagnosticsReceived(
 		diagnosticsKind: DiagnosticKind,
-		file: vscode.Uri,
-		diagnostics: (vscode.Diagnostic & { reportUnnecessary: any; reportDeprecated: any })[],
-		ranges: vscode.Range[] | undefined): void {
+		file: docode.Uri,
+		diagnostics: (docode.Diagnostic & { reportUnnecessary: any; reportDeprecated: any })[],
+		ranges: docode.Range[] | undefined): void {
 		if (diagnosticsKind !== DiagnosticKind.Syntax && !this.client.hasCapabilityForResource(file, ClientCapability.Semantic)) {
 			return;
 		}
@@ -165,7 +165,7 @@ export default class LanguageProvider extends Disposable {
 		this.client.diagnosticsManager.updateDiagnostics(file, this._diagnosticLanguage, diagnosticsKind, diagnostics, ranges);
 	}
 
-	public configFileDiagnosticsReceived(file: vscode.Uri, diagnostics: vscode.Diagnostic[]): void {
+	public configFileDiagnosticsReceived(file: docode.Uri, diagnostics: docode.Diagnostic[]): void {
 		this.client.diagnosticsManager.configFileDiagnosticsReceived(file, diagnostics);
 	}
 

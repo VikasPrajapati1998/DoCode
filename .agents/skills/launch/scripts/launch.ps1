@@ -86,12 +86,12 @@ function Get-SourceSharedDataDir([string]$repoPath) {
 
 	# Mirrors IEnvironmentService.appSharedDataHome, minus the --shared-data-dir
 	# branch (that one names the *destination*, not the source we copy from):
-	# VSCODE_PORTABLE\shared-data, else ~/<product.sharedDataFolderName>.
-	if ($env:VSCODE_PORTABLE) {
-		return Join-Path $env:VSCODE_PORTABLE 'shared-data'
+	# DOCODE_PORTABLE\shared-data, else ~/<product.sharedDataFolderName>.
+	if ($env:DOCODE_PORTABLE) {
+		return Join-Path $env:DOCODE_PORTABLE 'shared-data'
 	}
 
-	$folderName = '.vscode-oss-shared'
+	$folderName = '.docode-oss-shared'
 	$productJson = Join-Path $repoPath 'product.json'
 	if (Test-Path -LiteralPath $productJson -PathType Leaf) {
 		$product = Get-Content -LiteralPath $productJson -Raw | ConvertFrom-Json
@@ -138,8 +138,8 @@ function Test-ExcludedPath([string]$relativePath) {
 		'/logs',
 		'/Cache', '/Code Cache', '/CachedData', '/component_crx_cache',
 		'/GPUCache', '/ShaderCache', '/Dawn*Cache',
-		'Partitions/vscode-browser/Cache', 'Partitions/vscode-browser/Code Cache',
-		'Partitions/vscode-browser/GPUCache', 'Partitions/vscode-browser/Dawn*Cache',
+		'Partitions/docode-browser/Cache', 'Partitions/docode-browser/Code Cache',
+		'Partitions/docode-browser/GPUCache', 'Partitions/docode-browser/Dawn*Cache',
 		'/Backups', '/blob_storage', '/BrowserMetrics', '/Crashpad',
 		'/Session Storage',
 		'/Singleton*',
@@ -256,7 +256,7 @@ try {
 function Test-SourceHasGitHubAuthenticationSecret([string]$node, [string]$source, [string]$sharedSource, [string]$temporaryDb) {
 	# On Windows the GitHub session is APPLICATION_SHARED scoped, so it lives in
 	# the shared-data-dir rather than the profile - see useSharedStorage in
-	# src/vs/platform/secrets/common/secrets.ts. Older profiles may still hold it
+	# src/do/platform/secrets/common/secrets.ts. Older profiles may still hold it
 	# in globalStorage, and both directories get copied, so either one counts.
 	$databases = @(
 		(Join-Path $sharedSource 'sharedStorage\state.vscdb'),
@@ -326,7 +326,7 @@ function Start-Code([string]$codeBat, [string[]]$arguments, [string]$logFile) {
 	# `EnvironmentVariables` (not `Environment`) so this works on Windows
 	# PowerShell 5.1 as well as PowerShell 7+ — the latter property is .NET
 	# Core only, and `powershell.exe` is still the built-in Windows shell.
-	[void]($processInfo.EnvironmentVariables['VSCODE_SKIP_PRELAUNCH'] = '1')
+	[void]($processInfo.EnvironmentVariables['DOCODE_SKIP_PRELAUNCH'] = '1')
 	[void]$processInfo.EnvironmentVariables.Remove('ELECTRON_RUN_AS_NODE')
 	[void]$processInfo.EnvironmentVariables.Remove('GIT_CONFIG_COUNT')
 	[void]$processInfo.EnvironmentVariables.Remove('GIT_CONFIG_PARAMETERS')
@@ -409,21 +409,21 @@ try {
 		if (Test-Path -LiteralPath (Join-Path $candidateRepo 'scripts\code.bat') -PathType Leaf) {
 			$repo = $candidateRepo
 		} else {
-			Exit-Usage "Could not find a vscode checkout in $candidateRepo. Pass --repo <vscode-repo-root>."
+			Exit-Usage "Could not find a docode checkout in $candidateRepo. Pass --repo <docode-repo-root>."
 		}
 	}
 	$repo = [IO.Path]::GetFullPath($repo)
 
 	$codeBat = Join-Path $repo 'scripts\code.bat'
 	if (-not (Test-Path -LiteralPath $codeBat -PathType Leaf)) {
-		Exit-Usage "Could not find a Code OSS launcher at $codeBat. Pass --repo <vscode-repo-root>."
+		Exit-Usage "Could not find a Code OSS launcher at $codeBat. Pass --repo <docode-repo-root>."
 	}
 
 	if ([string]::IsNullOrWhiteSpace($sourceUserDataDir)) {
 		$sourceUserDataDir = if ($env:CODE_OSS_DEV_AUTHED_USER_DATA_DIR) {
 			$env:CODE_OSS_DEV_AUTHED_USER_DATA_DIR
 		} else {
-			Join-Path $env:USERPROFILE '.vscode-oss-dev'
+			Join-Path $env:USERPROFILE '.docode-oss-dev'
 		}
 	}
 	$sourceUserDataDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($sourceUserDataDir)
@@ -452,7 +452,7 @@ try {
 	if (Test-Path -LiteralPath $sourceSharedDataDir -PathType Container) {
 		# On Windows the GitHub session is APPLICATION_SHARED scoped, so it lives here
 		# and not in the profile - see useSharedStorage in
-		# src/vs/platform/secrets/common/secrets.ts. Without this copy the launched
+		# src/do/platform/secrets/common/secrets.ts. Without this copy the launched
 		# instance always prompts for sign-in.
 		Write-LaunchError "[launch.ps1] copying shared data: $sourceSharedDataDir -> $sharedDataDir"
 		Copy-ProfileDirectory $sourceSharedDataDir $sharedDataDir $false

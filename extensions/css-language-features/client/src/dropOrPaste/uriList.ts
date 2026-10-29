@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 function splitUriList(str: string): string[] {
 	return str.split('\r\n');
@@ -20,7 +20,7 @@ export class UriList {
 	static from(str: string): UriList {
 		return new UriList(coalesce(parseUriList(str).map(line => {
 			try {
-				return { uri: vscode.Uri.parse(line), str: line };
+				return { uri: docode.Uri.parse(line), str: line };
 			} catch {
 				// Uri parse failure
 				return undefined;
@@ -29,7 +29,7 @@ export class UriList {
 	}
 
 	constructor(
-		public readonly entries: ReadonlyArray<{ readonly uri: vscode.Uri; readonly str: string }>
+		public readonly entries: ReadonlyArray<{ readonly uri: docode.Uri; readonly str: string }>
 	) { }
 }
 

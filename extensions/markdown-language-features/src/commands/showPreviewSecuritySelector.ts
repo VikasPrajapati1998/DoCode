@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Command } from '../commandManager';
 import { MarkdownPreviewManager } from '../preview/previewManager';
 import { PreviewSecuritySelector } from '../preview/security';
@@ -27,10 +27,10 @@ export class ShowPreviewSecuritySelectorCommand implements Command {
 		if (this.#previewManager.activePreviewResource) {
 			this.#previewSecuritySelector.showSecuritySelectorForResource(this.#previewManager.activePreviewResource);
 		} else if (resource) {
-			const source = vscode.Uri.parse(resource);
-			this.#previewSecuritySelector.showSecuritySelectorForResource(source.query ? vscode.Uri.parse(source.query) : source);
-		} else if (vscode.window.activeTextEditor && isMarkdownFile(vscode.window.activeTextEditor.document)) {
-			this.#previewSecuritySelector.showSecuritySelectorForResource(vscode.window.activeTextEditor.document.uri);
+			const source = docode.Uri.parse(resource);
+			this.#previewSecuritySelector.showSecuritySelectorForResource(source.query ? docode.Uri.parse(source.query) : source);
+		} else if (docode.window.activeTextEditor && isMarkdownFile(docode.window.activeTextEditor.document)) {
+			this.#previewSecuritySelector.showSecuritySelectorForResource(docode.window.activeTextEditor.document.uri);
 		}
 	}
 }

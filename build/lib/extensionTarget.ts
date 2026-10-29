@@ -24,7 +24,7 @@ export function isAlpineLinux(): boolean {
 
 /**
  * The set of platform-specific marketplace target platforms, matching the `TargetPlatform` enum
- * in `src/vs/platform/extensions/common/extensions.ts` (excluding the non platform-specific
+ * in `src/do/platform/extensions/common/extensions.ts` (excluding the non platform-specific
  * `web`/`universal`/`unknown`/`undefined` values).
  */
 const supportedTargets = new Set([
@@ -35,7 +35,7 @@ const supportedTargets = new Set([
 ]);
 
 /**
- * Normalizes an architecture (from `VSCODE_ARCH` or `process.arch`) to the suffix used
+ * Normalizes an architecture (from `DOCODE_ARCH` or `process.arch`) to the suffix used
  * by the marketplace target platform identifiers.
  */
 function toTargetArch(arch: string): string {
@@ -48,7 +48,7 @@ function toTargetArch(arch: string): string {
 /**
  * Returns the marketplace target platform (e.g. `win32-x64`, `linux-armhf`, `alpine-x64`)
  * for the given platform and architecture. Mirrors the `TargetPlatform` enum in
- * `src/vs/platform/extensions/common/extensions.ts`.
+ * `src/do/platform/extensions/common/extensions.ts`.
  *
  * @returns the target platform string, or `undefined` when the combination is not a supported
  * marketplace target (e.g. an unsupported OS or architecture such as `win32-ia32` or `linux-riscv64`).
@@ -72,7 +72,7 @@ export function getExtensionTarget(platform: string, arch: string, isAlpine: () 
 
 /**
  * Reads an environment variable, ignoring empty values and unexpanded Azure Pipelines
- * macros (e.g. a literal `$(VSCODE_ARCH)` left in place when the variable is not defined).
+ * macros (e.g. a literal `$(DOCODE_ARCH)` left in place when the variable is not defined).
  */
 function readEnv(name: string): string | undefined {
 	const value = process.env[name];
@@ -86,17 +86,17 @@ function readEnv(name: string): string | undefined {
  * Returns the marketplace target platform for the current build.
  *
  * Resolution order:
- * 1. `VSCODE_EXTENSION_TARGET` env, when set — an explicit override for cross-compilation
+ * 1. `DOCODE_EXTENSION_TARGET` env, when set — an explicit override for cross-compilation
  *    scenarios where the target cannot be detected from the host (e.g. building the alpine
  *    target on a glibc host).
- * 2. `process.platform` + (`VSCODE_ARCH` ?? `process.arch`) + runtime alpine detection.
+ * 2. `process.platform` + (`DOCODE_ARCH` ?? `process.arch`) + runtime alpine detection.
  */
 export function getCurrentExtensionTarget(): string | undefined {
-	const override = readEnv('VSCODE_EXTENSION_TARGET');
+	const override = readEnv('DOCODE_EXTENSION_TARGET');
 	if (override) {
 		return override;
 	}
-	const arch = readEnv('VSCODE_ARCH') ?? process.arch;
+	const arch = readEnv('DOCODE_ARCH') ?? process.arch;
 	return getExtensionTarget(process.platform, arch);
 }
 

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getTsNativeExtension, tsNativeExtensionOldId } from '../commands/useTsgo';
 import { ExperimentationService } from '../experimentationService';
 import type { PluginManager } from '../tsServer/plugins.js';
@@ -13,7 +13,7 @@ import { hasModifiedUnifiedConfig } from '../utils/configuration';
 const suggestTS7NoPluginsStorageKey = 'typescript.suggestTS7NoPlugins.dismissed';
 
 export async function suggestNativePreview(
-	context: vscode.ExtensionContext,
+	context: docode.ExtensionContext,
 	experimentationService: ExperimentationService,
 	pluginManager: PluginManager
 ): Promise<void> {
@@ -22,7 +22,7 @@ export async function suggestNativePreview(
 	}
 
 	// Only show when the window is active
-	if (!vscode.window.state.active) {
+	if (!docode.window.state.active) {
 		return;
 	}
 
@@ -44,12 +44,12 @@ export async function suggestNativePreview(
 		return;
 	}
 
-	const install: vscode.MessageItem = { title: vscode.l10n.t("Install") };
-	const learnMore: vscode.MessageItem = { title: vscode.l10n.t("Learn More") };
-	const dismiss: vscode.MessageItem = { title: vscode.l10n.t("Don't Show Again") };
+	const install: docode.MessageItem = { title: docode.l10n.t("Install") };
+	const learnMore: docode.MessageItem = { title: docode.l10n.t("Learn More") };
+	const dismiss: docode.MessageItem = { title: docode.l10n.t("Don't Show Again") };
 
-	const selection = await vscode.window.showInformationMessage(
-		vscode.l10n.t("Try TypeScript 7 for significantly faster type checking and language features."),
+	const selection = await docode.window.showInformationMessage(
+		docode.l10n.t("Try TypeScript 7 for significantly faster type checking and language features."),
 		{ notificationId: 'typescript.nativePreview' },
 		install,
 		learnMore,
@@ -59,8 +59,8 @@ export async function suggestNativePreview(
 	await context.globalState.update(suggestTS7NoPluginsStorageKey, true);
 
 	if (selection === install) {
-		await vscode.commands.executeCommand('workbench.extensions.installExtension', tsNativeExtensionOldId);
+		await docode.commands.executeCommand('workbench.extensions.installExtension', tsNativeExtensionOldId);
 	} else if (selection === learnMore) {
-		await vscode.env.openExternal(vscode.Uri.parse('https://aka.ms/typescript7'));
+		await docode.env.openExternal(docode.Uri.parse('https://aka.ms/typescript7'));
 	}
 }

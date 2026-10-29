@@ -18,7 +18,7 @@ run({
 	additionalOptions: {
 		tsconfig: path.join(import.meta.dirname, 'tsconfig.browser.json'),
 		external: [
-			'vscode',
+			'docode',
 			'child_process',
 		]
 	},

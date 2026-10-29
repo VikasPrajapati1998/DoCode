@@ -7,7 +7,7 @@ import {
 	window, languages, Uri, Disposable, commands, QuickPickItem,
 	extensions, workspace, Extension, WorkspaceFolder, QuickPickItemKind,
 	ThemeIcon, TextDocument, LanguageStatusSeverity, l10n, DocumentSelector, Diagnostic
-} from 'vscode';
+} from 'docode';
 import { CommandIds, ErrorCodes, isSchemaResolveError, JSONLanguageStatus, JSONSchemaSettings, SettingIds } from './jsonClient';
 
 type ShowSchemasInput = {
@@ -151,7 +151,7 @@ function showSchemaList(input: ShowSchemasInput) {
 	quickPick.onDidAccept(() => {
 		const uri = quickPick.selectedItems[0].uri;
 		if (uri) {
-			commands.executeCommand('vscode.open', uri);
+			commands.executeCommand('docode.open', uri);
 			quickPick.dispose();
 		}
 	});

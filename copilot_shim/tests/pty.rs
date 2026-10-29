@@ -220,7 +220,7 @@ fn unix_pty_preserves_prompt_and_cli_interaction() {
 	fs::create_dir_all(&state).expect("create state directory");
 
 	let mut prompt = PtyProcess::spawn(
-		&[OsString::from("--vscode-shim"), OsString::from("clear")],
+		&[OsString::from("--docode-shim"), OsString::from("clear")],
 		empty_path.as_os_str(),
 		&working_directory,
 		&[],
@@ -237,7 +237,7 @@ fn unix_pty_preserves_prompt_and_cli_interaction() {
 
 	write_executable(&cli_path.join("copilot"), compatible_cli_script());
 	let redirected = run_redirected(
-		&[OsString::from("--vscode-shim"), OsString::from("clear")],
+		&[OsString::from("--docode-shim"), OsString::from("clear")],
 		cli_path.as_os_str(),
 		&working_directory,
 		root.path(),
@@ -253,7 +253,7 @@ fn unix_pty_preserves_prompt_and_cli_interaction() {
 
 	let native_argument = OsString::from_vec(b"native-\xff".to_vec());
 	let arguments = vec![
-		OsString::from("--vscode-shim"),
+		OsString::from("--docode-shim"),
 		OsString::from("clear"),
 		OsString::new(),
 		OsString::from("with spaces"),
@@ -770,7 +770,7 @@ fn macos_pty_install_only_keeps_installer_profile_consent_and_never_launches_cli
 	);
 	let mut process = PtyProcess::spawn(
 		&[
-			OsString::from("--vscode-shim"),
+			OsString::from("--docode-shim"),
 			OsString::from("install"),
 			OsString::from("--interactive"),
 		],
@@ -831,7 +831,7 @@ fn macos_pty_install_only_ctrl_c_stops_without_fallback() {
 	write_executable(&tools.join("bash"), &marker_script("bash-started"));
 	let mut process = PtyProcess::spawn(
 		&[
-			OsString::from("--vscode-shim"),
+			OsString::from("--docode-shim"),
 			OsString::from("install"),
 			OsString::from("--interactive"),
 		],

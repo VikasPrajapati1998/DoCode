@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as tas from 'vscode-tas-client';
+import * as docode from 'docode';
+import * as tas from '@docode/tas-client';
 
 import { IExperimentationTelemetryReporter } from './experimentTelemetryReporter';
 
@@ -16,7 +16,7 @@ export class ExperimentationService {
 	private readonly _experimentationServicePromise: Promise<tas.IExperimentationService>;
 	private readonly _telemetryReporter: IExperimentationTelemetryReporter;
 
-	constructor(telemetryReporter: IExperimentationTelemetryReporter, id: string, version: string, globalState: vscode.Memento) {
+	constructor(telemetryReporter: IExperimentationTelemetryReporter, id: string, version: string, globalState: docode.Memento) {
 		this._telemetryReporter = telemetryReporter;
 		this._experimentationServicePromise = createTasExperimentationService(this._telemetryReporter, id, version, globalState);
 	}
@@ -24,7 +24,7 @@ export class ExperimentationService {
 	public async getTreatmentVariable<K extends keyof ExperimentTypes>(name: K, defaultValue: ExperimentTypes[K]): Promise<ExperimentTypes[K]> {
 		const experimentationService = await this._experimentationServicePromise;
 		try {
-			const treatmentVariable = await experimentationService.getTreatmentVariableAsync('vscode', name, /*checkCache*/ true) as ExperimentTypes[K];
+			const treatmentVariable = await experimentationService.getTreatmentVariableAsync('docode', name, /*checkCache*/ true) as ExperimentTypes[K];
 			return treatmentVariable ?? defaultValue;
 		} catch {
 			return defaultValue;
@@ -36,17 +36,17 @@ export async function createTasExperimentationService(
 	reporter: IExperimentationTelemetryReporter,
 	id: string,
 	version: string,
-	globalState: vscode.Memento
+	globalState: docode.Memento
 ): Promise<tas.IExperimentationService> {
 	let targetPopulation: tas.TargetPopulation;
-	switch (vscode.env.uriScheme) {
-		case 'vscode':
+	switch (docode.env.uriScheme) {
+		case 'docode':
 			targetPopulation = tas.TargetPopulation.Public;
 			break;
-		case 'vscode-insiders':
+		case 'docode-insiders':
 			targetPopulation = tas.TargetPopulation.Insiders;
 			break;
-		case 'vscode-exploration':
+		case 'docode-exploration':
 			targetPopulation = tas.TargetPopulation.Internal;
 			break;
 		case 'code-oss':

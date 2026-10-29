@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorModel, EditorView, OffsetRange } from '@vscode/markdown-editor';
-import { Disposable, autorun, observableValue } from '@vscode/observables';
+import { EditorModel, EditorView, OffsetRange } from '@docode/markdown-editor';
+import { Disposable, autorun, observableValue } from '@docode/observables';
 import type { MarkdownDiagnostic, MarkdownEditorHost } from '../src/preview/markdownEditorProtocol';
 import { DiagnosticHover } from './diagnosticHover';
 import './languageFeatures.css';

@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorModel, EditorView, OffsetRange, RenameModel, RenameWidget } from '@vscode/markdown-editor';
-import { Disposable, autorun, observableValue } from '@vscode/observables';
+import { EditorModel, EditorView, OffsetRange, RenameModel, RenameWidget } from '@docode/markdown-editor';
+import { Disposable, autorun, observableValue } from '@docode/observables';
 import type { MarkdownEditorHost } from '../src/preview/markdownEditorProtocol';
-import '@vscode/markdown-editor/rename.css';
+import '@docode/markdown-editor/rename.css';
 import './rename.css';
 
 export class RenameController extends Disposable {

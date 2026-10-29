@@ -1,6 +1,6 @@
 ---
 description: Use when writing or reviewing model-facing language model tool descriptions.
-applyTo: "src/vs/**/*Tool.ts,src/vs/**/*Tools.ts"
+applyTo: "src/do/**/*Tool.ts,src/do/**/*Tools.ts"
 ---
 
 # Language model tool descriptions

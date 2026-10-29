@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type { ICompletionResource } from '../types';
-import type { Uri } from 'vscode';
+import type { Uri } from 'docode';
 
 export interface ISuiteSpec {
 	name: string;
@@ -27,16 +27,16 @@ export interface ITestSpec {
 	expectedCompletions?: (string | ICompletionResource)[];
 }
 
-const fixtureDir = vscode.Uri.joinPath(vscode.Uri.file(__dirname), '../../testWorkspace');
+const fixtureDir = docode.Uri.joinPath(docode.Uri.file(__dirname), '../../testWorkspace');
 
 /**
  * A default set of paths shared across tests.
  */
 export const testPaths = {
 	fixtureDir,
-	cwdParent: vscode.Uri.joinPath(fixtureDir, 'parent'),
-	cwd: vscode.Uri.joinPath(fixtureDir, 'parent/home'),
-	cwdChild: vscode.Uri.joinPath(fixtureDir, 'parent/home/child'),
+	cwdParent: docode.Uri.joinPath(fixtureDir, 'parent'),
+	cwd: docode.Uri.joinPath(fixtureDir, 'parent/home'),
+	cwdChild: docode.Uri.joinPath(fixtureDir, 'parent/home/child'),
 };
 
 export function removeArrayEntries<T>(array: T[], ...elements: T[]): T[] {

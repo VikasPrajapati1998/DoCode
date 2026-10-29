@@ -14,7 +14,7 @@ import {
 	Uri,
 	workspace,
 	l10n
-} from 'vscode';
+} from 'docode';
 import { readScripts } from './readScripts';
 import { getRunScriptCommand } from './tasks';
 

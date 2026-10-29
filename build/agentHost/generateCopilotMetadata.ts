@@ -27,7 +27,7 @@ interface PortableSchema extends JSONSchema {
 }
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const outputFile = resolve(repositoryRoot, 'src/vs/platform/agentHost/common/meta/copilotd/generated/copilotdMetadata.ts');
+const outputFile = resolve(repositoryRoot, 'src/do/platform/agentHost/common/meta/copilotd/generated/copilotdMetadata.ts');
 const contracts: readonly Contract[] = [
 	{ typeName: 'CopilotErrorDetail', schema: 'error-info.copilot.errorDetail.schema.json' },
 	{ typeName: 'CopilotModelPickerCategory', schema: 'model-info.copilot.modelPickerCategory.schema.json' },
@@ -147,7 +147,7 @@ async function main(): Promise<void> {
 	}
 	mkdirSync(dirname(outputFile), { recursive: true });
 	writeFileSync(outputFile, generated);
-	console.log('Generated src/vs/platform/agentHost/common/meta/copilotd/generated/copilotdMetadata.ts.');
+	console.log('Generated src/do/platform/agentHost/common/meta/copilotd/generated/copilotdMetadata.ts.');
 }
 
 main().catch(error => {

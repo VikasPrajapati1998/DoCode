@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use super::code_server::get_tunnel_web_url;
 
-const STATUS_PREFIX: &str = "__VSCODE_CLI_STATUS__";
+const STATUS_PREFIX: &str = "__DOCODE_CLI_STATUS__";
 
 /// A machine-readable tunnel lifecycle event that can be relayed to attached
 /// singleton clients without parsing the human-readable log stream.
@@ -163,7 +163,7 @@ mod tests {
 				link: Some("https://insiders.vscode.dev/tunnel/desktop-oss/c:/some/dir".to_string()),
 				domain: Some("insiders.vscode.dev".to_string()),
 			}),
-			"__VSCODE_CLI_STATUS__{\"type\":\"connected\",\"tunnelName\":\"desktop-oss\",\"tunnelId\":\"tunnel-id\",\"isAttached\":false,\"link\":\"https://insiders.vscode.dev/tunnel/desktop-oss/c:/some/dir\",\"domain\":\"insiders.vscode.dev\"}"
+			"__DOCODE_CLI_STATUS__{\"type\":\"connected\",\"tunnelName\":\"desktop-oss\",\"tunnelId\":\"tunnel-id\",\"isAttached\":false,\"link\":\"https://insiders.vscode.dev/tunnel/desktop-oss/c:/some/dir\",\"domain\":\"insiders.vscode.dev\"}"
 		);
 	}
 
@@ -177,7 +177,7 @@ mod tests {
 				link: None,
 				domain: None,
 			}),
-			"__VSCODE_CLI_STATUS__{\"type\":\"connected\",\"tunnelName\":\"desktop-oss\",\"isAttached\":true}"
+			"__DOCODE_CLI_STATUS__{\"type\":\"connected\",\"tunnelName\":\"desktop-oss\",\"isAttached\":true}"
 		);
 	}
 
@@ -187,7 +187,7 @@ mod tests {
 			status_line(&MachineStatus::TokenError {
 				message: "refresh token expired".to_string(),
 			}),
-			"__VSCODE_CLI_STATUS__{\"type\":\"tokenError\",\"message\":\"refresh token expired\"}"
+			"__DOCODE_CLI_STATUS__{\"type\":\"tokenError\",\"message\":\"refresh token expired\"}"
 		);
 	}
 

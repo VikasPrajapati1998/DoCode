@@ -10,18 +10,18 @@ import { IDisposable } from './disposable';
 /**
  * Identifier for the custom Mermaid theme that is derived from the current VS Code color theme.
  */
-export const vsCodeMermaidTheme = 'vscode';
+export const vsCodeMermaidTheme = 'docode';
 
 /**
  * Returns `true` when the active VS Code theme is a dark (or non-light high contrast) theme.
  */
 function isDarkVsCodeTheme(): boolean {
-	return document.body.classList.contains('vscode-dark')
-		|| (document.body.classList.contains('vscode-high-contrast') && !document.body.classList.contains('vscode-high-contrast-light'));
+	return document.body.classList.contains('docode-dark')
+		|| (document.body.classList.contains('docode-high-contrast') && !document.body.classList.contains('docode-high-contrast-light'));
 }
 
 /**
- * Resolves a CSS color value (such as `var(--vscode-editor-background)`) to a hex color string
+ * Resolves a CSS color value (such as `var(--docode-editor-background)`) to a hex color string
  * by letting the browser compute it on a temporary element.
  */
 function resolveCssColor(cssValue: string): string | undefined {
@@ -139,7 +139,7 @@ export class VsCodeMermaidThemeTracker {
 	/**
 	 * Resolves the Mermaid `theme` / `themeVariables` pair for the given extension config,
 	 * picking the dark or light slot based on the active VS Code theme and translating the
-	 * `'vscode'` sentinel into mermaid's `base` theme plus VS Code-derived variables.
+	 * `'docode'` sentinel into mermaid's `base` theme plus VS Code-derived variables.
 	 */
 	resolveMermaidTheme(extensionConfig: MermaidExtensionConfig): Pick<MermaidConfig, 'theme' | 'themeVariables'> {
 		const themeName = isDarkVsCodeTheme()
@@ -156,7 +156,7 @@ export class VsCodeMermaidThemeTracker {
 		return {
 			theme: themeName as MermaidConfig['theme'],
 			// Reset theme variables in case mermaid.initialize was previously called with the
-			// vscode theme: mermaid merges configs and stale variables would otherwise leak through.
+			// docode theme: mermaid merges configs and stale variables would otherwise leak through.
 			themeVariables: {},
 		};
 	}
@@ -168,7 +168,7 @@ export class VsCodeMermaidThemeTracker {
 	 */
 	observeDomChanges(): IDisposable {
 		const observer = new MutationObserver(() => this.refresh());
-		observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-vscode-theme-id', 'data-vscode-theme-kind'] });
+		observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-docode-theme-id', 'data-docode-theme-kind'] });
 		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
 		return { dispose: () => observer.disconnect() };
 	}
@@ -187,63 +187,63 @@ function computeVsCodeMermaidThemeVariables(): VsCodeMermaidThemeVariables {
 	};
 
 	// Canvas / text
-	set('background', '--vscode-editor-background');
-	set('textColor', '--vscode-charts-foreground', '--vscode-editor-foreground', '--vscode-foreground');
-	set('lineColor', '--vscode-chart-line', '--vscode-charts-lines', '--vscode-editor-foreground', '--vscode-foreground');
+	set('background', '--docode-editor-background');
+	set('textColor', '--docode-charts-foreground', '--docode-editor-foreground', '--docode-foreground');
+	set('lineColor', '--docode-chart-line', '--docode-charts-lines', '--docode-editor-foreground', '--docode-foreground');
 
 	// Primary (default node) colors
-	set('primaryColor', '--vscode-editorWidget-background');
-	set('primaryTextColor', '--vscode-charts-foreground', '--vscode-editor-foreground', '--vscode-foreground');
-	set('primaryBorderColor', '--vscode-chart-line', '--vscode-editorWidget-border', '--vscode-focusBorder');
-	set('mainBkg', '--vscode-editorWidget-background');
-	set('nodeBorder', '--vscode-chart-line', '--vscode-editorWidget-border', '--vscode-focusBorder');
+	set('primaryColor', '--docode-editorWidget-background');
+	set('primaryTextColor', '--docode-charts-foreground', '--docode-editor-foreground', '--docode-foreground');
+	set('primaryBorderColor', '--docode-chart-line', '--docode-editorWidget-border', '--docode-focusBorder');
+	set('mainBkg', '--docode-editorWidget-background');
+	set('nodeBorder', '--docode-chart-line', '--docode-editorWidget-border', '--docode-focusBorder');
 
 	// Secondary colors
-	set('secondaryColor', '--vscode-input-background', '--vscode-editorWidget-background');
-	set('secondaryTextColor', '--vscode-input-foreground', '--vscode-foreground');
-	set('secondaryBorderColor', '--vscode-input-border', '--vscode-editorWidget-border');
+	set('secondaryColor', '--docode-input-background', '--docode-editorWidget-background');
+	set('secondaryTextColor', '--docode-input-foreground', '--docode-foreground');
+	set('secondaryBorderColor', '--docode-input-border', '--docode-editorWidget-border');
 
 	// Tertiary / subgraph (cluster) colors
-	set('tertiaryColor', '--vscode-textBlockQuote-background', '--vscode-input-background');
-	set('tertiaryTextColor', '--vscode-foreground');
-	set('tertiaryBorderColor', '--vscode-textBlockQuote-border', '--vscode-editorWidget-border');
-	set('clusterBkg', '--vscode-textBlockQuote-background', '--vscode-input-background');
-	set('clusterBorder', '--vscode-textBlockQuote-border', '--vscode-editorWidget-border');
+	set('tertiaryColor', '--docode-textBlockQuote-background', '--docode-input-background');
+	set('tertiaryTextColor', '--docode-foreground');
+	set('tertiaryBorderColor', '--docode-textBlockQuote-border', '--docode-editorWidget-border');
+	set('clusterBkg', '--docode-textBlockQuote-background', '--docode-input-background');
+	set('clusterBorder', '--docode-textBlockQuote-border', '--docode-editorWidget-border');
 
 	// Notes
-	set('noteBkgColor', '--vscode-textBlockQuote-background', '--vscode-editorWidget-background');
-	set('noteTextColor', '--vscode-foreground');
-	set('noteBorderColor', '--vscode-textBlockQuote-border', '--vscode-editorWidget-border');
+	set('noteBkgColor', '--docode-textBlockQuote-background', '--docode-editorWidget-background');
+	set('noteTextColor', '--docode-foreground');
+	set('noteBorderColor', '--docode-textBlockQuote-border', '--docode-editorWidget-border');
 
 	// Errors
-	set('errorBkgColor', '--vscode-inputValidation-errorBackground', '--vscode-editorError-background');
-	set('errorTextColor', '--vscode-editorError-foreground', '--vscode-foreground');
+	set('errorBkgColor', '--docode-inputValidation-errorBackground', '--docode-editorError-background');
+	set('errorTextColor', '--docode-editorError-foreground', '--docode-foreground');
 
 	// Misc
-	set('titleColor', '--vscode-charts-foreground', '--vscode-editor-foreground', '--vscode-foreground');
-	set('edgeLabelBackground', '--vscode-editor-background');
+	set('titleColor', '--docode-charts-foreground', '--docode-editor-foreground', '--docode-foreground');
+	set('edgeLabelBackground', '--docode-editor-background');
 
 	// Pie / palette slots — mermaid uses pie1..pie12 for pie chart slices and cScale0..cScale11
 	// as the accent palette for various diagram types. Map to the VS Code chart accent colors.
 	const chartPalette = [
-		'--vscode-charts-blue',
-		'--vscode-charts-green',
-		'--vscode-charts-orange',
-		'--vscode-charts-red',
-		'--vscode-charts-purple',
-		'--vscode-charts-yellow',
+		'--docode-charts-blue',
+		'--docode-charts-green',
+		'--docode-charts-orange',
+		'--docode-charts-red',
+		'--docode-charts-purple',
+		'--docode-charts-yellow',
 	];
 	for (let i = 0; i < chartPalette.length; i++) {
 		set(`pie${i + 1}`, chartPalette[i]);
 		set(`cScale${i}`, chartPalette[i]);
 	}
 
-	const fontFamily = readCssVar('--vscode-font-family');
+	const fontFamily = readCssVar('--docode-font-family');
 	if (fontFamily) {
 		variables.fontFamily = fontFamily;
 	}
 
-	const fontSize = readCssVar('--vscode-font-size');
+	const fontSize = readCssVar('--docode-font-size');
 	if (fontSize) {
 		variables.fontSize = fontSize;
 	}

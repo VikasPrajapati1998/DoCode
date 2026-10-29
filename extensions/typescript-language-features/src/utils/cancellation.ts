@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
-const noopDisposable = vscode.Disposable.from();
+const noopDisposable = docode.Disposable.from();
 
-export const nulToken: vscode.CancellationToken = {
+export const nulToken: docode.CancellationToken = {
 	isCancellationRequested: false,
 	onCancellationRequested: () => noopDisposable
 };

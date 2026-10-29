@@ -9,7 +9,7 @@ import * as path from 'path';
 import { ApplicationService, getProductVersion, JSONValue } from './application';
 
 const rootPath = path.join(__dirname, '..', '..', '..');
-const artifactRootPath = path.join(rootPath, '.build', 'vscode-playwright-mcp');
+const artifactRootPath = path.join(rootPath, '.build', 'docode-playwright-mcp');
 const evidenceRootPath = path.join(artifactRootPath, 'evidence');
 const logsRootPath = path.join(artifactRootPath, 'logs');
 const qualityNames = ['Dev', 'Insiders', 'Stable', 'Exploration', 'OSS'];
@@ -74,7 +74,7 @@ interface EvidenceRun {
 		platform: NodeJS.Platform;
 		architecture: string;
 		nodeVersion: string;
-		vscodeVersion: string;
+		docodeVersion: string;
 		quality: string;
 		commit?: string;
 	};
@@ -127,7 +127,7 @@ export class EvidenceService {
 				platform: process.platform,
 				architecture: process.arch,
 				nodeVersion: process.version,
-				vscodeVersion: getProductVersion(),
+				docodeVersion: getProductVersion(),
 				quality: 'unknown',
 				commit: process.env.GITHUB_SHA ?? process.env.BUILD_SOURCEVERSION
 			},
@@ -482,7 +482,7 @@ export class EvidenceService {
 <html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(run.title)}</title>
 <style>body{font:14px system-ui;margin:32px;max-width:1200px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #bbb;padding:8px;text-align:left}th{background:#eee}video{display:block;max-width:100%;margin:16px 0}.passed{color:#187b34}.failed{color:#b42318}.skipped{color:#8a6100}.blocked{color:#8a6100;font-weight:600}</style></head>
 <body><h1>${escapeHtml(run.title)}</h1><p><strong>Scenario:</strong> ${escapeHtml(run.scenarioId)}<br><strong>Outcome:</strong> <span class="${escapeHtml(run.outcome ?? '')}">${escapeHtml(run.outcome ?? 'unknown')}</span><br><strong>Started:</strong> ${escapeHtml(run.startedAt)}<br><strong>Completed:</strong> ${escapeHtml(run.completedAt ?? '')}</p>
-<p><strong>Source:</strong> ${run.source ? `<a href="${escapeHtml(run.source)}">${escapeHtml(run.source)}</a>` : 'Not recorded'}<br><strong>Workspace:</strong> ${escapeHtml(run.workspacePath ?? 'Not specified')}<br><strong>Environment:</strong> ${escapeHtml(`${run.environment.platform} ${run.environment.architecture}; VS Code ${run.environment.vscodeVersion} (${run.environment.quality}); Node ${run.environment.nodeVersion}; commit ${run.environment.commit ?? 'unknown'}`)}</p>
+<p><strong>Source:</strong> ${run.source ? `<a href="${escapeHtml(run.source)}">${escapeHtml(run.source)}</a>` : 'Not recorded'}<br><strong>Workspace:</strong> ${escapeHtml(run.workspacePath ?? 'Not specified')}<br><strong>Environment:</strong> ${escapeHtml(`${run.environment.platform} ${run.environment.architecture}; VS Code ${run.environment.docodeVersion} (${run.environment.quality}); Node ${run.environment.nodeVersion}; commit ${run.environment.commit ?? 'unknown'}`)}</p>
 <p>${escapeHtml(run.notes ?? '')}</p><h2>Steps</h2><table><thead><tr><th>ID</th><th>Title</th><th>Result</th><th>Screenshots</th><th>Details</th></tr></thead><tbody>${rows}</tbody></table>
 ${blockedSection}<h2>Video</h2>${videoElements}<h2>Trace and logs</h2>${logs ? `<ul>${logs}</ul>` : '<p>No new trace or log content was produced.</p>'}</body></html>`;
 		const reportPath = path.join(run.runPath, 'report.html');

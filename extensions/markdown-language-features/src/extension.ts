@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { LanguageClient, ServerOptions, TransportKind } from 'vscode-languageclient/node';
 import { MdLanguageClient, startClient } from './client/client';
 import { activateShared } from './extension.shared';
@@ -12,7 +12,7 @@ import { IMdParser, MarkdownItEngine } from './markdownEngine';
 import { getMarkdownExtensionContributions } from './markdownExtensions';
 import { githubSlugifier } from './slugify';
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: docode.ExtensionContext) {
 	const contributions = getMarkdownExtensionContributions(context);
 	context.subscriptions.push(contributions);
 
@@ -26,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	activateShared(context, client, engine, logger, contributions);
 }
 
-function startServer(context: vscode.ExtensionContext, parser: IMdParser): Promise<MdLanguageClient> {
+function startServer(context: docode.ExtensionContext, parser: IMdParser): Promise<MdLanguageClient> {
 	const isDebugBuild = context.extension.packageJSON.main.includes('/out/');
 
 	const serverModule = context.asAbsolutePath(
@@ -48,7 +48,7 @@ function startServer(context: vscode.ExtensionContext, parser: IMdParser): Promi
 	};
 
 	// pass the location of the localization bundle to the server
-	process.env['VSCODE_L10N_BUNDLE_LOCATION'] = vscode.l10n.uri?.toString() ?? '';
+	process.env['DOCODE_L10N_BUNDLE_LOCATION'] = docode.l10n.uri?.toString() ?? '';
 
 	return startClient((id, name, clientOptions) => {
 		return new LanguageClient(id, name, serverOptions, clientOptions);

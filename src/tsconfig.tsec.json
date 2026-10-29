@@ -11,7 +11,7 @@
 		]
 	},
 	"exclude": [
-		"./vs/workbench/contrib/webview/browser/pre/service-worker.js",
+		"./do/workbench/contrib/webview/browser/pre/service-worker.js",
 		"*/test/*",
 		"**/*.test.ts"
 	]

@@ -154,10 +154,10 @@ export function setup(logger: Logger): void {
 			sandboxReply = `MOCKED_CHAT_SANDBOX_RESPONSE_${process.platform}_${process.pid}_${Date.now()}`;
 			networkAllowedReply = `MOCKED_CHAT_SANDBOX_NETWORK_ALLOWED_${process.platform}_${process.pid}_${Date.now()}`;
 			homeFileContents = `MOCKED_CHAT_SANDBOX_HOME_FILE_${process.platform}_${process.pid}_${Date.now()}`;
-			const homeFileName = `.vscode-chat-sandbox-smoke-${process.pid}-${Date.now()}.txt`;
+			const homeFileName = `.docode-chat-sandbox-smoke-${process.pid}-${Date.now()}.txt`;
 			homeFilePath = path.join(os.homedir(), homeFileName);
 			fs.writeFileSync(homeFilePath, `${homeFileContents}\n`);
-			const tempFileName = `.vscode-chat-sandbox-tmp-${process.pid}-${Date.now()}.txt`;
+			const tempFileName = `.docode-chat-sandbox-tmp-${process.pid}-${Date.now()}.txt`;
 			hostTempFilePath = path.join(os.tmpdir(), tempFileName);
 			fs.rmSync(hostTempFilePath, { force: true });
 

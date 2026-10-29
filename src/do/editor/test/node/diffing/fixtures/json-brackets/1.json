@@ -1,0 +1,478 @@
+{
+	"editor": [
+		{
+			"name": "do/platform",
+			"project": "docode-editor"
+		},
+		{
+			"name": "do/editor/contrib",
+			"project": "docode-editor"
+		},
+		{
+			"name": "do/editor",
+			"project": "docode-editor"
+		},
+		{
+			"name": "do/base",
+			"project": "docode-editor"
+		}
+	],
+	"workbench": [
+		{
+			"name": "do/code",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/api/common",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/bulkEdit",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/cli",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/codeEditor",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/callHierarchy",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/typeHierarchy",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/codeActions",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/comments",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/debug",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/dialogs",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/emmet",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/experiments",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/extensions",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/externalTerminal",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/feedback",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/files",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/html",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/issue",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/inlayHints",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/interactive",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/languageStatus",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/keybindings",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/markers",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/mergeEditor",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/localization",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/logs",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/output",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/performance",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/preferences",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/notebook",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/quickaccess",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/userData",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/remote",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/relauncher",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/sash",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/scm",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/search",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/searchEditor",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/snippets",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/format",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/tags",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/surveys",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/tasks",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/testing",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/terminal",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/themes",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/trust",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/update",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/url",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/watermark",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/webview",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/webviewPanel",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/workspace",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/workspaces",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/customEditor",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/externalUriOpener",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/welcomeGettingStarted",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/welcomeOverlay",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/welcomePage",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/welcomeViews",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/welcomeWalkthrough",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/outline",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/userDataSync",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/editSessions",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/views",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/languageDetection",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/audioCues",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/deprecatedExtensionMigrator",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/offline",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/actions",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/authToken",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/backup",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/bulkEdit",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/clipboard",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/commands",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/configuration",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/configurationResolver",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/dialogs",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/editor",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/extensions",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/extensionManagement",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/files",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/history",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/log",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/integrity",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/keybinding",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/lifecycle",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/language",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/progress",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/remote",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/search",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/textfile",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/themes",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/textMate",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/workingCopy",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/workspaces",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/decorations",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/label",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/preferences",
+			"project": "docode-preferences"
+		},
+		{
+			"name": "do/workbench/services/notification",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/userData",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/userDataSync",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/editSessions",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/views",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/timeline",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/localHistory",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/authentication",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/extensionRecommendations",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/gettingStarted",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/services/host",
+			"project": "docode-workbench"
+		},
+		{
+			"name": "do/workbench/contrib/userDataProfile",
+			"project": "docode-profiles"
+		},
+		{
+			"name": "do/workbench/services/userDataProfile",
+			"project": "docode-profiles"
+		}
+	]
+}

@@ -35,8 +35,8 @@ BUILD_TARGETS.forEach(buildTarget => {
 	const platform = buildTarget.platform;
 	const arch = buildTarget.arch;
 
-	const destinationExe = path.join(path.dirname(root), 'scanbin', `VSCode${dashed(platform)}${dashed(arch)}`, 'bin');
-	const destinationPdb = path.join(path.dirname(root), 'scanbin', `VSCode${dashed(platform)}${dashed(arch)}`, 'pdb');
+	const destinationExe = path.join(path.dirname(root), 'scanbin', `DoCode${dashed(platform)}${dashed(arch)}`, 'bin');
+	const destinationPdb = path.join(path.dirname(root), 'scanbin', `DoCode${dashed(platform)}${dashed(arch)}`, 'pdb');
 
 	const tasks: task.Task[] = [];
 
@@ -65,7 +65,7 @@ BUILD_TARGETS.forEach(buildTarget => {
 		nodeModules(destinationExe, destinationPdb, platform)
 	);
 
-	const setupSymbolsTask = task.define(`vscode-symbols${dashed(platform)}${dashed(arch)}`,
+	const setupSymbolsTask = task.define(`docode-symbols${dashed(platform)}${dashed(arch)}`,
 		task.series(...tasks)
 	);
 

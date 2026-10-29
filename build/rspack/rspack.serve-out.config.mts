@@ -35,7 +35,7 @@ export default {
 	target: 'web',
 	devtool: 'source-map',
 	entry: {
-		workbench: path.join(repoRoot, 'src', 'vs', 'code', 'browser', 'workbench', 'workbench.ts'),
+		workbench: path.join(repoRoot, 'src', 'do', 'code', 'browser', 'workbench', 'workbench.ts'),
 	},
 	output: {
 		path: path.join(repoRoot, '.build', 'rspack-serve-out'),

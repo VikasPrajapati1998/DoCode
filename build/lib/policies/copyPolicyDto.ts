@@ -6,14 +6,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const sourceFile = path.join(import.meta.dirname, '../../../src/vs/workbench/contrib/policyExport/common/policyDto.ts');
+const sourceFile = path.join(import.meta.dirname, '../../../src/do/workbench/contrib/policyExport/common/policyDto.ts');
 const destFile = path.join(import.meta.dirname, 'policyDto.ts');
 
 try {
 	// Check if source file exists
 	if (!fs.existsSync(sourceFile)) {
 		console.error(`Error: Source file not found: ${sourceFile}`);
-		console.error('Please ensure policyDto.ts exists in src/vs/workbench/contrib/policyExport/common/');
+		console.error('Please ensure policyDto.ts exists in src/do/workbench/contrib/policyExport/common/');
 		process.exit(1);
 	}
 

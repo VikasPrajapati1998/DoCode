@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { PackageDocument } from './packageDocumentHelper';
 import { PackageDocumentL10nSupport } from './packageDocumentL10nSupport';
 import { ExtensionLinter } from './extensionLinter';
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 
 	//package.json suggestions
 	context.subscriptions.push(registerPackageDocumentCompletions());
@@ -22,16 +22,16 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(new ExtensionLinter());
 }
 
-function registerPackageDocumentCompletions(): vscode.Disposable {
-	return vscode.languages.registerCompletionItemProvider({ language: 'json', pattern: '**/package.json' }, {
+function registerPackageDocumentCompletions(): docode.Disposable {
+	return docode.languages.registerCompletionItemProvider({ language: 'json', pattern: '**/package.json' }, {
 		provideCompletionItems(document, position, token) {
 			return new PackageDocument(document).provideCompletionItems(position, token);
 		}
 	});
 }
 
-function registerCodeActionsProvider(): vscode.Disposable {
-	return vscode.languages.registerCodeActionsProvider({ language: 'json', pattern: '**/package.json' }, {
+function registerCodeActionsProvider(): docode.Disposable {
+	return docode.languages.registerCodeActionsProvider({ language: 'json', pattern: '**/package.json' }, {
 		provideCodeActions(document, range, context, token) {
 			return new PackageDocument(document).provideCodeActions(range, context, token);
 		}

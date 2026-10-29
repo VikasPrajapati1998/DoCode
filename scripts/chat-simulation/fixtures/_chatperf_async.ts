@@ -7,7 +7,7 @@
 
 /**
  * Fixture for chat-simulation benchmarks.
- * Simplified from src/vs/base/common/async.ts for stable perf testing.
+ * Simplified from src/do/base/common/async.ts for stable perf testing.
  */
 
 import { IDisposable } from './lifecycle';

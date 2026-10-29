@@ -5,7 +5,7 @@
 
 import 'mocha';
 import * as assert from 'assert';
-import { Selection } from 'vscode';
+import { Selection } from 'docode';
 import { withRandomFileEditor, closeAllEditors } from './testUtils';
 import { fetchEditPoint } from '../editPoint';
 import { fetchSelectItem } from '../selectItem';

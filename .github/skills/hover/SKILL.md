@@ -11,8 +11,8 @@ Keep hovers **Calm** on first entry and **Consistent** while moving between rela
 
 - Use the widget's hover API or `IHoverService`, not native browser tooltips via `element.title` or `setAttribute('title', ...)`. Remove conflicting HTML title attributes when introducing a custom hover.
 - A widget's `title` or `tooltip` option can still be correct when the widget routes it through the custom-hover machinery. Inspect the implementation rather than banning properties by name.
-- Keep native tooltips a narrow exception for controls inside an existing custom hover/context view when opening another custom hover would interfere with the parent. Pass [nativeHoverDelegate](../../../src/vs/platform/hover/browser/hover.ts) through the widget's supported `hoverDelegate` option instead of hand-writing title attributes.
-- Do not turn an entire feature native to solve one nested control's problem. The current [HoverService](../../../src/vs/platform/hover/browser/hoverService.ts) supports limited nested hovers, so nesting is not universally impossible; check the actual parent/context-view interaction before choosing this exception.
+- Keep native tooltips a narrow exception for controls inside an existing custom hover/context view when opening another custom hover would interfere with the parent. Pass [nativeHoverDelegate](../../../src/do/platform/hover/browser/hover.ts) through the widget's supported `hoverDelegate` option instead of hand-writing title attributes.
+- Do not turn an entire feature native to solve one nested control's problem. The current [HoverService](../../../src/do/platform/hover/browser/hoverService.ts) supports limited nested hovers, so nesting is not universally impossible; check the actual parent/context-view interaction before choosing this exception.
 
 ## Choose placement and pointer together
 
@@ -40,9 +40,9 @@ Read the target widget and its surrounding component before wiring a hover.
 | New direct hover registrations, or widgets accepting `hoverLifecycleOptions` | Use delayed hovers with a shared lifecycle `groupId` |
 | A feature already owns the triggering events and needs to control showing the hover | Use `showDelayedHover(options, { groupId })` and own the returned hover's lifecycle |
 
-Prefer `setupDelayedHover` / `setupDelayedHoverAtMouse` for new direct registrations. [setupManagedHover](../../../src/vs/base/browser/ui/hover/hover.ts) is deprecated, but existing widgets still use it internally through `hoverDelegate`; do not bypass their supported API or rewrite them unnecessarily.
+Prefer `setupDelayedHover` / `setupDelayedHoverAtMouse` for new direct registrations. [setupManagedHover](../../../src/do/base/browser/ui/hover/hover.ts) is deprecated, but existing widgets still use it internally through `hoverDelegate`; do not bypass their supported API or rewrite them unnecessarily.
 
-Inject `IHoverService` through the constructor where available. In `vs/base`, where importing platform services would violate layering, use [getBaseLayerHoverDelegate()](../../../src/vs/base/browser/ui/hover/hoverDelegate2.ts) for direct registrations, or accept a delegate/lifecycle option from the caller.
+Inject `IHoverService` through the constructor where available. In `do/base`, where importing platform services would violate layering, use [getBaseLayerHoverDelegate()](../../../src/do/base/browser/ui/hover/hoverDelegate2.ts) for direct registrations, or accept a delegate/lifecycle option from the caller.
 
 Do not use unconditional `showInstantHover`, a zero delay, a custom timer, or `reducedDelay` as a substitute for grouping. The first ordinary pointer-triggered hover must still respect the configured workbench delay.
 
@@ -52,7 +52,7 @@ Choose the boundary by what the user sees, not by class ownership. Two toolbars 
 
 ### Delegate-based widgets
 
-Create one [createInstantHoverDelegate()](../../../src/vs/base/browser/ui/hover/hoverDelegateFactory.ts) at the common owner and pass the **same instance** to every related widget:
+Create one [createInstantHoverDelegate()](../../../src/do/base/browser/ui/hover/hoverDelegateFactory.ts) at the common owner and pass the **same instance** to every related widget:
 
 ```typescript
 const hoverDelegate = this._register(createInstantHoverDelegate());
@@ -67,7 +67,7 @@ const secondaryToolbar = this._register(this.instantiationService.createInstance
 
 - The factory creates an element-placement, instant-enabled delegate. The initial hover uses the workbench delay; subsequent hovers using that instance can skip the delay during its short recently-hidden grace window.
 - `getDefaultHoverDelegate('element')` gives element placement but does **not** enable instant hover.
-- [ToolBar](../../../src/vs/base/browser/ui/toolbar/toolbar.ts) and [ActionBar](../../../src/vs/base/browser/ui/actionbar/actionbar.ts) create their own instant delegate when none is supplied. That groups items **within** each widget, not across two neighboring widgets. Explicitly supply the common delegate to connect them.
+- [ToolBar](../../../src/do/base/browser/ui/toolbar/toolbar.ts) and [ActionBar](../../../src/do/base/browser/ui/actionbar/actionbar.ts) create their own instant delegate when none is supplied. That groups items **within** each widget, not across two neighboring widgets. Explicitly supply the common delegate to connect them.
 - Forward the incoming action-view-item options in custom `actionViewItemProvider` implementations, especially `hoverDelegate`. Pass the same delegate to separately constructed action items and buttons too. Creating a delegate per item, per toolbar, or inside the provider breaks the shared behavior.
 - If constructing `WorkbenchHoverDelegate` for feature-specific overrides, enable `{ instantHover: true }` for an element-placement group and share that instance. Do not accidentally disable the pointer through appearance overrides.
 

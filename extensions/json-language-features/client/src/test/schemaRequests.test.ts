@@ -198,7 +198,7 @@ for (const transport of ['browser', 'node'] as const) {
 		test('controls: non-network resources retain their existing handlers', async () => {
 			await withClient({ trustedDomains: {}, downloadEnabled: false, workspaceTrusted: false }, async client => {
 				const document = 'file:///schemas/schema.json';
-				const resource = 'vscode://schemas/schema.json';
+				const resource = 'docode://schemas/schema.json';
 				const contents = [await client.request(document), await client.request(resource)];
 				const untitledError = await client.request('untitled:Untitled-1').then(() => undefined, error => error.code);
 				assert.deepStrictEqual({

@@ -8,9 +8,9 @@ import type { TSESTree } from '@typescript-eslint/utils';
 import { posix } from 'path';
 import { createImportRuleListener } from './utils.ts';
 
-const metadataDirectory = 'src/vs/platform/agentHost/common/meta';
+const metadataDirectory = 'src/do/platform/agentHost/common/meta';
 const metadataPathPattern = new RegExp(`(?:^|/)${metadataDirectory}/(.*)$`);
-const privateDirectories = new Set(['copilotd', 'vscode']);
+const privateDirectories = new Set(['copilotd', 'docode']);
 const repositoryRoot = normalizePath(`${import.meta.dirname}/..`);
 
 function normalizePath(value: string): string {
@@ -25,7 +25,7 @@ export default new class NoPrivateAgentHostMetaImport implements eslint.Rule.Rul
 
 	readonly meta: eslint.Rule.RuleMetaData = {
 		messages: {
-			privateMetadata: 'Host-specific metadata in `{{directory}}` is private. Import domain helpers and portable types from top-level `src/vs/platform/agentHost/common/meta/*.ts` modules instead.',
+			privateMetadata: 'Host-specific metadata in `{{directory}}` is private. Import domain helpers and portable types from top-level `src/do/platform/agentHost/common/meta/*.ts` modules instead.',
 		},
 		docs: {
 			description: 'Keep host-specific metadata implementations behind top-level domain helpers.',
@@ -50,7 +50,7 @@ export default new class NoPrivateAgentHostMetaImport implements eslint.Rule.Rul
 			let importedPath = value.replace(/\\/g, '/');
 			if (importedPath.startsWith('.')) {
 				importedPath = posix.join(posix.dirname(filename), importedPath);
-			} else if (importedPath.startsWith('vs/')) {
+			} else if (importedPath.startsWith('do/')) {
 				importedPath = `src/${importedPath}`;
 			}
 

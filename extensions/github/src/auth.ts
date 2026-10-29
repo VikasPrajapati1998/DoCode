@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AuthenticationSession, EventEmitter, authentication, window } from 'vscode';
+import { AuthenticationSession, EventEmitter, authentication, window } from 'docode';
 import { Agent, globalAgent } from 'https';
 import { graphql } from '@octokit/graphql/types';
 import { Octokit } from '@octokit/rest';
@@ -46,7 +46,7 @@ export function getOctokit(): Promise<Octokit> {
 
 			return new Octokit({
 				request: { agent },
-				userAgent: 'GitHub VSCode',
+				userAgent: 'GitHub DoCode',
 				auth: `token ${token}`
 			});
 		}).then(null, async err => {

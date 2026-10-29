@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as sinon from 'sinon';
-import { CancellationTokenSource, Disposable, EventEmitter, ExtensionContext, NotebookCellKind, NotebookDocumentChangeEvent, NotebookDocumentWillSaveEvent, NotebookEdit, NotebookRange, TextDocument, TextDocumentSaveReason, workspace, type CancellationToken, type NotebookCell, type NotebookDocument, type WorkspaceEdit, type WorkspaceEditMetadata } from 'vscode';
+import { CancellationTokenSource, Disposable, EventEmitter, ExtensionContext, NotebookCellKind, NotebookDocumentChangeEvent, NotebookDocumentWillSaveEvent, NotebookEdit, NotebookRange, TextDocument, TextDocumentSaveReason, workspace, type CancellationToken, type NotebookCell, type NotebookDocument, type WorkspaceEdit, type WorkspaceEditMetadata } from 'docode';
 import { activate } from '../notebookModelStoreSync';
 
 suite(`Notebook Model Store Sync`, () => {
@@ -281,7 +281,7 @@ suite(`Notebook Model Store Sync`, () => {
 		const newMetadata = cellMetadataUpdates[0].newCellMetadata || {};
 		assert.strictEqual(Object.keys(newMetadata).length, 3);
 		assert.deepStrictEqual(newMetadata.execution_count, null);
-		assert.deepStrictEqual(newMetadata.metadata, { collapsed: true, scrolled: true, vscode: { languageId: 'javascript' } });
+		assert.deepStrictEqual(newMetadata.metadata, { collapsed: true, scrolled: true, docode: { languageId: 'javascript' } });
 		assert.strictEqual(newMetadata.id, '1234');
 	});
 	test('No changes when language is javascript', async () => {
@@ -344,7 +344,7 @@ suite(`Notebook Model Store Sync`, () => {
 			metadata: {
 				id: '1234',
 				metadata: {
-					vscode: { languageId: 'python' },
+					docode: { languageId: 'python' },
 					collapsed: true, scrolled: true
 				}
 			},
@@ -395,7 +395,7 @@ suite(`Notebook Model Store Sync`, () => {
 			metadata: {
 				id: '1234',
 				metadata: {
-					vscode: { languageId: 'python' },
+					docode: { languageId: 'python' },
 					collapsed: true, scrolled: true
 				}
 			},
@@ -426,7 +426,7 @@ suite(`Notebook Model Store Sync`, () => {
 		const newMetadata = cellMetadataUpdates[0].newCellMetadata || {};
 		assert.strictEqual(Object.keys(newMetadata).length, 3);
 		assert.deepStrictEqual(newMetadata.execution_count, null);
-		assert.deepStrictEqual(newMetadata.metadata, { collapsed: true, scrolled: true, vscode: { languageId: 'powershell' } });
+		assert.deepStrictEqual(newMetadata.metadata, { collapsed: true, scrolled: true, docode: { languageId: 'powershell' } });
 		assert.strictEqual(newMetadata.id, '1234');
 	});
 

@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Node } from 'EmmetFlatNode';
 import { getFlatNode, offsetRangeToVsRange, validate } from './util';
 import { getRootNode } from './parseDocument';
 
 export function mergeLines() {
-	if (!validate(false) || !vscode.window.activeTextEditor) {
+	if (!validate(false) || !docode.window.activeTextEditor) {
 		return;
 	}
 
-	const editor = vscode.window.activeTextEditor;
+	const editor = docode.window.activeTextEditor;
 
 	const rootNode = getRootNode(editor.document, true);
 	if (!rootNode) {
@@ -30,7 +30,7 @@ export function mergeLines() {
 	});
 }
 
-function getRangesToReplace(document: vscode.TextDocument, selection: vscode.Selection, rootNode: Node): vscode.TextEdit | undefined {
+function getRangesToReplace(document: docode.TextDocument, selection: docode.Selection, rootNode: Node): docode.TextEdit | undefined {
 	let startNodeToUpdate: Node | undefined;
 	let endNodeToUpdate: Node | undefined;
 
@@ -62,5 +62,5 @@ function getRangesToReplace(document: vscode.TextDocument, selection: vscode.Sel
 		textToReplaceWith += document.lineAt(i).text.trim();
 	}
 
-	return new vscode.TextEdit(rangeToReplace, textToReplaceWith);
+	return new docode.TextEdit(rangeToReplace, textToReplaceWith);
 }

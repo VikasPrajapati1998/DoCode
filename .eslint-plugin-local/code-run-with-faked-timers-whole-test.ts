@@ -9,9 +9,9 @@ import { TSESTree } from '@typescript-eslint/utils';
 import { posix } from 'path';
 
 const helperModules = [
-	'/vs/base/test/common/timeTravelScheduler.js',
-	'/vs/base/test/common/virtualScheduling/index.js',
-	'/vs/base/test/common/virtualScheduling/runWithFakedTimers.js',
+	'/do/base/test/common/timeTravelScheduler.js',
+	'/do/base/test/common/virtualScheduling/index.js',
+	'/do/base/test/common/virtualScheduling/runWithFakedTimers.js',
 ];
 const testFunctions = new Set(['test', 'it']);
 const hookFunctions = new Set(['setup', 'teardown', 'suiteSetup', 'suiteTeardown', 'before', 'after', 'beforeEach', 'afterEach']);

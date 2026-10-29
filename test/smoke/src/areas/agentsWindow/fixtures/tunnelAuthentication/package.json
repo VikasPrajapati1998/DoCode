@@ -1,12 +1,12 @@
 {
 	"name": "remote-devcontainer-smoke-authentication",
 	"displayName": "Remote Dev Container Smoke Authentication",
-	"publisher": "vscode-smoke",
+	"publisher": "docode-smoke",
 	"version": "0.0.1",
 	"private": true,
 	"license": "MIT",
 	"engines": {
-		"vscode": "^1.100.0"
+		"docode": "^1.100.0"
 	},
 	"main": "./extension.js",
 	"extensionKind": ["ui"],

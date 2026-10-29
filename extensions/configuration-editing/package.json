@@ -3,10 +3,10 @@
   "displayName": "%displayName%",
   "description": "%description%",
   "version": "10.0.0",
-  "publisher": "vscode",
+  "publisher": "docode",
   "license": "MIT",
   "engines": {
-    "vscode": "^1.0.0"
+    "docode": "^1.0.0"
   },
   "icon": "images/icon.png",
   "activationEvents": [
@@ -72,96 +72,96 @@
     ],
     "jsonValidation": [
       {
-        "fileMatch": "vscode://defaultsettings/keybindings.json",
-        "url": "vscode://schemas/keybindings"
+        "fileMatch": "docode://defaultsettings/keybindings.json",
+        "url": "docode://schemas/keybindings"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/keybindings.json",
-        "url": "vscode://schemas/keybindings"
+        "url": "docode://schemas/keybindings"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/profiles/*/keybindings.json",
-        "url": "vscode://schemas/keybindings"
+        "url": "docode://schemas/keybindings"
       },
       {
-        "fileMatch": "vscode://defaultsettings/*.json",
-        "url": "vscode://schemas/settings/default"
+        "fileMatch": "docode://defaultsettings/*.json",
+        "url": "docode://schemas/settings/default"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/settings.json",
-        "url": "vscode://schemas/settings/user"
+        "url": "docode://schemas/settings/user"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/profiles/*/settings.json",
-        "url": "vscode://schemas/settings/profile"
+        "url": "docode://schemas/settings/profile"
       },
       {
         "fileMatch": "%MACHINE_SETTINGS_HOME%/settings.json",
-        "url": "vscode://schemas/settings/machine"
+        "url": "docode://schemas/settings/machine"
       },
       {
         "fileMatch": "%APP_WORKSPACES_HOME%/*/workspace.json",
-        "url": "vscode://schemas/workspaceConfig"
+        "url": "docode://schemas/workspaceConfig"
       },
       {
         "fileMatch": "**/*.code-workspace",
-        "url": "vscode://schemas/workspaceConfig"
+        "url": "docode://schemas/workspaceConfig"
       },
       {
         "fileMatch": "**/argv.json",
-        "url": "vscode://schemas/argv"
+        "url": "docode://schemas/argv"
       },
       {
-        "fileMatch": "/.vscode/settings.json",
-        "url": "vscode://schemas/settings/folder"
+        "fileMatch": "/.docode/settings.json",
+        "url": "docode://schemas/settings/folder"
       },
       {
-        "fileMatch": "/.vscode/launch.json",
-        "url": "vscode://schemas/launch"
+        "fileMatch": "/.docode/launch.json",
+        "url": "docode://schemas/launch"
       },
       {
-        "fileMatch": "/.vscode/tasks.json",
-        "url": "vscode://schemas/tasks"
+        "fileMatch": "/.docode/tasks.json",
+        "url": "docode://schemas/tasks"
       },
       {
-        "fileMatch": "/.vscode/mcp.json",
-        "url": "vscode://schemas/mcp"
+        "fileMatch": "/.docode/mcp.json",
+        "url": "docode://schemas/mcp"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/tasks.json",
-        "url": "vscode://schemas/tasks"
+        "url": "docode://schemas/tasks"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/chatLanguageModels.json",
-        "url": "vscode://schemas/language-models"
+        "url": "docode://schemas/language-models"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/profiles/*/chatLanguageModels.json",
-        "url": "vscode://schemas/language-models"
+        "url": "docode://schemas/language-models"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/snippets/*.json",
-        "url": "vscode://schemas/snippets"
+        "url": "docode://schemas/snippets"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/prompts/*.toolsets.jsonc",
-        "url": "vscode://schemas/toolsets"
+        "url": "docode://schemas/toolsets"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/profiles/*/snippets/.json",
-        "url": "vscode://schemas/snippets"
+        "url": "docode://schemas/snippets"
       },
       {
         "fileMatch": "%APP_SETTINGS_HOME%/sync/snippets/preview/*.json",
-        "url": "vscode://schemas/snippets"
+        "url": "docode://schemas/snippets"
       },
       {
         "fileMatch": "**/*.code-snippets",
-        "url": "vscode://schemas/global-snippets"
+        "url": "docode://schemas/global-snippets"
       },
       {
-        "fileMatch": "/.vscode/extensions.json",
-        "url": "vscode://schemas/extensions"
+        "fileMatch": "/.docode/extensions.json",
+        "url": "docode://schemas/extensions"
       },
       {
         "fileMatch": "devcontainer.json",
@@ -181,7 +181,7 @@
       },
       {
         "fileMatch": "**/quality/*/product.json",
-        "url": "vscode://schemas/vscode-product"
+        "url": "docode://schemas/docode-product"
       }
     ]
   },

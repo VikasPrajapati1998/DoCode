@@ -1,0 +1,22 @@
+{
+	"name": "@docode/web-editors",
+	"version": "0.0.2-76",
+	"type": "module",
+	"license": "MIT",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"sideEffects": false,
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./standalone-app-adapter.js": "./dist/standalone-app-adapter.js"
+	},
+	"dependencies": {
+		"@docode/hubrpc": "file:../hubrpc"
+	}
+}

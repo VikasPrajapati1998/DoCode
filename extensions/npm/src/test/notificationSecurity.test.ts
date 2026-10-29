@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import 'mocha';
 import * as sinon from 'sinon';
-import { ExtensionContext, Memento, Uri, window } from 'vscode';
+import { ExtensionContext, Memento, Uri, window } from 'docode';
 import * as preferredPackageManager from '../preferred-pm';
 import { detectPackageManager } from '../tasks';
 import { getSafeNotificationMessage } from '../notification';

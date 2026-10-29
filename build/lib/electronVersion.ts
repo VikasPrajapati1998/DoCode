@@ -16,10 +16,10 @@ export function getElectronVersion(rootDir: string = root): Record<string, strin
 }
 
 export function shouldDownloadElectron(repoRoot = root, environment: NodeJS.ProcessEnv = process.env, platform: NodeJS.Platform = process.platform): boolean {
-	if (environment.VSCODE_SKIP_PRELAUNCH === '1') {
+	if (environment.DOCODE_SKIP_PRELAUNCH === '1') {
 		return false;
 	}
-	if (environment.VSCODE_FORCE_PRELAUNCH) {
+	if (environment.DOCODE_FORCE_PRELAUNCH) {
 		return true;
 	}
 

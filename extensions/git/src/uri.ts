@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Uri } from 'vscode';
+import { Uri } from 'docode';
 import type { Change } from './api/git';
 import { Status } from './api/git.constants';
 

@@ -139,7 +139,7 @@ export function readSavedContents(): Record<string, string> | undefined {
 	}
 }
 
-// When run directly, output state as JSON for tooling (e.g. the vscode-extras extension).
+// When run directly, output state as JSON for tooling (e.g. the docode-extras extension).
 if (import.meta.filename === process.argv[1]) {
 	const args = new Set(process.argv.slice(2));
 

@@ -35,7 +35,7 @@ function crossCopyPlatformDir(x64AppPath: string, arm64AppPath: string, relative
 }
 
 async function main(buildDir?: string) {
-	const arch = process.env['VSCODE_ARCH'];
+	const arch = process.env['DOCODE_ARCH'];
 
 	if (!buildDir) {
 		throw new Error('Build dir not provided');
@@ -43,10 +43,10 @@ async function main(buildDir?: string) {
 
 	const product = JSON.parse(fs.readFileSync(path.join(root, 'product.json'), 'utf8'));
 	const appName = product.nameLong + '.app';
-	const x64AppPath = path.join(buildDir, 'VSCode-darwin-x64', appName);
-	const arm64AppPath = path.join(buildDir, 'VSCode-darwin-arm64', appName);
+	const x64AppPath = path.join(buildDir, 'DoCode-darwin-x64', appName);
+	const arm64AppPath = path.join(buildDir, 'DoCode-darwin-arm64', appName);
 	const asarRelativePath = path.join('Contents', 'Resources', 'app', 'node_modules.asar');
-	const outAppPath = path.join(buildDir, `VSCode-darwin-${arch}`, appName);
+	const outAppPath = path.join(buildDir, `DoCode-darwin-${arch}`, appName);
 	const productJsonPath = path.resolve(outAppPath, 'Contents', 'Resources', 'app', 'product.json');
 	crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join('Contents', 'Resources', 'app', 'node-compile-cache'));
 
@@ -70,19 +70,9 @@ async function main(buildDir?: string) {
 			crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(base, '@github', 'copilot', 'tgrep', 'bin', plat));
 			// @github/copilot/sdk/tgrep/bin/{platform} (tgrep binary)
 			crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(base, '@github', 'copilot', 'sdk', 'tgrep', 'bin', plat));
-			// @vscode/ripgrep-universal/bin/{platform} (rg binary)
-			crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(base, '@vscode', 'ripgrep-universal', 'bin', plat));
+			// @docode/ripgrep-universal/bin/{platform} (rg binary)
+			crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(base, '@docode', 'ripgrep-universal', 'bin', plat));
 		}
-
-		const copilotExtensionNodeModules = path.join('Contents', 'Resources', 'app', 'extensions', 'copilot', 'node_modules');
-		// @github/copilot/sdk/prebuilds/{platform} (pty.node, spawn-helper)
-		crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(copilotExtensionNodeModules, '@github', 'copilot', 'sdk', 'prebuilds', plat));
-		// @github/copilot/sdk/ripgrep/bin/{platform} (ripgrep shim)
-		crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(copilotExtensionNodeModules, '@github', 'copilot', 'sdk', 'ripgrep', 'bin', plat));
-		// @github/copilot/sdk/tgrep/bin/{platform} (tgrep binary)
-		crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(copilotExtensionNodeModules, '@github', 'copilot', 'sdk', 'tgrep', 'bin', plat));
-		// @github/copilot/tgrep/bin/{platform} (tgrep binary)
-		crossCopyPlatformDir(x64AppPath, arm64AppPath, path.join(copilotExtensionNodeModules, '@github', 'copilot', 'tgrep', 'bin', plat));
 	}
 
 	const filesToSkip = [
@@ -113,14 +103,10 @@ async function main(buildDir?: string) {
 		'**/node_modules/@github/copilot/sdk/tgrep/bin/darwin-arm64/**',
 		'**/node_modules.asar.unpacked/@github/copilot/sdk/tgrep/bin/darwin-x64/**',
 		'**/node_modules.asar.unpacked/@github/copilot/sdk/tgrep/bin/darwin-arm64/**',
-		'**/node_modules/@github/copilot/sdk/prebuilds/darwin-x64/**',
-		'**/node_modules/@github/copilot/sdk/prebuilds/darwin-arm64/**',
-		'**/node_modules/@github/copilot/sdk/ripgrep/bin/darwin-x64/**',
-		'**/node_modules/@github/copilot/sdk/ripgrep/bin/darwin-arm64/**',
-		'**/node_modules/@vscode/ripgrep-universal/bin/darwin-x64/**',
-		'**/node_modules/@vscode/ripgrep-universal/bin/darwin-arm64/**',
-		'**/node_modules.asar.unpacked/@vscode/ripgrep-universal/bin/darwin-x64/**',
-		'**/node_modules.asar.unpacked/@vscode/ripgrep-universal/bin/darwin-arm64/**',
+		'**/node_modules/@docode/ripgrep-universal/bin/darwin-x64/**',
+		'**/node_modules/@docode/ripgrep-universal/bin/darwin-arm64/**',
+		'**/node_modules.asar.unpacked/@docode/ripgrep-universal/bin/darwin-x64/**',
+		'**/node_modules.asar.unpacked/@docode/ripgrep-universal/bin/darwin-arm64/**',
 	];
 
 	await makeUniversalApp({
@@ -136,8 +122,8 @@ async function main(buildDir?: string) {
 		// them as arch-unique. Paths here are ASAR-internal (top level, no `node_modules`
 		// prefix). Over-covering is harmless: the allowlist is only consulted for files
 		// that are actually unique to one arch.
-		singleArchFiles: '{**/@github/copilot-darwin-*,**/@github/copilot-darwin-*/**,**/@github/copilot-sdk-darwin-*,**/@github/copilot-sdk-darwin-*/**,**/@github/copilot/prebuilds/darwin-*,**/@github/copilot/prebuilds/darwin-*/**,**/@github/copilot/tgrep/bin/darwin-*,**/@github/copilot/tgrep/bin/darwin-*/**,**/@github/copilot/sdk/tgrep/bin/darwin-*,**/@github/copilot/sdk/tgrep/bin/darwin-*/**,**/@github/copilot/sdk/prebuilds/darwin-*,**/@github/copilot/sdk/prebuilds/darwin-*/**,**/@github/copilot/sdk/ripgrep/bin/darwin-*,**/@github/copilot/sdk/ripgrep/bin/darwin-*/**,**/@vscode/ripgrep-universal/bin/darwin-*,**/@vscode/ripgrep-universal/bin/darwin-*/**,**/@vscode/os-proxy-resolver-darwin-*,**/@vscode/os-proxy-resolver-darwin-*/**,**/foundry-local-sdk/prebuilds,**/foundry-local-sdk/prebuilds/darwin-arm64,**/foundry-local-sdk/prebuilds/darwin-arm64/**}',
-		x64ArchFiles: '{*/kerberos.node,**/extensions/microsoft-authentication/dist/libmsalruntime.dylib,**/extensions/microsoft-authentication/dist/msal-node-runtime.node,**/node_modules/@github/copilot-darwin-*/**,**/node_modules/@github/copilot-sdk-darwin-*/**,**/node_modules/@github/copilot/prebuilds/darwin-*/*,**/node_modules/@github/copilot/tgrep/bin/darwin-*/*,**/node_modules/@github/copilot/sdk/tgrep/bin/darwin-*/*,**/node_modules.asar.unpacked/@github/copilot-darwin-*/**,**/node_modules.asar.unpacked/@github/copilot-sdk-darwin-*/**,**/node_modules.asar.unpacked/@github/copilot/prebuilds/darwin-*/*,**/node_modules.asar.unpacked/@github/copilot/tgrep/bin/darwin-*/*,**/node_modules.asar.unpacked/@github/copilot/sdk/tgrep/bin/darwin-*/*,**/extensions/copilot/node_modules/@github/copilot/sdk/prebuilds/darwin-*/*,**/extensions/copilot/node_modules/@github/copilot/sdk/ripgrep/bin/darwin-*/*,**/extensions/copilot/node_modules/@github/copilot/sdk/tgrep/bin/darwin-*/*,**/extensions/copilot/node_modules/@github/copilot/tgrep/bin/darwin-*/*,**/node_modules/@vscode/ripgrep-universal/bin/darwin-*/*,**/node_modules.asar.unpacked/@vscode/ripgrep-universal/bin/darwin-*/*,**/node_modules/@vscode/os-proxy-resolver-darwin-*/**,**/node_modules.asar.unpacked/@vscode/os-proxy-resolver-darwin-*/**}',
+		singleArchFiles: '{**/@github/copilot-darwin-*,**/@github/copilot-darwin-*/**,**/@github/copilot-sdk-darwin-*,**/@github/copilot-sdk-darwin-*/**,**/@github/copilot/prebuilds/darwin-*,**/@github/copilot/prebuilds/darwin-*/**,**/@github/copilot/tgrep/bin/darwin-*,**/@github/copilot/tgrep/bin/darwin-*/**,**/@github/copilot/sdk/tgrep/bin/darwin-*,**/@github/copilot/sdk/tgrep/bin/darwin-*/**,**/@docode/ripgrep-universal/bin/darwin-*,**/@docode/ripgrep-universal/bin/darwin-*/**,**/@vscode/os-proxy-resolver-darwin-*,**/@vscode/os-proxy-resolver-darwin-*/**,**/foundry-local-sdk/prebuilds,**/foundry-local-sdk/prebuilds/darwin-arm64,**/foundry-local-sdk/prebuilds/darwin-arm64/**}',
+		x64ArchFiles: '{*/kerberos.node,**/extensions/microsoft-authentication/dist/libmsalruntime.dylib,**/extensions/microsoft-authentication/dist/msal-node-runtime.node,**/node_modules/@github/copilot-darwin-*/**,**/node_modules/@github/copilot-sdk-darwin-*/**,**/node_modules/@github/copilot/prebuilds/darwin-*/*,**/node_modules/@github/copilot/tgrep/bin/darwin-*/*,**/node_modules/@github/copilot/sdk/tgrep/bin/darwin-*/*,**/node_modules.asar.unpacked/@github/copilot-darwin-*/**,**/node_modules.asar.unpacked/@github/copilot-sdk-darwin-*/**,**/node_modules.asar.unpacked/@github/copilot/prebuilds/darwin-*/*,**/node_modules.asar.unpacked/@github/copilot/tgrep/bin/darwin-*/*,**/node_modules.asar.unpacked/@github/copilot/sdk/tgrep/bin/darwin-*/*,**/node_modules/@docode/ripgrep-universal/bin/darwin-*/*,**/node_modules.asar.unpacked/@docode/ripgrep-universal/bin/darwin-*/*,**/node_modules/@vscode/os-proxy-resolver-darwin-*/**,**/node_modules.asar.unpacked/@vscode/os-proxy-resolver-darwin-*/**}',
 		filesToSkipComparison: (file: string) => {
 			for (const expected of filesToSkip) {
 				if (minimatch(file, expected)) {

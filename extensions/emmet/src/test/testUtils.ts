@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import * as fs from 'fs';
 import * as os from 'os';
 import { join } from 'path';
@@ -17,7 +17,7 @@ export function rndName() {
 	return name;
 }
 
-export function createRandomFile(contents = '', fileExtension = 'txt'): Thenable<vscode.Uri> {
+export function createRandomFile(contents = '', fileExtension = 'txt'): Thenable<docode.Uri> {
 	return new Promise((resolve, reject) => {
 		const tmpFile = join(os.tmpdir(), rndName() + '.' + fileExtension);
 		fs.writeFile(tmpFile, contents, (error) => {
@@ -25,7 +25,7 @@ export function createRandomFile(contents = '', fileExtension = 'txt'): Thenable
 				return reject(error);
 			}
 
-			resolve(vscode.Uri.file(tmpFile));
+			resolve(docode.Uri.file(tmpFile));
 		});
 	});
 }
@@ -39,7 +39,7 @@ export function pathEquals(path1: string, path2: string): boolean {
 	return path1 === path2;
 }
 
-export function deleteFile(file: vscode.Uri): Thenable<boolean> {
+export function deleteFile(file: docode.Uri): Thenable<boolean> {
 	return new Promise((resolve, reject) => {
 		fs.unlink(file.fsPath, (err) => {
 			if (err) {
@@ -52,13 +52,13 @@ export function deleteFile(file: vscode.Uri): Thenable<boolean> {
 }
 
 export function closeAllEditors(): Thenable<any> {
-	return vscode.commands.executeCommand('workbench.action.closeAllEditors');
+	return docode.commands.executeCommand('workbench.action.closeAllEditors');
 }
 
-export function withRandomFileEditor(initialContents: string, fileExtension: string = 'txt', run: (editor: vscode.TextEditor, doc: vscode.TextDocument) => Thenable<void>): Thenable<boolean> {
+export function withRandomFileEditor(initialContents: string, fileExtension: string = 'txt', run: (editor: docode.TextEditor, doc: docode.TextDocument) => Thenable<void>): Thenable<boolean> {
 	return createRandomFile(initialContents, fileExtension).then(file => {
-		return vscode.workspace.openTextDocument(file).then(doc => {
-			return vscode.window.showTextDocument(doc).then((editor) => {
+		return docode.workspace.openTextDocument(file).then(doc => {
+			return docode.window.showTextDocument(doc).then((editor) => {
 				return run(editor, doc).then(_ => {
 					if (doc.isDirty) {
 						return doc.save().then(() => {

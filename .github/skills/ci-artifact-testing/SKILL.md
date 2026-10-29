@@ -48,7 +48,7 @@ Check the producer job, OS, architecture, ABI/libc, build profile, and required 
 
 ```bash
 artifact_name=exact-name-from-the-run
-artifact_dir=$(mktemp -d "${TMPDIR:-/tmp}/vscode-ci-artifact.XXXXXX")
+artifact_dir=$(mktemp -d "${TMPDIR:-/tmp}/docode-ci-artifact.XXXXXX")
 gh run download "$run_id" --repo "$repo" \
   --name "$artifact_name" --dir "$artifact_dir"
 ```

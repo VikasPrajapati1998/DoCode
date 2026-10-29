@@ -44,7 +44,7 @@ export interface IRemoteDevContainerFixture {
 const repositoryRoot = path.resolve(__dirname, '../../../../..');
 const startupTimeout = 90_000;
 const fakeModelToken = 'smoketest-fake-agent-host-token';
-const tunnelTokenEnvironmentKey = 'VSCODE_SMOKE_TEST_TUNNEL_TOKEN';
+const tunnelTokenEnvironmentKey = 'DOCODE_SMOKE_TEST_TUNNEL_TOKEN';
 const tunnelPorts = [31545, 31546];
 
 /** Provision a matching CLI when published, otherwise a same-quality fallback for unpublished builds. */
@@ -61,8 +61,8 @@ export function getDevContainerCliInstallCommand(codePath?: string): string {
 	const quality = product.quality ?? 'insider';
 	assertCliQuality(quality);
 	const archive = quality === 'stable' ? 'code' : quality === 'exploration' ? 'code-exploration' : 'code-insiders';
-	const legacyDirectory = quality === 'stable' ? '.vscode-cli' : `.vscode-cli-${quality}`;
-	const serverDirectory = product.serverDataFolderName ?? '.vscode-server-oss';
+	const legacyDirectory = quality === 'stable' ? '.docode-cli' : `.docode-cli-${quality}`;
+	const serverDirectory = product.serverDataFolderName ?? '.docode-server-oss';
 	if (!/^[\w.-]+$/.test(serverDirectory)) {
 		throw new Error(`Invalid CLI server data folder: ${serverDirectory}`);
 	}
@@ -135,7 +135,7 @@ interface ITunnelCli {
 }
 
 function findTunnelCli(): ITunnelCli {
-	const explicit = process.env.VSCODE_SMOKE_TEST_TUNNEL_CLI;
+	const explicit = process.env.DOCODE_SMOKE_TEST_TUNNEL_CLI;
 	const executableNames = process.platform === 'win32'
 		? ['code-tunnel-insiders.exe', 'code-tunnel.exe', 'code-insiders.exe', 'code.exe']
 		: ['code-tunnel-insiders', 'code-tunnel', 'code-insiders', 'code'];
@@ -159,13 +159,13 @@ function findTunnelCli(): ITunnelCli {
 		});
 		if (result.status === 0 && /Usage:.*tunnel/.test(result.stdout)) {
 			const consentFile = [
-				process.env.VSCODE_CLI_DATA_DIR,
-				path.join(os.homedir(), '.vscode-insiders', 'cli'),
-				path.join(os.homedir(), '.vscode', 'cli'),
-				path.join(os.homedir(), '.vscode-oss', 'cli'),
-				path.join(os.homedir(), '.vscode-cli-insiders'),
-				path.join(os.homedir(), '.vscode-cli'),
-				path.join(os.homedir(), '.vscode-cli-oss'),
+				process.env.DOCODE_CLI_DATA_DIR,
+				path.join(os.homedir(), '.docode-insiders', 'cli'),
+				path.join(os.homedir(), '.docode', 'cli'),
+				path.join(os.homedir(), '.docode-oss', 'cli'),
+				path.join(os.homedir(), '.docode-cli-insiders'),
+				path.join(os.homedir(), '.docode-cli'),
+				path.join(os.homedir(), '.docode-cli-oss'),
 			].filter((value): value is string => !!value)
 				.map(directory => path.join(directory, 'license_consent.json'))
 				.find(file => {
@@ -178,7 +178,7 @@ function findTunnelCli(): ITunnelCli {
 			return { executable, consentFile };
 		}
 	}
-	throw new Error('Set VSCODE_SMOKE_TEST_TUNNEL_CLI to an installed CLI supporting tunnel --machine-status and the schema-2 endpoint registry.');
+	throw new Error('Set DOCODE_SMOKE_TEST_TUNNEL_CLI to an installed CLI supporting tunnel --machine-status and the schema-2 endpoint registry.');
 }
 
 function assertTunnelPorts(tunnel: import('@microsoft/dev-tunnels-contracts').Tunnel): void {
@@ -202,9 +202,9 @@ export function getTunnelSmokeTestAvailability(): { available: boolean; reason?:
 function withoutSecrets(environment: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 	const result = { ...environment };
 	for (const key of [
-		tunnelTokenEnvironmentKey, 'VSCODE_CLI_ACCESS_TOKEN', 'VSCODE_CLI_REFRESH_TOKEN',
+		tunnelTokenEnvironmentKey, 'DOCODE_CLI_ACCESS_TOKEN', 'DOCODE_CLI_REFRESH_TOKEN',
 		'GH_TOKEN', 'GITHUB_TOKEN', 'GITHUB_PAT', 'GITHUB_COPILOT_API_TOKEN',
-		'VSCODE_COPILOT_CHAT_TOKEN', 'ANTHROPIC_API_KEY', 'OPENAI_API_KEY',
+		'DOCODE_COPILOT_CHAT_TOKEN', 'ANTHROPIC_API_KEY', 'OPENAI_API_KEY',
 		'AZURE_OPENAI_API_KEY', 'SSH_AUTH_SOCK', 'NODE_OPTIONS',
 	]) {
 		delete result[key];
@@ -411,11 +411,11 @@ function createAppEnvironment(options: IRemoteDevContainerFixtureOptions, resour
 		HOME: home, USERPROFILE: home, APPDATA: path.join(home, 'AppData', 'Roaming'), LOCALAPPDATA: path.join(home, 'AppData', 'Local'),
 		XDG_STATE_HOME: state, XDG_CONFIG_HOME: path.join(home, '.config'), XDG_CACHE_HOME: path.join(home, '.cache'),
 		COPILOT_HOME: copilotHome, CODEX_HOME: path.join(state, '.codex'), SSH_AUTH_SOCK: undefined,
-		VSCODE_CLI_DATA_DIR: path.join(resources.root, 'app-cli'), VSCODE_CLI_USE_FILE_KEYCHAIN: '1',
-		[tunnelTokenEnvironmentKey]: undefined, VSCODE_CLI_ACCESS_TOKEN: undefined, VSCODE_CLI_REFRESH_TOKEN: undefined,
+		DOCODE_CLI_DATA_DIR: path.join(resources.root, 'app-cli'), DOCODE_CLI_USE_FILE_KEYCHAIN: '1',
+		[tunnelTokenEnvironmentKey]: undefined, DOCODE_CLI_ACCESS_TOKEN: undefined, DOCODE_CLI_REFRESH_TOKEN: undefined,
 		GH_TOKEN: undefined, GITHUB_TOKEN: undefined, GITHUB_PAT: 'smoketest-fake-pat',
 		GITHUB_COPILOT_API_TOKEN: fakeModelToken, COPILOT_API_URL: options.mockServerUrl,
-		COPILOT_DEBUG_GITHUB_API_URL: options.mockServerUrl, VSCODE_AGENT_HOST_CAPI_URL_OVERRIDE: options.mockServerUrl,
+		COPILOT_DEBUG_GITHUB_API_URL: options.mockServerUrl, DOCODE_AGENT_HOST_CAPI_URL_OVERRIDE: options.mockServerUrl,
 	};
 }
 
@@ -424,10 +424,10 @@ function createHostRuntime(options: IRemoteDevContainerFixtureOptions, resources
 	const executable = options.appOptions.codePath ? getBuildElectronPath(options.appOptions.codePath) : getDevElectronPath();
 	const entry = options.appOptions.codePath
 		? path.join(appRoot, 'out/bootstrap-fork.js')
-		: path.join(appRoot, 'out/vs/platform/agentHost/node/agentHostServerMain.js');
+		: path.join(appRoot, 'out/do/platform/agentHost/node/agentHostServerMain.js');
 	const packagedLauncher = path.join(__dirname, 'fixtures/packagedAgentHost.js');
 	const requiredFiles = options.appOptions.codePath
-		? [executable, entry, path.join(appRoot, 'out/vs/platform/agentHost/node/agentHostMain.js'), packagedLauncher]
+		? [executable, entry, path.join(appRoot, 'out/do/platform/agentHost/node/agentHostMain.js'), packagedLauncher]
 		: [executable, entry];
 	for (const file of requiredFiles) {
 		if (!fs.existsSync(file)) {
@@ -446,23 +446,23 @@ function createHostRuntime(options: IRemoteDevContainerFixtureOptions, resources
 	const env: NodeJS.ProcessEnv = {
 		...withoutSecrets({ ...process.env, ...options.appOptions.extraEnv }),
 		ELECTRON_RUN_AS_NODE: '1',
-		VSCODE_DEV: options.appOptions.codePath ? undefined : '1',
+		DOCODE_DEV: options.appOptions.codePath ? undefined : '1',
 		HOME: home, USERPROFILE: home,
 		XDG_STATE_HOME: state, XDG_CONFIG_HOME: path.join(home, '.config'), XDG_CACHE_HOME: path.join(home, '.cache'),
 		COPILOT_HOME: path.join(home, '.copilot'), CODEX_HOME: path.join(home, '.codex'),
-		VSCODE_CLI_DATA_DIR: path.join(resources.root, 'host-cli'), VSCODE_CLI_USE_FILE_KEYCHAIN: '1',
+		DOCODE_CLI_DATA_DIR: path.join(resources.root, 'host-cli'), DOCODE_CLI_USE_FILE_KEYCHAIN: '1',
 		// Retain the selected Docker context without moving/writing the user's
 		// Docker configuration into the isolated HOME.
 		DOCKER_CONFIG: process.env.DOCKER_CONFIG ?? path.join(os.homedir(), '.docker'),
 		COPILOT_API_URL: options.mockServerUrl,
 		COPILOT_DEBUG_GITHUB_API_URL: options.mockServerUrl,
-		VSCODE_AGENT_HOST_CAPI_URL_OVERRIDE: options.mockServerUrl,
+		DOCODE_AGENT_HOST_CAPI_URL_OVERRIDE: options.mockServerUrl,
 		GITHUB_COPILOT_API_TOKEN: fakeModelToken,
 		GITHUB_PAT: 'smoketest-fake-pat',
 		IS_SCENARIO_AUTOMATION: '1',
-		VSCODE_AGENT_HOST_CLAUDE_AGENT_ENABLED: 'false',
-		VSCODE_AGENT_HOST_CODEX_AGENT_ENABLED: 'false',
-		VSCODE_AGENT_HOST_TELEMETRY_LEVEL: 'off',
+		DOCODE_AGENT_HOST_CLAUDE_AGENT_ENABLED: 'false',
+		DOCODE_AGENT_HOST_CODEX_AGENT_ENABLED: 'false',
+		DOCODE_AGENT_HOST_TELEMETRY_LEVEL: 'off',
 	};
 	resources.add(async () => {
 		resources.preserveLogs(path.join(resources.root, 'host-user-data', 'logs'), path.join(options.logsPath, 'remote-devcontainer-host-runtime'));
@@ -484,7 +484,7 @@ interface IHostHandshake {
 async function verifyHost(port: number, token: string): Promise<IHostHandshake> {
 	// Read the checkout's protocol version rather than duplicating the version
 	// registry in a test. A --build server can negotiate its own version below.
-	const registry = fs.readFileSync(path.join(repositoryRoot, 'src/vs/platform/agentHost/common/state/protocol/version/registry.ts'), 'utf8');
+	const registry = fs.readFileSync(path.join(repositoryRoot, 'src/do/platform/agentHost/common/state/protocol/version/registry.ts'), 'utf8');
 	const version = /PROTOCOL_VERSION\s*=\s*'(?<version>[^']+)'/.exec(registry)?.groups?.version;
 	if (!version) {
 		throw new Error('Cannot read the Agent Host protocol version.');
@@ -520,10 +520,10 @@ async function verifyHost(port: number, token: string): Promise<IHostHandshake> 
 				const supportedVersion = response.error?.data?.supportedVersions?.[0]?.replace(/^\^/, '');
 				if (response.error?.code === -32005 && requestId === 1 && supportedVersion) {
 					initialize(supportedVersion);
-				} else if (response.result?.protocolVersion && response.result._meta?.['vscode.devContainers'] === true) {
+				} else if (response.result?.protocolVersion && response.result._meta?.['docode.devContainers'] === true) {
 					finish(undefined, { protocolVersion: response.result.protocolVersion });
 				} else {
-					finish(new Error('The real Agent Host did not advertise vscode.devContainers. Compile the matching source/build; do not substitute a mock host.'));
+					finish(new Error('The real Agent Host did not advertise docode.devContainers. Compile the matching source/build; do not substitute a mock host.'));
 				}
 			} catch {
 				finish(new Error('Invalid Agent Host capability handshake.'));
@@ -540,7 +540,7 @@ async function startHost(options: IRemoteDevContainerFixtureOptions, resources: 
 		return value ? Number(value) : undefined;
 	});
 	const handshake = await verifyHost(port, runtime.token);
-	resources.log(`Real Agent Host ready on loopback port ${port}; vscode.devContainers is advertised.`);
+	resources.log(`Real Agent Host ready on loopback port ${port}; docode.devContainers is advertised.`);
 	return { child, port, ...handshake };
 }
 
@@ -552,7 +552,7 @@ async function createSshFixture(options: IRemoteDevContainerFixtureOptions, reso
 	await stopProcess(preflight.child);
 	const password = randomBytes(24).toString('hex');
 	resources.addSecret(password);
-	const username = 'vscode-smoke';
+	const username = 'docode-smoke';
 	const name = `ssh-devcontainer-${randomBytes(5).toString('hex')}`;
 	const key = generateKeyPairSync('rsa', { modulusLength: 2048, privateKeyEncoding: { type: 'pkcs1', format: 'pem' }, publicKeyEncoding: { type: 'spki', format: 'pem' } });
 	const parsedKey = sshUtils.parseKey(key.privateKey);
@@ -562,7 +562,7 @@ async function createSshFixture(options: IRemoteDevContainerFixtureOptions, reso
 	const fingerprint = `SHA256:${createHash('sha256').update(parsedKey.getPublicSSH()).digest('base64').replace(/=+$/, '')}`;
 	const connections = new Set<Connection>();
 	const sockets = new Set<net.Socket>();
-	const server = new Server({ hostKeys: [key.privateKey], ident: 'VSCode-Smoke-SSH' }, connection => {
+	const server = new Server({ hostKeys: [key.privateKey], ident: 'DoCode-Smoke-SSH' }, connection => {
 		connections.add(connection);
 		connection.on('close', () => connections.delete(connection));
 		connection.on('error', error => resources.log(`SSH connection: ${error.message}`));
@@ -642,16 +642,16 @@ async function createSshFixture(options: IRemoteDevContainerFixtureOptions, reso
 	// Reassert isolation inside the login shell used by the real SSH client.
 	// No real credential is present in this command or in settings.json.
 	const environment = Object.entries(runtime.env).filter((entry): entry is [string, string] => entry[1] !== undefined &&
-		['HOME', 'USERPROFILE', 'XDG_STATE_HOME', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME', 'COPILOT_HOME', 'CODEX_HOME', 'ELECTRON_RUN_AS_NODE', 'VSCODE_DEV',
-			'PATH', 'DOCKER_CONFIG', 'COPILOT_API_URL', 'COPILOT_DEBUG_GITHUB_API_URL', 'VSCODE_AGENT_HOST_CAPI_URL_OVERRIDE',
-			'GITHUB_COPILOT_API_TOKEN', 'GITHUB_PAT', 'IS_SCENARIO_AUTOMATION', 'VSCODE_AGENT_HOST_CLAUDE_AGENT_ENABLED',
-			'VSCODE_AGENT_HOST_CODEX_AGENT_ENABLED', 'VSCODE_AGENT_HOST_TELEMETRY_LEVEL', 'VSCODE_CLI_DATA_DIR', 'VSCODE_CLI_USE_FILE_KEYCHAIN'].includes(entry[0]));
+		['HOME', 'USERPROFILE', 'XDG_STATE_HOME', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME', 'COPILOT_HOME', 'CODEX_HOME', 'ELECTRON_RUN_AS_NODE', 'DOCODE_DEV',
+			'PATH', 'DOCKER_CONFIG', 'COPILOT_API_URL', 'COPILOT_DEBUG_GITHUB_API_URL', 'DOCODE_AGENT_HOST_CAPI_URL_OVERRIDE',
+			'GITHUB_COPILOT_API_TOKEN', 'GITHUB_PAT', 'IS_SCENARIO_AUTOMATION', 'DOCODE_AGENT_HOST_CLAUDE_AGENT_ENABLED',
+			'DOCODE_AGENT_HOST_CODEX_AGENT_ENABLED', 'DOCODE_AGENT_HOST_TELEMETRY_LEVEL', 'DOCODE_CLI_DATA_DIR', 'DOCODE_CLI_USE_FILE_KEYCHAIN'].includes(entry[0]));
 	const command = ['env', ...environment.map(([key, value]) => `${key}=${value}`), runtime.executable, ...runtime.args].map(shellQuote).join(' ');
 	resources.log(`Real SSH server listening on 127.0.0.1:${port}.`);
 	return {
 		name, settings: { 'chat.sshRemoteAgentHostCommand': command },
 		ssh: { host: '127.0.0.1', port, username, password, fingerprint },
-		extraEnv: { [tunnelTokenEnvironmentKey]: undefined, VSCODE_CLI_ACCESS_TOKEN: undefined },
+		extraEnv: { [tunnelTokenEnvironmentKey]: undefined, DOCODE_CLI_ACCESS_TOKEN: undefined },
 		dispose: () => resources.dispose(),
 	};
 }
@@ -724,9 +724,9 @@ async function createTunnelFixture(options: IRemoteDevContainerFixtureOptions, r
 	}
 	resources.addSecret(token);
 	const cli = findTunnelCli();
-	const acceptedTerms = process.env.VSCODE_SMOKE_TEST_TUNNEL_ACCEPT_SERVER_LICENSE_TERMS === '1';
+	const acceptedTerms = process.env.DOCODE_SMOKE_TEST_TUNNEL_ACCEPT_SERVER_LICENSE_TERMS === '1';
 	if (!acceptedTerms && !cli.consentFile) {
-		throw new Error('Tunnel license consent is required. Explicitly set VSCODE_SMOKE_TEST_TUNNEL_ACCEPT_SERVER_LICENSE_TERMS=1 after reviewing the server license, or consent with the installed CLI first.');
+		throw new Error('Tunnel license consent is required. Explicitly set DOCODE_SMOKE_TEST_TUNNEL_ACCEPT_SERVER_LICENSE_TERMS=1 after reviewing the server license, or consent with the installed CLI first.');
 	}
 	const sourceAppRoot = createTunnelSourceAppRoot(options, resources);
 	const cliData = path.join(resources.root, 'cli');
@@ -735,7 +735,7 @@ async function createTunnelFixture(options: IRemoteDevContainerFixtureOptions, r
 		fs.copyFileSync(cli.consentFile, path.join(cliData, 'license_consent.json'));
 	}
 	const response = await fetch('https://api.github.com/user', {
-		headers: { Authorization: `Bearer ${token}`, 'User-Agent': 'vscode-remote-devcontainer-smoke', Accept: 'application/vnd.github+json' },
+		headers: { Authorization: `Bearer ${token}`, 'User-Agent': 'docode-remote-devcontainer-smoke', Accept: 'application/vnd.github+json' },
 		signal: AbortSignal.timeout(30_000),
 	});
 	if (!response.ok) {
@@ -763,14 +763,14 @@ async function createTunnelFixture(options: IRemoteDevContainerFixtureOptions, r
 		connectionToken: runtime.token, endpoint: { type: 'tcp', host: '127.0.0.1', port: host.port }, tunnelName: name,
 	}), { mode: 0o600 });
 	const cliEnv: NodeJS.ProcessEnv = {
-		...withoutSecrets(runtime.env), ELECTRON_RUN_AS_NODE: undefined, VSCODE_DEV: undefined,
-		VSCODE_CLI_USE_FILE_KEYCHAIN: '1', VSCODE_CLI_DATA_DIR: cliData,
+		...withoutSecrets(runtime.env), ELECTRON_RUN_AS_NODE: undefined, DOCODE_DEV: undefined,
+		DOCODE_CLI_USE_FILE_KEYCHAIN: '1', DOCODE_CLI_DATA_DIR: cliData,
 	};
 	const prefix = ['--cli-data-dir', cliData, '--disable-telemetry'];
 	// Resolve the product's SDK only for an explicitly requested tunnel run;
 	// ordinary smoke runs do not need to load this root-repository dependency.
 	const management: typeof import('@microsoft/dev-tunnels-management') = require(require.resolve('@microsoft/dev-tunnels-management', { paths: [repositoryRoot] }));
-	const client = new management.TunnelManagementHttpClient('vscode-remote-devcontainer-smoke', management.ManagementApiVersions.Version20230927preview, async () => `github ${token}`);
+	const client = new management.TunnelManagementHttpClient('docode-remote-devcontainer-smoke', management.ManagementApiVersions.Version20230927preview, async () => `github ${token}`);
 	resources.add(() => client.dispose());
 	client.enableEventsReporting = false;
 	const existingTunnels = await tunnelRequest(cancellation => client.listTunnels(undefined, undefined, undefined, cancellation));
@@ -812,7 +812,7 @@ async function createTunnelFixture(options: IRemoteDevContainerFixtureOptions, r
 	});
 	resources.log(`Creating private Dev Tunnels relay ${name} through the management SDK.`);
 	const created = await tunnelRequest(cancellation => client.createTunnel({
-		labels: ['vscode-server-launcher', 'protocolv6', name],
+		labels: ['docode-server-launcher', 'protocolv6', name],
 		// An empty ACL grants no additional access beyond the implicit owner.
 		accessControl: { entries: [] },
 		ports: tunnelPorts.map(portNumber => ({ portNumber, protocol: 'auto', accessControl: { entries: [] } })),
@@ -850,11 +850,11 @@ async function createTunnelFixture(options: IRemoteDevContainerFixtureOptions, r
 	...(acceptedTerms ? ['--accept-server-license-terms'] : []),
 	], cliEnv, options.workspacePath, path.join(options.logsPath, 'remote-devcontainer-tunnel.log'));
 	await waitForOutput(tunnelProcess, 'Private Dev Tunnels relay', line => {
-		const index = line.indexOf('__VSCODE_CLI_STATUS__');
+		const index = line.indexOf('__DOCODE_CLI_STATUS__');
 		if (index < 0) {
 			return undefined;
 		}
-		const status = JSON.parse(line.slice(index + '__VSCODE_CLI_STATUS__'.length)) as { type: string; tunnelId?: string; tunnelName?: string; isAttached?: boolean };
+		const status = JSON.parse(line.slice(index + '__DOCODE_CLI_STATUS__'.length)) as { type: string; tunnelId?: string; tunnelName?: string; isAttached?: boolean };
 		if (status.type === 'tokenError') {
 			throw new Error('The isolated tunnel CLI rejected the supplied credentials; see redacted fixture log.');
 		}
@@ -876,22 +876,22 @@ async function createTunnelFixture(options: IRemoteDevContainerFixtureOptions, r
 	return {
 		name, settings: {},
 		sourceAppRoot,
-		extraArgs: [`--extensionDevelopmentPath=${extension}`, '--disable-extension=vscode.github-authentication'],
+		extraArgs: [`--extensionDevelopmentPath=${extension}`, '--disable-extension=docode.github-authentication'],
 		extraEnv: {
-			...(sourceAppRoot ? { VSCODE_DEV: '1' } : {}),
-			[tunnelTokenEnvironmentKey]: undefined, VSCODE_CLI_ACCESS_TOKEN: undefined, VSCODE_CLI_REFRESH_TOKEN: undefined,
+			...(sourceAppRoot ? { DOCODE_DEV: '1' } : {}),
+			[tunnelTokenEnvironmentKey]: undefined, DOCODE_CLI_ACCESS_TOKEN: undefined, DOCODE_CLI_REFRESH_TOKEN: undefined,
 			GH_TOKEN: undefined, GITHUB_TOKEN: undefined,
-			VSCODE_SMOKE_TEST_TUNNEL_AUTH_FILE: authFile,
+			DOCODE_SMOKE_TEST_TUNNEL_AUTH_FILE: authFile,
 		},
 		dispose: () => resources.dispose(),
 	};
 }
 
 async function createWslFixture(options: IRemoteDevContainerFixtureOptions, resources: FixtureResources): Promise<IRemoteDevContainerFixture> {
-	const distro = process.env.VSCODE_SMOKE_TEST_WSL_DISTRO;
-	const serverPath = process.env.VSCODE_SMOKE_TEST_WSL_SERVER_PATH;
+	const distro = process.env.DOCODE_SMOKE_TEST_WSL_DISTRO;
+	const serverPath = process.env.DOCODE_SMOKE_TEST_WSL_SERVER_PATH;
 	if (process.platform !== 'win32' || !distro || !serverPath?.startsWith('/')) {
-		throw new Error('WSL smoke tests require Windows, VSCODE_SMOKE_TEST_WSL_DISTRO, and VSCODE_SMOKE_TEST_WSL_SERVER_PATH pointing to an extracted Linux VS Code server inside that distribution.');
+		throw new Error('WSL smoke tests require Windows, DOCODE_SMOKE_TEST_WSL_DISTRO, and DOCODE_SMOKE_TEST_WSL_SERVER_PATH pointing to an extracted Linux VS Code server inside that distribution.');
 	}
 	const wsl = path.join(process.env.SystemRoot ?? 'C:\\Windows', 'System32', 'wsl.exe');
 	const run = (command: string, timeout = 60_000): Promise<string> => new Promise((resolve, reject) => {
@@ -909,8 +909,8 @@ async function createWslFixture(options: IRemoteDevContainerFixtureOptions, reso
 	const copiedLogs = path.join(resources.root, 'wsl-logs');
 	fs.mkdirSync(copiedLogs);
 	const windowsRoot = await run(`wslpath -u ${shellQuote(resources.root)}`);
-	const root = await run('mktemp -d /tmp/vscode-smoke-wsl-XXXXXXXX');
-	if (!/^\/tmp\/vscode-smoke-wsl-[A-Za-z0-9]+$/.test(root)) {
+	const root = await run('mktemp -d /tmp/docode-smoke-wsl-XXXXXXXX');
+	if (!/^\/tmp\/docode-smoke-wsl-[A-Za-z0-9]+$/.test(root)) {
 		throw new Error(`Unexpected WSL fixture directory: ${root}`);
 	}
 	const workspacePath = `${root}/workspace`;
@@ -945,7 +945,7 @@ async function createWslFixture(options: IRemoteDevContainerFixtureOptions, reso
 		throw new Error(`Cannot determine the Windows host address from WSL: ${hostAddress}`);
 	}
 	const containerConfig: { runArgs: string[] } = JSON.parse(fs.readFileSync(path.join(options.workspacePath, '.devcontainer', 'devcontainer.json'), 'utf8'));
-	containerConfig.runArgs = containerConfig.runArgs.map(arg => arg === '--add-host=vscode-smoke.test:host-gateway' ? `--add-host=vscode-smoke.test:${hostAddress}` : arg);
+	containerConfig.runArgs = containerConfig.runArgs.map(arg => arg === '--add-host=docode-smoke.test:host-gateway' ? `--add-host=docode-smoke.test:${hostAddress}` : arg);
 	fs.writeFileSync(path.join(resources.root, 'devcontainer.json'), JSON.stringify(containerConfig, null, 2));
 	await run(`cp ${shellQuote(`${windowsRoot}/devcontainer.json`)} ${shellQuote(`${workspacePath}/.devcontainer/devcontainer.json`)}`);
 	const mockServerUrl = new URL(options.mockServerUrl);
@@ -954,12 +954,12 @@ async function createWslFixture(options: IRemoteDevContainerFixtureOptions, reso
 		HOME: `${root}/home`, XDG_STATE_HOME: `${root}/state`, XDG_CONFIG_HOME: `${root}/home/.config`, XDG_CACHE_HOME: `${root}/home/.cache`,
 		PATH: `${serverPath}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`,
 		COPILOT_HOME: `${root}/home/.copilot`, CODEX_HOME: `${root}/home/.codex`,
-		VSCODE_CLI_DATA_DIR: `${root}/cli`, VSCODE_CLI_USE_FILE_KEYCHAIN: '1',
-		VSCODE_SMOKE_TEST_WSL_MOCK_UPSTREAM: mockServerUrl.href,
-		VSCODE_SMOKE_TEST_PROXY_HEADER: process.env.VSCODE_SMOKE_TEST_PROXY_HEADER ?? 'dev-container',
+		DOCODE_CLI_DATA_DIR: `${root}/cli`, DOCODE_CLI_USE_FILE_KEYCHAIN: '1',
+		DOCODE_SMOKE_TEST_WSL_MOCK_UPSTREAM: mockServerUrl.href,
+		DOCODE_SMOKE_TEST_PROXY_HEADER: process.env.DOCODE_SMOKE_TEST_PROXY_HEADER ?? 'dev-container',
 		GITHUB_COPILOT_API_TOKEN: fakeModelToken, GITHUB_PAT: 'smoketest-fake-pat',
-		IS_SCENARIO_AUTOMATION: '1', VSCODE_AGENT_HOST_CLAUDE_AGENT_ENABLED: 'false', VSCODE_AGENT_HOST_CODEX_AGENT_ENABLED: 'false',
-		VSCODE_AGENT_HOST_TELEMETRY_LEVEL: 'off',
+		IS_SCENARIO_AUTOMATION: '1', DOCODE_AGENT_HOST_CLAUDE_AGENT_ENABLED: 'false', DOCODE_AGENT_HOST_CODEX_AGENT_ENABLED: 'false',
+		DOCODE_AGENT_HOST_TELEMETRY_LEVEL: 'off',
 	};
 	const command = [
 		`echo $$ > ${shellQuote(`${root}/host.pid`)}`,

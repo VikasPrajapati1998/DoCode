@@ -25,13 +25,13 @@ if [[ "$1" == "--help" || "$1" == "-h" ]]; then
 	echo "  --help, -h                    show this help"
 	echo ""
 	echo "All other options are forwarded to scripts/test.sh."
-	echo "Set VSCODE_SKIP_AGENT_HOST_E2E=1 to skip the suites, for example when no relevant files changed."
-	echo "See src/vs/platform/agentHost/test/node/e2e/README.md."
+	echo "Set DOCODE_SKIP_AGENT_HOST_E2E=1 to skip the suites, for example when no relevant files changed."
+	echo "See src/do/platform/agentHost/test/node/e2e/README.md."
 	exit 0
 fi
 
-if [[ "$VSCODE_SKIP_AGENT_HOST_E2E" == "1" ]]; then
-	echo "Skipping Agent Host E2E tests because VSCODE_SKIP_AGENT_HOST_E2E is set."
+if [[ "$DOCODE_SKIP_AGENT_HOST_E2E" == "1" ]]; then
+	echo "Skipping Agent Host E2E tests because DOCODE_SKIP_AGENT_HOST_E2E is set."
 	exit 0
 fi
 

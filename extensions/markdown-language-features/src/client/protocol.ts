@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { FileRename, RequestType } from 'vscode-languageclient';
 import type * as lsp from 'vscode-languageserver-types';
 import type * as md from 'vscode-markdown-languageservice';
 
 
 export type ResolvedDocumentLinkTarget =
-	| { readonly kind: 'file'; readonly uri: vscode.Uri; positionOrRange?: lsp.Position | lsp.Range; fragment?: string }
-	| { readonly kind: 'folder'; readonly uri: vscode.Uri }
-	| { readonly kind: 'external'; readonly uri: vscode.Uri };
+	| { readonly kind: 'file'; readonly uri: docode.Uri; positionOrRange?: lsp.Position | lsp.Range; fragment?: string }
+	| { readonly kind: 'folder'; readonly uri: docode.Uri }
+	| { readonly kind: 'external'; readonly uri: docode.Uri };
 
 //#region From server
 export const parse = new RequestType<{ uri: string; text?: string }, md.Token[], any>('markdown/parse');

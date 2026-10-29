@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
-import { Uri } from 'vscode';
+import { Uri } from 'docode';
 import { RequestService, FileType } from '../requests';
 
 export function getNodeFSRequestService(): RequestService {

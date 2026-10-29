@@ -56,7 +56,7 @@ const USER_ENVIRONMENT_KEY: &str = "Environment";
 use super::CLI_INSTALL_FOLDER;
 
 /// The policy registry key names (`win32RegValueName`) of the VS Code qualities.
-const PRODUCT_POLICY_KEYS: [&str; 4] = ["VSCode", "VSCodeInsiders", "VSCodeExploration", "CodeOSS"];
+const PRODUCT_POLICY_KEYS: [&str; 4] = ["DoCode", "DoCodeInsiders", "DoCodeExploration", "CodeOSS"];
 
 fn wide(value: &OsStr) -> Vec<u16> {
 	value.encode_wide().chain(std::iter::once(0)).collect()
@@ -351,7 +351,7 @@ fn crack_url(url: &str) -> io::Result<CrackedUrl> {
 
 impl HttpClient {
 	pub(crate) fn new(timeout: Duration) -> io::Result<Self> {
-		let agent = wide_str(concat!("VSCodeCopilotShim/", env!("CARGO_PKG_VERSION")));
+		let agent = wide_str(concat!("DoCodeCopilotShim/", env!("CARGO_PKG_VERSION")));
 		// Automatic proxy follows the system proxy settings, including PAC files.
 		let session = InternetHandle::new(unsafe {
 			WinHttpOpen(

@@ -330,7 +330,7 @@ pub fn print_banner_header(title: &str, elapsed: Duration) {
 	console::set_colors_enabled(true);
 	console::set_colors_enabled_stderr(true);
 
-	let version = constants::VSCODE_CLI_VERSION.unwrap_or("dev");
+	let version = constants::DOCODE_CLI_VERSION.unwrap_or("dev");
 	let elapsed_ms = elapsed.as_millis();
 
 	println!();
@@ -350,7 +350,7 @@ const ASCII_BANNER_MARKER: &str = ">";
 const UTF8_BANNER_MARKER: &str = "➜";
 
 #[cfg(windows)]
-pub(crate) const PARENT_STDOUT_SUPPORTS_UTF8_ENV: &str = "VSCODE_CLI_PARENT_STDOUT_SUPPORTS_UTF8";
+pub(crate) const PARENT_STDOUT_SUPPORTS_UTF8_ENV: &str = "DOCODE_CLI_PARENT_STDOUT_SUPPORTS_UTF8";
 
 pub(crate) fn banner_marker() -> &'static str {
 	utf8_or_ascii(UTF8_BANNER_MARKER, ASCII_BANNER_MARKER)

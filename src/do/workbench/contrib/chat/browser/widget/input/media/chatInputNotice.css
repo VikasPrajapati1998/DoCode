@@ -1,0 +1,245 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/*
+ * The notice above a chat input. Five producers - notification, voice and
+ * dictation introductions, getting-started tip, sub-session tip - share this
+ * frame so the space looks the same whoever is filling it. Producers can still
+ * change their own padding or density.
+ *
+ * No offset here, or in any producer: the stack closes the join by squaring the
+ * corners of what follows. Sharing an offset was tried twice and broke both
+ * times, because the offset was never a property of the notice.
+ */
+
+/* --- The frame --- */
+
+.chat-input-notice {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size80);
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	padding: var(--docode-spacing-size120);
+	border: var(--docode-strokeThickness) solid var(--docode-input-border, var(--docode-widget-border, transparent));
+	/* Open at the bottom so the notice and the input below read as one surface.
+	 * The top corners follow the stack, and keep their own rounding outside one. */
+	border-bottom: none;
+	border-radius: var(--chat-input-stack-radius-top, var(--docode-cornerRadius-large)) var(--chat-input-stack-radius-top, var(--docode-cornerRadius-large)) 0 0;
+	background-color: var(--docode-agentsChatInput-background, var(--docode-input-background));
+	color: var(--docode-foreground);
+}
+
+.chat-input-notice:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: calc(-1 * var(--docode-strokeThickness));
+}
+
+/* Tips and notifications are prose, so they take the chat type ramp and the
+	demoted foreground. An onboarding card keeps the base foreground and sets its
+	own type. */
+.chat-input-notice.chat-input-notice-tip,
+.chat-input-notice.chat-input-notice-notification {
+	font-size: var(--docode-chat-font-size-body-s);
+	font-family: var(--docode-chat-font-family, inherit);
+	color: var(--docode-descriptionForeground);
+}
+
+/* Links anywhere in a notice, excluding the anchor-based controls. Anchors are
+	not covered by the workbench focus rule, so they need their own
+	`:focus-visible` outline. */
+.chat-input-notice a:not(.action-label, .monaco-button),
+.chat-input-notice a:visited:not(.action-label, .monaco-button) {
+	color: var(--docode-textLink-foreground);
+	cursor: pointer;
+	border-radius: var(--docode-cornerRadius-xSmall);
+}
+
+.chat-input-notice a:hover:not(.action-label, .monaco-button),
+.chat-input-notice a:active:not(.action-label, .monaco-button) {
+	color: var(--docode-textLink-activeForeground);
+	text-decoration: underline;
+}
+
+.chat-input-notice a:focus-visible:not(.action-label, .monaco-button) {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: 2px;
+}
+
+/* --- Variant: tip --- */
+
+/* One line of text next to an icon, so a row, and the densest of the three. */
+.chat-input-notice.chat-input-notice-tip {
+	flex-direction: row;
+	align-items: flex-start;
+	gap: var(--docode-spacing-size60);
+	padding: var(--docode-spacing-size60) var(--docode-spacing-size80);
+}
+
+/* A card closes its own box and sits clear of the input, so it reports itself
+	standalone and the input below keeps its own frame. Its bottom corners are its
+	own, so they take the run's radius directly rather than through the stack. */
+.chat-input-notice.chat-input-notice-onboarding {
+	--chat-input-notice-radius: var(--chat-input-stack-radius-outer, var(--docode-cornerRadius-large));
+	border-bottom: var(--docode-strokeThickness) solid var(--docode-input-border, var(--docode-widget-border, transparent));
+	border-radius: var(--chat-input-stack-radius-top, var(--chat-input-notice-radius)) var(--chat-input-stack-radius-top, var(--chat-input-notice-radius)) var(--chat-input-notice-radius) var(--chat-input-notice-radius);
+	margin-bottom: var(--docode-spacing-size40);
+}
+
+/* --- Variant: notification --- */
+
+/*
+ * Severity tints the same frame rather than replacing it: the notice keeps its
+ * shape and only its border and wash say how urgent it is. Each severity names
+ * its colour once and the border, the wash and the icon all derive from it, so
+ * a new severity is one declaration rather than three across two files.
+ */
+.chat-input-notice.chat-input-notice-notification {
+	gap: var(--docode-spacing-size20);
+	border-color: var(--chat-input-notice-severity);
+	background-color: color-mix(in srgb, var(--chat-input-notice-severity) 6%, var(--docode-agentsChatInput-background, var(--docode-input-background)));
+}
+
+.chat-input-notice.chat-input-notice-notification.severity-info {
+	--chat-input-notice-severity: var(--docode-focusBorder);
+	/* The quiet one: it washes and colours its icon, but keeps the plain input
+	 * border rather than tinting it. */
+	border-color: var(--docode-input-border, transparent);
+}
+
+.chat-input-notice.chat-input-notice-notification.severity-warning {
+	--chat-input-notice-severity: var(--docode-editorWarning-foreground);
+}
+
+.chat-input-notice.chat-input-notice-notification.severity-error {
+	--chat-input-notice-severity: var(--docode-editorError-foreground);
+}
+
+/* --- Onboarding card: copy --- */
+
+/*
+ * A card names itself and then explains itself once. Both cards use the same two
+ * type roles, so they are set here rather than restated per card.
+ */
+.chat-input-notice-title {
+	font-size: var(--docode-fontSize-label1);
+	font-weight: var(--docode-fontWeight-semiBold);
+}
+
+/*
+ * Wraps rather than truncating: this sentence carries the promise, the ask and
+ * the escape hatch, so it survives at every width.
+ */
+.chat-input-notice-description {
+	font-size: var(--docode-fontSize-label2);
+	color: var(--docode-descriptionForeground);
+	line-height: 1.4;
+}
+
+/* --- Onboarding card: device picker --- */
+
+/*
+ * The housing for a device <select> inside a first-run card - the microphone in
+ * the dictation card, the microphone in the voice card. The housing draws the
+ * surface and the select inside it stays transparent, so there is one border
+ * rather than two, while the select keeps its real dropdown, keyboard handling
+ * and screen-reader semantics.
+ */
+.chat-input-notice-picker {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size60);
+	box-sizing: border-box;
+	min-width: 0;
+	height: var(--docode-spacing-size280);
+	padding: 0 var(--docode-spacing-size80);
+	border: var(--docode-strokeThickness) solid var(--docode-dropdown-border, var(--docode-input-border, transparent));
+	border-radius: var(--docode-cornerRadius-small);
+	background-color: var(--docode-dropdown-background, var(--docode-input-background));
+	transition: border-color 100ms ease-out;
+}
+
+.chat-input-notice-picker[hidden] {
+	display: none;
+}
+
+.chat-input-notice-picker:hover {
+	border-color: var(--docode-focusBorder);
+}
+
+.chat-input-notice-picker:focus-within {
+	border-color: var(--docode-focusBorder);
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: -2px;
+}
+
+.chat-input-notice-picker .monaco-select-box {
+	flex: 1 1 auto;
+	min-width: 0;
+	height: 100%;
+	padding: 0;
+	border: none;
+	border-radius: var(--docode-cornerRadius-small);
+	background-color: transparent;
+	color: var(--docode-dropdown-foreground, var(--docode-foreground));
+	font-family: inherit;
+	font-size: var(--docode-fontSize-label2);
+	text-overflow: ellipsis;
+}
+
+.chat-input-notice-picker .monaco-select-box:focus {
+	outline: none;
+}
+
+/* --- Actions --- */
+
+/*
+ * Actions are `ActionBar` items, so the hover, focus ring and keyboard handling
+ * come from `.monaco-action-bar`. Only the compact size this surface wants is
+ * set here.
+ */
+.chat-input-notice-action {
+	flex-shrink: 0;
+}
+
+.chat-input-notice-action .action-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--docode-spacing-size200);
+	height: var(--docode-spacing-size200);
+	padding: 0;
+	border-radius: var(--docode-cornerRadius-small);
+	color: var(--docode-descriptionForeground);
+}
+
+.chat-input-notice-action .action-label:hover {
+	color: var(--docode-foreground);
+}
+
+/*
+ * `.monaco-workbench .codicon` sets colour and size directly on the glyph, so
+ * without out-ranking it this renders as a dark 16px icon rather than a compact
+ * one inheriting the button's foreground.
+ */
+.monaco-workbench .chat-input-notice-action .codicon[class*='codicon-'] {
+	font-size: var(--docode-codiconFontSize-compact);
+	line-height: 1;
+	color: inherit;
+}
+
+/*
+ * A card is a stack, so there is no row for its close to sit in: it is pinned to
+ * the corner instead, and the copy underneath reserves the space. A tip and a
+ * notification both have a row, so their actions stay in the flow.
+ */
+.chat-input-notice.chat-input-notice-onboarding > .chat-input-notice-action {
+	position: absolute;
+	top: var(--docode-spacing-size80);
+	right: var(--docode-spacing-size80);
+}

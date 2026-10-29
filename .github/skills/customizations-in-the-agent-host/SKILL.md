@@ -9,9 +9,9 @@ Customizations are the plugins, MCP servers, agents, skills and instructions tha
 
 Read this before changing anything in:
 
-- `src/vs/platform/agentHost/node/agentHostCustomizationEnablementService.ts`
-- `src/vs/platform/agentHost/node/shared/customizationEnablementGate.ts`
-- `src/vs/platform/agentHost/common/customizationEnablement.ts`
+- `src/do/platform/agentHost/node/agentHostCustomizationEnablementService.ts`
+- `src/do/platform/agentHost/node/shared/customizationEnablementGate.ts`
+- `src/do/platform/agentHost/common/customizationEnablement.ts`
 - the per-provider customization paths under `node/copilot/`, `node/claude/`, `node/codex/`
 
 ## The mental model
@@ -120,7 +120,7 @@ Known false alarms:
 npm run typecheck-client
 ./scripts/test.sh --grep "customizationEnablement"
 ./scripts/test-integration.sh --runGlob "**/agentHost/**/{sessionConfig,toolApproval,codexCustomizations}.integrationTest.js"
-./scripts/test-integration.sh --run src/vs/platform/agentHost/test/node/claudeAgent.integrationTest.ts
+./scripts/test-integration.sh --run src/do/platform/agentHost/test/node/claudeAgent.integrationTest.ts
 ```
 
-Tests that construct an agent session directly need `IAgentHostCustomizationEnablementService` in their service collection; use `createNoopCustomizationEnablementService()` from `src/vs/platform/agentHost/test/node/testCustomizationEnablementService.ts`.
+Tests that construct an agent session directly need `IAgentHostCustomizationEnablementService` in their service collection; use `createNoopCustomizationEnablementService()` from `src/do/platform/agentHost/test/node/testCustomizationEnablementService.ts`.

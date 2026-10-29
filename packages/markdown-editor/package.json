@@ -1,0 +1,78 @@
+{
+	"name": "@docode/markdown-editor",
+	"version": "0.0.2-136",
+	"type": "module",
+	"license": "MIT",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"sideEffects": [
+		"**/*.css"
+	],
+	"typesVersions": {
+		"*": {
+			"config": [
+				"./dist/config.d.ts"
+			],
+			"commands": [
+				"./dist/commands.d.ts"
+			]
+		}
+	},
+	"files": [
+		"dist",
+		"src/view/editor.css",
+		"src/view/themes/default.css",
+		"src/view/themes/github.css",
+		"src/view/themes/docode-github.css",
+		"src/view/themes/docode-default.css",
+		"src/contrib/comments/commentInput.css",
+		"src/contrib/comments/commentWidget.css",
+		"src/contrib/find/find.css",
+		"src/contrib/rename/rename.css",
+		"src/contrib/suggest/suggest.css"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./config": {
+			"types": "./dist/config.d.ts",
+			"import": "./dist/config.js"
+		},
+		"./commands": {
+			"types": "./dist/commands.d.ts",
+			"import": "./dist/commands.js"
+		},
+		"./web-editors": {
+			"types": "./dist/web-editors.d.ts",
+			"import": "./dist/web-editors.js"
+		},
+		"./editor.css": "./src/view/editor.css",
+		"./themes/default.css": "./src/view/themes/default.css",
+		"./themes/github.css": "./src/view/themes/github.css",
+		"./themes/docode-github.css": "./src/view/themes/docode-github.css",
+		"./themes/docode-default.css": "./src/view/themes/docode-default.css",
+		"./commentInput.css": "./src/contrib/comments/commentInput.css",
+		"./commentWidget.css": "./src/contrib/comments/commentWidget.css",
+		"./rename.css": "./src/contrib/rename/rename.css",
+		"./suggest.css": "./src/contrib/suggest/suggest.css"
+	},
+	"dependencies": {
+		"@docode/codicons": "file:../codicons",
+		"@vscode/diff": "0.0.2-0",
+		"entities": "6.0.1",
+		"katex": "^0.16.33",
+		"micromark": "^4.0.1",
+		"micromark-extension-frontmatter": "^2.0.0",
+		"micromark-extension-gfm": "^3.0.0",
+		"micromark-extension-gfm-autolink-literal": "^2.1.0",
+		"micromark-extension-gfm-strikethrough": "^2.1.0",
+		"micromark-extension-gfm-table": "^2.1.1",
+		"micromark-extension-gfm-task-list-item": "^2.1.0",
+		"micromark-extension-math": "^3.1.0",
+		"micromark-util-decode-string": "^2.0.1",
+		"@docode/observables": "file:../observables"
+	},
+	"gitHead": "46230ef744c3159d7597254d56b346351773324e"
+}

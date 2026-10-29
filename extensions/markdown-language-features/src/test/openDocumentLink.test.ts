@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type { ResolvedDocumentLinkTarget } from '../client/protocol';
 import { getAbsoluteUri, getRangeFromPositionOrRange, MdLinkOpener } from '../util/openDocumentLink';
 
@@ -57,11 +57,11 @@ suite('Open Markdown document link', () => {
 			},
 		});
 
-		const target = await opener.resolveDocumentLink('https://example.com/docs#section', vscode.Uri.file('/workspace/readme.md'));
+		const target = await opener.resolveDocumentLink('https://example.com/docs#section', docode.Uri.file('/workspace/readme.md'));
 
 		assert.deepStrictEqual({
 			resolveCalls,
-			target: target && { kind: target.kind, uri: vscode.Uri.from(target.uri).toString() },
+			target: target && { kind: target.kind, uri: docode.Uri.from(target.uri).toString() },
 		}, {
 			resolveCalls: 0,
 			target: { kind: 'external', uri: 'https://example.com/docs#section' },

@@ -1,5 +1,5 @@
 {
-	"$schema": "vscode://schemas/color-theme",
+	"$schema": "docode://schemas/color-theme",
 	"name": "2026 Dark",
 	"include": "./dark_modern.json",
 	"type": "dark",

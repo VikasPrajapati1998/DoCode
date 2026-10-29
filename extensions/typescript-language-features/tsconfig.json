@@ -13,12 +13,12 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.codeActionAI.d.ts",
-		"../../src/vscode-dts/vscode.proposed.codeActionRanges.d.ts",
-		"../../src/vscode-dts/vscode.proposed.multiDocumentHighlightProvider.d.ts",
-		"../../src/vscode-dts/vscode.proposed.notificationTelemetry.d.ts",
-		"../../src/vscode-dts/vscode.proposed.workspaceTrust.d.ts",
-		"../../src/vscode-dts/vscode.proposed.editorHoverVerbosityLevel.d.ts",
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.codeActionAI.d.ts",
+		"../../src/docode-dts/docode.proposed.codeActionRanges.d.ts",
+		"../../src/docode-dts/docode.proposed.multiDocumentHighlightProvider.d.ts",
+		"../../src/docode-dts/docode.proposed.notificationTelemetry.d.ts",
+		"../../src/docode-dts/docode.proposed.workspaceTrust.d.ts",
+		"../../src/docode-dts/docode.proposed.editorHoverVerbosityLevel.d.ts",
 	]
 }

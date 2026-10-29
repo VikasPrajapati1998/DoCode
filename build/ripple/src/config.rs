@@ -6,7 +6,7 @@
 //! Repository configuration. The engine only knows TypeScript, JavaScript and npm; everything it
 //! knows about a particular repository (where the modules and tests are, which files every test
 //! depends on, which of the repository's own functions are pure) comes from a JSONC file such as
-//! `vscode.jsonc`.
+//! `docode.jsonc`.
 
 use std::collections::{BTreeMap, HashSet};
 use std::path::Path;
@@ -45,7 +45,7 @@ pub enum Scope {
 	Integration,
 }
 
-/// The configuration file, see `vscode.jsonc` for the meaning of each field.
+/// The configuration file, see `docode.jsonc` for the meaning of each field.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 struct File {
@@ -250,7 +250,7 @@ impl Config {
 		self.test_runners.matches(path)
 	}
 
-	/// The prefixes of the path aliases, such as `vs/`.
+	/// The prefixes of the path aliases, such as `do/`.
 	pub fn alias_prefixes(&self) -> impl Iterator<Item = &str> {
 		self.aliases.iter().map(|(prefix, _)| prefix.as_str())
 	}
@@ -455,6 +455,6 @@ mod tests {
 
 	#[test]
 	fn repository_configuration_is_valid() {
-		Config::parse(include_str!("../vscode.jsonc")).unwrap();
+		Config::parse(include_str!("../docode.jsonc")).unwrap();
 	}
 }

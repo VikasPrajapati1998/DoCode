@@ -9,7 +9,7 @@ Start by identifying the execution surface. VS Code has separate OTel pipelines 
 
 | Surface | Process and producer | Configuration | Authoritative VS Code document |
 |---|---|---|---|
-| Agent Host sessions (Copilot, Claude, Codex) | Provider-native telemetry routed by the Agent Host utility process | `chat.agentHost.otel.*` | [`src/vs/platform/agentHost/OTEL.md`](../../../src/vs/platform/agentHost/OTEL.md) |
+| Agent Host sessions (Copilot, Claude, Codex) | Provider-native telemetry routed by the Agent Host utility process | `chat.agentHost.otel.*` | [`src/do/platform/agentHost/OTEL.md`](../../../src/do/platform/agentHost/OTEL.md) |
 | Local Copilot Chat | Copilot Chat extension host and `IOTelService` | `github.copilot.chat.otel.*` | [`extensions/copilot/docs/monitoring/agent_monitoring.md`](../../../extensions/copilot/docs/monitoring/agent_monitoring.md) |
 
 Do not combine these pipelines or assume that a setting for one configures another.
@@ -38,7 +38,7 @@ The runtime's `docs/developer-docs/monitor.md` is exhaustive for native Copilot 
 ### Agent Host integration
 
 ```text
-src/vs/platform/agentHost/
+src/do/platform/agentHost/
 ├── OTEL.md
 ├── common/
 │   ├── agentService.ts                         # setting IDs, env names, settings → env translation
@@ -56,7 +56,7 @@ src/vs/platform/agentHost/
 Shared transport and persistence live under:
 
 ```text
-src/vs/platform/otel/
+src/do/platform/otel/
 ├── common/                                      # normalized span data and shared attributes
 └── node/
     ├── otlp/                                    # receiver, decoder, outbound forwarders
@@ -68,7 +68,7 @@ Agent Host supports two routing modes:
 - **Pass-through:** provider SDKs export directly to the configured destination.
 - **DB mode:** provider traces use a private OTLP/HTTP JSON loopback, are decoded into SQLite, and may be forwarded to a compatible external destination. Provider logs and metrics bypass the trace loopback.
 
-Read `src/vs/platform/agentHost/OTEL.md` before changing either mode.
+Read `src/do/platform/agentHost/OTEL.md` before changing either mode.
 
 ### Local Copilot Chat
 
@@ -80,10 +80,10 @@ extensions/copilot/src/platform/otel/
 extensions/copilot/src/extension/
 ├── prompt/node/chatMLFetcher.ts                 # chat spans
 ├── intents/node/toolCallingLoop.ts              # invoke_agent spans
-├── tools/vscode-node/toolsService.ts            # execute_tool spans
-├── chat/vscode-node/chatHookService.ts           # execute_hook spans
-├── byok/vscode-node/                            # BYOK chat spans
-└── trajectory/vscode-node/                      # Agent Debug Log conversion
+├── tools/docode-node/toolsService.ts            # execute_tool spans
+├── chat/docode-node/chatHookService.ts           # execute_hook spans
+├── byok/docode-node/                            # BYOK chat spans
+└── trajectory/docode-node/                      # Agent Debug Log conversion
 ```
 
 For extension-emitted attributes, use constants from `extensions/copilot/src/platform/otel/common/genAiAttributes.ts`. Those constants are not authoritative for provider-native Agent Host telemetry.
@@ -96,7 +96,7 @@ When changing Agent Host configuration:
 2. Update setting IDs, environment names, and `buildAgentHostOTelEnv()` in `common/agentService.ts`.
 3. Update `readAgentHostOTelEnv()` or provider launch translation as applicable.
 4. Preserve precedence deliberately: enterprise managed policy, inherited environment, and local settings are separate channels.
-5. Update `src/vs/platform/agentHost/OTEL.md`.
+5. Update `src/do/platform/agentHost/OTEL.md`.
 6. Add focused translation and integration tests.
 7. Invoke the `policy-and-managed-settings` skill for any enterprise control.
 
@@ -123,7 +123,7 @@ For Agent Host provider-native signals:
 For host-produced spans:
 
 - Keep names and attributes in `common/otel/agentHostOTelService.ts` or shared platform constants.
-- Preserve `service.namespace=vscode.agent-host` while retaining distinct provider service names.
+- Preserve `service.namespace=docode.agent-host` while retaining distinct provider service names.
 - Treat titles, prompts, responses, tool arguments, file paths, commands, and raw server names as sensitive content.
 - Gate sensitive content on the effective content-capture policy and apply explicit bounds where required.
 - Propagate W3C `traceparent` and `tracestate` through the provider's supported boundary.
@@ -152,7 +152,7 @@ Check the provider launch code and bundled provider version before documenting s
 
 ## Documentation rules
 
-- Keep current Agent Host architecture and data flow in `src/vs/platform/agentHost/OTEL.md`.
+- Keep current Agent Host architecture and data flow in `src/do/platform/agentHost/OTEL.md`.
 - Keep local extension-host usage in `extensions/copilot/docs/monitoring/agent_monitoring.md`.
 - Keep exhaustive native Copilot signals in the runtime repository.
 - Keep this skill procedural. Do not duplicate complete settings, environment-variable, attribute, event, or metric tables here.
@@ -167,7 +167,7 @@ Agent Host examples:
 
 ```bash
 ./scripts/test.sh --grep "AgentHostOTel\|agent host.*OTel"
-./scripts/test-integration.sh --run src/vs/platform/agentHost/test/node/otel/agentHostOTelService.integrationTest.ts
+./scripts/test-integration.sh --run src/do/platform/agentHost/test/node/otel/agentHostOTelService.integrationTest.ts
 ```
 
 Local Copilot Chat examples, from `extensions/copilot/`:

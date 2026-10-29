@@ -7,7 +7,7 @@ artifacts/
 .mozilla
 .pki
 .var
-.vscode*
+.docode*
 Downloads
 node_modules/
 npm-debug.log

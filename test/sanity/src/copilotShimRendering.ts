@@ -21,7 +21,7 @@ export function assertCopilotLinkHelperSource(source: string, sourceName: string
 	assert.ok(normalized.length > 0, `${sourceName} is empty.`);
 	assert.ok(!normalized.includes('@@'), `${sourceName} contains an unresolved template marker.`);
 	assert.ok(!normalized.includes('%{'), `${sourceName} contains an RPM macro.`);
-	assert.match(normalized, /\bvscode_copilot_link\s*\(\)\s*\{/u, `${sourceName} must define vscode_copilot_link.`);
+	assert.match(normalized, /\bdocode_copilot_link\s*\(\)\s*\{/u, `${sourceName} must define docode_copilot_link.`);
 	assert.match(normalized, /\binstall\b/u, `${sourceName} must support the install action.`);
 	assert.match(normalized, /\bremove\b/u, `${sourceName} must support the remove action.`);
 
@@ -46,8 +46,8 @@ export function assertEmbeddedCopilotLinkHelper(script: string, helperSource: st
  * Verifies a generated lifecycle call for a specific package identity.
  */
 export function assertCopilotLinkLifecycleCall(script: string, action: 'install' | 'remove', applicationName: string, scriptName: string): void {
-	const expression = new RegExp(`\\bvscode_copilot_link\\s+${action}\\s+["']?${escapeRegExp(applicationName)}["']?(?:\\s|$)`, 'm');
-	assert.match(script, expression, `${scriptName} does not call vscode_copilot_link ${action} ${applicationName}.`);
+	const expression = new RegExp(`\\bdocode_copilot_link\\s+${action}\\s+["']?${escapeRegExp(applicationName)}["']?(?:\\s|$)`, 'm');
+	assert.match(script, expression, `${scriptName} does not call docode_copilot_link ${action} ${applicationName}.`);
 }
 
 function escapeRegExp(value: string): string {

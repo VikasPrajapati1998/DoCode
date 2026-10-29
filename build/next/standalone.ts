@@ -13,9 +13,9 @@ import { rewriteSourceMappingURL } from './source-map-url.ts';
  * These run in special contexts (Electron preload) and must not be bundled.
  */
 const desktopStandaloneFiles = [
-	'vs/base/parts/sandbox/electron-browser/preload.ts',
-	'vs/base/parts/sandbox/electron-browser/preload-aux.ts',
-	'vs/platform/browserView/electron-browser/preload-browserView.ts',
+	'do/base/parts/sandbox/electron-browser/preload.ts',
+	'do/base/parts/sandbox/electron-browser/preload-aux.ts',
+	'do/platform/browserView/electron-browser/preload-browserView.ts',
 ];
 
 export async function compileStandaloneFiles(srcDir: string, outDir: string, target: BuildTarget, minify: boolean, sourceMapBaseUrl?: string): Promise<void> {

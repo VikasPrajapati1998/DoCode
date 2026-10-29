@@ -34,7 +34,7 @@ Do not add a VS Code `policy:` merely to mirror runtime policy. Do not add a Git
 
 ### Harness eligibility for managed policy
 
-A non-empty effective managed `permissions.deny` list, or managed `sandbox.enabled: true`, requires Copilot Agent Host, subject to the existing temporary Local escape hatch. A valid empty deny array, other `permissions.*` settings, and other sandbox settings do not independently require Agent Host. Malformed deny values remain fail-closed for runtime validation. VS Code only checks whether the deny list is empty; it does not interpret or enforce rule grammar. Native MDM continues watching the runtime's declared permission keys. Permissions do not turn sandboxing on. Explicit `vscode.temporaryAllowLocalHarness: false` still overrides the escape hatch. Claude/Codex retain their separate presence-based managed-settings governance.
+A non-empty effective managed `permissions.deny` list, or managed `sandbox.enabled: true`, requires Copilot Agent Host, subject to the existing temporary Local escape hatch. A valid empty deny array, other `permissions.*` settings, and other sandbox settings do not independently require Agent Host. Malformed deny values remain fail-closed for runtime validation. VS Code only checks whether the deny list is empty; it does not interpret or enforce rule grammar. Native MDM continues watching the runtime's declared permission keys. Permissions do not turn sandboxing on. Explicit `docode.temporaryAllowLocalHarness: false` still overrides the escape hatch. Claude/Codex retain their separate presence-based managed-settings governance.
 
 When effective enterprise policy prohibits Local, the harness picker keeps its row visible but disabled, with a policy explanation and a link to learn why Local is disabled. This presentation does not make Local selectable, usable as a fallback, or exempt from request blocking and migration. Personal visibility settings still apply when no enterprise restriction is active.
 
@@ -125,5 +125,5 @@ Start with:
 - `github/copilot-agent-runtime/src/runtime/src/permissions/managed.rs`
 - `github/copilot-agent-runtime/src/runtime/src/permissions/orchestrator.rs`
 - `github/copilot-sdk/nodejs/src/types.ts`
-- `microsoft/vscode/src/vs/platform/agentHost/common/agentHostManagedSettings.ts`
-- `microsoft/vscode/src/vs/platform/agentHost/node/copilot/copilotSessionLauncher.ts`
+- `microsoft/vscode/src/do/platform/agentHost/common/agentHostManagedSettings.ts`
+- `microsoft/vscode/src/do/platform/agentHost/node/copilot/copilotSessionLauncher.ts`

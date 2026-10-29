@@ -60,23 +60,21 @@ export const unicodeFilter = Object.freeze<string[]>([
 	'!extensions/php-language-features/src/features/phpGlobalFunctions.ts',
 	'!extensions/terminal-suggest/src/completions/upstream/**',
 	'!extensions/typescript-language-features/test-workspace/**',
-	'!extensions/vscode-api-tests/testWorkspace/**',
-	'!extensions/vscode-api-tests/testWorkspace2/**',
+	'!extensions/docode-api-tests/testWorkspace/**',
+	'!extensions/docode-api-tests/testWorkspace2/**',
 	'!extensions/**/dist/**',
 	'!extensions/**/out/**',
 	'!extensions/**/snippets/**',
 	'!extensions/**/colorize-fixtures/**',
 	'!extensions/terminal-suggest/src/shell/fishBuiltinsCache.ts',
 
-	// extensions/copilot has its own code style
-	'!extensions/copilot/**',
 
-	'!src/vs/base/browser/dompurify/**',
-	'!src/vs/workbench/services/keybinding/browser/keyboardLayouts/**',
-	'!src/vs/workbench/contrib/terminal/common/scripts/psreadline/**',
+	'!src/do/base/browser/dompurify/**',
+	'!src/do/workbench/services/keybinding/browser/keyboardLayouts/**',
+	'!src/do/workbench/contrib/terminal/common/scripts/psreadline/**',
 
 	// Files with licences
-	'!src/vs/platform/endpoint/common/licenseAgreement.ts',
+	'!src/do/platform/endpoint/common/licenseAgreement.ts',
 ]);
 
 export const indentationFilter = Object.freeze<string[]>([
@@ -89,22 +87,22 @@ export const indentationFilter = Object.freeze<string[]>([
 	'!LICENSES.chromium.html',
 	'!**/LICENSE',
 	'!**/*.mp3',
-	'!src/vs/base/browser/dompurify/*',
-	'!src/vs/base/common/lit-html/**',
-	'!src/vs/base/common/signals-core/**',
-	'!src/vs/base/common/marked/marked.js',
-	'!src/vs/base/common/semver/semver.js',
-	'!src/vs/base/node/terminateProcess.sh',
-	'!src/vs/base/node/cpuUsage.sh',
-	'!src/vs/editor/common/languages/highlights/*.scm',
-	'!src/vs/editor/common/languages/injections/*.scm',
+	'!src/do/base/browser/dompurify/*',
+	'!src/do/base/common/lit-html/**',
+	'!src/do/base/common/signals-core/**',
+	'!src/do/base/common/marked/marked.js',
+	'!src/do/base/common/semver/semver.js',
+	'!src/do/base/node/terminateProcess.sh',
+	'!src/do/base/node/cpuUsage.sh',
+	'!src/do/editor/common/languages/highlights/*.scm',
+	'!src/do/editor/common/languages/injections/*.scm',
 	'!test/unit/assert.js',
 	'!resources/linux/snap/electron-launch',
 	'!build/ext.js',
 	'!build/darwin/patch-dmg.py',
 	'!build/npm/gyp/patches/gyp_spectre_mitigation_support.patch',
 	'!product.overrides.json',
-	'!src/vs/platform/endpoint/common/licenseAgreement.ts',
+	'!src/do/platform/endpoint/common/licenseAgreement.ts',
 
 	// except specific folders
 	'!test/automation/out/**',
@@ -118,12 +116,12 @@ export const indentationFilter = Object.freeze<string[]>([
 	'!extensions/typescript-language-features/package-manager/node-maintainer/**',
 	'!extensions/markdown-math/notebook-out/**',
 	'!extensions/ipynb/notebook-out/**',
-	'!extensions/vscode-api-tests/testWorkspace/**',
-	'!extensions/vscode-api-tests/testWorkspace2/**',
+	'!extensions/docode-api-tests/testWorkspace/**',
+	'!extensions/docode-api-tests/testWorkspace2/**',
 	'!build/monaco/**',
 	'!build/win32/**',
 	'!build/checker/**',
-	'!src/vs/workbench/contrib/terminal/common/scripts/psreadline/**',
+	'!src/do/workbench/contrib/terminal/common/scripts/psreadline/**',
 
 	// except multiple specific files
 	'!**/package.json',
@@ -141,18 +139,14 @@ export const indentationFilter = Object.freeze<string[]>([
 	'!extensions/**/themes/**',
 	'!extensions/**/colorize-fixtures/**',
 
-	// extensions/copilot has its own code style
-	'!extensions/copilot/**',
 
 	// except specific file types
-	'!src/vs/*/**/*.d.ts',
+	'!src/do/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
 	'!**/*.{svg,exe,png,bmp,jpg,gif,scpt,bat,cmd,cur,ttf,woff,eot,md,ps1,psm1,template,yaml,yml,d.ts.recipe,ico,icns,plist,opus,admx,adml,wasm}',
 	'!build/{lib,download,linux,darwin}/**/*.js',
 	'!build/**/*.sh',
-	'!build/azure-pipelines/**/*.js',
-	'!build/azure-pipelines/**/*.config',
 	'!build/npm/gyp/custom-headers/**',
 	'!**/Dockerfile',
 	'!**/Dockerfile.*',
@@ -220,48 +214,44 @@ export const copyrightFilter = Object.freeze<string[]>([
 	'!extensions/typescript-language-features/node-maintainer/**',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
 	'!extensions/*/server/bin/*',
-	'!src/vs/platform/agentHost/node/codex/protocol/generated/**',
-	'!src/vs/workbench/contrib/terminal/common/scripts/psreadline/**',
+	'!src/do/platform/agentHost/node/codex/protocol/generated/**',
+	'!src/do/workbench/contrib/terminal/common/scripts/psreadline/**',
 	'!extensions/mermaid-markdown-features/chat-webview-out/**',
 	'!extensions/mermaid-markdown-features/markdown-preview-out/**',
 	'!extensions/mermaid-markdown-features/notebook-out/**',
 
 	// vendored third-party libraries
-	'!src/vs/base/common/lit-html/**',
-	'!src/vs/base/common/signals-core/**',
+	'!src/do/base/common/lit-html/**',
+	'!src/do/base/common/signals-core/**',
 
-	// extensions/copilot has its own code style
-	'!extensions/copilot/**',
 ]);
 
 export const tsFormattingFilter = Object.freeze<string[]>([
 	'src/**/*.ts',
 	'test/**/*.ts',
 	'extensions/**/*.ts',
-	'!src/vs/*/**/*.d.ts',
+	'!src/do/*/**/*.d.ts',
 	'!src/typings/**/*.d.ts',
 	'!extensions/**/*.d.ts',
 	'!**/fixtures/**',
 	'!**/typings/**',
 	'!**/node_modules/**',
 	'!extensions/**/colorize-fixtures/**',
-	'!extensions/vscode-api-tests/testWorkspace/**',
-	'!extensions/vscode-api-tests/testWorkspace2/**',
+	'!extensions/docode-api-tests/testWorkspace/**',
+	'!extensions/docode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
 	'!extensions/terminal-suggest/src/shell/zshBuiltinsCache.ts',
 	'!extensions/terminal-suggest/src/shell/fishBuiltinsCache.ts',
-	'!src/vs/platform/agentHost/node/codex/protocol/generated/**',
+	'!src/do/platform/agentHost/node/codex/protocol/generated/**',
 
-	// extensions/copilot has its own code style
-	'!extensions/copilot/**',
 ]);
 
 export const eslintFilter = Object.freeze<string[]>([
 	'**/*.{js,cjs,mjs}',
 	'**/*.{ts,tsx,mts,cts}',
 	'.eslint-plugin-local/**/*.ts',
-	'!src/vs/platform/agentHost/node/codex/protocol/generated/**',
+	'!src/do/platform/agentHost/node/codex/protocol/generated/**',
 	...readFileSync(join(import.meta.dirname, '..', '.eslint-ignore'))
 		.toString()
 		.split(/\r\n|\n/)

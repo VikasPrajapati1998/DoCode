@@ -9,13 +9,13 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { product, pkg } from './bootstrap-meta.js';
 import './bootstrap-node.js';
-import * as performance from './vs/base/common/performance.js';
-import { INLSConfiguration } from './vs/nls.js';
+import * as performance from './do/base/common/performance.js';
+import { INLSConfiguration } from './do/nls.js';
 
 // Prepare globals that are needed for running
-globalThis._VSCODE_PRODUCT_JSON = { ...product };
-globalThis._VSCODE_PACKAGE_JSON = { ...pkg };
-globalThis._VSCODE_FILE_ROOT = import.meta.dirname;
+globalThis._DOCODE_PRODUCT_JSON = { ...product };
+globalThis._DOCODE_PACKAGE_JSON = { ...pkg };
+globalThis._DOCODE_FILE_ROOT = import.meta.dirname;
 
 // Install a hook to ESM module resolution that
 // 1) maps 'fs' to 'original-fs' (the ASAR-unaware Node.js `fs`), and
@@ -44,7 +44,7 @@ function enableASARSupport(): void {
 	}
 
 	let trace: ((message: string) => void) | undefined;
-	const traceSink = process.env['VSCODE_ASAR_TRACE'] || undefined;
+	const traceSink = process.env['DOCODE_ASAR_TRACE'] || undefined;
 	if (traceSink) {
 		// Known truthy values trace to stderr; any other value is a file path.
 		const prefix = '[asar-resolve] ';
@@ -92,7 +92,7 @@ function enableASARSupport(): void {
 	};
 
 	const appRoot = dirname(import.meta.dirname);
-	const resourcesPath = process.env['VSCODE_DEV'] ? undefined : normalizeDriveLetter(appRoot);
+	const resourcesPath = process.env['DOCODE_DEV'] ? undefined : normalizeDriveLetter(appRoot);
 	// Root require.resolve() inside the archive; the leading './' below avoids a node_modules walk.
 	const asarRequire = resourcesPath ? createRequire(join(appRoot, 'node_modules.asar', 'x.js')) : undefined;
 	trace?.(`tracing enabled (node ${process.versions.node}); resourcesPath=${resourcesPath}`);
@@ -230,30 +230,30 @@ async function doSetupNLS(): Promise<INLSConfiguration | undefined> {
 	let nlsConfig: INLSConfiguration | undefined = undefined;
 
 	let messagesFile: string | undefined;
-	if (process.env['VSCODE_NLS_CONFIG']) {
+	if (process.env['DOCODE_NLS_CONFIG']) {
 		try {
-			nlsConfig = JSON.parse(process.env['VSCODE_NLS_CONFIG']);
+			nlsConfig = JSON.parse(process.env['DOCODE_NLS_CONFIG']);
 			if (nlsConfig?.languagePack?.messagesFile) {
 				messagesFile = nlsConfig.languagePack.messagesFile;
 			} else if (nlsConfig?.defaultMessagesFile) {
 				messagesFile = nlsConfig.defaultMessagesFile;
 			}
 
-			globalThis._VSCODE_NLS_LANGUAGE = nlsConfig?.resolvedLanguage;
+			globalThis._DOCODE_NLS_LANGUAGE = nlsConfig?.resolvedLanguage;
 		} catch (e) {
-			console.error(`Error reading VSCODE_NLS_CONFIG from environment: ${e}`);
+			console.error(`Error reading DOCODE_NLS_CONFIG from environment: ${e}`);
 		}
 	}
 
 	if (
-		process.env['VSCODE_DEV'] ||	// no NLS support in dev mode
+		process.env['DOCODE_DEV'] ||	// no NLS support in dev mode
 		!messagesFile					// no NLS messages file
 	) {
 		return undefined;
 	}
 
 	try {
-		globalThis._VSCODE_NLS_MESSAGES = JSON.parse((await fs.promises.readFile(messagesFile)).toString());
+		globalThis._DOCODE_NLS_MESSAGES = JSON.parse((await fs.promises.readFile(messagesFile)).toString());
 	} catch (error) {
 		console.error(`Error reading NLS messages file ${messagesFile}: ${error}`);
 
@@ -269,7 +269,7 @@ async function doSetupNLS(): Promise<INLSConfiguration | undefined> {
 		// Fallback to the default message file to ensure english translation at least
 		if (nlsConfig?.defaultMessagesFile && nlsConfig.defaultMessagesFile !== messagesFile) {
 			try {
-				globalThis._VSCODE_NLS_MESSAGES = JSON.parse((await fs.promises.readFile(nlsConfig.defaultMessagesFile)).toString());
+				globalThis._DOCODE_NLS_MESSAGES = JSON.parse((await fs.promises.readFile(nlsConfig.defaultMessagesFile)).toString());
 			} catch (error) {
 				console.error(`Error reading default NLS messages file ${nlsConfig.defaultMessagesFile}: ${error}`);
 			}

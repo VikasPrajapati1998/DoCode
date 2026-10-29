@@ -1,0 +1,17 @@
+{
+	"name": "@docode/tas-client",
+	"version": "0.1.84",
+	"description": "",
+	"main": "./index.js",
+	"keywords": [
+		"docode-tas-client"
+	],
+	"author": "Microsoft",
+	"license": "MIT",
+	"engines": {
+		"docode": "^1.85.0"
+	},
+	"dependencies": {
+		"tas-client": "0.2.33"
+	}
+}

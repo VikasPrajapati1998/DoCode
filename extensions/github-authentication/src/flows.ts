@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { ProgressLocation, Uri, commands, env, l10n, window, workspace } from 'vscode';
+import { ProgressLocation, Uri, commands, env, l10n, window, workspace } from 'docode';
 import { Log } from './common/logger';
 import { Config } from './config';
 import { UriEventHandler } from './github';
@@ -82,7 +82,7 @@ interface IFlowTriggerOptions {
 	 */
 	redirectUri: Uri;
 	/**
-	 * The Uri to redirect to after redirecting to the redirect Uri. (i.e. vscode://....)
+	 * The Uri to redirect to after redirecting to the redirect Uri. (i.e. docode://....)
 	 */
 	callbackUri: Uri;
 	/**

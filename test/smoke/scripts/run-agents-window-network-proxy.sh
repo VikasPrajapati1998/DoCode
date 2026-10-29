@@ -9,17 +9,17 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 FIXTURE_DIR="$ROOT/test/smoke/network-proxy"
 LOG_DIR="$ROOT/.build/logs/agents-window-network-proxy"
-TEMP_ROOT="${RUNNER_TEMP:-${AGENT_TEMPDIRECTORY:-${TMPDIR:-/tmp}}}/vscode-agents-window-network-proxy-$$"
-TEST_REPO="$TEMP_ROOT/vscode-smoketest-express"
+TEMP_ROOT="${RUNNER_TEMP:-${AGENT_TEMPDIRECTORY:-${TMPDIR:-/tmp}}}/docode-agents-window-network-proxy-$$"
+TEST_REPO="$TEMP_ROOT/docode-smoketest-express"
 PROXY_AUTH="none"
 if [[ "${1:-}" == "--kerberos" ]]; then
 	PROXY_AUTH="kerberos"
 	shift
 fi
-PROXY_GROUP="vscodeproxytest"
-PF_ANCHOR="com.apple/vscodeproxytest"
-MOCK_HOST="vscode-smoke.test"
-PROXY_HEADER_VALUE="vscode-smoke-network-proxy-$$"
+PROXY_GROUP="docodeproxytest"
+PF_ANCHOR="com.apple/docodeproxytest"
+MOCK_HOST="docode-smoke.test"
+PROXY_HEADER_VALUE="docode-smoke-network-proxy-$$"
 PAC_URL="http://127.0.0.1:44444/test.pac"
 PAC_FILE="$FIXTURE_DIR/test.pac"
 PAC_LOG="$LOG_DIR/pac-server.log"
@@ -35,7 +35,7 @@ KERBEROS_AUTH_LOG="$LOG_DIR/kerberos-auth.log"
 KERBEROS_CONFIG="$TEMP_ROOT/krb5.conf"
 KERBEROS_CACHE="FILE:$TEMP_ROOT/krb5cc"
 KERBEROS_KEYTAB="FILE:$TEMP_ROOT/proxy.keytab"
-KERBEROS_REALM="VSCODE.PROXY.TEST"
+KERBEROS_REALM="DOCODE.PROXY.TEST"
 KERBEROS_USERNAME="PlaceholderUsername"
 KERBEROS_PASSWORD="Placeholder"
 TLS_CA="$TEMP_ROOT/ca.pem"
@@ -156,7 +156,7 @@ extendedKeyUsage = serverAuth
 subjectAltName = DNS:$MOCK_HOST,DNS:localhost,IP:127.0.0.1
 EOF
 	openssl req -x509 -newkey rsa:2048 -nodes -days 1 -sha256 \
-		-config "$TEMP_ROOT/tls.cnf" -extensions ca -subj "/CN=VSCode Smoke Test CA" \
+		-config "$TEMP_ROOT/tls.cnf" -extensions ca -subj "/CN=DoCode Smoke Test CA" \
 		-keyout "$TEMP_ROOT/ca.key" -out "$TLS_CA"
 	openssl req -new -newkey rsa:2048 -nodes -sha256 -config "$TEMP_ROOT/tls.cnf" \
 		-keyout "$TLS_KEY" -out "$TEMP_ROOT/server.csr"
@@ -216,10 +216,10 @@ cat > "$TEMP_ROOT/hosts" <<EOF
 127.0.0.1 $MOCK_HOST
 EOF
 cat > "$TEMP_ROOT/squid.conf" <<EOF
-visible_hostname vscode-smoke-proxy
+visible_hostname docode-smoke-proxy
 http_port 127.0.0.1:43144
 hosts_file $TEMP_ROOT/hosts
-request_header_add X-VSCode-Smoke-Proxy $PROXY_HEADER_VALUE all
+request_header_add X-DoCode-Smoke-Proxy $PROXY_HEADER_VALUE all
 cache deny all
 cache_store_log none
 access_log stdio:$SQUID_ACCESS_LOG
@@ -329,8 +329,8 @@ if [[ "$PROXY_AUTH" == "kerberos" ]]; then
 		"COPILOT_PROXY_KERBEROS_SPN=HTTP/localhost"
 		"NODE_EXTRA_CA_CERTS=$TLS_CA"
 		"SSL_CERT_FILE=$TLS_CA"
-		"VSCODE_SMOKE_TEST_MOCK_CERT=$TLS_CERT"
-		"VSCODE_SMOKE_TEST_MOCK_KEY=$TLS_KEY"
+		"DOCODE_SMOKE_TEST_MOCK_CERT=$TLS_CERT"
+		"DOCODE_SMOKE_TEST_MOCK_KEY=$TLS_KEY"
 	)
 fi
 for name in BUILD_ARTIFACTSTAGINGDIRECTORY CI GITHUB_ACTIONS GITHUB_RUN_ATTEMPT GITHUB_RUN_ID GITHUB_WORKSPACE RUNNER_TEMP TF_BUILD; do
@@ -378,7 +378,7 @@ if [[ "$PROXY_AUTH" == "kerberos" ]]; then
 fi
 
 cd "$ROOT"
-run_restricted env VSCODE_SMOKE_TEST_MOCK_HOST="$MOCK_HOST" VSCODE_SMOKE_TEST_PROXY_HEADER="$PROXY_HEADER_VALUE" \
+run_restricted env DOCODE_SMOKE_TEST_MOCK_HOST="$MOCK_HOST" DOCODE_SMOKE_TEST_PROXY_HEADER="$PROXY_HEADER_VALUE" \
 	npm run smoketest-no-compile -- --tracing -g 'Agents Window' --fail-zero --test-repo "$TEST_REPO" --skip-stable-build "$@"
 
 kill "$squid_pid"

@@ -386,7 +386,7 @@ fn windows_conpty_prompt_and_cli_interaction() {
 	}
 
 	let mut prompt = ConPtyProcess::spawn(
-		&[OsString::from("--vscode-shim"), OsString::from("clear")],
+		&[OsString::from("--docode-shim"), OsString::from("clear")],
 		empty_path.as_os_str(),
 		&working_directory,
 		&[],
@@ -404,7 +404,7 @@ fn windows_conpty_prompt_and_cli_interaction() {
 	let helper = cli_path.join("copilot.exe");
 	build_native_helper(&helper, native_helper_source());
 	let arguments = vec![
-		OsString::from("--vscode-shim"),
+		OsString::from("--docode-shim"),
 		OsString::from("clear"),
 		OsString::new(),
 		OsString::from("with spaces"),
@@ -495,7 +495,7 @@ fn windows_conpty_ctrl_c_cancels_without_fallback() {
 		&[],
 		&path,
 		&working_directory,
-		&[("VSCODE_COPILOT_SHIM_RELEASES_URL", releases_url.as_os_str())],
+		&[("DOCODE_COPILOT_SHIM_RELEASES_URL", releases_url.as_os_str())],
 	);
 	process.wait_for(INSTALL_PROMPT);
 	process.write(b"y\r");

@@ -20,7 +20,7 @@
  * `npm install` inside it once to generate the lockfile, commit both.
  *
  * `getSdkTargetForBuild()` hard-codes the
- * `(vscodePlatform, arch, sdk) → sdkTarget` table; the SDK's own npm
+ * `(docodePlatform, arch, sdk) → sdkTarget` table; the SDK's own npm
  * `optionalDependencies` are the canonical SKU set, and the table is
  * kept in lockstep with it by convention.
  */
@@ -117,17 +117,17 @@ export function getSdkVersion(sdk: Sdk): string {
 
 /** Strict subset of VS Code build platforms — the SDK pipeline only knows
  *  about platforms it can target. `web` is excluded (no SDK on web). */
-export type VscodeBuildPlatform = 'darwin' | 'linux' | 'alpine' | 'win32';
+export type DocodeBuildPlatform = 'darwin' | 'linux' | 'alpine' | 'win32';
 
-/** Runtime whitelist mirroring `VscodeBuildPlatform`. Used by CLI guards so
- *  a typo like `--vscode-platform=lnux` fails loud instead of silently
+/** Runtime whitelist mirroring `DocodeBuildPlatform`. Used by CLI guards so
+ *  a typo like `--docode-platform=lnux` fails loud instead of silently
  *  emitting an empty results file. */
-export const KNOWN_VSCODE_PLATFORMS: ReadonlySet<VscodeBuildPlatform> = new Set([
+export const KNOWN_DOCODE_PLATFORMS: ReadonlySet<DocodeBuildPlatform> = new Set([
 	'darwin', 'linux', 'alpine', 'win32',
 ]);
 
 /** Strict subset of architectures. `armhf` is excluded — no SDK ships armhf. */
-export type VscodeBuildArch = 'x64' | 'arm64';
+export type DocodeBuildArch = 'x64' | 'arm64';
 
 /**
  * Resolves the SDK's npm `optionalDependencies` suffix for a particular VS
@@ -146,19 +146,19 @@ export type VscodeBuildArch = 'x64' | 'arm64';
  * are accepted.
  */
 export function getSdkTargetForBuild(
-	vscodePlatform: string,
+	docodePlatform: string,
 	arch: string,
 	sdk: Sdk,
 ): string | undefined {
 	// Normalize the legacy Alpine x64 encoding into the modern one.
-	if (vscodePlatform === 'linux' && arch === 'alpine') {
-		vscodePlatform = 'alpine';
+	if (docodePlatform === 'linux' && arch === 'alpine') {
+		docodePlatform = 'alpine';
 		arch = 'x64';
 	}
 	if (arch !== 'x64' && arch !== 'arm64') {
 		return undefined;
 	}
-	switch (vscodePlatform) {
+	switch (docodePlatform) {
 		case 'darwin': return `darwin-${arch}`;
 		case 'win32': return `win32-${arch}`;
 		case 'linux': return `linux-${arch}`;
@@ -182,7 +182,7 @@ export function buildCdnUrl(sdk: Sdk, sdkVersion: string, sdkTarget: string): st
  * Builds the `format2`-style URL template stamped into
  * `product.agentSdks.<sdk>.urlTemplate`. The runtime substitutes
  * `{sdkTarget}` per launch via `resolveSdkTarget` in
- * `src/vs/platform/agentHost/node/agentSdkDownloader.ts`. Matches the
+ * `src/do/platform/agentHost/node/agentSdkDownloader.ts`. Matches the
  * upload path written by `upload.ts` with `{sdkTarget}` in place of the
  * concrete target suffix.
  */
@@ -218,7 +218,7 @@ export function parseFlags(argv: readonly string[]): Map<string, string> {
 /**
  * Per-SDK product.json entry, written by `produce.ts` and read by the
  * gulpfiles' `packageTask`. Shape matches `IAgentSdkProductConfig` in
- * `src/vs/base/common/product.ts` so the values can be dropped straight
+ * `src/do/base/common/product.ts` so the values can be dropped straight
  * into `product.agentSdks`.
  *
  * Every platform job emits the SAME `{version, urlTemplate}` per SDK —

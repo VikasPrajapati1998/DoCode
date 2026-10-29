@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import 'mocha';
 import * as sinon from 'sinon';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import PHPValidationProvider from '../features/validationProvider';
 import { getSafeNotificationMessage } from '../features/utils/notification';
 
@@ -32,7 +32,7 @@ suite('Notification security', () => {
 
 	test('validation errors retain Open Settings and do not interpret executable paths or tool errors as links', async () => {
 		const showErrorMessage = Reflect.get(PHPValidationProvider.prototype, 'showErrorMessage') as (message: string) => Promise<void>;
-		const messages = sinon.stub(vscode.window, 'showInformationMessage').resolves(undefined);
+		const messages = sinon.stub(docode.window, 'showInformationMessage').resolves(undefined);
 		const inputs = ['Cannot find /workspace/php', 'Cannot find /workspace/[Open](command:test.noop)', 'Error: \\[Open\\](CoMmAnD:test.noop?%5B1%5D)', 'Error: COMMAND:test.noop'];
 		for (const message of inputs) {
 			await showErrorMessage(message);

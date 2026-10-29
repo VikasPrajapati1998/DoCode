@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Command, Disposable, Event, EventEmitter, SourceControlActionButton, Uri, workspace, l10n, LogOutputChannel } from 'vscode';
+import { Command, Disposable, Event, EventEmitter, SourceControlActionButton, Uri, workspace, l10n, LogOutputChannel } from 'docode';
 import type { Branch } from './api/git';
 import { RefType, Status } from './api/git.constants';
 import { OperationKind } from './operation';

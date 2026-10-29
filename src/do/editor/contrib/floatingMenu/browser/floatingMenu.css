@@ -1,0 +1,88 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.floating-menu-overlay-widget {
+	padding: 2px 4px;
+	color: var(--docode-foreground);
+	background-color: var(--docode-editorWidget-background);
+	border-radius: var(--docode-cornerRadius-medium);
+	border: 1px solid var(--docode-contrastBorder);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	z-index: 10;
+	box-shadow: var(--docode-shadow-lg);
+	overflow: hidden;
+
+	&.single-button {
+		background-color: transparent;
+		border-width: 0;
+		padding: 0;
+		overflow: visible;
+
+		.action-item > .action-label,
+		.action-item > .action-label.codicon:not(.separator) {
+			height: 28px;
+			line-height: 28px;
+			border-radius: var(--docode-cornerRadius-medium);
+			box-shadow: 0 2px 8px var(--docode-widget-shadow);
+		}
+
+		.action-item > .action-label {
+			padding: 0 8px;
+		}
+
+		.action-item > .action-label.codicon:not(.separator) {
+			width: 28px;
+		}
+	}
+
+	.actions-container {
+		gap: 4px;
+	}
+
+	.action-item > .action-label {
+		padding: 4px 6px;
+		font-size: 11px;
+		line-height: 14px;
+		border-radius: var(--docode-cornerRadius-small);
+	}
+
+	.action-item > .action-label.codicon:not(.separator) {
+		color: var(--docode-foreground);
+		width: 22px;
+		height: 22px;
+		padding: 0;
+		font-size: 16px;
+		line-height: 22px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.action-item.primary > .action-label,
+	.action-item.primary > .action-label.action-label.codicon:not(.separator) {
+		background-color: var(--docode-button-background);
+		color: var(--docode-button-foreground);
+	}
+
+	.action-item.primary > .action-label:hover {
+		background-color: var(--docode-button-hoverBackground) !important;
+	}
+}
+
+.hc-black .floating-menu-overlay-widget.single-button,
+.hc-light .floating-menu-overlay-widget.single-button {
+	border-width: 1px;
+	border-style: solid;
+	border-color: var(--docode-contrastBorder);
+	background-color: var(--docode-editorWidget-background);
+	padding: 0;
+	.action-item > .action-label,
+	.action-item > .action-label.codicon:not(.separator) {
+		box-shadow: none;
+	}
+}

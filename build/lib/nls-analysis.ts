@@ -121,7 +121,7 @@ export function analyzeLocalizeCalls(
 	// Find all imports
 	const imports = collect(sourceFile, n => isImportNode(n) ? CollectStepResult.YesAndRecurse : CollectStepResult.NoAndRecurse);
 
-	// import nls = require('vs/nls');
+	// import nls = require('do/nls');
 	const importEqualsDeclarations = imports
 		.filter(n => n.kind === ts.SyntaxKind.ImportEqualsDeclaration)
 		.map(n => n as ts.ImportEqualsDeclaration)
@@ -131,7 +131,7 @@ export function analyzeLocalizeCalls(
 			return text.endsWith(`/nls'`) || text.endsWith(`/nls"`) || text.endsWith(`/nls.js'`) || text.endsWith(`/nls.js"`);
 		});
 
-	// import ... from 'vs/nls';
+	// import ... from 'do/nls';
 	const importDeclarations = imports
 		.filter(n => n.kind === ts.SyntaxKind.ImportDeclaration)
 		.map(n => n as ts.ImportDeclaration)
@@ -174,7 +174,7 @@ export function analyzeLocalizeCalls(
 
 	const localizeCallExpressions: ts.CallExpression[] = [];
 
-	// Direct named import: import { localize } from 'vs/nls'
+	// Direct named import: import { localize } from 'do/nls'
 	for (const namedImport of namedImports) {
 		const isTarget = namedImport.name.getText() === functionName ||
 			(namedImport.propertyName && namedImport.propertyName.getText() === functionName);

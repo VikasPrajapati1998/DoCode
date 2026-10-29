@@ -10,7 +10,7 @@ import * as path from 'path';
 import { suite, test, afterEach } from 'node:test';
 import { CODEX_INPUT_PREFIXES, diffGeneratedTrees, filterCodexInputs, listFiles } from '../check-protocol-sync.ts';
 
-const GENERATED_DIR = 'src/vs/platform/agentHost/node/codex/protocol/generated';
+const GENERATED_DIR = 'src/do/platform/agentHost/node/codex/protocol/generated';
 
 const scratchDirs: string[] = [];
 function makeDir(tree: Readonly<Record<string, string>>): string {
@@ -46,7 +46,7 @@ suite('codex protocol freshness check helpers', () => {
 			'build/codex/codex-version.txt',
 			'build/codex/generate-protocol.mjs',
 			'build/codex/check-protocol-sync.ts',
-			'src/vs/platform/agentHost/node/codex/codexAgent.ts',
+			'src/do/platform/agentHost/node/codex/codexAgent.ts',
 			'package.json',
 			'README.md',
 		];

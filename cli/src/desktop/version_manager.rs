@@ -413,7 +413,7 @@ mod tests {
 
 	use super::*;
 
-	fn make_fake_vscode_install(path: &Path) {
+	fn make_fake_docode_install(path: &Path) {
 		let bin = DESKTOP_CLI_RELATIVE_PATH
 			.split(',')
 			.next()
@@ -430,10 +430,10 @@ mod tests {
 			.expect("expected to write binary");
 	}
 
-	fn make_multiple_vscode_install() -> tempfile::TempDir {
+	fn make_multiple_docode_install() -> tempfile::TempDir {
 		let dir = tempfile::tempdir().expect("expected to make temp dir");
-		make_fake_vscode_install(&dir.path().join("desktop/stable"));
-		make_fake_vscode_install(&dir.path().join("desktop/1.68.2"));
+		make_fake_docode_install(&dir.path().join("desktop/stable"));
+		make_fake_docode_install(&dir.path().join("desktop/1.68.2"));
 		dir
 	}
 
@@ -448,7 +448,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn test_set_preferred_version() {
-		let dir = make_multiple_vscode_install();
+		let dir = make_multiple_docode_install();
 		let lp = LauncherPaths::new_without_replacements(dir.path().to_owned());
 		let vm1 = CodeVersionManager::new(log::Logger::test(), &lp, Platform::LinuxARM64);
 
@@ -480,7 +480,7 @@ mod tests {
 
 	#[tokio::test]
 	async fn test_gets_entrypoint() {
-		let dir = make_multiple_vscode_install();
+		let dir = make_multiple_docode_install();
 
 		assert!(CodeVersionManager::get_entrypoint_for_install_dir(
 			&dir.path().join("desktop").join("stable")

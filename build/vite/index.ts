@@ -3,12 +3,12 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path="../../src/vs/monaco.d.ts" />
+/// <reference path="../../src/do/monaco.d.ts" />
 /* eslint-disable local/code-no-standalone-editor */
 
-export * from '../../src/vs/editor/editor.main';
+export * from '../../src/do/editor/editor.main';
 import './style.css';
-import * as monaco from '../../src/vs/editor/editor.main';
+import * as monaco from '../../src/do/editor/editor.main';
 
 globalThis.monaco = monaco;
 const root = document.getElementById('sampleContent');

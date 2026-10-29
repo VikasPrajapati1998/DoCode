@@ -110,7 +110,7 @@ async function resolveBuild(buildArg) {
 	}
 	if (isVersionString(buildArg)) {
 		console.log(`[chat-simulation] Downloading VS Code ${buildArg}...`);
-		const { downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath } = require('@vscode/test-electron');
+		const { downloadAndUnzipVSCode, resolveCliArgsFromDoCodeExecutablePath } = require('@vscode/test-electron');
 		const exePath = await downloadAndUnzipVSCode(buildArg);
 		console.log(`[chat-simulation] Downloaded: ${exePath}`);
 
@@ -128,7 +128,7 @@ async function resolveBuild(buildArg) {
 			// --extensions-dir=DATA_DIR/extensions.
 			const extDir = path.join(DATA_DIR, 'extensions');
 			fs.mkdirSync(extDir, { recursive: true });
-			const [cli, ...cliArgs] = resolveCliArgsFromVSCodeExecutablePath(exePath);
+			const [cli, ...cliArgs] = resolveCliArgsFromDoCodeExecutablePath(exePath);
 			const extId = 'GitHub.copilot-chat';
 			console.log(`[chat-simulation] Installing ${extId} into ${extDir}...`);
 			const { spawnSync } = require('child_process');
@@ -187,7 +187,7 @@ function buildEnv(mockServer, { isDevBuild = true } = {}) {
 		ELECTRON_ENABLE_LOGGING: '1',
 		IS_SCENARIO_AUTOMATION: '1',
 		GITHUB_PAT: 'perf-benchmark-fake-pat',
-		VSCODE_COPILOT_CHAT_TOKEN: Buffer.from(JSON.stringify({
+		DOCODE_COPILOT_CHAT_TOKEN: Buffer.from(JSON.stringify({
 			token: 'perf-benchmark-fake-token',
 			expires_at: Math.floor(Date.now() / 1000) + 3600,
 			refresh_in: 1800,
@@ -204,8 +204,8 @@ function buildEnv(mockServer, { isDevBuild = true } = {}) {
 	// to fail to show a window.
 	if (isDevBuild) {
 		env.NODE_ENV = 'development';
-		env.VSCODE_DEV = '1';
-		env.VSCODE_CLI = '1';
+		env.DOCODE_DEV = '1';
+		env.DOCODE_CLI = '1';
 	}
 	return env;
 }
@@ -251,9 +251,9 @@ function buildArgs(userDataDir, extDir, logsDir, { isDevBuild = true, extHostIns
 		'--enable-smoke-test-driver',
 		'--disable-extensions',
 	];
-	// vscode-api-tests only exists in the dev build
+	// docode-api-tests only exists in the dev build
 	if (isDevBuild) {
-		args.push('--disable-extension=vscode.vscode-api-tests');
+		args.push('--disable-extension=docode.docode-api-tests');
 	}
 	if (process.platform !== 'darwin') {
 		args.push('--disable-gpu');
@@ -302,7 +302,7 @@ function writeSettings(userDataDir, mockServer, overrides) {
  * @returns {{ userDataDir: string, extDir: string, logsDir: string }}
  */
 function prepareRunDir(runId, mockServer, settingsOverrides) {
-	const tmpBase = path.join(os.tmpdir(), 'vscode-chat-simulation');
+	const tmpBase = path.join(os.tmpdir(), 'docode-chat-simulation');
 	const userDataDir = path.join(tmpBase, `run-${runId}`);
 	const extDir = path.join(DATA_DIR, 'extensions');
 	const logsDir = path.join(tmpBase, 'logs', `run-${runId}`);
@@ -512,7 +512,7 @@ let nextPort = 19222;
  * @param {{ verbose?: boolean }} [opts]
  * @returns {Promise<{ page: import('playwright').Page, browser: import('playwright').Browser, close: () => Promise<void> }>}
  */
-async function launchVSCode(executable, launchArgs, env, opts = {}) {
+async function launchDoCode(executable, launchArgs, env, opts = {}) {
 	const { chromium } = require('playwright');
 	const port = nextPort++;
 
@@ -582,7 +582,7 @@ async function launchVSCode(executable, launchArgs, env, opts = {}) {
 			// Kill crashpad handler — it self-daemonizes and outlives the
 			// parent. Wait briefly for it to detach, then kill by pattern.
 			await new Promise(r => setTimeout(r, 500));
-			try { execSync('pkill -9 -f crashpad_handler.*vscode-chat-simulation', { stdio: 'ignore' }); }
+			try { execSync('pkill -9 -f crashpad_handler.*docode-chat-simulation', { stdio: 'ignore' }); }
 			catch { }
 		},
 	};
@@ -840,7 +840,7 @@ module.exports = {
 	linearRegressionSlope,
 	summarize,
 	markDuration,
-	launchVSCode,
+	launchDoCode,
 	getNextExtHostInspectPort,
 	connectToExtHostInspector,
 };

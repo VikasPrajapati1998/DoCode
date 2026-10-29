@@ -20,15 +20,15 @@ function getElectronVersion(): string {
 
 function getEntitlementsForFile(filePath: string): string {
 	if (filePath.includes(' Helper (GPU).app')) {
-		return path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-gpu-entitlements.plist');
+		return path.join(baseDir, 'darwin', 'entitlements', 'helper-gpu-entitlements.plist');
 	} else if (filePath.includes(' Helper (Renderer).app')) {
-		return path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-renderer-entitlements.plist');
+		return path.join(baseDir, 'darwin', 'entitlements', 'helper-renderer-entitlements.plist');
 	} else if (filePath.includes(' Helper (Plugin).app')) {
-		return path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-plugin-entitlements.plist');
+		return path.join(baseDir, 'darwin', 'entitlements', 'helper-plugin-entitlements.plist');
 	} else if (filePath.includes(' Helper.app')) {
-		return path.join(baseDir, 'azure-pipelines', 'darwin', 'helper-entitlements.plist');
+		return path.join(baseDir, 'darwin', 'entitlements', 'helper-entitlements.plist');
 	}
-	return path.join(baseDir, 'azure-pipelines', 'darwin', 'app-entitlements.plist');
+	return path.join(baseDir, 'darwin', 'entitlements', 'app-entitlements.plist');
 }
 
 async function retrySignOnKeychainError<T>(fn: () => Promise<T>, maxRetries: number = 3): Promise<T> {
@@ -62,7 +62,7 @@ async function retrySignOnKeychainError<T>(fn: () => Promise<T>, maxRetries: num
 
 async function main(buildDir?: string): Promise<void> {
 	const tempDir = process.env['AGENT_TEMPDIRECTORY'];
-	const arch = process.env['VSCODE_ARCH'];
+	const arch = process.env['DOCODE_ARCH'];
 	const identity = process.env['CODESIGN_IDENTITY'];
 
 	if (!buildDir) {
@@ -73,7 +73,7 @@ async function main(buildDir?: string): Promise<void> {
 		throw new Error('$AGENT_TEMPDIRECTORY not set');
 	}
 
-	const appRoot = path.join(buildDir, `VSCode-darwin-${arch}`);
+	const appRoot = path.join(buildDir, `DoCode-darwin-${arch}`);
 	const appName = product.nameLong + '.app';
 	const infoPlistPath = path.resolve(appRoot, appName, 'Contents', 'Info.plist');
 

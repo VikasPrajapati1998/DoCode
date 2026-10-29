@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EventEmitter, Event, Disposable } from 'vscode';
+import { EventEmitter, Event, Disposable } from 'docode';
 
 export interface PromiseAdapter<T, U> {
 	(

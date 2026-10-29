@@ -7,10 +7,10 @@ import fs from 'fs';
 import glob from 'glob';
 import path from 'path';
 
-export const apiProposalNamesSource = 'src/vscode-dts/**';
+export const apiProposalNamesSource = 'src/docode-dts/**';
 
 function getApiProposalName(filePath: string): string | undefined {
-	return /vscode\.proposed\.(?<name>[a-zA-Z\d]+)\.d\.ts$/.exec(path.basename(filePath))?.groups?.name;
+	return /docode\.proposed\.(?<name>[a-zA-Z\d]+)\.d\.ts$/.exec(path.basename(filePath))?.groups?.name;
 }
 
 export function generateApiProposalNames(filePaths: Iterable<string>, eol: string): string {
@@ -49,7 +49,7 @@ export function generateApiProposalNames(filePaths: Iterable<string>, eol: strin
 }
 
 export function checkApiProposalNames(repoRoot: string): void {
-	const declarationsPath = path.join(repoRoot, 'src', 'vscode-dts');
+	const declarationsPath = path.join(repoRoot, 'src', 'docode-dts');
 	// Globs allow missing directories, but validation must not silently accept missing inputs.
 	fs.readdirSync(declarationsPath);
 	const proposalFiles = glob.sync(apiProposalNamesSource, { cwd: repoRoot, absolute: true })
@@ -65,7 +65,7 @@ export function checkApiProposalNames(repoRoot: string): void {
 		fs.readFileSync(filePath);
 	}
 
-	const registryPath = path.join(repoRoot, 'src', 'vs', 'platform', 'extensions', 'common', 'extensionsApiProposals.ts');
+	const registryPath = path.join(repoRoot, 'src', 'do', 'platform', 'extensions', 'common', 'extensionsApiProposals.ts');
 	const updateMessage = 'Run "npm run gulp compile-api-proposal-names" from the repository root and include the updated registry with your change.';
 	let existing: string;
 	try {

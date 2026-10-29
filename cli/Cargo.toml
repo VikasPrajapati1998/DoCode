@@ -87,4 +87,4 @@ lto = "thin"
 [features]
 default = []
 vsda = []
-vscode-encrypt = []
+docode-encrypt = []

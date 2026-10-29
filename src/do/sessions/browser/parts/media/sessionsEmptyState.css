@@ -1,0 +1,117 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.sessions-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--docode-spacing-size40);
+	text-align: center;
+	word-break: break-word;
+}
+
+.sessions-empty-state-title,
+.sessions-empty-state-description {
+	font-size: var(--docode-fontSize-body1);
+	line-height: normal;
+}
+
+.sessions-empty-state-title {
+	color: var(--docode-foreground);
+	font-weight: var(--docode-fontWeight-semiBold);
+	margin: 0;
+}
+
+.sessions-empty-state-description {
+	color: var(--docode-descriptionForeground);
+	font-weight: var(--docode-fontWeight-regular);
+}
+
+.sessions-empty-state-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size160);
+	width: min(320px, calc(100% - 2 * var(--docode-spacing-size240)));
+}
+
+.sessions-empty-state-content > .sessions-empty-state-description {
+	margin: 0;
+	text-align: center;
+}
+
+.sessions-watermark-actions {
+	width: 100%;
+	container-type: inline-size;
+}
+
+@container (max-width: 240px) {
+	.sessions-watermark-actions .sessions-add-tab-watermark-keybinding {
+		display: none;
+	}
+}
+
+.sessions-watermark-actions .monaco-action-bar.vertical {
+	height: auto;
+}
+
+.sessions-watermark-actions .monaco-action-bar.vertical .actions-container {
+	display: block;
+	height: auto;
+}
+
+.sessions-watermark-actions .monaco-action-bar .sessions-add-tab-watermark-entry {
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size80);
+	height: var(--docode-spacing-size280);
+	padding: 0 var(--docode-spacing-size80);
+	border-radius: var(--docode-cornerRadius-small);
+	color: var(--docode-foreground);
+	font-size: var(--docode-fontSize-body1);
+	cursor: pointer;
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-entry:hover,
+.sessions-watermark-actions .sessions-add-tab-watermark-entry.submenu-open {
+	background-color: var(--docode-toolbar-hoverBackground);
+	outline: var(--docode-strokeThickness) dashed var(--docode-toolbar-hoverOutline);
+	outline-offset: calc(-1 * var(--docode-strokeThickness));
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-entry:focus-visible {
+	outline: var(--docode-strokeThickness) solid var(--docode-focusBorder);
+	outline-offset: calc(-1 * var(--docode-strokeThickness));
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-entry.disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-icon {
+	flex: 0 0 auto;
+	width: var(--docode-codiconFontSize);
+	color: var(--docode-descriptionForeground);
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-label {
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-keybinding {
+	flex: 0 0 auto;
+	color: var(--docode-descriptionForeground);
+}
+
+.sessions-watermark-actions .sessions-add-tab-watermark-submenu-indicator {
+	flex: 0 0 auto;
+	margin-inline-end: calc(-1 * var(--docode-spacing-size40));
+	color: var(--docode-descriptionForeground);
+}

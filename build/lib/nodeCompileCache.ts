@@ -58,20 +58,20 @@ export function createNodeCompileCacheGenerationEnvironment(portableDirectory: s
 	delete env.NODE_COMPILE_CACHE_PORTABLE;
 	delete env.NODE_COMPILE_CACHE_READONLY;
 	delete env.NODE_DISABLE_COMPILE_CACHE;
-	delete env.VSCODE_DEV;
-	delete env.VSCODE_MEASURE_NODE_COMPILE_CACHE;
-	delete env.VSCODE_NODE_COMPILE_CACHE_KIND;
-	delete env.VSCODE_NODE_COMPILE_CACHE_MEASUREMENTS;
-	delete env.VSCODE_NODE_COMPILE_CACHE_ROOT;
-	env.VSCODE_GENERATE_NODE_COMPILE_CACHE = '1';
-	env.VSCODE_PORTABLE = portableDirectory;
+	delete env.DOCODE_DEV;
+	delete env.DOCODE_MEASURE_NODE_COMPILE_CACHE;
+	delete env.DOCODE_NODE_COMPILE_CACHE_KIND;
+	delete env.DOCODE_NODE_COMPILE_CACHE_MEASUREMENTS;
+	delete env.DOCODE_NODE_COMPILE_CACHE_ROOT;
+	env.DOCODE_GENERATE_NODE_COMPILE_CACHE = '1';
+	env.DOCODE_PORTABLE = portableDirectory;
 	return env;
 }
 
 export async function generateNodeCompileCache(platform: string, outputDirectory: string, versionedResourcesFolder: string, product: INodeCompileCacheProduct): Promise<void> {
 	const paths = getNodeCompileCachePaths(platform, outputDirectory, versionedResourcesFolder, product);
 	const temporaryDirectory = platform === 'win32' ? os.tmpdir() : '/tmp';
-	const portableDirectory = await fs.promises.mkdtemp(path.join(temporaryDirectory, 'vscode-cache-'));
+	const portableDirectory = await fs.promises.mkdtemp(path.join(temporaryDirectory, 'docode-cache-'));
 
 	await fs.promises.rm(paths.cacheDirectory, { recursive: true, force: true });
 

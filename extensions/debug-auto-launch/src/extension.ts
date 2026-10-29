@@ -6,7 +6,7 @@
 import { promises as fs } from 'fs';
 import { createServer, Server } from 'net';
 import { dirname } from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 const enum State {
 	Disabled = 'disabled',
@@ -15,31 +15,31 @@ const enum State {
 	Always = 'always',
 }
 const TEXT_STATUSBAR_LABEL = {
-	[State.Disabled]: vscode.l10n.t('Auto Attach: Disabled'),
-	[State.Always]: vscode.l10n.t('Auto Attach: Always'),
-	[State.Smart]: vscode.l10n.t('Auto Attach: Smart'),
-	[State.OnlyWithFlag]: vscode.l10n.t('Auto Attach: With Flag'),
+	[State.Disabled]: docode.l10n.t('Auto Attach: Disabled'),
+	[State.Always]: docode.l10n.t('Auto Attach: Always'),
+	[State.Smart]: docode.l10n.t('Auto Attach: Smart'),
+	[State.OnlyWithFlag]: docode.l10n.t('Auto Attach: With Flag'),
 };
 
 const TEXT_STATE_LABEL = {
-	[State.Disabled]: vscode.l10n.t('Disabled'),
-	[State.Always]: vscode.l10n.t('Always'),
-	[State.Smart]: vscode.l10n.t('Smart'),
-	[State.OnlyWithFlag]: vscode.l10n.t('Only With Flag'),
+	[State.Disabled]: docode.l10n.t('Disabled'),
+	[State.Always]: docode.l10n.t('Always'),
+	[State.Smart]: docode.l10n.t('Smart'),
+	[State.OnlyWithFlag]: docode.l10n.t('Only With Flag'),
 };
 const TEXT_STATE_DESCRIPTION = {
-	[State.Disabled]: vscode.l10n.t('Auto attach is disabled and not shown in status bar'),
-	[State.Always]: vscode.l10n.t('Auto attach to every Node.js process launched in the terminal'),
-	[State.Smart]: vscode.l10n.t("Auto attach when running scripts that aren't in a node_modules folder"),
-	[State.OnlyWithFlag]: vscode.l10n.t('Only auto attach when the `--inspect` flag is given')
+	[State.Disabled]: docode.l10n.t('Auto attach is disabled and not shown in status bar'),
+	[State.Always]: docode.l10n.t('Auto attach to every Node.js process launched in the terminal'),
+	[State.Smart]: docode.l10n.t("Auto attach when running scripts that aren't in a node_modules folder"),
+	[State.OnlyWithFlag]: docode.l10n.t('Only auto attach when the `--inspect` flag is given')
 };
 
-const TEXT_TOGGLE_TITLE = vscode.l10n.t('Toggle Auto Attach');
-const TEXT_TOGGLE_WORKSPACE = vscode.l10n.t('Toggle auto attach in this workspace');
-const TEXT_TOGGLE_GLOBAL = vscode.l10n.t('Toggle auto attach on this machine');
-const TEXT_TEMP_DISABLE = vscode.l10n.t('Temporarily disable auto attach in this session');
-const TEXT_TEMP_ENABLE = vscode.l10n.t('Re-enable auto attach');
-const TEXT_TEMP_DISABLE_LABEL = vscode.l10n.t('Auto Attach: Disabled');
+const TEXT_TOGGLE_TITLE = docode.l10n.t('Toggle Auto Attach');
+const TEXT_TOGGLE_WORKSPACE = docode.l10n.t('Toggle auto attach in this workspace');
+const TEXT_TOGGLE_GLOBAL = docode.l10n.t('Toggle auto attach on this machine');
+const TEXT_TEMP_DISABLE = docode.l10n.t('Temporarily disable auto attach in this session');
+const TEXT_TEMP_ENABLE = docode.l10n.t('Re-enable auto attach');
+const TEXT_TEMP_DISABLE_LABEL = docode.l10n.t('Auto Attach: Disabled');
 
 const TOGGLE_COMMAND = 'extension.node-debug.toggleAutoAttach';
 const STORAGE_IPC = 'jsDebugIpcState';
@@ -55,20 +55,20 @@ const SETTINGS_CAUSE_REFRESH = new Set(
 );
 
 
-let currentState: Promise<{ context: vscode.ExtensionContext; state: State | null }>;
-let statusItem: vscode.StatusBarItem | undefined; // and there is no status bar item
+let currentState: Promise<{ context: docode.ExtensionContext; state: State | null }>;
+let statusItem: docode.StatusBarItem | undefined; // and there is no status bar item
 let server: Promise<Server | undefined> | undefined; // auto attach server
 let isTemporarilyDisabled = false; // whether the auto attach server is disabled temporarily, reset whenever the state changes
 
-export function activate(context: vscode.ExtensionContext): void {
+export function activate(context: docode.ExtensionContext): void {
 	currentState = Promise.resolve({ context, state: null });
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand(TOGGLE_COMMAND, toggleAutoAttachSetting.bind(null, context)),
+		docode.commands.registerCommand(TOGGLE_COMMAND, toggleAutoAttachSetting.bind(null, context)),
 	);
 
 	context.subscriptions.push(
-		vscode.workspace.onDidChangeConfiguration(e => {
+		docode.workspace.onDidChangeConfiguration(e => {
 			// Whenever a setting is changed, disable auto attach, and re-enable
 			// it (if necessary) to refresh variables.
 			if (
@@ -92,29 +92,29 @@ function refreshAutoAttachVars() {
 	updateAutoAttach(readCurrentState());
 }
 
-function getDefaultScope(info: ReturnType<vscode.WorkspaceConfiguration['inspect']>) {
+function getDefaultScope(info: ReturnType<docode.WorkspaceConfiguration['inspect']>) {
 	if (!info) {
-		return vscode.ConfigurationTarget.Global;
+		return docode.ConfigurationTarget.Global;
 	} else if (info.workspaceFolderValue) {
-		return vscode.ConfigurationTarget.WorkspaceFolder;
+		return docode.ConfigurationTarget.WorkspaceFolder;
 	} else if (info.workspaceValue) {
-		return vscode.ConfigurationTarget.Workspace;
+		return docode.ConfigurationTarget.Workspace;
 	} else if (info.globalValue) {
-		return vscode.ConfigurationTarget.Global;
+		return docode.ConfigurationTarget.Global;
 	}
 
-	return vscode.ConfigurationTarget.Global;
+	return docode.ConfigurationTarget.Global;
 }
 
-type PickResult = { state: State } | { setTempDisabled: boolean } | { scope: vscode.ConfigurationTarget } | undefined;
-type PickItem = vscode.QuickPickItem & ({ state: State } | { setTempDisabled: boolean });
+type PickResult = { state: State } | { setTempDisabled: boolean } | { scope: docode.ConfigurationTarget } | undefined;
+type PickItem = docode.QuickPickItem & ({ state: State } | { setTempDisabled: boolean });
 
-async function toggleAutoAttachSetting(context: vscode.ExtensionContext, scope?: vscode.ConfigurationTarget): Promise<void> {
-	const section = vscode.workspace.getConfiguration(SETTING_SECTION);
+async function toggleAutoAttachSetting(context: docode.ExtensionContext, scope?: docode.ConfigurationTarget): Promise<void> {
+	const section = docode.workspace.getConfiguration(SETTING_SECTION);
 	scope = scope || getDefaultScope(section.inspect(SETTING_STATE));
 
-	const isGlobalScope = scope === vscode.ConfigurationTarget.Global;
-	const quickPick = vscode.window.createQuickPick<PickItem>();
+	const isGlobalScope = scope === docode.ConfigurationTarget.Global;
+	const quickPick = docode.window.createQuickPick<PickItem>();
 	const current = readCurrentState();
 
 	const items: PickItem[] = [State.Always, State.Smart, State.OnlyWithFlag, State.Disabled].map(state => ({
@@ -140,7 +140,7 @@ async function toggleAutoAttachSetting(context: vscode.ExtensionContext, scope?:
 	quickPick.placeholder = isGlobalScope ? TEXT_TOGGLE_GLOBAL : TEXT_TOGGLE_WORKSPACE;
 	quickPick.buttons = [
 		{
-			iconPath: new vscode.ThemeIcon(isGlobalScope ? 'folder' : 'globe'),
+			iconPath: new docode.ThemeIcon(isGlobalScope ? 'folder' : 'globe'),
 			tooltip: isGlobalScope ? TEXT_TOGGLE_WORKSPACE : TEXT_TOGGLE_GLOBAL,
 		},
 	];
@@ -153,8 +153,8 @@ async function toggleAutoAttachSetting(context: vscode.ExtensionContext, scope?:
 		quickPick.onDidTriggerButton(() => {
 			resolve({
 				scope: isGlobalScope
-					? vscode.ConfigurationTarget.Workspace
-					: vscode.ConfigurationTarget.Global,
+					? docode.ConfigurationTarget.Workspace
+					: docode.ConfigurationTarget.Global,
 			});
 		});
 	});
@@ -190,14 +190,14 @@ async function toggleAutoAttachSetting(context: vscode.ExtensionContext, scope?:
 }
 
 function readCurrentState(): State {
-	const section = vscode.workspace.getConfiguration(SETTING_SECTION);
+	const section = docode.workspace.getConfiguration(SETTING_SECTION);
 	return section.get<State>(SETTING_STATE) ?? State.Disabled;
 }
 
-async function clearJsDebugAttachState(context: vscode.ExtensionContext) {
+async function clearJsDebugAttachState(context: docode.ExtensionContext) {
 	if (server || await context.workspaceState.get(STORAGE_IPC)) {
 		await context.workspaceState.update(STORAGE_IPC, undefined);
-		await vscode.commands.executeCommand('extension.js-debug.clearAutoAttachVariables');
+		await docode.commands.executeCommand('extension.js-debug.clearAutoAttachVariables');
 		await destroyAttachServer();
 	}
 }
@@ -206,7 +206,7 @@ async function clearJsDebugAttachState(context: vscode.ExtensionContext) {
  * Turns auto attach on, and returns the server auto attach is listening on
  * if it's successful.
  */
-async function createAttachServer(context: vscode.ExtensionContext) {
+async function createAttachServer(context: docode.ExtensionContext) {
 	const ipcAddress = await getIpcAddress(context);
 	if (!ipcAddress) {
 		return undefined;
@@ -259,7 +259,7 @@ const createServerInstance = (ipcAddress: string) =>
 				data.push(chunk.slice(0, -1));
 
 				try {
-					await vscode.commands.executeCommand(
+					await docode.commands.executeCommand(
 						'extension.js-debug.autoAttachToProcess',
 						JSON.parse(Buffer.concat(data).toString()),
 					);
@@ -294,7 +294,7 @@ interface CachedIpcState {
  * Map of logic that happens when auto attach states are entered and exited.
  * All state transitions are queued and run in order; promises are awaited.
  */
-const transitions: { [S in State]: (context: vscode.ExtensionContext) => Promise<void> } = {
+const transitions: { [S in State]: (context: docode.ExtensionContext) => Promise<void> } = {
 	async [State.Disabled](context) {
 		await clearJsDebugAttachState(context);
 	},
@@ -315,17 +315,17 @@ const transitions: { [S in State]: (context: vscode.ExtensionContext) => Promise
 /**
  * Ensures the status bar text reflects the current state.
  */
-function updateStatusBar(context: vscode.ExtensionContext, state: State, busy = false) {
+function updateStatusBar(context: docode.ExtensionContext, state: State, busy = false) {
 	if (state === State.Disabled && !busy) {
 		statusItem?.hide();
 		return;
 	}
 
 	if (!statusItem) {
-		statusItem = vscode.window.createStatusBarItem('status.debug.autoAttach', vscode.StatusBarAlignment.Left);
-		statusItem.name = vscode.l10n.t("Debug Auto Attach");
+		statusItem = docode.window.createStatusBarItem('status.debug.autoAttach', docode.StatusBarAlignment.Left);
+		statusItem.name = docode.l10n.t("Debug Auto Attach");
 		statusItem.command = TOGGLE_COMMAND;
-		statusItem.tooltip = vscode.l10n.t("Automatically attach to node.js processes in debug mode");
+		statusItem.tooltip = docode.l10n.t("Automatically attach to node.js processes in debug mode");
 		context.subscriptions.push(statusItem);
 	}
 
@@ -359,7 +359,7 @@ function updateAutoAttach(newState: State) {
  * Gets the IPC address for the server to listen on for js-debug sessions. This
  * is cached such that we can reuse the address of previous activations.
  */
-async function getIpcAddress(context: vscode.ExtensionContext) {
+async function getIpcAddress(context: docode.ExtensionContext) {
 	// Iff the `cachedData` is present, the js-debug registered environment
 	// variables for this workspace--cachedData is set after successfully
 	// invoking the attachment command.
@@ -370,15 +370,15 @@ async function getIpcAddress(context: vscode.ExtensionContext) {
 	// environment variables will have been lost.
 	// todo: make a way in the API to read environment data directly without activating js-debug?
 	const jsDebugPath =
-		vscode.extensions.getExtension('ms-vscode.js-debug-nightly')?.extensionPath ||
-		vscode.extensions.getExtension('ms-vscode.js-debug')?.extensionPath;
+		docode.extensions.getExtension('ms-vscode.js-debug-nightly')?.extensionPath ||
+		docode.extensions.getExtension('ms-vscode.js-debug')?.extensionPath;
 
 	const settingsValue = getJsDebugSettingKey();
 	if (cachedIpc?.jsDebugPath === jsDebugPath && cachedIpc?.settingsValue === settingsValue) {
 		return cachedIpc.ipcAddress;
 	}
 
-	const result = await vscode.commands.executeCommand<{ ipcAddress: string }>(
+	const result = await docode.commands.executeCommand<{ ipcAddress: string }>(
 		'extension.js-debug.setAutoAttachVariables',
 		cachedIpc?.ipcAddress,
 	);
@@ -398,7 +398,7 @@ async function getIpcAddress(context: vscode.ExtensionContext) {
 
 function getJsDebugSettingKey() {
 	const o: { [key: string]: unknown } = {};
-	const config = vscode.workspace.getConfiguration(SETTING_SECTION);
+	const config = docode.workspace.getConfiguration(SETTING_SECTION);
 	for (const setting of SETTINGS_CAUSE_REFRESH) {
 		o[setting] = config.get(setting);
 	}

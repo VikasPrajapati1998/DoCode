@@ -3,26 +3,26 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//! Parses the `--vscode-shim` options that VS Code passes to the shim.
+//! Parses the `--docode-shim` options that VS Code passes to the shim.
 //!
 //! The options form a prefix of the command line:
 //!
 //! ```text
-//! copilot [--vscode-shim <clear|verbose>]... [--] [copilot arguments...]
-//! copilot [--vscode-shim verbose]... --vscode-shim <probe|install|policy> [command options...]
+//! copilot [--docode-shim <clear|verbose>]... [--] [copilot arguments...]
+//! copilot [--docode-shim verbose]... --docode-shim <probe|install|policy> [command options...]
 //! ```
 //!
 //! Modifiers are removed and the remaining arguments are forwarded to the Copilot CLI. Commands run and exit without
 //! ever launching the Copilot CLI. `verbose` may precede a command, while `clear` may not. Parsing stops at the first
-//! argument that is not a `--vscode-shim` option, so arguments meant for the Copilot CLI are never consumed.
+//! argument that is not a `--docode-shim` option, so arguments meant for the Copilot CLI are never consumed.
 
 use std::ffi::{OsStr, OsString};
 use std::path::PathBuf;
 use std::time::Duration;
 
-pub(crate) const OPTION: &str = "--vscode-shim";
+pub(crate) const OPTION: &str = "--docode-shim";
 
-/// Exit code for a malformed or unknown `--vscode-shim` option.
+/// Exit code for a malformed or unknown `--docode-shim` option.
 pub(crate) const USAGE_EXIT_CODE: i32 = 2;
 
 const DEFAULT_PROBE_TIMEOUT: Duration = Duration::from_secs(5);
@@ -385,34 +385,34 @@ mod tests {
 			[
 				parse(arguments(&[])),
 				parse(arguments(&["--resume", "id"])),
-				parse(arguments(&["--vscode-shim", "clear", "--resume", "id"])),
+				parse(arguments(&["--docode-shim", "clear", "--resume", "id"])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"clear",
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
 					"--",
-					"--vscode-shim",
+					"--docode-shim",
 					"clear"
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose"
 				])),
-				parse(arguments(&["--", "--vscode-shim", "clear"])),
-				parse(arguments(&["-p", "--vscode-shim", "clear"])),
+				parse(arguments(&["--", "--docode-shim", "clear"])),
+				parse(arguments(&["-p", "--docode-shim", "clear"])),
 				parse(arguments(&["--clear", "x"])),
 			],
 			[
 				launch(false, false, &[]),
 				launch(false, false, &["--resume", "id"]),
 				launch(false, true, &["--resume", "id"]),
-				launch(true, true, &["--vscode-shim", "clear"]),
+				launch(true, true, &["--docode-shim", "clear"]),
 				launch(true, false, &[]),
-				launch(false, false, &["--", "--vscode-shim", "clear"]),
-				launch(false, false, &["-p", "--vscode-shim", "clear"]),
+				launch(false, false, &["--", "--docode-shim", "clear"]),
+				launch(false, false, &["-p", "--docode-shim", "clear"]),
 				launch(false, false, &["--clear", "x"]),
 			]
 		);
@@ -423,9 +423,9 @@ mod tests {
 		assert_eq!(
 			[
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"probe",
 					"--scope",
 					"machine",
@@ -436,7 +436,7 @@ mod tests {
 					"probe.ini",
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"install",
 					"--non-interactive",
 					"--consent=installer",
@@ -450,16 +450,16 @@ mod tests {
 					"mutex",
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"install",
 					"--interactive"
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"policy"
 				])),
 			],
@@ -499,25 +499,25 @@ mod tests {
 	fn malformed_options_are_rejected() {
 		assert_eq!(
 			[
-				parse(arguments(&["--vscode-shim"])),
-				parse(arguments(&["--vscode-shim", "future-option", "--resume"])),
+				parse(arguments(&["--docode-shim"])),
+				parse(arguments(&["--docode-shim", "future-option", "--resume"])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"clear",
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"probe"
 				])),
-				parse(arguments(&["--vscode-shim", "probe", "extra"])),
+				parse(arguments(&["--docode-shim", "probe", "extra"])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"verbose",
-					"--vscode-shim",
+					"--docode-shim",
 					"probe"
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"probe",
 					"--scope",
 					"everyone",
@@ -525,32 +525,32 @@ mod tests {
 					"x"
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"probe",
 					"--timeout-ms",
 					"0",
 					"--result-file",
 					"x"
 				])),
-				parse(arguments(&["--vscode-shim", "probe", "--result-file"])),
+				parse(arguments(&["--docode-shim", "probe", "--result-file"])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"install",
 					"--non-interactive",
 					"--result-file",
 					"x"
 				])),
-				parse(arguments(&["--vscode-shim", "install"])),
+				parse(arguments(&["--docode-shim", "install"])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"policy",
 					"--result-file",
 					"x"
 				])),
 				parse(arguments(&[
-					"--vscode-shim",
+					"--docode-shim",
 					"clear",
-					"--vscode-shim",
+					"--docode-shim",
 					"policy"
 				])),
 			],

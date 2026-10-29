@@ -1,0 +1,137 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.chat-logo-motion-gallery,
+.chat-logo-motion-single {
+	box-sizing: border-box;
+	color: var(--docode-foreground);
+	background: var(--docode-editor-background);
+	font-size: var(--docode-fontSize-body1);
+	line-height: 1.5;
+}
+
+.chat-logo-motion-gallery {
+	width: 600px;
+	padding: var(--docode-spacing-size240);
+}
+
+.chat-logo-motion-gallery-header {
+	margin-bottom: var(--docode-spacing-size200);
+
+	h2 {
+		font-size: var(--docode-fontSize-heading2);
+		font-weight: var(--docode-fontWeight-semiBold);
+		margin: var(--docode-spacing-size80) 0;
+	}
+
+	p {
+		color: var(--docode-descriptionForeground);
+		margin: 0;
+	}
+}
+
+.chat-logo-motion-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--docode-spacing-size160);
+}
+
+.chat-logo-motion-card {
+	min-width: 0;
+	padding: var(--docode-spacing-size160);
+	border: var(--docode-strokeThickness) solid var(--docode-widget-border, var(--docode-panel-border));
+	border-radius: var(--docode-cornerRadius-medium);
+	background: var(--docode-editorWidget-background);
+}
+
+.chat-logo-motion-card-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--docode-spacing-size80);
+
+	h3 {
+		margin: 0;
+		font-size: var(--docode-fontSize-heading3);
+		font-weight: var(--docode-fontWeight-semiBold);
+	}
+}
+
+.chat-logo-motion-stage {
+	display: grid;
+	place-items: center;
+	height: 112px;
+	margin: var(--docode-spacing-size80) 0;
+}
+
+.chat-logo-motion-construction {
+	position: relative;
+	width: 64px;
+	height: 64px;
+	line-height: 0;
+}
+
+.chat-logo-motion-description {
+	min-height: 4.5em;
+	margin: 0 0 var(--docode-spacing-size160);
+	color: var(--docode-descriptionForeground);
+}
+
+.chat-logo-motion-samples {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size120);
+	padding: var(--docode-spacing-size120) 0;
+	border-top: var(--docode-strokeThickness) solid var(--docode-widget-border, var(--docode-panel-border));
+	border-bottom: var(--docode-strokeThickness) solid var(--docode-widget-border, var(--docode-panel-border));
+}
+
+.chat-logo-motion-sample {
+	display: flex;
+	align-items: center;
+	gap: var(--docode-spacing-size80);
+	min-height: 20px;
+}
+
+.chat-logo-motion-label {
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-label1);
+}
+
+.chat-logo-motion-size {
+	margin-left: auto;
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-label3);
+}
+
+.chat-logo-motion-note {
+	min-height: 3em;
+	margin: var(--docode-spacing-size120) 0 var(--docode-spacing-size80);
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-body2);
+}
+
+.chat-logo-motion-footer {
+	margin: var(--docode-spacing-size200) 0 0;
+	color: var(--docode-descriptionForeground);
+	font-size: var(--docode-fontSize-body2);
+}
+
+.chat-logo-motion-single {
+	width: 360px;
+	padding: var(--docode-spacing-size160);
+
+	.chat-logo-motion-stage {
+		height: 160px;
+	}
+}
+
+.chat-logo-motion-probe {
+	display: grid;
+	place-items: center;
+	width: 64px;
+	height: 64px;
+	background: var(--docode-editor-background);
+}

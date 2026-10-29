@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as sqlite3 from '@vscode/sqlite3';
+import * as sqlite3 from '@docode/sqlite3';
 import * as fs from 'fs';
 import { Suite, Context } from 'mocha';
 import { dirname, join } from 'path';
@@ -230,7 +230,7 @@ export function getMockLlmServerPath(): string {
 }
 
 export function getMockLlmServerUrl(mockServer: MockLlmServer): string {
-	const hostname = process.env.VSCODE_SMOKE_TEST_MOCK_HOST;
+	const hostname = process.env.DOCODE_SMOKE_TEST_MOCK_HOST;
 	if (!hostname) {
 		return mockServer.url;
 	}
@@ -298,11 +298,11 @@ export function getCopilotSmokeTestEnv(mockServer?: MockLlmServer, opts?: { user
 		//     skipping the real GitHub OAuth flow.
 		//   - IS_SCENARIO_AUTOMATION tells the Copilot extension this is an automation run
 		//     so it suppresses sign-in prompts and uses NoAuth paths.
-		//   - VSCODE_COPILOT_CHAT_TOKEN is a fake token whose endpoints.api/proxy
+		//   - DOCODE_COPILOT_CHAT_TOKEN is a fake token whose endpoints.api/proxy
 		//     point at the mock LLM server.
 		GITHUB_PAT: 'smoketest-fake-pat',
 		IS_SCENARIO_AUTOMATION: '1',
-		VSCODE_COPILOT_CHAT_TOKEN: mockServer ? buildCopilotChatToken(getMockLlmServerUrl(mockServer)) : undefined,
+		DOCODE_COPILOT_CHAT_TOKEN: mockServer ? buildCopilotChatToken(getMockLlmServerUrl(mockServer)) : undefined,
 		XDG_STATE_HOME: xdgStateHome,
 		COPILOT_HOME: copilotHome,
 		CODEX_HOME: codexHome,

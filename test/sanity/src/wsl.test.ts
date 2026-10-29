@@ -153,7 +153,7 @@ export function setup(context: TestContext) {
 		const args = [
 			'--extensions-dir', context.createTempDir(),
 			'--user-data-dir', test.userDataDir,
-			'--folder-uri', `vscode-remote://wsl+${wslDistro}${wslWorkspaceDir}`,
+			'--folder-uri', `docode-remote://wsl+${wslDistro}${wslWorkspaceDir}`,
 		];
 		const crashDumpsDir = context.getCrashDumpsDir();
 		if (crashDumpsDir) {
@@ -209,7 +209,7 @@ class WslUITest extends UITest {
 	protected override verifyExtensionInstalled() {
 		this.context.log(`Verifying extension is installed in WSL at ${this.wslExtensionsDir}`);
 		const result = this.context.runNoErrors('wsl', 'ls', this.wslExtensionsDir);
-		const hasExtension = result.stdout.split('\n').some(ext => ext.startsWith('github.vscode-pull-request-github'));
+		const hasExtension = result.stdout.split('\n').some(ext => ext.startsWith('github.docode-pull-request-github'));
 		assert.strictEqual(hasExtension, true, 'GitHub Pull Requests extension is not installed in WSL');
 	}
 }

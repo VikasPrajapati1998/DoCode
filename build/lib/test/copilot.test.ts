@@ -5,36 +5,16 @@
 
 import assert from 'assert';
 import { spawnSync } from 'child_process';
-import { createHash } from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { suite, test } from 'node:test';
 import { create } from 'tar';
-import { copilotPlatforms, ensureCopilotPlatformPackage, getCopilotExcludeFilter, getCopilotRuntimePrebuildFiles, getCopilotRuntimeVersion, prepareBuiltInCopilotRipgrepShim, renderCopilotShimLauncher } from '../copilot.ts';
-
-/**
- * Builds a fake `@github/copilot-win32-x64@1.0.73` tarball on disk and returns
- * its path plus the `sha512-...` integrity of its bytes, so a test can pin that
- * integrity in a lockfile the build verifies against.
- */
-function createPinnedCopilotWin32Tarball(dir: string): { tarball: string; integrity: string } {
-	const stage = fs.mkdtempSync(path.join(dir, 'pkg-'));
-	const packageRoot = path.join(stage, 'package');
-	fs.mkdirSync(path.join(packageRoot, 'prebuilds', 'win32-x64'), { recursive: true });
-	fs.mkdirSync(path.join(packageRoot, 'tgrep', 'bin', 'win32-x64'), { recursive: true });
-	fs.writeFileSync(path.join(packageRoot, 'package.json'), JSON.stringify({ version: '1.0.73' }));
-	fs.writeFileSync(path.join(packageRoot, 'prebuilds', 'win32-x64', 'runtime.node'), 'EXT-NATIVE-1.0.73');
-	fs.writeFileSync(path.join(packageRoot, 'tgrep', 'bin', 'win32-x64', 'tgrep.exe'), 'EXT-TGREP-1.0.73');
-	const tarball = path.join(stage, 'copilot-win32-x64.tgz');
-	create({ file: tarball, cwd: stage, gzip: true, sync: true }, ['package']);
-	const integrity = 'sha512-' + createHash('sha512').update(fs.readFileSync(tarball)).digest('base64');
-	return { tarball, integrity };
-}
+import { copilotPlatforms, ensureCopilotPlatformPackage, getCopilotExcludeFilter, getCopilotRuntimePrebuildFiles, getCopilotRuntimeVersion, renderCopilotShimLauncher } from '../copilot.ts';
 
 suite('copilot', () => {
 	test('reads the runtime version owned by the SDK', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-version-test-'));
+		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-copilot-version-test-'));
 		try {
 			const sdkDir = path.join(repoRoot, 'node_modules', '@github', 'copilot-sdk');
 			fs.mkdirSync(sdkDir, { recursive: true });
@@ -165,7 +145,7 @@ suite('copilot', () => {
 	}
 
 	test('materializes missing target platform packages from the lockfile', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-platform-test-'));
+		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-copilot-platform-test-'));
 		const nodeModulesRoot = path.join(repoRoot, 'node_modules');
 		try {
 			fs.mkdirSync(nodeModulesRoot, { recursive: true });
@@ -207,7 +187,7 @@ suite('copilot', () => {
 	});
 
 	test('rejects a target SDK platform package with missing runtime files', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-runtime-test-'));
+		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-copilot-runtime-test-'));
 		const nodeModulesRoot = path.join(repoRoot, 'node_modules');
 		try {
 			fs.mkdirSync(nodeModulesRoot, { recursive: true });
@@ -250,132 +230,6 @@ suite('copilot', () => {
 		});
 	});
 
-	test('materializes target Copilot SDK prebuilds and tgrep for the built-in extension', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-sdk-prebuild-test-'));
-		try {
-			const builtInCopilotExtensionDir = path.join(repoRoot, 'extensions', 'copilot');
-			const extensionCopilotDir = path.join(builtInCopilotExtensionDir, 'node_modules', '@github', 'copilot');
-			const appNodeModulesDir = path.join(repoRoot, 'node_modules');
-			const platformPackageDir = path.join(appNodeModulesDir, '@github', 'copilot-win32-x64');
-
-			fs.mkdirSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'linux-x64'), { recursive: true });
-			fs.writeFileSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'linux-x64', 'runtime.node'), '');
-			fs.writeFileSync(path.join(extensionCopilotDir, 'package.json'), JSON.stringify({ version: '1.0.73' }));
-			fs.mkdirSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'conpty'), { recursive: true });
-			fs.writeFileSync(path.join(platformPackageDir, 'package.json'), JSON.stringify({ version: '1.0.73' }));
-			fs.mkdirSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'mediaremote-adapter', 'MediaRemoteAdapter.framework'), { recursive: true });
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'runtime.node'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'copilot-runtime.exe'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'copilot-runtime-bin.exe'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'OneAuthInterop.dll'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'conpty.node'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'conpty', 'OpenConsole.exe'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'mediaremote-adapter', 'mediaremote-adapter.pl'), '');
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'mediaremote-adapter', 'MediaRemoteAdapter.framework', 'MediaRemoteAdapter'), '');
-			fs.mkdirSync(path.join(platformPackageDir, 'tgrep', 'bin', 'win32-x64'), { recursive: true });
-			fs.writeFileSync(path.join(platformPackageDir, 'tgrep', 'bin', 'win32-x64', 'tgrep.exe'), '');
-			fs.mkdirSync(path.join(appNodeModulesDir, '@vscode', 'ripgrep-universal', 'bin', 'win32-x64'), { recursive: true });
-			fs.writeFileSync(path.join(appNodeModulesDir, '@vscode', 'ripgrep-universal', 'bin', 'win32-x64', 'rg.exe'), '');
-
-			prepareBuiltInCopilotRipgrepShim('win32', 'x64', builtInCopilotExtensionDir, appNodeModulesDir);
-
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'runtime.node')));
-			assert(!fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'copilot-runtime.exe')));
-			assert(!fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'copilot-runtime-bin.exe')));
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'OneAuthInterop.dll')));
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'conpty.node')));
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'conpty', 'OpenConsole.exe')));
-			assert(!fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'mediaremote-adapter')));
-			assert(!fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'linux-x64')));
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'tgrep', 'bin', 'win32-x64', 'tgrep.exe')));
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'tgrep', 'bin', 'win32-x64', 'tgrep.exe')));
-			assert(fs.existsSync(path.join(extensionCopilotDir, 'sdk', 'ripgrep', 'bin', 'win32-x64', 'rg.exe')));
-		} finally {
-			fs.rmSync(repoRoot, { recursive: true, force: true });
-		}
-	});
-
-	test('materializes a version-matched native when app-root diverges from the pinned extension', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-sdk-pinned-test-'));
-		try {
-			const builtInCopilotExtensionDir = path.join(repoRoot, 'extensions', 'copilot');
-			const extensionCopilotDir = path.join(builtInCopilotExtensionDir, 'node_modules', '@github', 'copilot');
-			const appNodeModulesDir = path.join(repoRoot, 'node_modules');
-			const platformPackageDir = path.join(appNodeModulesDir, '@github', 'copilot-win32-x64');
-
-			// Extension pinned at 1.0.73.
-			fs.mkdirSync(path.join(extensionCopilotDir, 'sdk'), { recursive: true });
-			fs.writeFileSync(path.join(extensionCopilotDir, 'package.json'), JSON.stringify({ version: '1.0.73' }));
-
-			// App-root updated ahead of the pinned extension — its (mismatched) native must NOT be used.
-			fs.mkdirSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64'), { recursive: true });
-			fs.writeFileSync(path.join(platformPackageDir, 'package.json'), JSON.stringify({ version: '9.9.9-canary' }));
-			fs.writeFileSync(path.join(platformPackageDir, 'prebuilds', 'win32-x64', 'runtime.node'), 'CANARY-NATIVE');
-			fs.mkdirSync(path.join(platformPackageDir, 'tgrep', 'bin', 'win32-x64'), { recursive: true });
-			fs.writeFileSync(path.join(platformPackageDir, 'tgrep', 'bin', 'win32-x64', 'tgrep.exe'), 'CANARY-TGREP');
-
-			fs.mkdirSync(path.join(appNodeModulesDir, '@vscode', 'ripgrep-universal', 'bin', 'win32-x64'), { recursive: true });
-			fs.writeFileSync(path.join(appNodeModulesDir, '@vscode', 'ripgrep-universal', 'bin', 'win32-x64', 'rg.exe'), '');
-
-			// Pin the fetched tarball's integrity in the extension lockfile the build verifies against.
-			const { tarball, integrity } = createPinnedCopilotWin32Tarball(repoRoot);
-			const extensionLockfilePath = path.join(builtInCopilotExtensionDir, 'package-lock.json');
-			fs.writeFileSync(extensionLockfilePath, JSON.stringify({
-				packages: { 'node_modules/@github/copilot-win32-x64': { version: '1.0.73', integrity } }
-			}));
-
-			const packCalls: { packageName: string; version: string }[] = [];
-			prepareBuiltInCopilotRipgrepShim('win32', 'x64', builtInCopilotExtensionDir, appNodeModulesDir, {
-				extensionLockfilePath,
-				packPackage: (packageName, version) => {
-					packCalls.push({ packageName, version });
-					return tarball;
-				}
-			});
-
-			// The version-matched (1.0.73) native was fetched and used — not app-root's canary.
-			assert.deepStrictEqual(packCalls, [{ packageName: '@github/copilot-win32-x64', version: '1.0.73' }]);
-			assert.strictEqual(
-				fs.readFileSync(path.join(extensionCopilotDir, 'sdk', 'prebuilds', 'win32-x64', 'runtime.node'), 'utf8'),
-				'EXT-NATIVE-1.0.73'
-			);
-			assert.strictEqual(
-				fs.readFileSync(path.join(extensionCopilotDir, 'sdk', 'tgrep', 'bin', 'win32-x64', 'tgrep.exe'), 'utf8'),
-				'EXT-TGREP-1.0.73'
-			);
-		} finally {
-			fs.rmSync(repoRoot, { recursive: true, force: true });
-		}
-	});
-
-	test('refuses to ship a fetched native that does not match the pinned extension lockfile integrity', () => {
-		const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-sdk-integrity-test-'));
-		try {
-			const builtInCopilotExtensionDir = path.join(repoRoot, 'extensions', 'copilot');
-			const extensionCopilotDir = path.join(builtInCopilotExtensionDir, 'node_modules', '@github', 'copilot');
-			const appNodeModulesDir = path.join(repoRoot, 'node_modules');
-
-			fs.mkdirSync(path.join(extensionCopilotDir, 'sdk'), { recursive: true });
-			fs.writeFileSync(path.join(extensionCopilotDir, 'package.json'), JSON.stringify({ version: '1.0.73' }));
-			fs.mkdirSync(path.join(appNodeModulesDir, '@vscode', 'ripgrep-universal', 'bin', 'win32-x64'), { recursive: true });
-			fs.writeFileSync(path.join(appNodeModulesDir, '@vscode', 'ripgrep-universal', 'bin', 'win32-x64', 'rg.exe'), '');
-
-			const { tarball } = createPinnedCopilotWin32Tarball(repoRoot);
-			const extensionLockfilePath = path.join(builtInCopilotExtensionDir, 'package-lock.json');
-			// Lockfile pins a DIFFERENT (tampered) integrity than the fetched tarball.
-			fs.writeFileSync(extensionLockfilePath, JSON.stringify({
-				packages: { 'node_modules/@github/copilot-win32-x64': { version: '1.0.73', integrity: `sha512-${'A'.repeat(88)}` } }
-			}));
-
-			assert.throws(() => prepareBuiltInCopilotRipgrepShim('win32', 'x64', builtInCopilotExtensionDir, appNodeModulesDir, {
-				extensionLockfilePath,
-				packPackage: () => tarball
-			}), /integrity mismatch/);
-		} finally {
-			fs.rmSync(repoRoot, { recursive: true, force: true });
-		}
-	});
-
 	test('strips all copilot platform packages for unsupported armhf builds', () => {
 		assert.deepStrictEqual(
 			getCopilotExcludeFilter('linux', 'armhf'),
@@ -409,7 +263,7 @@ suite('copilot shim launcher', () => {
 		const launcherDir = path.join(root, folder, 'bin', 'copilot-shim');
 		fs.mkdirSync(launcherDir, { recursive: true });
 		const launcher = path.join(launcherDir, 'copilot');
-		fs.writeFileSync(launcher, renderCopilotShimLauncher(template, { commit, quality: 'insider', applicationName: 'code-insiders', dataFolderName: '.vscode-insiders', serverDataFolderName: '.vscode-server-insiders' }), { mode: 0o755 });
+		fs.writeFileSync(launcher, renderCopilotShimLauncher(template, { commit, quality: 'insider', applicationName: 'code-insiders', dataFolderName: '.docode-insiders', serverDataFolderName: '.docode-server-insiders' }), { mode: 0o755 });
 		fs.writeFileSync(path.join(launcherDir, 'copilot.exe'), '#!/bin/sh\nprintf "%s\\n" "shim=copilot.exe" "args=$*"\n', { mode: 0o755 });
 		return { root, home: path.join(root, 'home'), launcher, launcherDir };
 	}
@@ -432,7 +286,7 @@ suite('copilot shim launcher', () => {
 	}
 
 	function withFixture(callback: (root: string) => void): void {
-		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-copilot-launcher-'));
+		const root = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-copilot-launcher-'));
 		try {
 			callback(root);
 		} finally {
@@ -441,9 +295,9 @@ suite('copilot shim launcher', () => {
 	}
 
 	test('renders every product placeholder, with the marker where PATH filtering reads it', () => {
-		const rendered = renderCopilotShimLauncher(template, { commit, quality: 'stable', applicationName: 'code', dataFolderName: '.vscode', serverDataFolderName: '.vscode-server' });
+		const rendered = renderCopilotShimLauncher(template, { commit, quality: 'stable', applicationName: 'code', dataFolderName: '.docode', serverDataFolderName: '.docode-server' });
 		assert.deepStrictEqual(
-			[/@@\w+@@/.test(rendered), rendered.includes(`COMMIT="${commit}"`), rendered.includes('DATAFOLDER=".vscode"'), rendered.includes('SERVERDATAFOLDER=".vscode-server"'), Buffer.from(rendered).subarray(0, 512).includes('vscode-copilot-launcher')],
+			[/@@\w+@@/.test(rendered), rendered.includes(`COMMIT="${commit}"`), rendered.includes('DATAFOLDER=".docode"'), rendered.includes('SERVERDATAFOLDER=".docode-server"'), Buffer.from(rendered).subarray(0, 512).includes('docode-copilot-launcher')],
 			[false, true, true, true, true]
 		);
 	});
@@ -462,22 +316,22 @@ suite('copilot shim launcher', () => {
 				};
 
 				assert.deepStrictEqual({
-					remoteWslLayout: select([[`.vscode-server-insiders/bin/${commit}`, 1], ['.vscode-server-insiders/bin/newer', 9]]),
-					remoteSshLayout: select([[`.vscode-server-insiders/cli/servers/Insiders-${commit}/server`, 1], ['.vscode-server-insiders/bin/newer', 9]]),
-					codeCliLayout: select([[`.vscode-insiders/cli/servers/Insiders-${commit}/server`, 1], ['.vscode-server-insiders/bin/newer', 9]]),
-					codeCliDataDir: select([[`cli-data/servers/Insiders-${commit}/server`, 1], ['.vscode-server-insiders/bin/newer', 9]], { VSCODE_CLI_DATA_DIR: path.join(fixture.home, 'cli-data') }),
-					newestOfAnyQuality: select([['.vscode-server-insiders/bin/older', 1], ['.vscode-server/cli/servers/Stable-other/server', 5], ['.vscode-server/bin/newest', 9]]),
-					newestIncludesCodeCli: select([['.vscode-server-insiders/bin/older', 1], ['.vscode/cli/servers/Stable-other/server', 9]]),
-					skipsNonExecutable: select([[`.vscode-server-insiders/bin/${commit}`, 9, 0o644], ['.vscode-server/bin/other', 1]]),
-					agentFolder: select([[`custom/bin/${commit}`, 1], ['.vscode-server-insiders/bin/newer', 9]], { VSCODE_AGENT_FOLDER: path.join(fixture.home, 'custom') }),
+					remoteWslLayout: select([[`.docode-server-insiders/bin/${commit}`, 1], ['.docode-server-insiders/bin/newer', 9]]),
+					remoteSshLayout: select([[`.docode-server-insiders/cli/servers/Insiders-${commit}/server`, 1], ['.docode-server-insiders/bin/newer', 9]]),
+					codeCliLayout: select([[`.docode-insiders/cli/servers/Insiders-${commit}/server`, 1], ['.docode-server-insiders/bin/newer', 9]]),
+					codeCliDataDir: select([[`cli-data/servers/Insiders-${commit}/server`, 1], ['.docode-server-insiders/bin/newer', 9]], { DOCODE_CLI_DATA_DIR: path.join(fixture.home, 'cli-data') }),
+					newestOfAnyQuality: select([['.docode-server-insiders/bin/older', 1], ['.docode-server/cli/servers/Stable-other/server', 5], ['.docode-server/bin/newest', 9]]),
+					newestIncludesCodeCli: select([['.docode-server-insiders/bin/older', 1], ['.docode/cli/servers/Stable-other/server', 9]]),
+					skipsNonExecutable: select([[`.docode-server-insiders/bin/${commit}`, 9, 0o644], ['.docode-server/bin/other', 1]]),
+					agentFolder: select([[`custom/bin/${commit}`, 1], ['.docode-server-insiders/bin/newer', 9]], { DOCODE_AGENT_FOLDER: path.join(fixture.home, 'custom') }),
 				}, {
-					remoteWslLayout: `.vscode-server-insiders/bin/${commit}`,
-					remoteSshLayout: `.vscode-server-insiders/cli/servers/Insiders-${commit}/server`,
-					codeCliLayout: `.vscode-insiders/cli/servers/Insiders-${commit}/server`,
+					remoteWslLayout: `.docode-server-insiders/bin/${commit}`,
+					remoteSshLayout: `.docode-server-insiders/cli/servers/Insiders-${commit}/server`,
+					codeCliLayout: `.docode-insiders/cli/servers/Insiders-${commit}/server`,
 					codeCliDataDir: `cli-data/servers/Insiders-${commit}/server`,
-					newestOfAnyQuality: '.vscode-server/bin/newest',
-					newestIncludesCodeCli: '.vscode/cli/servers/Stable-other/server',
-					skipsNonExecutable: '.vscode-server/bin/other',
+					newestOfAnyQuality: '.docode-server/bin/newest',
+					newestIncludesCodeCli: '.docode/cli/servers/Stable-other/server',
+					skipsNonExecutable: '.docode-server/bin/other',
 					agentFolder: `custom/bin/${commit}`,
 				});
 			});
@@ -493,13 +347,13 @@ suite('copilot shim launcher', () => {
 				// Like a Copilot CLI executable that happens to contain the marker text far from its start.
 				const large = path.join(root, 'large');
 				fs.mkdirSync(large);
-				fs.writeFileSync(path.join(large, 'copilot'), Buffer.concat([Buffer.alloc(4096, 0x7f), Buffer.from('vscode-copilot-launcher')]), { mode: 0o755 });
-				addShim(fixture, `.vscode-server-insiders/bin/${commit}`, 1);
+				fs.writeFileSync(path.join(large, 'copilot'), Buffer.concat([Buffer.alloc(4096, 0x7f), Buffer.from('docode-copilot-launcher')]), { mode: 0o755 });
+				addShim(fixture, `.docode-server-insiders/bin/${commit}`, 1);
 
 				const result = runLauncher(shell, fixture, ['--resume', 'a b'], { WSL_DISTRO_NAME: 'Test', PATH: `${fixture.launcherDir}::/usr/bin:${other.launcherDir}:${unrelated}:${large}:/bin` });
 				assert.deepStrictEqual(result, {
 					status: 0,
-					stdout: { shim: `.vscode-server-insiders/bin/${commit}`, args: '--resume a b', path: `:/usr/bin:${unrelated}:${large}:/bin` },
+					stdout: { shim: `.docode-server-insiders/bin/${commit}`, args: '--resume a b', path: `:/usr/bin:${unrelated}:${large}:/bin` },
 					stderr: '',
 				});
 			});

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as nbformat from '@jupyterlab/nbformat';
-import type { NotebookCell, NotebookCellData, NotebookCellOutput, NotebookData, NotebookDocument } from 'vscode';
+import type { NotebookCell, NotebookCellData, NotebookCellOutput, NotebookData, NotebookDocument } from 'docode';
 import { CellOutputMetadata, hasKey, type CellMetadata } from './common';
 import { textMimeTypes, NotebookCellKindMarkup, CellOutputMimeTypes, defaultNotebookFormat } from './constants';
 
@@ -71,16 +71,16 @@ export function getCellMetadata(options: { cell: NotebookCell | NotebookCellData
 	}
 }
 
-export function getVSCodeCellLanguageId(metadata: CellMetadata): string | undefined {
-	return metadata.metadata?.vscode?.languageId;
+export function getDoCodeCellLanguageId(metadata: CellMetadata): string | undefined {
+	return metadata.metadata?.docode?.languageId;
 }
-export function setVSCodeCellLanguageId(metadata: CellMetadata, languageId: string) {
+export function setDoCodeCellLanguageId(metadata: CellMetadata, languageId: string) {
 	metadata.metadata = metadata.metadata || {};
-	metadata.metadata.vscode = { languageId };
+	metadata.metadata.docode = { languageId };
 }
-export function removeVSCodeCellLanguageId(metadata: CellMetadata) {
-	if (metadata.metadata?.vscode) {
-		delete metadata.metadata.vscode;
+export function removeDoCodeCellLanguageId(metadata: CellMetadata) {
+	if (metadata.metadata?.docode) {
+		delete metadata.metadata.docode;
 	}
 }
 
@@ -88,10 +88,10 @@ function createCodeCellFromNotebookCell(cell: NotebookCellData, preferredLanguag
 	const cellMetadata: CellMetadata = JSON.parse(JSON.stringify(getCellMetadata({ cell })));
 	cellMetadata.metadata = cellMetadata.metadata || {}; // This cannot be empty.
 	if (cell.languageId !== preferredLanguage) {
-		setVSCodeCellLanguageId(cellMetadata, cell.languageId);
+		setDoCodeCellLanguageId(cellMetadata, cell.languageId);
 	} else {
-		// cell current language is the same as the preferred cell language in the document, flush the vscode custom language id metadata
-		removeVSCodeCellLanguageId(cellMetadata);
+		// cell current language is the same as the preferred cell language in the document, flush the docode custom language id metadata
+		removeDoCodeCellLanguageId(cellMetadata);
 	}
 
 	const codeCell: nbformat.ICodeCell = {

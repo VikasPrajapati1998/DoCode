@@ -30,7 +30,7 @@ interface VsCodeApi<State, Message> {
 
 declare function acquireVsCodeApi(): VsCodeApi<SimpleBrowserState, OpenExternalMessage>;
 
-const vscode = acquireVsCodeApi();
+const docode = acquireVsCodeApi();
 
 function isSimpleBrowserSettings(value: unknown): value is SimpleBrowserSettings {
 	return typeof value === 'object'
@@ -120,7 +120,7 @@ onceDocumentLoaded(() => {
 	});
 
 	openExternalButton.addEventListener('click', () => {
-		vscode.postMessage({
+		docode.postMessage({
 			type: 'openExternal',
 			url: input.value
 		});
@@ -149,14 +149,14 @@ onceDocumentLoaded(() => {
 			// There does not appear to be any way to reliably do this except modifying the url
 			const existing = new URLSearchParams(location.search);
 			url.searchParams.append('id', existing.get('id')!);
-			url.searchParams.append('vscodeBrowserReqId', Date.now().toString());
+			url.searchParams.append('docodeBrowserReqId', Date.now().toString());
 
 			iframe.src = url.toString();
 		} catch {
 			iframe.src = rawUrl;
 		}
 
-		vscode.setState({ url: rawUrl });
+		docode.setState({ url: rawUrl });
 	}
 });
 

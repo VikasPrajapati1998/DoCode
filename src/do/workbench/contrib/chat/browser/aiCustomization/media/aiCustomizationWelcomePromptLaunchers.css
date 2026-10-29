@@ -1,0 +1,301 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+/* The DomScrollableElement wrapper fills the welcome page host */
+.ai-customization-management-editor .welcome-prompts-scrollable {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+/* The inner element is the one DomScrollableElement scrolls.
+ * Constrain it so clientHeight < scrollHeight when content overflows. */
+.ai-customization-management-editor .welcome-prompts-content-container {
+	position: absolute;
+	inset: 0;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.ai-customization-management-editor .welcome-prompts-inner {
+	margin: 0 auto;
+	width: min(calc(100% - var(--docode-spacing-size400) - var(--docode-spacing-size400)), 840px);
+	padding: 0 0 var(--docode-spacing-size320);
+	box-sizing: border-box;
+}
+
+.ai-customization-management-editor .welcome-prompts-heading {
+	font-size: var(--docode-fontSize-heading2);
+	font-weight: var(--docode-fontWeight-semiBold);
+	margin: 0 0 6px;
+	color: var(--docode-foreground);
+}
+
+.ai-customization-management-editor .welcome-prompts-subtitle {
+	font-size: var(--docode-fontSize-body1);
+	color: var(--docode-descriptionForeground);
+	margin: 0 0 8px;
+	padding-bottom: 8px;
+	line-height: 1.45;
+	min-height: calc(var(--docode-fontSize-body1) * 1.45 * 2);
+}
+
+.ai-customization-management-editor .welcome-prompts-primary {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size60);
+	/* Match card grid width — no extra horizontal margin */
+	width: 100%;
+	box-sizing: border-box;
+	padding: var(--docode-spacing-size160);
+	margin: var(--docode-spacing-size200) 0 var(--docode-spacing-size280);
+	border: var(--docode-strokeThickness) solid var(--docode-agentsPanel-border);
+	border-radius: var(--docode-cornerRadius-large);
+	background: color-mix(in srgb, var(--docode-foreground) 8%, var(--docode-agentsPanel-background));
+}
+
+.ai-customization-management-editor .welcome-prompts-section-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 0 4px;
+	font-size: var(--docode-fontSize-body1);
+	font-weight: var(--docode-fontWeight-semiBold);
+	color: var(--docode-foreground);
+}
+
+.ai-customization-management-editor .welcome-prompts-input-row {
+	display: flex;
+	align-items: center;
+	min-height: 36px;
+	height: 36px;
+	border-radius: 6px;
+	background: var(--docode-input-background);
+	border: var(--docode-strokeThickness) solid var(--docode-input-border, transparent);
+	padding: 0 4px 0 12px;
+	margin-top: 6px;
+}
+
+.ai-customization-management-editor .welcome-prompts-input-row:focus-within {
+	border-color: var(--docode-agentsChatInput-focusBorder, var(--docode-focusBorder));
+}
+
+.ai-customization-management-editor .welcome-prompts-input {
+	flex: 1;
+	min-width: 0;
+	height: 36px;
+	padding: 0;
+	font-size: var(--docode-fontSize-body1);
+	font-family: inherit;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	background: transparent;
+	color: var(--docode-input-foreground);
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+/* Override the global .monaco-workbench input[type="text"]:focus outline */
+.monaco-workbench .ai-customization-management-editor .welcome-prompts-input,
+.monaco-workbench .ai-customization-management-editor .welcome-prompts-input:focus,
+.monaco-workbench .ai-customization-management-editor .welcome-prompts-input:active,
+.monaco-workbench .ai-customization-management-editor .welcome-prompts-input:focus-visible,
+.monaco-workbench .ai-customization-management-editor input[type="text"].welcome-prompts-input:focus {
+	outline: none !important;
+	outline-width: 0 !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.ai-customization-management-editor .welcome-prompts-input::placeholder {
+	color: var(--docode-input-placeholderForeground, var(--docode-descriptionForeground));
+}
+
+.ai-customization-management-editor .welcome-prompts-input-submit {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	flex-shrink: 0;
+	border: none;
+	border-radius: 4px;
+	background: transparent;
+	color: var(--docode-descriptionForeground);
+	cursor: pointer;
+	transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.ai-customization-management-editor .welcome-prompts-input-submit:hover {
+	color: var(--docode-foreground);
+	background: color-mix(in srgb, var(--docode-list-hoverBackground) 75%, transparent);
+}
+
+.ai-customization-management-editor .welcome-prompts-input-submit:focus-visible {
+	outline: 1px solid var(--docode-focusBorder);
+	outline-offset: -1px;
+}
+
+.ai-customization-management-editor .welcome-prompts-input-submit.welcome-prompts-input-submit-disabled {
+	opacity: 0.4;
+	cursor: default;
+	pointer-events: none;
+}
+
+.ai-customization-management-editor .welcome-prompts-input-row.sent {
+	justify-content: center;
+}
+
+.ai-customization-management-editor .welcome-prompts-input-row.sent .welcome-prompts-input {
+	display: none;
+}
+
+.ai-customization-management-editor .welcome-prompts-sent-label {
+	font-size: var(--docode-agents-fontSize-label1);
+	color: var(--docode-descriptionForeground);
+	padding: 0 8px;
+	white-space: nowrap;
+	animation: welcomePromptsSentFadeIn 0.2s ease;
+}
+
+@keyframes welcomePromptsSentFadeIn {
+	from { opacity: 0; transform: translateY(2px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.ai-customization-management-editor .welcome-prompts-input-helper {
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--docode-descriptionForeground);
+	margin: 0;
+	padding: 0 4px;
+}
+
+.ai-customization-management-editor .welcome-prompts-cards {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size280);
+}
+
+.ai-customization-management-editor .welcome-prompts-overview-section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--docode-spacing-size100);
+}
+
+.ai-customization-management-editor .welcome-prompts-overview-section-title {
+	margin: 0;
+	font-size: var(--docode-agents-fontSize-heading3);
+	font-weight: var(--docode-agents-fontWeight-semiBold);
+	color: var(--docode-foreground);
+}
+
+.ai-customization-management-editor .welcome-prompts-overview-section-description {
+	margin: calc(-1 * var(--docode-spacing-size60)) 0 0;
+	font-size: var(--docode-agents-fontSize-body2);
+	line-height: 16px;
+	color: var(--docode-descriptionForeground);
+}
+
+.ai-customization-management-editor .welcome-prompts-overview-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: var(--docode-spacing-size100);
+}
+
+.ai-customization-management-editor .welcome-prompts-card {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	padding: var(--docode-spacing-size120);
+	border: var(--docode-strokeThickness) solid var(--docode-agentsPanel-border);
+	border-radius: var(--docode-cornerRadius-large);
+	background: color-mix(in srgb, var(--docode-foreground) 8%, var(--docode-agentsPanel-background));
+	color: var(--docode-foreground);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition: background-color 0.1s ease;
+}
+
+.ai-customization-management-editor .welcome-prompts-card:hover {
+	background: var(--docode-list-hoverBackground);
+}
+
+.ai-customization-management-editor .welcome-prompts-card:focus-visible {
+	outline: 1px solid var(--docode-focusBorder);
+	outline-offset: -1px;
+}
+
+.ai-customization-management-editor .welcome-prompts-migration-card {
+	grid-column: 1 / -1;
+	background: color-mix(in srgb, var(--docode-inputValidation-warningBackground) 35%, var(--docode-agentsPanel-background));
+	border-color: color-mix(in srgb, var(--docode-inputValidation-warningBorder) 70%, var(--docode-agentsPanel-border));
+	cursor: pointer;
+}
+
+.ai-customization-management-editor .welcome-prompts-migration-card:hover {
+	background: color-mix(in srgb, var(--docode-inputValidation-warningBackground) 55%, var(--docode-list-hoverBackground));
+}
+
+.ai-customization-management-editor .welcome-prompts-card-header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.ai-customization-management-editor .welcome-prompts-card-icon {
+	font-size: var(--docode-codiconFontSize);
+	color: var(--docode-icon-foreground);
+}
+
+.ai-customization-management-editor .welcome-prompts-card-label {
+	font-size: 12px;
+	font-weight: var(--docode-fontWeight-semiBold);
+	color: var(--docode-foreground);
+}
+
+.ai-customization-management-editor .welcome-prompts-card-description {
+	font-size: var(--docode-agents-fontSize-body2);
+	color: var(--docode-descriptionForeground);
+	line-height: 1.45;
+	margin: 0;
+	flex: 1;
+}
+
+.ai-customization-management-editor .welcome-prompts-card-action-label {
+	align-self: flex-start;
+	margin-top: var(--docode-spacing-size100);
+	font-size: var(--docode-agents-fontSize-body2);
+	font-weight: var(--docode-agents-fontWeight-semiBold);
+	color: var(--docode-inputValidation-warningForeground, var(--docode-foreground));
+}
+
+.ai-customization-management-editor .welcome-prompts-card-footer {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 10px;
+}
+
+.ai-customization-management-editor .welcome-prompts-card-action {
+	font-size: 11px;
+	color: var(--docode-button-secondaryForeground);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 6px;
+	border-radius: 4px;
+	background: var(--docode-button-secondaryBackground);
+	border: 1px solid var(--docode-button-secondaryBorder, var(--docode-button-border, var(--docode-contrastBorder, transparent)));
+}
+
+.ai-customization-management-editor .welcome-prompts-card-action:hover {
+	background: var(--docode-button-secondaryHoverBackground);
+}

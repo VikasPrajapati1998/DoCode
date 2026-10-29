@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Disposable } from '../util/dispose';
 
 const suppressedStorageKey = 'markdown.preview.renderedDiffWarning.suppressed';
@@ -11,19 +11,19 @@ const notificationShownStorageKey = 'markdown.preview.renderedDiffWarning.notifi
 
 export class RenderedDiffWarningManager extends Disposable {
 
-	readonly #workspaceState: vscode.Memento;
+	readonly #workspaceState: docode.Memento;
 
-	#statusBarItem: vscode.StatusBarItem | undefined;
+	#statusBarItem: docode.StatusBarItem | undefined;
 	#hasActiveDiffPreview = false;
 
 	readonly #showWarningCommandId = '_markdown.preview.showRenderedDiffWarning';
 
-	constructor(workspaceState: vscode.Memento) {
+	constructor(workspaceState: docode.Memento) {
 		super();
 
 		this.#workspaceState = workspaceState;
 
-		this._register(vscode.commands.registerCommand(this.#showWarningCommandId, () => {
+		this._register(docode.commands.registerCommand(this.#showWarningCommandId, () => {
 			void this.#showWarningNotification();
 		}));
 	}
@@ -62,20 +62,20 @@ export class RenderedDiffWarningManager extends Disposable {
 		}
 
 		if (!this.#statusBarItem) {
-			this.#statusBarItem = vscode.window.createStatusBarItem('markdown.renderedDiffWarning', vscode.StatusBarAlignment.Right, 100);
-			this.#statusBarItem.name = vscode.l10n.t('Rendered Markdown Diff Warning');
-			this.#statusBarItem.text = vscode.l10n.t('{0} Rendered Diff', '$(warning)');
-			this.#statusBarItem.tooltip = vscode.l10n.t('Rendered Markdown diffs may hide important changes. Click for details.');
-			this.#statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
+			this.#statusBarItem = docode.window.createStatusBarItem('markdown.renderedDiffWarning', docode.StatusBarAlignment.Right, 100);
+			this.#statusBarItem.name = docode.l10n.t('Rendered Markdown Diff Warning');
+			this.#statusBarItem.text = docode.l10n.t('{0} Rendered Diff', '$(warning)');
+			this.#statusBarItem.tooltip = docode.l10n.t('Rendered Markdown diffs may hide important changes. Click for details.');
+			this.#statusBarItem.backgroundColor = new docode.ThemeColor('statusBarItem.warningBackground');
 			this.#statusBarItem.command = this.#showWarningCommandId;
 		}
 		this.#statusBarItem.show();
 	}
 
 	async #showWarningNotification(): Promise<void> {
-		const dontShowAgain = vscode.l10n.t("Don't Show Again");
-		const selected = await vscode.window.showWarningMessage(
-			vscode.l10n.t('Rendered Markdown diffs may hide important changes such as formatting, whitespace, links, or HTML. Switch to the text diff if you need to review them.'),
+		const dontShowAgain = docode.l10n.t("Don't Show Again");
+		const selected = await docode.window.showWarningMessage(
+			docode.l10n.t('Rendered Markdown diffs may hide important changes such as formatting, whitespace, links, or HTML. Switch to the text diff if you need to review them.'),
 			dontShowAgain,
 		);
 		if (selected === dontShowAgain) {

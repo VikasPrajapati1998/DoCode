@@ -10,10 +10,10 @@
 	},
 	"exclude": [
 		"node_modules",
-		".vscode-test"
+		".docode-test"
 	],
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts"
+		"../../src/docode-dts/docode.d.ts"
 	]
 }

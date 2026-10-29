@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 import {
 	detectNpmScriptsForFolder,
@@ -13,8 +13,8 @@ import {
 } from './tasks';
 
 
-export function runSelectedScript(context: vscode.ExtensionContext) {
-	const editor = vscode.window.activeTextEditor;
+export function runSelectedScript(context: docode.ExtensionContext) {
+	const editor = docode.window.activeTextEditor;
 	if (!editor) {
 		return;
 	}
@@ -24,12 +24,12 @@ export function runSelectedScript(context: vscode.ExtensionContext) {
 	if (script) {
 		runScript(context, script, document);
 	} else {
-		const message = vscode.l10n.t("Could not find a valid npm script at the selection.");
-		vscode.window.showErrorMessage(message);
+		const message = docode.l10n.t("Could not find a valid npm script at the selection.");
+		docode.window.showErrorMessage(message);
 	}
 }
 
-export async function selectAndRunScriptFromFolder(context: vscode.ExtensionContext, selectedFolders: vscode.Uri[]) {
+export async function selectAndRunScriptFromFolder(context: docode.ExtensionContext, selectedFolders: docode.Uri[]) {
 	if (selectedFolders.length === 0) {
 		return;
 	}
@@ -38,11 +38,11 @@ export async function selectAndRunScriptFromFolder(context: vscode.ExtensionCont
 	const taskList: IFolderTaskItem[] = await detectNpmScriptsForFolder(context, selectedFolder);
 
 	if (taskList && taskList.length > 0) {
-		const quickPick = vscode.window.createQuickPick<IFolderTaskItem>();
+		const quickPick = docode.window.createQuickPick<IFolderTaskItem>();
 		quickPick.placeholder = 'Select an npm script to run in folder';
 		quickPick.items = taskList;
 
-		const toDispose: vscode.Disposable[] = [];
+		const toDispose: docode.Disposable[] = [];
 
 		const pickPromise = new Promise<IFolderTaskItem | undefined>((c) => {
 			toDispose.push(quickPick.onDidAccept(() => {
@@ -58,10 +58,10 @@ export async function selectAndRunScriptFromFolder(context: vscode.ExtensionCont
 		const result = await pickPromise;
 		quickPick.dispose();
 		if (result) {
-			vscode.tasks.executeTask(result.task);
+			docode.tasks.executeTask(result.task);
 		}
 	}
 	else {
-		vscode.window.showInformationMessage(`No npm scripts found in ${selectedFolder.fsPath}`, { modal: true });
+		docode.window.showInformationMessage(`No npm scripts found in ${selectedFolder.fsPath}`, { modal: true });
 	}
 }

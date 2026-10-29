@@ -2,12 +2,12 @@
 	"name": "builtin-notebook-renderers",
 	"displayName": "%displayName%",
 	"description": "%description%",
-	"publisher": "vscode",
+	"publisher": "docode",
 	"version": "10.0.0",
 	"license": "MIT",
 	"icon": "media/icon.png",
 	"engines": {
-		"vscode": "^1.57.0"
+		"docode": "^1.57.0"
 	},
 	"capabilities": {
 		"virtualWorkspaces": true,
@@ -18,7 +18,7 @@
 	"contributes": {
 		"notebookRenderer": [
 			{
-				"id": "vscode.builtin-renderer",
+				"id": "docode.builtin-renderer",
 				"entrypoint": "./renderer-out/index.js",
 				"displayName": "DoCode Builtin Notebook Output Renderer",
 				"requiresMessaging": "never",
@@ -49,7 +49,7 @@
 	"devDependencies": {
 		"@types/jsdom": "^21.1.0",
 		"@types/node": "24.x",
-		"@types/vscode-notebook-renderer": "^1.60.0",
+		"@types/docode-notebook-renderer": "file:../../packages/types-notebook-renderer",
 		"jsdom": "^28.1.0"
 	},
 	"repository": {

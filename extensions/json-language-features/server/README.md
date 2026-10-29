@@ -1,4 +1,4 @@
-# VSCode JSON Language Server
+# DoCode JSON Language Server
 
 [![NPM Version](https://img.shields.io/npm/v/vscode-json-languageserver.svg)](https://npmjs.org/package/vscode-json-languageserver)
 [![NPM Downloads](https://img.shields.io/npm/dm/vscode-json-languageserver.svg)](https://npmjs.org/package/vscode-json-languageserver)
@@ -13,14 +13,14 @@ The JSON Language server provides language-specific smarts for editing, validati
 The JSON language server supports requests on documents of language id `json` and `jsonc`.
 
 - `json` documents are parsed and validated following the [JSON specification](https://tools.ietf.org/html/rfc7159).
-- `jsonc` documents additionally accept single line (`//`) and multi-line comments (`/* ... */`). JSONC is a VSCode specific file format, intended for VSCode configuration files, without any aspirations to define a new common file format.
+- `jsonc` documents additionally accept single line (`//`) and multi-line comments (`/* ... */`). JSONC is a DoCode specific file format, intended for DoCode configuration files, without any aspirations to define a new common file format.
 
 The server implements the following capabilities of the language server protocol:
 
 - [Inline Suggestion](https://microsoft.github.io/language-server-protocol/specification#textDocument_completion) for JSON properties and values based on the document's [JSON schema](http://json-schema.org/) or based on existing properties and values used at other places in the document. JSON schemas are configured through the server configuration options.
 - [Hover](https://microsoft.github.io/language-server-protocol/specification#textDocument_hover) for values based on descriptions in the document's [JSON schema](http://json-schema.org/).
 - [Document Symbols](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentSymbol) for quick navigation to properties in the document.
-- [Document Colors](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentColor) for showing color decorators on values representing colors and [Color Presentation](https://microsoft.github.io/language-server-protocol/specification#textDocument_colorPresentation) for color presentation information to support color pickers. The location of colors is defined by the document's [JSON schema](http://json-schema.org/). All values marked with `"format": "color-hex"` (VSCode specific, non-standard JSON Schema extension) are considered color values. The supported color formats are `#rgb[a]` and `#rrggbb[aa]`.
+- [Document Colors](https://microsoft.github.io/language-server-protocol/specification#textDocument_documentColor) for showing color decorators on values representing colors and [Color Presentation](https://microsoft.github.io/language-server-protocol/specification#textDocument_colorPresentation) for color presentation information to support color pickers. The location of colors is defined by the document's [JSON schema](http://json-schema.org/). All values marked with `"format": "color-hex"` (DoCode specific, non-standard JSON Schema extension) are considered color values. The supported color formats are `#rgb[a]` and `#rrggbb[aa]`.
 - [Code Formatting](https://microsoft.github.io/language-server-protocol/specification#textDocument_rangeFormatting) supporting ranges and formatting the whole document.
 - [Folding Ranges](https://microsoft.github.io/language-server-protocol/specification#textDocument_foldingRange) for all folding ranges in the document.
 - Semantic Selection for semantic selection for one or multiple cursor positions.
@@ -136,7 +136,7 @@ Requests for schemas with URLs not handled by the server are forwarded to the cl
 
 Request:
 
-- method: 'vscode/content'
+- method: 'docode/content'
 - params: `string` - The schema URL to request.
 - response: `string` - The content of the schema with the given URL
 
@@ -206,32 +206,32 @@ If the setting `jsonFoldingLimit` or `jsoncFoldingLimit` is set, the JSON langua
 
 ## Try
 
-The JSON language server is shipped with [Visual Studio Code](https://code.visualstudio.com/) as part of the built-in VSCode extension `json-language-features`. The server is started when the first JSON file is opened. The [VSCode JSON documentation](https://code.visualstudio.com/docs/languages/json) for detailed information on the user experience and has more information on how to configure the language support.
+The JSON language server is shipped with [Visual Studio Code](https://code.visualstudio.com/) as part of the built-in DoCode extension `json-language-features`. The server is started when the first JSON file is opened. The [DoCode JSON documentation](https://code.visualstudio.com/docs/languages/json) for detailed information on the user experience and has more information on how to configure the language support.
 
 ## Integrate
 
 If you plan to integrate the JSON language server into an editor and IDE, check out [this page](https://microsoft.github.io/language-server-protocol/implementors/tools/) if there's already an LSP client integration available.
 
 You can also launch the language server as a command and connect to it.
-For that, install the `vscode-json-languageserver` npm module:
+For that, install the `docode-json-languageserver` npm module:
 
-`npm install -g vscode-json-languageserver`
+`npm install -g docode-json-languageserver`
 
-Start the language server with the `vscode-json-languageserver` command. Use a command line argument to specify the preferred communication channel:
+Start the language server with the `docode-json-languageserver` command. Use a command line argument to specify the preferred communication channel:
 
 ```
-vscode-json-languageserver --node-ipc
-vscode-json-languageserver --stdio
-vscode-json-languageserver --socket=<port>
+docode-json-languageserver --node-ipc
+docode-json-languageserver --stdio
+docode-json-languageserver --socket=<port>
 ```
 
 To connect to the server from NodeJS, see Remy Suen's great write-up on [how to communicate with the server](https://github.com/rcjsuen/dockerfile-language-server-nodejs#communicating-with-the-server) through the available communication channels.
 
 ## Participate
 
-The source code of the JSON language server can be found in the [VSCode repository](https://github.com/microsoft/vscode) at [extensions/json-language-features/server](https://github.com/microsoft/vscode/tree/master/extensions/json-language-features/server).
+The source code of the JSON language server can be found in the [DoCode repository](https://github.com/microsoft/vscode) at [extensions/json-language-features/server](https://github.com/microsoft/vscode/tree/master/extensions/json-language-features/server).
 
-File issues and pull requests in the [VSCode GitHub Issues](https://github.com/microsoft/vscode/issues). See the document [How to Contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) on how to build and run from source.
+File issues and pull requests in the [DoCode GitHub Issues](https://github.com/microsoft/vscode/issues). See the document [How to Contribute](https://github.com/microsoft/vscode/wiki/How-to-Contribute) on how to build and run from source.
 
 Most of the functionality of the server is located in libraries:
 

@@ -10,10 +10,10 @@ export class IPCClient {
 	private ipcHandlePath: string;
 
 	constructor(private handlerName: string) {
-		const ipcHandlePath = process.env['VSCODE_GIT_IPC_HANDLE'];
+		const ipcHandlePath = process.env['DOCODE_GIT_IPC_HANDLE'];
 
 		if (!ipcHandlePath) {
-			throw new Error('Missing VSCODE_GIT_IPC_HANDLE');
+			throw new Error('Missing DOCODE_GIT_IPC_HANDLE');
 		}
 
 		this.ipcHandlePath = ipcHandlePath;

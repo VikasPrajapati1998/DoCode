@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { UriHandler, Uri, window, Disposable, commands, LogOutputChannel, l10n } from 'vscode';
+import { UriHandler, Uri, window, Disposable, commands, LogOutputChannel, l10n } from 'docode';
 import { dispose, isWindows } from './util';
 import * as querystring from 'querystring';
 
@@ -21,7 +21,7 @@ export class GitProtocolHandler implements UriHandler {
 		this.disposables.push(window.registerUriHandler(this));
 	}
 
-	// example code-oss://vscode.git/clone?url=https://github.com/microsoft/vscode
+	// example code-oss://docode.git/clone?url=https://github.com/microsoft/vscode
 	handleUri(uri: Uri): void {
 		this.logger.info(`[GitProtocolHandler][handleUri] URI:(${uri.toString()})`);
 
@@ -81,7 +81,7 @@ export class GitProtocolHandler implements UriHandler {
 			const downloadGit = l10n.t('Download Git');
 
 			if (await window.showErrorMessage(errorMessage, { modal: true }, downloadGit) === downloadGit) {
-				commands.executeCommand('vscode.open', Uri.parse('https://aka.ms/vscode-download-git'));
+				commands.executeCommand('docode.open', Uri.parse('https://aka.ms/vscode-download-git'));
 			}
 
 			return;

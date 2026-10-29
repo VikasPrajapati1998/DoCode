@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import { CancellationTokenSource, CompletionTriggerKind, Selection } from 'vscode';
+import { CancellationTokenSource, CompletionTriggerKind, Selection } from 'docode';
 import { DefaultCompletionItemProvider } from '../defaultCompletionProvider';
 import { closeAllEditors, withRandomFileEditor } from './testUtils';
 

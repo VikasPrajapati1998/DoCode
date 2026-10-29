@@ -7,7 +7,7 @@ import { URL } from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
 import { randomBytes } from 'crypto';
-import { env } from 'vscode';
+import { env } from 'docode';
 
 function sendFile(res: http.ServerResponse, filepath: string) {
 	const isSvg = filepath.endsWith('.svg');
@@ -172,7 +172,7 @@ export class LoopbackAuthServer implements ILoopbackServer {
 
 				clearTimeout(portTimeout);
 
-				// set state which will be used to redirect back to vscode
+				// set state which will be used to redirect back to docode
 				this.state = `http://127.0.0.1:${this.port}/callback?nonce=${encodeURIComponent(this.nonce)}`;
 
 				resolve(this.port);

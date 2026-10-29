@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Launch Code OSS (VS Code from sources) with:
 #   - a fresh, slimmed copy of the authenticated user-data-dir (so Copilot/GitHub auth works)
-#   - an isolated --shared-data-dir (otherwise two instances share ~/.vscode-oss-shared and crash each other)
+#   - an isolated --shared-data-dir (otherwise two instances share ~/.docode-oss-shared and crash each other)
 #   - unique debug ports for renderer (CDP), extension host, main process, and agent host
 #
 # Auth on macOS comes from the OS keychain (per-app, shared automatically) plus
@@ -12,7 +12,7 @@
 # caller can pick them up programmatically. Logs go to stderr.
 #
 # Usage:
-#   launch.sh [--agents] [--session-title <title>] [--source-user-data-dir <path>] [--repo <vscode-repo-root>]
+#   launch.sh [--agents] [--session-title <title>] [--source-user-data-dir <path>] [--repo <docode-repo-root>]
 #             [--clone-extensions] [--full] [--skip-prelaunch]
 #             [--disable-workspace-trust]
 #             [-- <extra code.sh args>]
@@ -30,14 +30,14 @@
 #                       use with content you trust.
 #
 # Defaults:
-#   --source-user-data-dir  $CODE_OSS_DEV_AUTHED_USER_DATA_DIR  (else ~/.vscode-oss-dev)
-#   --repo                  $PWD if it looks like a vscode checkout; otherwise pass it explicitly
+#   --source-user-data-dir  $CODE_OSS_DEV_AUTHED_USER_DATA_DIR  (else ~/.docode-oss-dev)
+#   --repo                  $PWD if it looks like a docode checkout; otherwise pass it explicitly
 
 set -euo pipefail
 umask 077
 
 AGENTS=0
-SOURCE_UDD="${CODE_OSS_DEV_AUTHED_USER_DATA_DIR:-$HOME/.vscode-oss-dev}"
+SOURCE_UDD="${CODE_OSS_DEV_AUTHED_USER_DATA_DIR:-$HOME/.docode-oss-dev}"
 REPO=""
 EXTRA_ARGS=()
 CLONE_EXTENSIONS=0
@@ -78,7 +78,7 @@ if [[ -z "$REPO" ]]; then
 	if [[ -x "$PWD/scripts/code.sh" ]]; then
 		REPO="$PWD"
 	else
-		echo "Could not find a vscode checkout in $PWD. Pass --repo <path>." >&2
+		echo "Could not find a docode checkout in $PWD. Pass --repo <path>." >&2
 		exit 2
 	fi
 fi
@@ -99,7 +99,7 @@ fi
 
 CODE_SH="$REPO/scripts/code.sh"
 if [[ ! -x "$CODE_SH" ]]; then
-	echo "Could not find an executable Code OSS launcher at $CODE_SH. Pass --repo <vscode-repo-root>." >&2
+	echo "Could not find an executable Code OSS launcher at $CODE_SH. Pass --repo <docode-repo-root>." >&2
 	exit 2
 fi
 
@@ -154,8 +154,8 @@ EXCLUDES=(
 	'/logs'
 	'/Cache' '/Code Cache' '/CachedData' '/component_crx_cache'
 	'/GPUCache' '/ShaderCache' '/Dawn*Cache'
-	'Partitions/vscode-browser/Cache' 'Partitions/vscode-browser/Code Cache'
-	'Partitions/vscode-browser/GPUCache' 'Partitions/vscode-browser/Dawn*Cache'
+	'Partitions/docode-browser/Cache' 'Partitions/docode-browser/Code Cache'
+	'Partitions/docode-browser/GPUCache' 'Partitions/docode-browser/Dawn*Cache'
 	'/Backups' '/blob_storage' '/BrowserMetrics' '/Crashpad'
 	'/Session Storage'
 	'/Singleton*'
@@ -263,7 +263,7 @@ PRELAUNCH_READY_MS=$(monotonic_ms)
 # forked into its own process tree, so it's robust to its launching shell
 # going away. (Earlier failures came from returning while Electron was still
 # mid-bootstrap, not from process-group concerns.)
-nohup env VSCODE_SKIP_PRELAUNCH=1 "$CODE_SH" "${ARGS[@]}" \
+nohup env DOCODE_SKIP_PRELAUNCH=1 "$CODE_SH" "${ARGS[@]}" \
 	</dev/null >>"$LOG_FILE" 2>&1 &
 PID=$!
 disown $PID 2>/dev/null || true

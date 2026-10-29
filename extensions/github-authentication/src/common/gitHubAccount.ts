@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { NETWORK_ERROR } from './errors';
 import { IHttpClient, IHttpResponse } from './http';
 import { Log } from './logger';
@@ -34,7 +34,7 @@ export async function fetchUserInfo(http: IHttpClient, url: string, token: strin
 			retryFallbacks: true,
 			headers: {
 				Authorization: `token ${token}`,
-				'User-Agent': `${vscode.env.appName} (${vscode.env.appHost})`
+				'User-Agent': `${docode.env.appName} (${docode.env.appHost})`
 			}
 		});
 	} catch (ex) {

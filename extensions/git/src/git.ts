@@ -12,7 +12,7 @@ import which from 'which';
 import { EventEmitter } from 'events';
 import { fileTypeFromBuffer } from 'file-type';
 import { assign, groupBy, IDisposable, toDisposable, dispose, mkdirp, readBytes, detectUnicodeEncoding, Encoding, onceEvent, splitInChunks, Limiter, Versions, isWindows, pathEquals, isMacintosh, isDescendant, relativePathWithNoFallback, Mutable } from './util';
-import { CancellationError, CancellationToken, ConfigurationChangeEvent, LogOutputChannel, Progress, Uri, workspace } from 'vscode';
+import { CancellationError, CancellationToken, ConfigurationChangeEvent, LogOutputChannel, Progress, Uri, workspace } from 'docode';
 import type { Commit as ApiCommit, Ref, Branch, Remote, LogOptions, Change, CommitOptions, RefQuery as ApiRefQuery, InitOptions, DiffChange, Worktree as ApiWorktree } from './api/git';
 import { RefType, ForcePushMode, GitErrorCodes, Status } from './api/git.constants';
 import * as byline from 'byline';
@@ -695,7 +695,7 @@ export class Git {
 		}
 
 		options.env = assign({}, process.env, this.env, options.env || {}, {
-			VSCODE_GIT_COMMAND: args[0],
+			DOCODE_GIT_COMMAND: args[0],
 			LANGUAGE: 'en',
 			LC_ALL: 'en_US.UTF-8',
 			LANG: 'en_US.UTF-8',
@@ -2481,7 +2481,7 @@ export class Repository {
 		}
 
 		if (options.silent) {
-			spawnOptions.env!['VSCODE_GIT_FETCH_SILENT'] = 'true';
+			spawnOptions.env!['DOCODE_GIT_FETCH_SILENT'] = 'true';
 		}
 
 		try {

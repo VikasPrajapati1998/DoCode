@@ -1,0 +1,31 @@
+{
+  "name": "docode-colorize-perf-tests",
+  "description": "Colorize performance tests for VS Code",
+  "version": "0.0.1",
+  "publisher": "docode",
+  "license": "MIT",
+  "private": true,
+  "activationEvents": [
+    "onLanguage:json"
+  ],
+  "main": "./out/colorizerTestMain",
+  "engines": {
+    "docode": "*"
+  },
+  "icon": "media/icon.png",
+  "scripts": {
+    "docode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.mjs compile-extension:docode-colorize-perf-tests ./tsconfig.json",
+    "watch": "gulp watch-extension:docode-colorize-perf-tests",
+    "compile": "gulp compile-extension:docode-colorize-perf-tests"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/vscode.git"
+  }
+}

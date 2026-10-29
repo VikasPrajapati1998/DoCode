@@ -5,7 +5,7 @@ description: Use when creating or updating component fixtures for screenshot tes
 
 # Component Fixtures
 
-Component fixtures render isolated UI components for visual screenshot testing via the component explorer. Fixtures live in `src/vs/workbench/test/browser/componentFixtures/` and are auto-discovered by the Vite dev server using the glob `src/**/*.fixture.ts`.
+Component fixtures render isolated UI components for visual screenshot testing via the component explorer. Fixtures live in `src/do/workbench/test/browser/componentFixtures/` and are auto-discovered by the Vite dev server using the glob `src/**/*.fixture.ts`.
 
 Use tools `mcp_component-exp_`* to list and screenshot fixtures. If you cannot see these tools, inform the user to them on.
 
@@ -20,7 +20,7 @@ Use tools `mcp_component-exp_`* to list and screenshot fixtures. If you cannot s
 Each fixture file exports a default `defineThemedFixtureGroup(...)`. The file must end with `.fixture.ts`.
 
 ```
-src/vs/workbench/test/browser/componentFixtures/
+src/do/workbench/test/browser/componentFixtures/
   fixtureUtils.ts              # Shared helpers (DO NOT import @vscode/component-explorer elsewhere)
   myComponent.fixture.ts       # Your fixture file
 ```
@@ -101,7 +101,7 @@ Fixtures share the document and workbench stylesheets (`isolation: 'none'`). The
 
 ### Shared theme initialization
 
-`fixtureUtilsCss.ts` loads the shared workbench color and size registrations before generating and caching theme CSS, including the agent tokens in `vs/workbench/common/agentsColors.ts` and `agentsSizes.ts`. Keep required product-wide registrations in this shared bootstrap, not in individual fixtures: discovering another fixture must not change an existing fixture's typography or colors. Reuse lightweight registration modules from the owning shared layer rather than importing product entry points or higher-layer contributions.
+`fixtureUtilsCss.ts` loads the shared workbench color and size registrations before generating and caching theme CSS, including the agent tokens in `do/workbench/common/agentsColors.ts` and `agentsSizes.ts`. Keep required product-wide registrations in this shared bootstrap, not in individual fixtures: discovering another fixture must not change an existing fixture's typography or colors. Reuse lightweight registration modules from the owning shared layer rather than importing product entry points or higher-layer contributions.
 
 ### Matching production CSS selectors
 
@@ -368,7 +368,7 @@ Fixtures cannot trigger CSS `:hover`, and DOM focus is only deterministic throug
 - Drive focus and selection through the component (list rows get `.focused` and `.selected` from the list traits), from a test-only subclass when production has no such API (see [Keep test-only operations out of the production API](#keep-test-only-operations-out-of-the-production-api)). Then call `ctx.focus()` when the state needs DOM focus.
 - When JavaScript also reacts to hover (for example `mouseover` listeners), dispatch a `mouseover` on the element as well as adding `.hovered`.
 
-`src/vs/sessions/contrib/sessions/test/browser/sessionsListFixtureUtils.ts` renders `interaction: { hovered, focused, selected }` this way.
+`src/do/sessions/contrib/sessions/test/browser/sessionsListFixtureUtils.ts` renders `interaction: { hovered, focused, selected }` this way.
 
 ## Multiple Fixture Variants
 

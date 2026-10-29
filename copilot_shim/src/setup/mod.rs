@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//! The `--vscode-shim probe|install` commands. They report to VS Code setup through INI files and never launch the
+//! The `--docode-shim probe|install` commands. They report to VS Code setup through INI files and never launch the
 //! Copilot CLI. `install` also backs the interactive first-use install on Windows.
 
 use std::ffi::OsString;
@@ -38,7 +38,7 @@ pub(crate) const COPILOT_CLI_COMMAND_POLICY: &str = "CopilotCliCommand";
 const DEFAULT_RELEASES_URL: &str = "https://github.com/github/copilot-cli/releases";
 /// Replaces the GitHub releases URL, for tests and mirrors. The Authenticode signer check still applies.
 #[cfg(windows)]
-const RELEASES_URL_VARIABLE: &str = "VSCODE_COPILOT_SHIM_RELEASES_URL";
+const RELEASES_URL_VARIABLE: &str = "DOCODE_COPILOT_SHIM_RELEASES_URL";
 #[cfg(windows)]
 const EXPECTED_SIGNER: &str = "GitHub, Inc.";
 #[cfg(windows)]
@@ -792,7 +792,7 @@ fn install_cli(target: Option<HostTarget>, reporter: &mut dyn InstallReporter) -
 	};
 
 	let directory = match tempfile::Builder::new()
-		.prefix("vscode-copilot-cli-")
+		.prefix("docode-copilot-cli-")
 		.tempdir()
 	{
 		Ok(directory) => directory,
@@ -876,7 +876,7 @@ fn install_cli(target: Option<HostTarget>, reporter: &mut dyn InstallReporter) -
 		return with_tag(cancelled());
 	}
 	reporter.report(InstallPhase::Installing, 0, 0);
-	let log = std::env::temp_dir().join("vscode-copilot-cli-install.log");
+	let log = std::env::temp_dir().join("docode-copilot-cli-install.log");
 	let msiexec = std::env::var_os("SystemRoot")
 		.map(|root| PathBuf::from(root).join(r"System32\msiexec.exe"))
 		.unwrap_or_else(|| PathBuf::from("msiexec.exe"));

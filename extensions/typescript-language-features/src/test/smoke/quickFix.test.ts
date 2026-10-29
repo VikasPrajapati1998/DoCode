@@ -5,27 +5,27 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { createTestEditor, joinLines, retryUntilDocumentChanges, wait } from '../../test/testUtils';
 import { disposeAll } from '../../utils/dispose';
 
 suite.skip('TypeScript Quick Fix', () => {
 
-	const _disposables: vscode.Disposable[] = [];
+	const _disposables: docode.Disposable[] = [];
 
 	setup(async () => {
 		// the tests assume that typescript features are registered
-		await vscode.extensions.getExtension('vscode.typescript-language-features')!.activate();
+		await docode.extensions.getExtension('docode.typescript-language-features')!.activate();
 	});
 
 	teardown(async () => {
 		disposeAll(_disposables);
 
-		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+		await docode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	test('Fix all should not be marked as preferred #97866', async () => {
-		const testDocumentUri = vscode.Uri.parse('untitled:test.ts');
+		const testDocumentUri = docode.Uri.parse('untitled:test.ts');
 
 		const editor = await createTestEditor(testDocumentUri,
 			`export const _ = 1;`,
@@ -34,7 +34,7 @@ suite.skip('TypeScript Quick Fix', () => {
 		);
 
 		await retryUntilDocumentChanges(testDocumentUri, { retries: 10, timeout: 500 }, _disposables, () => {
-			return vscode.commands.executeCommand('editor.action.autoFix');
+			return docode.commands.executeCommand('editor.action.autoFix');
 		});
 
 		assert.strictEqual(editor.document.getText(), joinLines(
@@ -55,7 +55,7 @@ suite.skip('TypeScript Quick Fix', () => {
 		);
 
 		await retryUntilDocumentChanges(testDocumentUri, { retries: 10, timeout: 500 }, _disposables, () => {
-			return vscode.commands.executeCommand('editor.action.autoFix');
+			return docode.commands.executeCommand('editor.action.autoFix');
 		});
 
 		// Document should not have been changed here
@@ -82,7 +82,7 @@ suite.skip('TypeScript Quick Fix', () => {
 
 		await wait(3000);
 
-		await vscode.commands.executeCommand('editor.action.autoFix');
+		await docode.commands.executeCommand('editor.action.autoFix');
 
 		await wait(500);
 
@@ -100,7 +100,7 @@ suite.skip('TypeScript Quick Fix', () => {
 
 		await wait(3000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			editor.document.lineAt(1).range
 		);
@@ -117,7 +117,7 @@ suite.skip('TypeScript Quick Fix', () => {
 
 		await wait(3000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			editor.document.lineAt(1).range
 		);
@@ -136,7 +136,7 @@ suite.skip('TypeScript Quick Fix', () => {
 
 		await wait(3000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			testDocumentUri,
 			editor.document.lineAt(1).range
 		);
@@ -161,7 +161,7 @@ suite.skip('TypeScript Quick Fix', () => {
 
 		await wait(3000);
 
-		const fixes = await vscode.commands.executeCommand<vscode.CodeAction[]>('vscode.executeCodeActionProvider',
+		const fixes = await docode.commands.executeCommand<docode.CodeAction[]>('docode.executeCodeActionProvider',
 			workspaceFile('index.ts'),
 			editor.document.lineAt(1).range
 		);
@@ -174,5 +174,5 @@ suite.skip('TypeScript Quick Fix', () => {
 });
 
 function workspaceFile(fileName: string) {
-	return vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, fileName);
+	return docode.Uri.joinPath(docode.workspace.workspaceFolders![0].uri, fileName);
 }

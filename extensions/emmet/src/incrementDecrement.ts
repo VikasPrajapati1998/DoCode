@@ -5,7 +5,7 @@
 
 /* Based on @sergeche's work in his emmet plugin */
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 const reNumber = /[0-9]/;
 
@@ -13,11 +13,11 @@ const reNumber = /[0-9]/;
  * Incerement number under caret of given editor
  */
 export function incrementDecrement(delta: number): Thenable<boolean> | undefined {
-	if (!vscode.window.activeTextEditor) {
-		vscode.window.showInformationMessage('No editor is active');
+	if (!docode.window.activeTextEditor) {
+		docode.window.showInformationMessage('No editor is active');
 		return;
 	}
-	const editor = vscode.window.activeTextEditor;
+	const editor = docode.window.activeTextEditor;
 
 	return editor.edit(editBuilder => {
 		editor.selections.forEach(selection => {
@@ -62,7 +62,7 @@ export function update(numString: string, delta: number): string {
  *
  * @return Range of number or `undefined` if not found
  */
-export function locate(document: vscode.TextDocument, pos: vscode.Position): vscode.Range | undefined {
+export function locate(document: docode.TextDocument, pos: docode.Position): docode.Range | undefined {
 
 	const line = document.lineAt(pos.line).text;
 	let start = pos.character;
@@ -100,7 +100,7 @@ export function locate(document: vscode.TextDocument, pos: vscode.Position): vsc
 
 	// ensure that found range contains valid number
 	if (start !== end && isValidNumber(line.slice(start, end))) {
-		return new vscode.Range(pos.line, start, pos.line, end);
+		return new docode.Range(pos.line, start, pos.line, end);
 	}
 
 	return;

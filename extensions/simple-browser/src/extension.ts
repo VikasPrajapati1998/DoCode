@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { SimpleBrowserManager } from './simpleBrowserManager';
 import { SimpleBrowserView } from './simpleBrowserView';
 
@@ -36,7 +36,7 @@ const openerId = 'simpleBrowser.open';
  * Checks if the integrated browser should be used instead of the simple browser
  */
 async function shouldUseIntegratedBrowser(): Promise<boolean> {
-	const commands = await vscode.commands.getCommands(true);
+	const commands = await docode.commands.getCommands(true);
 	return commands.includes(integratedBrowserCommand);
 }
 
@@ -44,29 +44,29 @@ async function shouldUseIntegratedBrowser(): Promise<boolean> {
  * Opens a URL in the integrated browser
  */
 async function openInIntegratedBrowser(url?: string): Promise<void> {
-	await vscode.commands.executeCommand(integratedBrowserCommand, url);
+	await docode.commands.executeCommand(integratedBrowserCommand, url);
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 
 	const manager = new SimpleBrowserManager(context.extensionUri);
 	context.subscriptions.push(manager);
 
-	context.subscriptions.push(vscode.window.registerWebviewPanelSerializer(SimpleBrowserView.viewType, {
+	context.subscriptions.push(docode.window.registerWebviewPanelSerializer(SimpleBrowserView.viewType, {
 		deserializeWebviewPanel: async (panel, state) => {
 			manager.restore(panel, state);
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand(showCommand, async (url?: string) => {
+	context.subscriptions.push(docode.commands.registerCommand(showCommand, async (url?: string) => {
 		if (await shouldUseIntegratedBrowser()) {
 			return openInIntegratedBrowser(url);
 		}
 
 		if (!url) {
-			url = await vscode.window.showInputBox({
-				placeHolder: vscode.l10n.t("https://example.com"),
-				prompt: vscode.l10n.t("Enter url to visit")
+			url = await docode.window.showInputBox({
+				placeHolder: docode.l10n.t("https://example.com"),
+				prompt: docode.l10n.t("Enter url to visit")
 			});
 		}
 
@@ -75,9 +75,9 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand(openApiCommand, async (url: vscode.Uri, showOptions?: {
+	context.subscriptions.push(docode.commands.registerCommand(openApiCommand, async (url: docode.Uri, showOptions?: {
 		preserveFocus?: boolean;
-		viewColumn: vscode.ViewColumn;
+		viewColumn: docode.ViewColumn;
 	}) => {
 		if (await shouldUseIntegratedBrowser()) {
 			await openInIntegratedBrowser(url.toString(true));
@@ -86,33 +86,33 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.window.registerExternalUriOpener(openerId, {
-		canOpenExternalUri(uri: vscode.Uri) {
+	context.subscriptions.push(docode.window.registerExternalUriOpener(openerId, {
+		canOpenExternalUri(uri: docode.Uri) {
 			// We have to replace the IPv6 hosts with IPv4 because URL can't handle IPv6.
 			const originalUri = new URL(uri.toString(true));
 			if (enabledHosts.has(originalUri.hostname)) {
 				return isWeb()
-					? vscode.ExternalUriOpenerPriority.Default
-					: vscode.ExternalUriOpenerPriority.Option;
+					? docode.ExternalUriOpenerPriority.Default
+					: docode.ExternalUriOpenerPriority.Option;
 			}
 
-			return vscode.ExternalUriOpenerPriority.None;
+			return docode.ExternalUriOpenerPriority.None;
 		},
-		async openExternalUri(resolveUri: vscode.Uri) {
+		async openExternalUri(resolveUri: docode.Uri) {
 			if (await shouldUseIntegratedBrowser()) {
 				await openInIntegratedBrowser(resolveUri.toString(true));
 			} else {
 				return manager.show(resolveUri, {
-					viewColumn: vscode.window.activeTextEditor ? vscode.ViewColumn.Beside : vscode.ViewColumn.Active
+					viewColumn: docode.window.activeTextEditor ? docode.ViewColumn.Beside : docode.ViewColumn.Active
 				});
 			}
 		}
 	}, {
 		schemes: ['http', 'https'],
-		label: vscode.l10n.t("Open in Simple Browser"),
+		label: docode.l10n.t("Open in Simple Browser"),
 	}));
 }
 
 function isWeb(): boolean {
-	return !(typeof process === 'object' && !!process.versions.node) && vscode.env.uiKind === vscode.UIKind.Web;
+	return !(typeof process === 'object' && !!process.versions.node) && docode.env.uiKind === docode.UIKind.Web;
 }

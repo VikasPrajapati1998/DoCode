@@ -1,5 +1,5 @@
 ---
-description: Architecture documentation for VS Code interactive window component. Use when working in `src/vs/workbench/contrib/interactive`
+description: Architecture documentation for VS Code interactive window component. Use when working in `src/do/workbench/contrib/interactive`
 ---
 
 # Interactive Window
@@ -8,8 +8,8 @@ The interactive window component enables extensions to offer REPL like experienc
 
 The interactive window consists of notebook editor at the top and regular monaco editor at the bottom of the viewport. Extensions can extend the interactive window by leveraging the notebook editor API and text editor/document APIs:
 
-* Extensions register notebook controllers for the notebook document in the interactive window through `vscode.notebooks.createNotebookController`. The notebook document has a special notebook view type `interactive`, which is contributed by the core instead of extensions. The registered notebook controller is responsible for execution.
-* Extensions register auto complete provider for the bottom text editor through `vscode.languages.registerCompletionItemProvider`. The resource scheme for the text editor is `interactive-input` and the language used in the editor is determined by the notebook controller contributed by extensions.
+* Extensions register notebook controllers for the notebook document in the interactive window through `docode.notebooks.createNotebookController`. The notebook document has a special notebook view type `interactive`, which is contributed by the core instead of extensions. The registered notebook controller is responsible for execution.
+* Extensions register auto complete provider for the bottom text editor through `docode.languages.registerCompletionItemProvider`. The resource scheme for the text editor is `interactive-input` and the language used in the editor is determined by the notebook controller contributed by extensions.
 
 Users can type in code in the text editor and after users pressing `Shift+Enter`, we will insert a new code cell into the notebook document with the content from the text editor. Then we will request execution for the newly inserted cell. The notebook controller will handle the execution just like it's in a normal notebook editor.
 
@@ -17,7 +17,7 @@ Users can type in code in the text editor and after users pressing `Shift+Enter`
 
 Registering a new editor type in the workbench consists of two steps:
 
-* Register an editor input factory which is responsible for resolving resources with given `glob` patterns. Here we register an `InteractiveEditorInput` for all resources with `vscode-interactive` scheme.
+* Register an editor input factory which is responsible for resolving resources with given `glob` patterns. Here we register an `InteractiveEditorInput` for all resources with `docode-interactive` scheme.
 * Register an editor pane factory for the given editor input type. Here we register `InteractiveEditor` for our own editor input `InteractiveEditorInput`.
 
 The workbench editor service is not aware of how models are resolved in `EditorInput`, neither how `EditorPane`s are rendered. It only cares about the common states and events on `EditorInput` or `EditorPane`, i.e., display name, capabilities (editable), content change, dirty state change. It's `EditorInput`/`EditorPane`'s responsibility to provide the right info and updates to the editor service. One major difference between Interactive Editor and other editor panes is Interactive Window is never dirty so users never see a dot on the editor title bar.
@@ -34,7 +34,7 @@ When the notebook model is resolved, the `INotebookEditorModelResolverService` u
 
 ![Model Resolution](./resources/interactive/interactive.model.resolution.drawio.svg)
 
-The `FileSystem` provider that is registered for `vscode-interactive` schema will always return an empty buffer for any read, and will drop all write requests as nothing is stored on disk for Interactive Window resources. The `NotebookSerializer` that is registered for the `interactive` viewtype knows to return an empty notebook data model when it deserializes an empty buffer when the model is being resolved.
+The `FileSystem` provider that is registered for `docode-interactive` schema will always return an empty buffer for any read, and will drop all write requests as nothing is stored on disk for Interactive Window resources. The `NotebookSerializer` that is registered for the `interactive` viewtype knows to return an empty notebook data model when it deserializes an empty buffer when the model is being resolved.
 
 Restoring the interactive window happens through the editor serializer (`InteractiveEditorSerializer`), where the notebook data is stored, and can be used to repopulate the `InteractiveEditorInput` without needing to go through the full editor model resolution flow.
 

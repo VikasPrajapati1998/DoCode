@@ -3,24 +3,24 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 export interface TSConfig {
-	readonly uri: vscode.Uri;
+	readonly uri: docode.Uri;
 	readonly fsPath: string;
 	readonly posixPath: string;
-	readonly workspaceFolder?: vscode.WorkspaceFolder;
+	readonly workspaceFolder?: docode.WorkspaceFolder;
 }
 
 export class TsConfigProvider {
-	public async getConfigsForWorkspace(token: vscode.CancellationToken): Promise<Iterable<TSConfig>> {
-		if (!vscode.workspace.workspaceFolders) {
+	public async getConfigsForWorkspace(token: docode.CancellationToken): Promise<Iterable<TSConfig>> {
+		if (!docode.workspace.workspaceFolders) {
 			return [];
 		}
 
 		const configs = new Map<string, TSConfig>();
 		for (const config of await this.findConfigFiles(token)) {
-			const root = vscode.workspace.getWorkspaceFolder(config);
+			const root = docode.workspace.getWorkspaceFolder(config);
 			if (root) {
 				configs.set(config.fsPath, {
 					uri: config,
@@ -33,7 +33,7 @@ export class TsConfigProvider {
 		return configs.values();
 	}
 
-	private async findConfigFiles(token: vscode.CancellationToken): Promise<vscode.Uri[]> {
-		return await vscode.workspace.findFiles('**/tsconfig*.json', '**/{node_modules,.*}/**', undefined, token);
+	private async findConfigFiles(token: docode.CancellationToken): Promise<docode.Uri[]> {
+		return await docode.workspace.findFiles('**/tsconfig*.json', '**/{node_modules,.*}/**', undefined, token);
 	}
 }

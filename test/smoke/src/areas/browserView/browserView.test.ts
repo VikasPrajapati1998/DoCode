@@ -248,16 +248,16 @@ export function setup(logger: Logger): void {
 			await target.waitFor();
 
 			await browserPage.keyboard.press(`${modifier}+Shift+c`);
-			await browserPage.locator('[data-vscode-pick-host]').waitFor({ state: 'attached' });
+			await browserPage.locator('[data-docode-pick-host]').waitFor({ state: 'attached' });
 			await target.click();
 			await app.workbench.chat.waitForChatView();
 			await workbenchPage.locator('div[id="workbench.panel.chat"] .chat-attached-context-attachment', { hasText: 'button#comment-target' }).waitFor();
 
 			await target.click();
 			await browserPage.keyboard.press(`${modifier}+Alt+c`);
-			await browserPage.locator('[data-vscode-pick-host]').waitFor({ state: 'attached' });
+			await browserPage.locator('[data-docode-pick-host]').waitFor({ state: 'attached' });
 			await target.click();
-			await browserPage.waitForFunction(() => document.activeElement?.hasAttribute('data-vscode-pick-host'));
+			await browserPage.waitForFunction(() => document.activeElement?.hasAttribute('data-docode-pick-host'));
 			await browserPage.evaluate(() => document.querySelector('#comment-keydown-count')!.textContent = '0');
 			await browserPage.keyboard.type(comment);
 			await browserPage.keyboard.press('Enter');
@@ -266,12 +266,12 @@ export function setup(logger: Logger): void {
 			await app.workbench.chat.waitForInputText(comment);
 
 			await browserPage.keyboard.press('Escape');
-			await browserPage.locator('[data-vscode-pick-host]').waitFor({ state: 'attached' });
+			await browserPage.locator('[data-docode-pick-host]').waitFor({ state: 'attached' });
 			const chatInput = workbenchPage.locator('div[id="workbench.panel.chat"] .interactive-input-part .monaco-editor[role="code"]');
 			await chatInput.click();
 			await workbenchPage.keyboard.press(process.platform === 'darwin' ? 'Meta+a' : 'Control+a');
 			await workbenchPage.keyboard.press('Backspace');
-			await browserPage.locator('[data-vscode-pick-host]').waitFor({ state: 'detached' });
+			await browserPage.locator('[data-docode-pick-host]').waitFor({ state: 'detached' });
 
 			await browserPage.goto(`${baseUrl}/screenshot`);
 			await runAddToChatMenuAction(browserPage, workbenchPage, 'Add Full Page Screenshot to Chat (Experimental)');

@@ -9,10 +9,10 @@
 .github/workflows/telemetry.yml @lramos15 @lszomoru @alexdima
 
 # VS Code API
-# Ensure the API team is aware of changes to the vscode-dts file
+# Ensure the API team is aware of changes to the docode-dts file
 # this is only about the final API, not about proposed API changes
-src/vscode-dts/vscode.d.ts @TylerLeonhardt @alexr00
-src/vs/workbench/services/extensions/common/extensionPoints.json @TylerLeonhardt @alexr00
+src/docode-dts/docode.d.ts @TylerLeonhardt @alexr00
+src/do/workbench/services/extensions/common/extensionPoints.json @TylerLeonhardt @alexr00
 
 # Allowlist for the `local/code-no-new-javascript-files` lint rule.
 # Adding entries here lets a new .js/.cjs/.mjs file land in the repo;

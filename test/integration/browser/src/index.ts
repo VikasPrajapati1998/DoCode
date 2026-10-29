@@ -126,7 +126,7 @@ async function runTestsInBrowser(browserType: BrowserType, browserChannel: Brows
 	});
 
 	const host = endpoint.host;
-	const protocol = 'vscode-remote';
+	const protocol = 'docode-remote';
 
 	const testWorkspacePath = URI.file(path.resolve(args.workspacePath)).path;
 	const testExtensionUri = url.format({ pathname: URI.file(path.resolve(args.extensionDevelopmentPath)).path, protocol, host, slashes: true });
@@ -187,23 +187,23 @@ async function launchServer(browserType: BrowserType, browserChannel: BrowserCha
 	const userDataDir = path.join(testDataPath, 'd');
 
 	const env = {
-		VSCODE_BROWSER: browserChannel ? `${browserType}-${browserChannel}` : browserType,
+		DOCODE_BROWSER: browserChannel ? `${browserType}-${browserChannel}` : browserType,
 		...process.env
 	};
 
 	const serverArgs = ['--enable-proposed-api', '--disable-telemetry', '--disable-experiments', '--server-data-dir', userDataDir, '--accept-server-license-terms', '--disable-workspace-trust', '--enable-smoke-test-driver', '--force-disable-user-env'];
 
 	let serverLocation: string;
-	if (process.env.VSCODE_REMOTE_SERVER_PATH) {
-		const { serverApplicationName } = require(path.join(process.env.VSCODE_REMOTE_SERVER_PATH, 'product.json'));
-		serverLocation = path.join(process.env.VSCODE_REMOTE_SERVER_PATH, 'bin', `${serverApplicationName}${process.platform === 'win32' ? '.cmd' : ''}`);
+	if (process.env.DOCODE_REMOTE_SERVER_PATH) {
+		const { serverApplicationName } = require(path.join(process.env.DOCODE_REMOTE_SERVER_PATH, 'product.json'));
+		serverLocation = path.join(process.env.DOCODE_REMOTE_SERVER_PATH, 'bin', `${serverApplicationName}${process.platform === 'win32' ? '.cmd' : ''}`);
 
 		if (args.debug) {
 			console.log(`Starting built server from '${serverLocation}'`);
 		}
 	} else {
 		serverLocation = path.join(root, `scripts/code-server.${process.platform === 'win32' ? 'bat' : 'sh'}`);
-		process.env.VSCODE_DEV = '1';
+		process.env.DOCODE_DEV = '1';
 
 		if (args.debug) {
 			console.log(`Starting server out of sources from '${serverLocation}'`);

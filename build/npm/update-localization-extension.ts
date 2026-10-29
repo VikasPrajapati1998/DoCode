@@ -50,7 +50,7 @@ function update(options: Options) {
 	}
 	let locExtFolder: string = idOrPath;
 	if (/^\w{2,3}(-\w+)?$/.test(idOrPath)) {
-		locExtFolder = path.join('..', 'vscode-loc', 'i18n', `vscode-language-pack-${idOrPath}`);
+		locExtFolder = path.join('..', 'docode-loc', 'i18n', `docode-language-pack-${idOrPath}`);
 	}
 	const locExtStat = fs.statSync(locExtFolder);
 	if (!locExtStat || !locExtStat.isDirectory) {

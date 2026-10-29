@@ -43,7 +43,7 @@ static LISTENING_PORT_RE: LazyLock<Regex> =
 	LazyLock::new(|| Regex::new(r"Extension host agent listening on (.+)").unwrap());
 static WEB_UI_RE: LazyLock<Regex> =
 	LazyLock::new(|| Regex::new(r"Web UI available at (.+)").unwrap());
-const AGENT_HOST_BRIDGE_CONNECTION_TOKEN_ENV: &str = "VSCODE_AGENT_HOST_BRIDGE_CONNECTION_TOKEN";
+const AGENT_HOST_BRIDGE_CONNECTION_TOKEN_ENV: &str = "DOCODE_AGENT_HOST_BRIDGE_CONNECTION_TOKEN";
 
 #[derive(Clone, Debug, Default)]
 pub struct CodeServerArgs {
@@ -904,7 +904,7 @@ pub fn print_listening(log: &log::Logger, tunnel_name: &str, show_editor_link: b
 
 	let arrow = style(output::banner_marker()).green().bold();
 	let product = QUALITYLESS_PRODUCT_NAME;
-	let version = crate::constants::VSCODE_CLI_VERSION.unwrap_or("dev");
+	let version = crate::constants::DOCODE_CLI_VERSION.unwrap_or("dev");
 
 	println!();
 	println!(

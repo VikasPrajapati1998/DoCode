@@ -5,21 +5,21 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ILogDirectoryProvider } from './logDirectoryProvider';
 import { Lazy } from '../utils/lazy';
 
 export class NodeLogDirectoryProvider implements ILogDirectoryProvider {
 	public constructor(
-		private readonly context: vscode.ExtensionContext
+		private readonly context: docode.ExtensionContext
 	) { }
 
-	public getNewLogDirectory(): vscode.Uri | undefined {
+	public getNewLogDirectory(): docode.Uri | undefined {
 		const root = this.logDirectory.value;
 		if (root) {
 			try {
 				// eslint-disable-next-line local/code-no-sync-fs -- TODO: await directory allocation before tsserver spawn; the current provider must return an existing path for the immediately consumed log arguments.
-				return vscode.Uri.file(fs.mkdtempSync(path.join(root, `tsserver-log-`)));
+				return docode.Uri.file(fs.mkdtempSync(path.join(root, `tsserver-log-`)));
 			} catch (e) {
 				return undefined;
 			}

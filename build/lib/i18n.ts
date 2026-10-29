@@ -330,19 +330,19 @@ function stripComments(content: string): string {
 }
 
 function processCoreBundleFormat(base: string, fileHeader: string, languages: Language[], json: NLSKeysFormat, emitter: eventStream.ThroughStream) {
-	const languageDirectory = path.join(REPO_ROOT_PATH, '..', 'vscode-loc', 'i18n');
+	const languageDirectory = path.join(REPO_ROOT_PATH, '..', 'docode-loc', 'i18n');
 	if (!fs.existsSync(languageDirectory)) {
 		log(`No VS Code localization repository found. Looking at ${languageDirectory}`);
-		log(`To bundle translations please check out the vscode-loc repository as a sibling of the vscode repository.`);
+		log(`To bundle translations please check out the docode-loc repository as a sibling of the docode repository.`);
 	}
 	const sortedLanguages = sortLanguages(languages);
 	sortedLanguages.forEach((language) => {
-		if (process.env['VSCODE_BUILD_VERBOSE']) {
+		if (process.env['DOCODE_BUILD_VERBOSE']) {
 			log(`Generating nls bundles for: ${language.id}`);
 		}
 
 		const languageFolderName = language.translationId || language.id;
-		const i18nFile = path.join(languageDirectory, `vscode-language-pack-${languageFolderName}`, 'translations', 'main.i18n.json');
+		const i18nFile = path.join(languageDirectory, `docode-language-pack-${languageFolderName}`, 'translations', 'main.i18n.json');
 		let allMessages: I18nFormat | undefined;
 		if (fs.existsSync(i18nFile)) {
 			const content = stripComments(fs.readFileSync(i18nFile, 'utf8'));
@@ -361,8 +361,8 @@ function processCoreBundleFormat(base: string, fileHeader: string, languages: La
 
 		emitter.queue(new File({
 			contents: Buffer.from(`${fileHeader}
-globalThis._VSCODE_NLS_MESSAGES=${serializeNlsData(nlsResult)};
-globalThis._VSCODE_NLS_LANGUAGE=${serializeNlsData(language.id)};`),
+globalThis._DOCODE_NLS_MESSAGES=${serializeNlsData(nlsResult)};
+globalThis._DOCODE_NLS_LANGUAGE=${serializeNlsData(language.id)};`),
 			base,
 			path: `${base}/nls.messages.${language.id}.js`
 		}));
@@ -387,28 +387,28 @@ export function processNlsFiles(opts: { out: string; fileHeader: string; languag
 	});
 }
 
-const editorProject: string = 'vscode-editor',
-	workbenchProject: string = 'vscode-workbench',
-	extensionsProject: string = 'vscode-extensions',
-	setupProject: string = 'vscode-setup',
-	serverProject: string = 'vscode-server',
-	sessionsProject: string = 'vscode-sessions';
+const editorProject: string = 'docode-editor',
+	workbenchProject: string = 'docode-workbench',
+	extensionsProject: string = 'docode-extensions',
+	setupProject: string = 'docode-setup',
+	serverProject: string = 'docode-server',
+	sessionsProject: string = 'docode-sessions';
 
 export function getResource(sourceFile: string): Resource {
 	let resource: string;
 
 	if (/^vs\/platform/.test(sourceFile)) {
-		return { name: 'vs/platform', project: editorProject };
+		return { name: 'do/platform', project: editorProject };
 	} else if (/^vs\/editor\/contrib/.test(sourceFile)) {
-		return { name: 'vs/editor/contrib', project: editorProject };
+		return { name: 'do/editor/contrib', project: editorProject };
 	} else if (/^vs\/editor/.test(sourceFile)) {
-		return { name: 'vs/editor', project: editorProject };
+		return { name: 'do/editor', project: editorProject };
 	} else if (/^vs\/base/.test(sourceFile)) {
-		return { name: 'vs/base', project: editorProject };
+		return { name: 'do/base', project: editorProject };
 	} else if (/^vs\/code/.test(sourceFile)) {
-		return { name: 'vs/code', project: workbenchProject };
+		return { name: 'do/code', project: workbenchProject };
 	} else if (/^vs\/server/.test(sourceFile)) {
-		return { name: 'vs/server', project: serverProject };
+		return { name: 'do/server', project: serverProject };
 	} else if (/^vs\/workbench\/contrib/.test(sourceFile)) {
 		resource = sourceFile.split('/', 4).join('/');
 		return { name: resource, project: workbenchProject };
@@ -416,12 +416,12 @@ export function getResource(sourceFile: string): Resource {
 		resource = sourceFile.split('/', 4).join('/');
 		return { name: resource, project: workbenchProject };
 	} else if (/^vs\/workbench/.test(sourceFile)) {
-		return { name: 'vs/workbench', project: workbenchProject };
+		return { name: 'do/workbench', project: workbenchProject };
 	} else if (/^vs\/sessions\/contrib/.test(sourceFile)) {
 		resource = sourceFile.split('/', 4).join('/');
 		return { name: resource, project: sessionsProject };
 	} else if (/^vs\/sessions/.test(sourceFile)) {
-		return { name: 'vs/sessions', project: sessionsProject };
+		return { name: 'do/sessions', project: sessionsProject };
 	}
 
 	throw new Error(`Could not identify the XLF bundle for ${sourceFile}`);
@@ -480,9 +480,9 @@ function createL10nBundleForExtension(extensionFolderName: string, prefixWithBui
 		.src([
 			// For source code of extensions
 			`${prefix}extensions/${extensionFolderName}/{src,client,server}/**/*.{ts,tsx}`,
-			// // For any dependencies pulled in (think vscode-css-languageservice or @vscode/emmet-helper)
-			`${prefix}extensions/${extensionFolderName}/**/node_modules/{@vscode,vscode-*}/**/*.{js,jsx}`,
-			// // For any dependencies pulled in that bundle @vscode/l10n. They needed to export the bundle
+			// // For any dependencies pulled in (think vscode-css-languageservice or @docode/emmet-helper)
+			`${prefix}extensions/${extensionFolderName}/**/node_modules/{@docode,docode-*}/**/*.{js,jsx}`,
+			// // For any dependencies pulled in that bundle @docode/l10n. They needed to export the bundle
 			`${prefix}extensions/${extensionFolderName}/**/bundle.l10n.json`,
 		])
 		.pipe(eventStream.map(function (data, callback) {
@@ -738,12 +738,12 @@ export function prepareI18nPackFiles(resultingTranslationPaths: TranslationPath[
 	const errors: unknown[] = [];
 	return eventStream.through(function (this: eventStream.ThroughStream, xlf: File) {
 		let project = path.basename(path.dirname(path.dirname(xlf.relative)));
-		// strip `-new` since vscode-extensions-loc uses the `-new` suffix to indicate that it's from the new loc pipeline
+		// strip `-new` since docode-extensions-loc uses the `-new` suffix to indicate that it's from the new loc pipeline
 		const resource = path.basename(path.basename(xlf.relative, '.xlf'), '-new');
 		if (EXTERNAL_EXTENSIONS.find(e => e === resource)) {
 			project = extensionsProject;
 		}
-		// vscode-setup has its own import path via prepareIslFiles
+		// docode-setup has its own import path via prepareIslFiles
 		if (project === setupProject) {
 			return;
 		}
@@ -781,7 +781,7 @@ export function prepareI18nPackFiles(resultingTranslationPaths: TranslationPath[
 					throw errors;
 				}
 				const translatedMainFile = createI18nFile('./main', mainPack);
-				resultingTranslationPaths.push({ id: 'vscode', resourceName: 'main.i18n.json' });
+				resultingTranslationPaths.push({ id: 'docode', resourceName: 'main.i18n.json' });
 
 				this.queue(translatedMainFile);
 				for (const extensionId in extensionsPacks) {

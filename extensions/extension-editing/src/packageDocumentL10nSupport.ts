@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getLocation, getNodeValue, parseTree, findNodeAtLocation, visit } from 'jsonc-parser';
 
 
-const packageJsonSelector: vscode.DocumentSelector = { language: 'json', pattern: '**/package.json' };
-const packageNlsJsonSelector: vscode.DocumentSelector = { language: 'json', pattern: '**/package.nls.json' };
+const packageJsonSelector: docode.DocumentSelector = { language: 'json', pattern: '**/package.json' };
+const packageNlsJsonSelector: docode.DocumentSelector = { language: 'json', pattern: '**/package.nls.json' };
 
-export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vscode.ReferenceProvider, vscode.Disposable {
+export class PackageDocumentL10nSupport implements docode.DefinitionProvider, docode.ReferenceProvider, docode.Disposable {
 
-	private readonly _disposables: vscode.Disposable[] = [];
+	private readonly _disposables: docode.Disposable[] = [];
 
 	constructor() {
-		this._disposables.push(vscode.languages.registerDefinitionProvider(packageJsonSelector, this));
-		this._disposables.push(vscode.languages.registerDefinitionProvider(packageNlsJsonSelector, this));
+		this._disposables.push(docode.languages.registerDefinitionProvider(packageJsonSelector, this));
+		this._disposables.push(docode.languages.registerDefinitionProvider(packageNlsJsonSelector, this));
 
-		this._disposables.push(vscode.languages.registerReferenceProvider(packageNlsJsonSelector, this));
-		this._disposables.push(vscode.languages.registerReferenceProvider(packageJsonSelector, this));
+		this._disposables.push(docode.languages.registerReferenceProvider(packageNlsJsonSelector, this));
+		this._disposables.push(docode.languages.registerReferenceProvider(packageJsonSelector, this));
 	}
 
 	dispose(): void {
@@ -28,7 +28,7 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		}
 	}
 
-	public async provideDefinition(document: vscode.TextDocument, position: vscode.Position, _token: vscode.CancellationToken): Promise<vscode.DefinitionLink[] | undefined> {
+	public async provideDefinition(document: docode.TextDocument, position: docode.Position, _token: docode.CancellationToken): Promise<docode.DefinitionLink[] | undefined> {
 		const basename = document.uri.path.split('/').pop()?.toLowerCase();
 		if (basename === 'package.json') {
 			return this.provideNlsValueDefinition(document, position);
@@ -41,17 +41,17 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		return undefined;
 	}
 
-	private async provideNlsValueDefinition(packageJsonDoc: vscode.TextDocument, position: vscode.Position): Promise<vscode.DefinitionLink[] | undefined> {
+	private async provideNlsValueDefinition(packageJsonDoc: docode.TextDocument, position: docode.Position): Promise<docode.DefinitionLink[] | undefined> {
 		const nlsRef = this.getNlsReferenceAtPosition(packageJsonDoc, position);
 		if (!nlsRef) {
 			return undefined;
 		}
 
-		const nlsUri = vscode.Uri.joinPath(packageJsonDoc.uri, '..', 'package.nls.json');
+		const nlsUri = docode.Uri.joinPath(packageJsonDoc.uri, '..', 'package.nls.json');
 		return this.resolveNlsDefinition(nlsRef, nlsUri);
 	}
 
-	private async provideNlsKeyDefinition(nlsDoc: vscode.TextDocument, position: vscode.Position): Promise<vscode.DefinitionLink[] | undefined> {
+	private async provideNlsKeyDefinition(nlsDoc: docode.TextDocument, position: docode.Position): Promise<docode.DefinitionLink[] | undefined> {
 		const nlsKey = this.getNlsKeyDefinitionAtPosition(nlsDoc, position);
 		if (!nlsKey) {
 			return undefined;
@@ -59,7 +59,7 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		return this.resolveNlsDefinition(nlsKey, nlsDoc.uri);
 	}
 
-	private async resolveNlsDefinition(origin: { key: string; range: vscode.Range }, nlsUri: vscode.Uri): Promise<vscode.DefinitionLink[] | undefined> {
+	private async resolveNlsDefinition(origin: { key: string; range: docode.Range }, nlsUri: docode.Uri): Promise<docode.DefinitionLink[] | undefined> {
 		const target = await this.findNlsKeyDeclaration(origin.key, nlsUri);
 		if (!target) {
 			return undefined;
@@ -72,7 +72,7 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		}];
 	}
 
-	private getNlsReferenceAtPosition(packageJsonDoc: vscode.TextDocument, position: vscode.Position): { key: string; range: vscode.Range } | undefined {
+	private getNlsReferenceAtPosition(packageJsonDoc: docode.TextDocument, position: docode.Position): { key: string; range: docode.Range } | undefined {
 		const location = getLocation(packageJsonDoc.getText(), packageJsonDoc.offsetAt(position));
 		if (!location.previousNode || location.previousNode.type !== 'string') {
 			return undefined;
@@ -90,10 +90,10 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 
 		const nodeStart = packageJsonDoc.positionAt(location.previousNode.offset);
 		const nodeEnd = packageJsonDoc.positionAt(location.previousNode.offset + location.previousNode.length);
-		return { key: match[1], range: new vscode.Range(nodeStart, nodeEnd) };
+		return { key: match[1], range: new docode.Range(nodeStart, nodeEnd) };
 	}
 
-	public async provideReferences(document: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext, _token: vscode.CancellationToken): Promise<vscode.Location[] | undefined> {
+	public async provideReferences(document: docode.TextDocument, position: docode.Position, context: docode.ReferenceContext, _token: docode.CancellationToken): Promise<docode.Location[] | undefined> {
 		const basename = document.uri.path.split('/').pop()?.toLowerCase();
 		if (basename === 'package.nls.json') {
 			return this.provideNlsKeyReferences(document, position, context);
@@ -104,27 +104,27 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		return undefined;
 	}
 
-	private async provideNlsKeyReferences(nlsDoc: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext): Promise<vscode.Location[] | undefined> {
+	private async provideNlsKeyReferences(nlsDoc: docode.TextDocument, position: docode.Position, context: docode.ReferenceContext): Promise<docode.Location[] | undefined> {
 		const nlsKey = this.getNlsKeyDefinitionAtPosition(nlsDoc, position);
 		if (!nlsKey) {
 			return undefined;
 		}
 
-		const packageJsonUri = vscode.Uri.joinPath(nlsDoc.uri, '..', 'package.json');
+		const packageJsonUri = docode.Uri.joinPath(nlsDoc.uri, '..', 'package.json');
 		return this.findAllNlsReferences(nlsKey.key, packageJsonUri, nlsDoc.uri, context);
 	}
 
-	private async provideNlsValueReferences(packageJsonDoc: vscode.TextDocument, position: vscode.Position, context: vscode.ReferenceContext): Promise<vscode.Location[] | undefined> {
+	private async provideNlsValueReferences(packageJsonDoc: docode.TextDocument, position: docode.Position, context: docode.ReferenceContext): Promise<docode.Location[] | undefined> {
 		const nlsRef = this.getNlsReferenceAtPosition(packageJsonDoc, position);
 		if (!nlsRef) {
 			return undefined;
 		}
 
-		const nlsUri = vscode.Uri.joinPath(packageJsonDoc.uri, '..', 'package.nls.json');
+		const nlsUri = docode.Uri.joinPath(packageJsonDoc.uri, '..', 'package.nls.json');
 		return this.findAllNlsReferences(nlsRef.key, packageJsonDoc.uri, nlsUri, context);
 	}
 
-	private async findAllNlsReferences(nlsKey: string, packageJsonUri: vscode.Uri, nlsUri: vscode.Uri, context: vscode.ReferenceContext): Promise<vscode.Location[]> {
+	private async findAllNlsReferences(nlsKey: string, packageJsonUri: docode.Uri, nlsUri: docode.Uri, context: docode.ReferenceContext): Promise<docode.Location[]> {
 		const locations = await this.findNlsReferencesInPackageJson(nlsKey, packageJsonUri);
 
 		if (context.includeDeclaration) {
@@ -137,9 +137,9 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		return locations;
 	}
 
-	private async findNlsKeyDeclaration(nlsKey: string, nlsUri: vscode.Uri): Promise<vscode.Location | undefined> {
+	private async findNlsKeyDeclaration(nlsKey: string, nlsUri: docode.Uri): Promise<docode.Location | undefined> {
 		try {
-			const nlsDoc = await vscode.workspace.openTextDocument(nlsUri);
+			const nlsDoc = await docode.workspace.openTextDocument(nlsUri);
 			const nlsTree = parseTree(nlsDoc.getText());
 			if (!nlsTree) {
 				return undefined;
@@ -157,30 +157,30 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 
 			const start = nlsDoc.positionAt(keyNode.offset);
 			const end = nlsDoc.positionAt(keyNode.offset + keyNode.length);
-			return new vscode.Location(nlsUri, new vscode.Range(start, end));
+			return new docode.Location(nlsUri, new docode.Range(start, end));
 		} catch {
 			return undefined;
 		}
 	}
 
-	private async findNlsReferencesInPackageJson(nlsKey: string, packageJsonUri: vscode.Uri): Promise<vscode.Location[]> {
-		let packageJsonDoc: vscode.TextDocument;
+	private async findNlsReferencesInPackageJson(nlsKey: string, packageJsonUri: docode.Uri): Promise<docode.Location[]> {
+		let packageJsonDoc: docode.TextDocument;
 		try {
-			packageJsonDoc = await vscode.workspace.openTextDocument(packageJsonUri);
+			packageJsonDoc = await docode.workspace.openTextDocument(packageJsonUri);
 		} catch {
 			return [];
 		}
 
 		const text = packageJsonDoc.getText();
 		const needle = `%${nlsKey}%`;
-		const locations: vscode.Location[] = [];
+		const locations: docode.Location[] = [];
 
 		visit(text, {
 			onLiteralValue(value, offset, length) {
 				if (value === needle) {
 					const start = packageJsonDoc.positionAt(offset);
 					const end = packageJsonDoc.positionAt(offset + length);
-					locations.push(new vscode.Location(packageJsonUri, new vscode.Range(start, end)));
+					locations.push(new docode.Location(packageJsonUri, new docode.Range(start, end)));
 				}
 			}
 		});
@@ -188,7 +188,7 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		return locations;
 	}
 
-	private getNlsKeyDefinitionAtPosition(nlsDoc: vscode.TextDocument, position: vscode.Position): { key: string; range: vscode.Range } | undefined {
+	private getNlsKeyDefinitionAtPosition(nlsDoc: docode.TextDocument, position: docode.Position): { key: string; range: docode.Range } | undefined {
 		const location = getLocation(nlsDoc.getText(), nlsDoc.offsetAt(position));
 
 		// Must be on a top-level property key
@@ -199,6 +199,6 @@ export class PackageDocumentL10nSupport implements vscode.DefinitionProvider, vs
 		const key = location.path[0] as string;
 		const start = nlsDoc.positionAt(location.previousNode.offset);
 		const end = nlsDoc.positionAt(location.previousNode.offset + location.previousNode.length);
-		return { key, range: new vscode.Range(start, end) };
+		return { key, range: new docode.Range(start, end) };
 	}
 }

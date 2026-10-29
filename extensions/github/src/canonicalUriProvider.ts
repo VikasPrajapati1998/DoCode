@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationToken, CanonicalUriProvider, CanonicalUriRequestOptions, Disposable, ProviderResult, Uri, workspace } from 'vscode';
+import { CancellationToken, CanonicalUriProvider, CanonicalUriRequestOptions, Disposable, ProviderResult, Uri, workspace } from 'docode';
 import type { API } from './typings/git.d.ts';
 
 const SUPPORTED_SCHEMES = ['ssh', 'https', 'file'];

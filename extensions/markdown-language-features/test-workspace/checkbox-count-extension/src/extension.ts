@@ -3,22 +3,22 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 const providerId = 'checkboxCount';
-const runtimeUris = new Map<string, vscode.Uri>();
+const runtimeUris = new Map<string, docode.Uri>();
 const runtimeKeys = new Map<string, string>();
 let nextRuntimeId = 1;
 
 interface MarkdownCodeBlockEditorResolveRequest {
-	readonly documentUri: vscode.Uri;
+	readonly documentUri: docode.Uri;
 }
 
 interface MarkdownCodeBlockEditorHostTransport {
 	readonly runtimeKey: string;
 	sendMessage(message: TaskProgressMessage): void;
-	onDidReceiveMessage(listener: (message: unknown) => void): vscode.Disposable;
-	onDidDispose(listener: () => void): vscode.Disposable;
+	onDidReceiveMessage(listener: (message: unknown) => void): docode.Disposable;
+	onDidDispose(listener: () => void): docode.Disposable;
 }
 
 interface TaskProgressMessage {
@@ -27,7 +27,7 @@ interface TaskProgressMessage {
 	readonly total: number;
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: docode.ExtensionContext) {
 	const provider = {
 		async resolve(request: MarkdownCodeBlockEditorResolveRequest) {
 			const documentKey = request.documentUri.toString();
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 			return {
 				content: {
-					uri: vscode.Uri.joinPath(context.extensionUri, 'editor', 'index.html'),
+					uri: docode.Uri.joinPath(context.extensionUri, 'editor', 'index.html'),
 				},
 				runtimeKey,
 				contentType: 'text',
@@ -48,13 +48,13 @@ export function activate(context: vscode.ExtensionContext) {
 			};
 		},
 
-		async createHostTransport(transport: MarkdownCodeBlockEditorHostTransport, token: vscode.CancellationToken) {
+		async createHostTransport(transport: MarkdownCodeBlockEditorHostTransport, token: docode.CancellationToken) {
 			const documentUri = runtimeUris.get(transport.runtimeKey);
 			if (!documentUri) {
 				throw new Error(`Unknown checkbox-count runtime: ${transport.runtimeKey}`);
 			}
 
-			const document = await vscode.workspace.openTextDocument(documentUri);
+			const document = await docode.workspace.openTextDocument(documentUri);
 			if (token.isCancellationRequested) {
 				return;
 			}
@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 			};
 
-			const documentListener = vscode.workspace.onDidChangeTextDocument(event => {
+			const documentListener = docode.workspace.onDidChangeTextDocument(event => {
 				if (event.document.uri.toString() === document.uri.toString()) {
 					update();
 				}
@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 			const disposeListener = transport.onDidDispose(() => {
 				console.log(`Disposed checkbox-count runtime ${transport.runtimeKey}`);
 			});
-			return vscode.Disposable.from(documentListener, messageListener, disposeListener);
+			return docode.Disposable.from(documentListener, messageListener, disposeListener);
 		},
 	};
 

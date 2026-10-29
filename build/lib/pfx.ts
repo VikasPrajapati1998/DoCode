@@ -30,7 +30,7 @@ export function getCertificatesFromPFX(pfx: string): string[] {
 
 function convertPFX<T>(pfx: string, args: readonly string[], extract: (raw: string) => T): T {
 	// Artifact workers share os.tmpdir(), so each conversion must own both its PFX and PEM paths.
-	const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-pfx-'));
+	const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-pfx-'));
 	const pfxPath = path.join(temporaryDirectory, 'cert.pfx');
 	const pemPath = path.join(temporaryDirectory, 'output.pem');
 	let result: T;

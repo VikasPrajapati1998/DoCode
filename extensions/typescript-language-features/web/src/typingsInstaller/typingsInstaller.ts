@@ -23,7 +23,7 @@
  * the stuff the abstract class is already doing for us.
  */
 
-import { PackageManager, PackageType } from '@vscode/ts-package-manager';
+import { PackageManager, PackageType } from '@docode/ts-package-manager';
 import { join } from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import { NameValidationResult, validatePackageNameWorker } from './jsTyping';

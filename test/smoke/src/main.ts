@@ -9,7 +9,7 @@ import * as cp from 'child_process';
 import * as path from 'path';
 import * as os from 'os';
 import minimist from 'minimist';
-import * as vscodetest from '@vscode/test-electron';
+import * as docodetest from '@vscode/test-electron';
 import fetch from 'node-fetch';
 import { Quality, MultiLogger, Logger, ConsoleLogger, FileLogger, measureAndLog, getDevElectronPath, getBuildElectronPath, getBuildVersion, ApplicationOptions } from '../../automation';
 import { retry } from './utils';
@@ -168,7 +168,7 @@ process.once('exit', () => {
 });
 
 const testRepoUrl = 'https://github.com/microsoft/vscode-smoketest-express';
-const workspacePath = path.join(testDataPath, `vscode-smoketest-express`);
+const workspacePath = path.join(testDataPath, `docode-smoketest-express`);
 const extensionsPath = path.join(testDataPath, 'extensions-dir');
 fs.mkdirSync(extensionsPath, { recursive: true });
 
@@ -198,11 +198,11 @@ function parseVersion(version: string): { major: number; minor: number; patch: n
 }
 
 function parseQuality(): Quality {
-	if (process.env.VSCODE_DEV === '1') {
+	if (process.env.DOCODE_DEV === '1') {
 		return Quality.Dev;
 	}
 
-	const quality = process.env.VSCODE_QUALITY ?? '';
+	const quality = process.env.DOCODE_QUALITY ?? '';
 
 	switch (quality) {
 		case 'stable':
@@ -231,13 +231,13 @@ if (!opts.web) {
 	} else {
 		testCodePath = getDevElectronPath();
 		electronPath = testCodePath;
-		process.env.VSCODE_REPOSITORY = rootPath;
-		process.env.VSCODE_DEV = '1';
-		process.env.VSCODE_CLI = '1';
+		process.env.DOCODE_REPOSITORY = rootPath;
+		process.env.DOCODE_DEV = '1';
+		process.env.DOCODE_CLI = '1';
 	}
 
 	if (!fs.existsSync(electronPath || '')) {
-		fail(`Cannot find VSCode at ${electronPath}. Please run VSCode once first (scripts/code.sh, scripts\\code.bat) and try again.`);
+		fail(`Cannot find DoCode at ${electronPath}. Please run DoCode once first (scripts/code.sh, scripts\\code.bat) and try again.`);
 	}
 
 	quality = parseQuality();
@@ -253,7 +253,7 @@ if (!opts.web) {
 // #### Web Smoke Tests ####
 //
 else {
-	const testCodeServerPath = opts.build || process.env.VSCODE_REMOTE_SERVER_PATH;
+	const testCodeServerPath = opts.build || process.env.DOCODE_REMOTE_SERVER_PATH;
 
 	if (typeof testCodeServerPath === 'string') {
 		if (!fs.existsSync(testCodeServerPath)) {
@@ -264,9 +264,9 @@ else {
 	}
 
 	if (!testCodeServerPath) {
-		process.env.VSCODE_REPOSITORY = rootPath;
-		process.env.VSCODE_DEV = '1';
-		process.env.VSCODE_CLI = '1';
+		process.env.DOCODE_REPOSITORY = rootPath;
+		process.env.DOCODE_DEV = '1';
+		process.env.DOCODE_CLI = '1';
 
 		logger.log(`Running web smoke out of sources`);
 	}
@@ -340,7 +340,7 @@ async function ensureStableCode(): Promise<void> {
 		let lastProgressMessage: string | undefined = undefined;
 		let lastProgressReportedAt = 0;
 		const stableCodeDestination = path.join(testDataPath, 's');
-		const stableCodeExecutable = await retry(() => measureAndLog(() => vscodetest.download({
+		const stableCodeExecutable = await retry(() => measureAndLog(() => docodetest.download({
 			cachePath: stableCodeDestination,
 			version: stableVersion,
 			extractSync: true,
@@ -369,7 +369,7 @@ async function ensureStableCode(): Promise<void> {
 			// Visual Studio Code.app/Contents/MacOS/Code
 			stableCodePath = path.dirname(path.dirname(path.dirname(stableCodeExecutable)));
 		} else {
-			// VSCode/Code.exe (Windows) | VSCode/code (Linux)
+			// DoCode/Code.exe (Windows) | DoCode/code (Linux)
 			stableCodePath = path.dirname(stableCodeExecutable);
 		}
 
@@ -377,7 +377,7 @@ async function ensureStableCode(): Promise<void> {
 	}
 
 	if (!fs.existsSync(stableCodePath)) {
-		throw new Error(`Cannot find Stable VSCode at ${stableCodePath}.`);
+		throw new Error(`Cannot find Stable DoCode at ${stableCodePath}.`);
 	}
 
 	logger.log(`Using stable build ${stableCodePath} for migration tests`);
@@ -396,7 +396,7 @@ async function setup(): Promise<void> {
 	await measureAndLog(() => setupRepository(), 'setupRepository', logger);
 
 	if (!opts.web && !opts.remote) {
-		for (const extension of ['vscode-smoketest-ext-host', 'vscode-smoketest-language-pack-de']) {
+		for (const extension of ['docode-smoketest-ext-host', 'docode-smoketest-language-pack-de']) {
 			const smokeExtensionPath = path.join(rootPath, 'test', 'smoke', 'extensions', extension);
 			const destination = path.join(extensionsPath, extension);
 			if (fs.existsSync(destination)) {
@@ -411,7 +411,7 @@ async function setup(): Promise<void> {
 
 // Before all tests run setup
 before(async function () {
-	this.timeout(5 * 60 * 1000); // increase since we download VSCode
+	this.timeout(5 * 60 * 1000); // increase since we download DoCode
 
 	const options: ApplicationOptions = {
 		quality,
@@ -448,7 +448,7 @@ after(async function () {
 	}
 });
 
-const smokeTestSuite = describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
+const smokeTestSuite = describe(`DoCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
 	if (!opts.web) { setupDataLossTests(() => { return { stableCodePath: opts['stable-build'], stableCodeVersion: opts['stable-version'] } /* Do not change, deferred for a reason! */; }, logger); }
 	setupPreferencesTests(logger);
 	setupSearchTests(logger);
@@ -470,7 +470,7 @@ const smokeTestSuite = describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Elect
 	if (!opts.web && !opts.remote) { setupAgentsWindowTests(logger, quality); }
 	if (!opts.web && !opts.remote) { setupBrowserViewTests(logger); }
 	// Native policy fixtures modify OS state outside the test profile; opt in only on disposable runners so you don't break your own machine.
-	if (!opts.web && !opts.remote && process.env.VSCODE_SMOKE_TEST_POLICY === '1') { setupPolicyTests(logger); }
+	if (!opts.web && !opts.remote && process.env.DOCODE_SMOKE_TEST_POLICY === '1') { setupPolicyTests(logger); }
 	setupAccessibilityTests(logger, opts, quality);
 });
 

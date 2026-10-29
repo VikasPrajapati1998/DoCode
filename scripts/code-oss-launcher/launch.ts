@@ -136,10 +136,10 @@ async function main(): Promise<number> {
 	const repo = path.resolve(options.repo ?? process.cwd());
 	const codeScript = path.join(repo, 'scripts', process.platform === 'win32' ? 'code.bat' : 'code.sh');
 	if (!existsSync(codeScript)) {
-		throw new UsageError(options.repo ? `Could not find a Code OSS launcher at ${codeScript}. Pass --repo <vscode-repo-root>.` : `Could not find a vscode checkout in ${repo}. Pass --repo <vscode-repo-root>.`);
+		throw new UsageError(options.repo ? `Could not find a Code OSS launcher at ${codeScript}. Pass --repo <docode-repo-root>.` : `Could not find a docode checkout in ${repo}. Pass --repo <docode-repo-root>.`);
 	}
 
-	const sourceUserDataDir = path.resolve(options.sourceUserDataDir ?? process.env.CODE_OSS_DEV_AUTHED_USER_DATA_DIR ?? path.join(os.homedir(), '.vscode-oss-dev'));
+	const sourceUserDataDir = path.resolve(options.sourceUserDataDir ?? process.env.CODE_OSS_DEV_AUTHED_USER_DATA_DIR ?? path.join(os.homedir(), '.docode-oss-dev'));
 	const sourceProfileExists = await isDirectory(sourceUserDataDir);
 	if (!sourceProfileExists) {
 		log(`no source profile at ${sourceUserDataDir}; launching with an empty isolated profile so the user can sign in.`);
@@ -307,7 +307,7 @@ async function prepareProfile(repo: string, sourceUserDataDir: string, sourcePro
 	await fs.mkdir(userDataDir, { recursive: true });
 
 	// On Windows the GitHub session is APPLICATION_SHARED scoped, so it lives in the shared-data-dir
-	// and not in the profile - see useSharedStorage in src/vs/platform/secrets/common/secrets.ts.
+	// and not in the profile - see useSharedStorage in src/do/platform/secrets/common/secrets.ts.
 	// Without this copy the launched instance always prompts for sign-in.
 	const sourceSharedDataDir = getSourceSharedDataDir(repo);
 	const copiesSharedData = process.platform === 'win32' && await isDirectory(sourceSharedDataDir);
@@ -353,16 +353,16 @@ async function prepareProfile(repo: string, sourceUserDataDir: string, sourcePro
 
 /**
  * Mirrors IEnvironmentService.appSharedDataHome, minus the --shared-data-dir branch, which names
- * the destination and not the source: VSCODE_PORTABLE\shared-data, else ~/<product.sharedDataFolderName>.
+ * the destination and not the source: DOCODE_PORTABLE\shared-data, else ~/<product.sharedDataFolderName>.
  */
 function getSourceSharedDataDir(repo: string): string {
 	if (process.env.CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR) {
 		return process.env.CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR;
 	}
-	if (process.env.VSCODE_PORTABLE) {
-		return path.join(process.env.VSCODE_PORTABLE, 'shared-data');
+	if (process.env.DOCODE_PORTABLE) {
+		return path.join(process.env.DOCODE_PORTABLE, 'shared-data');
 	}
-	return path.join(os.homedir(), readProduct(repo).sharedDataFolderName ?? '.vscode-oss-shared');
+	return path.join(os.homedir(), readProduct(repo).sharedDataFolderName ?? '.docode-oss-shared');
 }
 
 /**
@@ -416,7 +416,7 @@ function runPreLaunch(repo: string, logFile: string): Promise<boolean> {
  * passing arguments through cmd.exe breaks on characters such as `&` and `%`.
  */
 async function startCode(repo: string, codeScript: string, launchArgs: readonly string[], logFile: string, wait: boolean) {
-	const env: NodeJS.ProcessEnv = { ...process.env, VSCODE_SKIP_PRELAUNCH: '1' };
+	const env: NodeJS.ProcessEnv = { ...process.env, DOCODE_SKIP_PRELAUNCH: '1' };
 	// Host-only configuration, commonly inherited from VS Code's integrated terminal and agent runtimes
 	for (const name of ['ELECTRON_RUN_AS_NODE', 'GIT_CONFIG_COUNT', 'GIT_CONFIG_PARAMETERS', 'CODE_OSS_DEV_REFS_VOLUMES', 'UV_THREADPOOL_SIZE']) {
 		delete env[name];
@@ -430,8 +430,8 @@ async function startCode(repo: string, codeScript: string, launchArgs: readonly 
 			throw new Error(`Electron is missing at ${electron}; launch without --skip-prelaunch to download it.`);
 		}
 		command = electron;
-		args = ['.', ...(launchArgs.includes('--extensionTestsPath') ? [] : ['--disable-extension=vscode.vscode-api-tests']), ...launchArgs];
-		Object.assign(env, { NODE_ENV: 'development', VSCODE_DEV: '1', VSCODE_CLI: '1', ELECTRON_ENABLE_LOGGING: '1', ELECTRON_ENABLE_STACK_DUMPING: '1' });
+		args = ['.', ...(launchArgs.includes('--extensionTestsPath') ? [] : ['--disable-extension=docode.docode-api-tests']), ...launchArgs];
+		Object.assign(env, { NODE_ENV: 'development', DOCODE_DEV: '1', DOCODE_CLI: '1', ELECTRON_ENABLE_LOGGING: '1', ELECTRON_ENABLE_STACK_DUMPING: '1' });
 	}
 	log(`launching: ${command} ${args.join(' ')}`);
 

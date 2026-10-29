@@ -7,7 +7,7 @@
 
 /**
  * Fixture for chat-simulation benchmarks.
- * Simplified from src/vs/base/common/errors.ts for stable perf testing.
+ * Simplified from src/do/base/common/errors.ts for stable perf testing.
  */
 
 export interface ErrorListenerCallback {

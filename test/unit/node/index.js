@@ -64,7 +64,7 @@ Options:
 	process.exit(0);
 }
 
-// --runList: the listed test files as compiled modules relative to the output folder (src/vs/a.test.ts is vs/a.test.js)
+// --runList: the listed test files as compiled modules relative to the output folder (src/do/a.test.ts is do/a.test.js)
 const runList = args.runList ? new Set(fs.readFileSync(args.runList, 'utf8').split(/\r?\n/).map(line => line.trim().replace(/\\/g, '/')).filter(line => line.length > 0).map(line => line.replace(/^src\//, '').replace(/\.ts$/, '.js'))) : undefined;
 
 const TEST_GLOB = '**/test/**/*.test.js';
@@ -80,19 +80,19 @@ const MAX_RERUN_TARGETS = 50;
  * Set for the process that reruns failed tests: the path of the JSON file in which
  * it reports which tests passed and failed.
  */
-const RESULT_REPORT_ENV = 'VSCODE_TEST_RESULT_REPORT';
+const RESULT_REPORT_ENV = 'DOCODE_TEST_RESULT_REPORT';
 
-const CHECK_LOADER_ENV = 'VSCODE_TEST_CHECK_LOADER';
+const CHECK_LOADER_ENV = 'DOCODE_TEST_CHECK_LOADER';
 const checkLoader = process.env[CHECK_LOADER_ENV] === undefined
 	? !args.run && !args.runGlob
 	: process.env[CHECK_LOADER_ENV] === '1';
 
 const excludeGlobs = [
 	'**/{browser,electron-browser,electron-main,electron-utility}/**/*.test.js',
-	'**/vs/platform/environment/test/node/nativeModules.test.js', // native modules are compiled against Electron and this test would fail with node.js
-	'**/vs/base/parts/storage/test/node/storage.test.js', // same as above, due to direct dependency to sqlite native module
-	'**/vs/workbench/contrib/testing/test/**', // flaky (https://github.com/microsoft/vscode/issues/137853)
-	'**/vs/sessions/test/web.test.js', // web-only E2E test that imports CSS — cannot run in Node
+	'**/do/platform/environment/test/node/nativeModules.test.js', // native modules are compiled against Electron and this test would fail with node.js
+	'**/do/base/parts/storage/test/node/storage.test.js', // same as above, due to direct dependency to sqlite native module
+	'**/do/workbench/contrib/testing/test/**', // flaky (https://github.com/microsoft/vscode/issues/137853)
+	'**/do/sessions/test/web.test.js', // web-only E2E test that imports CSS — cannot run in Node
 ];
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
@@ -111,19 +111,19 @@ if (currentNodeVersion?.major < requiredNodeVersion?.major) {
 
 function main() {
 
-	// VSCODE_GLOBALS: package/product.json
+	// DOCODE_GLOBALS: package/product.json
 	const _require = module.createRequire(import.meta.url);
-	globalThis._VSCODE_PRODUCT_JSON = _require(`${REPO_ROOT}/product.json`);
-	globalThis._VSCODE_PACKAGE_JSON = _require(`${REPO_ROOT}/package.json`);
+	globalThis._DOCODE_PRODUCT_JSON = _require(`${REPO_ROOT}/product.json`);
+	globalThis._DOCODE_PACKAGE_JSON = _require(`${REPO_ROOT}/package.json`);
 
-	// VSCODE_GLOBALS: file root
-	globalThis._VSCODE_FILE_ROOT = baseUrl.href;
+	// DOCODE_GLOBALS: file root
+	globalThis._DOCODE_FILE_ROOT = baseUrl.href;
 
 	if (args.build) {
 		// when running from `out-build`, ensure to load the default
 		// messages file, because all `nls.localize` calls have their
 		// english values removed and replaced by an index.
-		globalThis._VSCODE_NLS_MESSAGES = _require(`${REPO_ROOT}/${out}/nls.messages.json`);
+		globalThis._DOCODE_NLS_MESSAGES = _require(`${REPO_ROOT}/${out}/nls.messages.json`);
 	}
 
 	// Test file operations that are common across platforms. Used for test infra, namely snapshot tests
@@ -279,7 +279,7 @@ function main() {
 		}
 
 		// replace the default unexpected error handler to be useful during tests
-		import(`${baseUrl}/vs/base/common/errors.js`).then(errors => {
+		import(`${baseUrl}/do/base/common/errors.js`).then(errors => {
 			errors.setUnexpectedErrorHandler(function(err) {
 				const stack = (err && err.stack) || (new Error().stack);
 				unexpectedErrors.push((err && err.message ? err.message : err) + '\n' + stack);
@@ -441,7 +441,7 @@ function rerunFailedTests(result) {
  * @returns {IAttemptResult | undefined}
  */
 function runInFreshProcess(plan) {
-	const reportDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vscode-node-rerun-'));
+	const reportDir = fs.mkdtempSync(path.join(os.tmpdir(), 'docode-node-rerun-'));
 	const reportPath = path.join(reportDir, 'result.json');
 	try {
 		const mochaCli = module.createRequire(import.meta.url).resolve('mocha/bin/mocha.js');

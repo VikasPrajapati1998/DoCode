@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TypeScriptServiceConfiguration } from '../configuration/configuration';
 import { setImmediate } from '../utils/async';
 import { Disposable } from '../utils/dispose';
@@ -19,12 +19,12 @@ export class NodeVersionManager extends Disposable {
 
 	public constructor(
 		private configuration: TypeScriptServiceConfiguration,
-		private readonly workspaceState: vscode.Memento
+		private readonly workspaceState: docode.Memento
 	) {
 		super();
 
 		this._currentVersion = this.configuration.globalNodePath || undefined;
-		if (vscode.workspace.isTrusted) {
+		if (docode.workspace.isTrusted) {
 			const workspaceVersion = this.configuration.localNodePath;
 			if (workspaceVersion) {
 				const useWorkspaceNode = this.canUseWorkspaceNode(workspaceVersion);
@@ -39,7 +39,7 @@ export class NodeVersionManager extends Disposable {
 			}
 		}
 		else {
-			this._disposables.push(vscode.workspace.onDidGrantWorkspaceTrust(() => {
+			this._disposables.push(docode.workspace.onDidGrantWorkspaceTrust(() => {
 				const workspaceVersion = this.configuration.localNodePath;
 				if (workspaceVersion) {
 					const useWorkspaceNode = this.canUseWorkspaceNode(workspaceVersion);
@@ -56,7 +56,7 @@ export class NodeVersionManager extends Disposable {
 		}
 	}
 
-	private readonly _onDidPickNewVersion = this._register(new vscode.EventEmitter<void>());
+	private readonly _onDidPickNewVersion = this._register(new docode.EventEmitter<void>());
 	public readonly onDidPickNewVersion = this._onDidPickNewVersion.event;
 
 	public get currentVersion(): string | undefined {
@@ -75,7 +75,7 @@ export class NodeVersionManager extends Disposable {
 	private async computeNewVersion() {
 		let version = this.configuration.globalNodePath || undefined;
 		const workspaceVersion = this.configuration.localNodePath;
-		if (vscode.workspace.isTrusted && workspaceVersion) {
+		if (docode.workspace.isTrusted && workspaceVersion) {
 			const useWorkspaceNode = this.canUseWorkspaceNode(workspaceVersion);
 			if (useWorkspaceNode === undefined) {
 				version = await this.promptUseWorkspaceNode() || version;
@@ -93,11 +93,11 @@ export class NodeVersionManager extends Disposable {
 			throw new Error('Could not prompt to use workspace Node installation because no workspace Node installation is specified');
 		}
 
-		const allow = vscode.l10n.t("Yes");
-		const disallow = vscode.l10n.t("No");
-		const dismiss = vscode.l10n.t("Not now");
+		const allow = docode.l10n.t("Yes");
+		const disallow = docode.l10n.t("No");
+		const dismiss = docode.l10n.t("Not now");
 
-		const result = await vscode.window.showInformationMessage(vscode.l10n.t("This workspace wants to use the Node installation at '{0}' to run TS Server. Would you like to use it?", workspaceVersion),
+		const result = await docode.window.showInformationMessage(docode.l10n.t("This workspace wants to use the Node installation at '{0}' to run TS Server. Would you like to use it?", workspaceVersion),
 			{ notificationId: 'typescript.workspaceNode' },
 			allow,
 			disallow,

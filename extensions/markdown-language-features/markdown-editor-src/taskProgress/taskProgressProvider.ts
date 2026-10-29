@@ -3,9 +3,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ListItemAstNode, type AstNode, type EditorModel } from '@vscode/markdown-editor';
-import type { IframeEmbeddedEditorHostTransport, IframeEmbeddedEditorProvider } from '@vscode/markdown-editor/web-editors';
-import { autorun, derived, type IObservable } from '@vscode/observables';
+import { ListItemAstNode, type AstNode, type EditorModel } from '@docode/markdown-editor';
+import type { IframeEmbeddedEditorHostTransport, IframeEmbeddedEditorProvider } from '@docode/markdown-editor/web-editors';
+import { autorun, derived, type IObservable } from '@docode/observables';
 import type { TaskProgressMessage } from './taskProgressProtocol';
 import type { TaskProgressLabels } from '../../src/preview/webviewInitialState';
 import taskProgressHtml from './taskProgress.html';
@@ -18,11 +18,11 @@ interface TaskProgressCounts {
 export function createTaskProgressProvider(model: EditorModel, labels: TaskProgressLabels): IframeEmbeddedEditorProvider {
 	const counts = derived(reader => countTasks(model.document.read(reader)));
 	return {
-		id: 'vscode.markdown.taskProgress',
+		id: 'docode.markdown.taskProgress',
 		selector: { language: 'widget:task-progress' },
 		resolve: async () => ({
 			html: taskProgressHtml,
-			runtimeKey: 'vscode.markdown.taskProgress',
+			runtimeKey: 'docode.markdown.taskProgress',
 			hostTransport: true,
 			initialHeight: 88,
 		}),

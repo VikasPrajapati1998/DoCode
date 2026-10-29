@@ -5,14 +5,14 @@
 
 import type * as nbformat from '@jupyterlab/nbformat';
 import detectIndent from 'detect-indent';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getPreferredLanguage, jupyterNotebookModelToNotebookData } from './deserializers';
 import * as fnv from '@enonic/fnv-plus';
 import { serializeNotebookToString } from './serializers';
 
-export abstract class NotebookSerializerBase extends vscode.Disposable implements vscode.NotebookSerializer {
+export abstract class NotebookSerializerBase extends docode.Disposable implements docode.NotebookSerializer {
 	protected disposed: boolean = false;
-	constructor(protected readonly context: vscode.ExtensionContext) {
+	constructor(protected readonly context: docode.ExtensionContext) {
 		super(() => { });
 	}
 
@@ -21,7 +21,7 @@ export abstract class NotebookSerializerBase extends vscode.Disposable implement
 		super.dispose();
 	}
 
-	public async deserializeNotebook(content: Uint8Array, _token: vscode.CancellationToken): Promise<vscode.NotebookData> {
+	public async deserializeNotebook(content: Uint8Array, _token: docode.CancellationToken): Promise<docode.NotebookData> {
 		let contents = '';
 		try {
 			contents = new TextDecoder().decode(content);
@@ -33,11 +33,11 @@ export abstract class NotebookSerializerBase extends vscode.Disposable implement
 		if (json.__webview_backup) {
 			const backupId = json.__webview_backup;
 			const uri = this.context.globalStorageUri;
-			const folder = uri.with({ path: this.context.globalStorageUri.path.replace('vscode.ipynb', 'ms-toolsai.jupyter') });
+			const folder = uri.with({ path: this.context.globalStorageUri.path.replace('docode.ipynb', 'ms-toolsai.jupyter') });
 			const fileHash = fnv.fast1a32hex(backupId) as string;
 			const fileName = `${fileHash}.ipynb`;
-			const file = vscode.Uri.joinPath(folder, fileName);
-			const data = await vscode.workspace.fs.readFile(file);
+			const file = docode.Uri.joinPath(folder, fileName);
+			const data = await docode.workspace.fs.readFile(file);
 			json = data ? JSON.parse(data.toString()) : {};
 
 			if (json.contents && typeof json.contents === 'string') {
@@ -76,7 +76,7 @@ export abstract class NotebookSerializerBase extends vscode.Disposable implement
 		return data;
 	}
 
-	public async serializeNotebook(data: vscode.NotebookData, _token: vscode.CancellationToken): Promise<Uint8Array> {
+	public async serializeNotebook(data: docode.NotebookData, _token: docode.CancellationToken): Promise<Uint8Array> {
 		if (this.disposed) {
 			return new Uint8Array(0);
 		}

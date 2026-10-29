@@ -1,5 +1,5 @@
 {
-  "name": "vscode-extensions",
+  "name": "docode-extensions",
   "version": "0.0.1",
   "license": "MIT",
   "description": "Dependencies shared by all extensions",

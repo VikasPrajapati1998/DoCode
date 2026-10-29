@@ -1,6 +1,6 @@
 ---
 name: integrated-browser
-description: Use this when working on the VS Code integrated browser ("browserView") to understand its architecture and mental model. Covers the embedded Chromium browser, its editor tab, navigation, overlay/layout, sessions, and agent browser tools under `src/vs/platform/browserView` and `src/vs/workbench/contrib/browserView`.
+description: Use this when working on the VS Code integrated browser ("browserView") to understand its architecture and mental model. Covers the embedded Chromium browser, its editor tab, navigation, overlay/layout, sessions, and agent browser tools under `src/do/platform/browserView` and `src/do/workbench/contrib/browserView`.
 ---
 
 # Integrated Browser Architecture
@@ -88,7 +88,7 @@ The network belongs to the browser context, not its owner, audience, or policy. 
 
 - **Unit tests** cover important isolated logic such as state transitions, protocol translation, persistence rules, security gates, and failure handling. Use representative cases rather than exhaustive tests of trivial branches or private structure.
 - **Widget tests** cover major renderer interactions, commands, context-key-driven visibility, and central rendering behavior that do not require a native page. Avoid pixel-level or DOM-structure assertions unless that structure is the contract.
-- **Extension API tests** under `extensions/vscode-api-tests/src/singlefolder-tests/browser*.test.ts` are the preferred integration layer for browser APIs, CDP behavior, browser tools, extension-host wiring, and cross-process contracts exposed to extensions.
+- **Extension API tests** under `extensions/docode-api-tests/src/singlefolder-tests/browser*.test.ts` are the preferred integration layer for browser APIs, CDP behavior, browser tools, extension-host wiring, and cross-process contracts exposed to extensions.
 - **Other E2E integration tests** cover important process boundaries or runtime integrations that need real services but not a complete workbench journey.
 - **Smoke tests** cover only major user journeys whose meaningful failure mode requires the actual Electron workbench, renderer/main/shared-process wiring, or native `WebContentsView`. This includes core risks in preload keyboard routing, native focus/visibility/lifecycle, Electron permissions, popup editors, workbench UI over the native view, and live page-to-chat attachments. Keep each test to the happy-path spine, group related assertions into one coherent journey, and leave variants, edge cases, and visual details to lower layers.
 

@@ -149,13 +149,13 @@ export class UITest {
 		const failedResources: string[] = [];
 		const diagnostics: string[] = [];
 		const onResponse = (response: Response) => {
-			if (response.status() >= 400 && response.url().includes('.vscode-resource.')) {
+			if (response.status() >= 400 && response.url().includes('.docode-resource.')) {
 				this.context.log(`Webview resource failed with ${response.status()}: ${response.url()}`);
 				failedResources.push(`${response.status()} ${response.url()}`);
 			}
 		};
 		const onRequestFailed = (request: Request) => {
-			if (/\.vscode-resource\.|vscode-cdn\.net/.test(request.url())) {
+			if (/\.docode-resource\.|docode-cdn\.net/.test(request.url())) {
 				const message = `Webview request failed with ${request.failure()?.errorText}: ${request.url()}`;
 				this.context.log(message);
 				diagnostics.push(message);
@@ -176,7 +176,7 @@ export class UITest {
 
 			this.context.log('Waiting for the Markdown preview to render');
 			const preview = page
-				.frameLocator('iframe.webview.ready[src*="extensionId=vscode.markdown-language-features"]')
+				.frameLocator('iframe.webview.ready[src*="extensionId=docode.markdown-language-features"]')
 				.frameLocator('#active-frame');
 			try {
 				await preview.getByRole('heading', { name: 'Webview Sanity' }).waitFor({ timeout: 60_000 });
@@ -346,7 +346,7 @@ export class UITest {
 	protected verifyExtensionInstalled() {
 		this.context.log('Verifying extension is installed');
 		const extensions = fs.readdirSync(this.extensionsDir);
-		const hasExtension = extensions.some(ext => ext.startsWith('github.vscode-pull-request-github'));
+		const hasExtension = extensions.some(ext => ext.startsWith('github.docode-pull-request-github'));
 		assert.strictEqual(hasExtension, true, 'GitHub Pull Requests extension is not installed');
 	}
 }

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { OpenJsDocLinkCommand, OpenJsDocLinkCommand_Args } from '../../commands/openJsDocLink';
 import type * as Proto from '../../tsServer/protocol/protocol';
 import * as typeConverters from '../../typeConverters';
@@ -12,7 +12,7 @@ export interface IFilePathToResourceConverter {
 	/**
 	 * Convert a typescript filepath to a VS Code resource.
 	 */
-	toResource(filepath: string): vscode.Uri;
+	toResource(filepath: string): docode.Uri;
 }
 
 function getTagBodyText(
@@ -163,7 +163,7 @@ function convertLinkTags(
 						const command = `command:${OpenJsDocLinkCommand.id}?${encodeURIComponent(JSON.stringify([args]))}`;
 
 						const linkText = currentLink.text ? currentLink.text : escapeMarkdownSyntaxTokensForCode(currentLink.name ?? '');
-						out.push(`[${currentLink.linkcode ? '`' + linkText + '`' : linkText}](${command} "${vscode.l10n.t('Open symbol link')}")`);
+						out.push(`[${currentLink.linkcode ? '`' + linkText + '`' : linkText}](${command} "${docode.l10n.t('Open symbol link')}")`);
 					} else {
 						const text = currentLink.text ?? currentLink.name;
 						if (text) {
@@ -224,9 +224,9 @@ export function documentationToMarkdown(
 	documentation: readonly Proto.SymbolDisplayPart[] | string,
 	tags: readonly Proto.JSDocTagInfo[],
 	filePathConverter: IFilePathToResourceConverter,
-	baseUri: vscode.Uri | undefined,
-): vscode.MarkdownString {
-	const out = new vscode.MarkdownString();
+	baseUri: docode.Uri | undefined,
+): docode.MarkdownString {
+	const out = new docode.MarkdownString();
 	appendDocumentationAsMarkdown(out, documentation, tags, filePathConverter);
 	out.baseUri = baseUri;
 	out.isTrusted = { enabledCommands: [OpenJsDocLinkCommand.id] };
@@ -234,11 +234,11 @@ export function documentationToMarkdown(
 }
 
 export function appendDocumentationAsMarkdown(
-	out: vscode.MarkdownString,
+	out: docode.MarkdownString,
 	documentation: readonly Proto.SymbolDisplayPart[] | string | undefined,
 	tags: readonly Proto.JSDocTagInfo[] | undefined,
 	converter: IFilePathToResourceConverter,
-): vscode.MarkdownString {
+): docode.MarkdownString {
 	if (documentation) {
 		out.appendMarkdown(asPlainTextWithLinks(documentation, converter));
 	}

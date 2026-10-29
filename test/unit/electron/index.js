@@ -12,7 +12,7 @@ process.env.MOCHA_COLORS = '1';
 
 const { app, BrowserWindow, WebContentsView, ipcMain, crashReporter, net: electronNet, protocol, session } = require('electron');
 // A renderer's execPath points at the helper executable on macOS.
-process.env.VSCODE_TEST_ELECTRON_PATH = process.execPath;
+process.env.DOCODE_TEST_ELECTRON_PATH = process.execPath;
 const product = require('../../../product.json');
 const { tmpdir } = require('os');
 const { existsSync, mkdirSync, promises } = require('fs');
@@ -30,11 +30,11 @@ const minimist = require('minimist');
 
 protocol.registerSchemesAsPrivileged([
 	{
-		scheme: 'vscode-file',
+		scheme: 'docode-file',
 		privileges: { secure: true, standard: true, supportFetchAPI: true, corsEnabled: true }
 	},
 	{
-		scheme: 'vscode-remote-resource',
+		scheme: 'docode-remote-resource',
 		privileges: { secure: true, supportFetchAPI: true, corsEnabled: true }
 	}
 ]);
@@ -153,14 +153,14 @@ if (crashReporterDirectory) {
 
 	crashReporter.start({
 		companyName: 'Microsoft',
-		productName: process.env.VSCODE_DEV ? `${product.nameShort} Dev` : product.nameShort,
+		productName: process.env.DOCODE_DEV ? `${product.nameShort} Dev` : product.nameShort,
 		uploadToServer: false,
 		compress: true
 	});
 }
 
 if (!args.dev) {
-	app.setPath('userData', path.join(tmpdir(), `vscode-tests-${Date.now()}-${process.pid}`));
+	app.setPath('userData', path.join(tmpdir(), `docode-tests-${Date.now()}-${process.pid}`));
 }
 
 function deserializeSuite(suite) {
@@ -307,8 +307,8 @@ app.on('ready', async () => {
 	session.defaultSession.setSpellCheckerEnabled(false);
 	const outDir = args.build ? 'out-build' : 'out';
 	const [{ createRemoteResourceRequestHandler }, { getRemoteResourceResponseHeaders }] = await Promise.all([
-		import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/vs/platform/protocol/electron-main/remoteResourceProtocol.js`)).href),
-		import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/vs/server/node/remoteResourceResponse.js`)).href),
+		import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/do/platform/protocol/electron-main/remoteResourceProtocol.js`)).href),
+		import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/do/server/node/remoteResourceResponse.js`)).href),
 	]);
 	/** @type {import('http').IncomingHttpHeaders | undefined} */
 	let remoteResourceRequestHeaders;
@@ -329,11 +329,11 @@ app.on('ready', async () => {
 	if (!remoteResourceServerAddress || typeof remoteResourceServerAddress === 'string') {
 		throw new Error('Remote resource test server did not bind to a TCP port');
 	}
-	protocol.handle('vscode-remote-resource', createRemoteResourceRequestHandler({ warn() { } }));
+	protocol.handle('docode-remote-resource', createRemoteResourceRequestHandler({ warn() { } }));
 	// A second view lets tests blur the page without stealing desktop focus.
 	/** @type {Map<number, import('electron').WebContentsView>} */
 	const focusTestViews = new Map();
-	ipcMain.handle('vscode:test-set-web-contents-focus', async (event, focused) => {
+	ipcMain.handle('docode:test-set-web-contents-focus', async (event, focused) => {
 		const window = BrowserWindow.fromWebContents(event.sender);
 		if (!window) {
 			throw new Error('Focus test requires a BrowserWindow');
@@ -354,13 +354,13 @@ app.on('ready', async () => {
 			view.webContents.focus();
 		}
 	});
-	ipcMain.handle('vscode:test-remote-resource', async () => {
+	ipcMain.handle('docode:test-remote-resource', async () => {
 		const remoteResourceTestWindow = new BrowserWindow({ show: false });
 		try {
 			const pagePath = url.pathToFileURL(path.join(__dirname, 'fixtures/remote-resource.html')).pathname;
-			await remoteResourceTestWindow.loadURL(`vscode-file://vscode-app${pagePath}`);
+			await remoteResourceTestWindow.loadURL(`docode-file://docode-app${pagePath}`);
 
-			const remoteResourceUrl = `vscode-remote-resource://127.0.0.1:${remoteResourceServerAddress.port}/vscode-remote-resource`;
+			const remoteResourceUrl = `docode-remote-resource://127.0.0.1:${remoteResourceServerAddress.port}/docode-remote-resource`;
 			await remoteResourceTestWindow.webContents.executeJavaScript(`
 				new Promise((resolve, reject) => {
 					const image = new Image();
@@ -383,10 +383,10 @@ app.on('ready', async () => {
 		}
 	});
 
-	ipcMain.handle('vscode:test-file-resource', async (_event, requestUrl, roots) => {
+	ipcMain.handle('docode:test-file-resource', async (_event, requestUrl, roots) => {
 		const [{ ProtocolMainService }, { URI }] = await Promise.all([
-			import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/vs/platform/protocol/electron-main/protocolMainService.js`)).href),
-			import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/vs/base/common/uri.js`)).href),
+			import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/do/platform/protocol/electron-main/protocolMainService.js`)).href),
+			import(url.pathToFileURL(path.join(__dirname, `../../../${outDir}/do/base/common/uri.js`)).href),
 		]);
 		// Preserve the production root registration and guard; replace only protocol registration and file transport.
 		class TestProtocolMainService extends ProtocolMainService {
@@ -411,9 +411,9 @@ app.on('ready', async () => {
 	});
 
 	// needed when loading resources from the renderer, e.g xterm.js or the encoding lib
-	session.defaultSession.protocol.handle('vscode-file', request => {
-		const fileUrl = new URL(request.url.replace(/^vscode-file:/, 'file:'));
-		if (fileUrl.hostname === 'vscode-app') {
+	session.defaultSession.protocol.handle('docode-file', request => {
+		const fileUrl = new URL(request.url.replace(/^docode-file:/, 'file:'));
+		if (fileUrl.hostname === 'docode-app') {
 			fileUrl.hostname = '';
 		}
 
@@ -434,21 +434,21 @@ app.on('ready', async () => {
 	// We need to provide a basic `ISandboxConfiguration`
 	// for our preload script to function properly because
 	// some of our types depend on it (e.g. product.ts).
-	ipcMain.handle('vscode:test-vscode-window-config', async () => {
+	ipcMain.handle('docode:test-docode-window-config', async () => {
 		return {
 			product: {
 				version: '1.x.y',
 				nameShort: 'Code - OSS Dev',
 				nameLong: 'Code - OSS Dev',
 				applicationName: 'code-oss',
-				dataFolderName: '.vscode-oss',
+				dataFolderName: '.docode-oss',
 				urlProtocol: 'code-oss',
 			}
 		};
 	});
 
 	// No-op since invoke the IPC as part of IIFE in the preload.
-	ipcMain.handle('vscode:fetchShellEnv', event => { });
+	ipcMain.handle('docode:fetchShellEnv', event => { });
 
 	/**
 	 * Validates that a file path is within the project root for security purposes.
@@ -474,7 +474,7 @@ app.on('ready', async () => {
 	}
 
 	// Handle file reading for tests
-	ipcMain.handle('vscode:readFile', async (event, filePath) => {
+	ipcMain.handle('docode:readFile', async (event, filePath) => {
 		validatePathWithinProject(filePath);
 
 		try {
@@ -486,7 +486,7 @@ app.on('ready', async () => {
 	});
 
 	// Handle file stat for tests
-	ipcMain.handle('vscode:statFile', async (event, filePath) => {
+	ipcMain.handle('docode:statFile', async (event, filePath) => {
 		validatePathWithinProject(filePath);
 
 		try {
@@ -519,8 +519,8 @@ app.on('ready', async () => {
 			width: 800,
 			show: false,
 			webPreferences: {
-				preload: path.join(__dirname, 'preload.js'), // ensure similar environment as VSCode as tests may depend on this
-				additionalArguments: [`--vscode-window-config=vscode:test-vscode-window-config`],
+				preload: path.join(__dirname, 'preload.js'), // ensure similar environment as DoCode as tests may depend on this
+				additionalArguments: [`--docode-window-config=docode:test-docode-window-config`],
 				nodeIntegration: true,
 				contextIsolation: false,
 				backgroundThrottling: false,

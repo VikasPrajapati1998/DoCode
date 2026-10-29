@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { disposeAll } from '../../utils/dispose';
 import { joinLines, withRandomFileEditor } from '../testUtils';
 import { updateConfig, VsCodeConfiguration } from './referencesCodeLens.test';
@@ -15,8 +15,8 @@ const Config = {
 	showOnAllClassMethods: 'typescript.implementationsCodeLens.showOnAllClassMethods',
 };
 
-function getCodeLenses(doc: vscode.TextDocument) {
-	return vscode.commands.executeCommand<vscode.CodeLens[]>('vscode.executeCodeLensProvider', doc.uri);
+function getCodeLenses(doc: docode.TextDocument) {
+	return docode.commands.executeCommand<docode.CodeLens[]>('docode.executeCodeLensProvider', doc.uri);
 }
 
 suite('TypeScript Implementations CodeLens', () => {
@@ -26,12 +26,12 @@ suite('TypeScript Implementations CodeLens', () => {
 		[Config.showOnAllClassMethods]: false,
 	});
 
-	const _disposables: vscode.Disposable[] = [];
+	const _disposables: docode.Disposable[] = [];
 	let oldConfig: { [key: string]: any } = {};
 
 	setup(async () => {
 		// the tests assume that typescript features are registered
-		await vscode.extensions.getExtension('vscode.typescript-language-features')!.activate();
+		await docode.extensions.getExtension('docode.typescript-language-features')!.activate();
 
 		// Save off config and apply defaults
 		oldConfig = await updateConfig(configDefaults);
@@ -43,7 +43,7 @@ suite('TypeScript Implementations CodeLens', () => {
 		// Restore config
 		await updateConfig(oldConfig);
 
-		return vscode.commands.executeCommand('workbench.action.closeAllEditors');
+		return docode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	test('Should show on interfaces and abstract classes', async () => {
@@ -55,7 +55,7 @@ suite('TypeScript Implementations CodeLens', () => {
 				'class Concrete extends AbstractBase {}'
 			),
 			'ts',
-			async (_editor: vscode.TextEditor, doc: vscode.TextDocument) => {
+			async (_editor: docode.TextEditor, doc: docode.TextDocument) => {
 				const lenses = await getCodeLenses(doc);
 				assert.strictEqual(lenses?.length, 2);
 
@@ -80,7 +80,7 @@ suite('TypeScript Implementations CodeLens', () => {
 				'}',
 			),
 			'ts',
-			async (_editor: vscode.TextEditor, doc: vscode.TextDocument) => {
+			async (_editor: docode.TextEditor, doc: docode.TextDocument) => {
 				const lenses = await getCodeLenses(doc);
 				assert.strictEqual(lenses?.length, 4);
 
@@ -103,7 +103,7 @@ suite('TypeScript Implementations CodeLens', () => {
 				'}',
 			),
 			'ts',
-			async (_editor: vscode.TextEditor, doc: vscode.TextDocument) => {
+			async (_editor: docode.TextEditor, doc: docode.TextDocument) => {
 				const lenses = await getCodeLenses(doc);
 				assert.strictEqual(lenses?.length, 1);
 			},
@@ -125,7 +125,7 @@ suite('TypeScript Implementations CodeLens', () => {
 				'}',
 			),
 			'ts',
-			async (_editor: vscode.TextEditor, doc: vscode.TextDocument) => {
+			async (_editor: docode.TextEditor, doc: docode.TextDocument) => {
 				const lenses = await getCodeLenses(doc);
 				assert.strictEqual(lenses?.length, 3);
 
@@ -154,7 +154,7 @@ suite('TypeScript Implementations CodeLens', () => {
 				'}',
 			),
 			'ts',
-			async (_editor: vscode.TextEditor, doc: vscode.TextDocument) => {
+			async (_editor: docode.TextEditor, doc: docode.TextDocument) => {
 				const lenses = await getCodeLenses(doc);
 				assert.strictEqual(lenses?.length, 5);
 

@@ -23,7 +23,7 @@ function isNearMiss(px: number): boolean {
 }
 
 /** The two standard codicon sizes, formatted for the suggestion. */
-const STANDARD_CODICON_SIZES = 'var(--vscode-codiconFontSize) [16] or var(--vscode-codiconFontSize-compact) [12]';
+const STANDARD_CODICON_SIZES = 'var(--docode-codiconFontSize) [16] or var(--docode-codiconFontSize-compact) [12]';
 
 /** Builds a compact, single-line warning for an off-scale codicon font-size. */
 function formatCodiconMessage(px: string, nearMiss: boolean): string {
@@ -83,7 +83,7 @@ function forEachDeclaration(text: string, callback: (line: number, selector: str
  * allowed codicon sizes (16px base, 12px compact). Off-scale values are reported
  * as warnings: the 13-15px near-miss band is always a mistake for 12 or 16, while
  * other off sizes (large hero icons / small chevrons) may be intentional and are
- * worded accordingly. Values expressed via `var(--vscode-codiconFontSize...)` are
+ * worded accordingly. Values expressed via `var(--docode-codiconFontSize...)` are
  * not matched by the px regex and are therefore always accepted.
  */
 export function validateCodiconFontSizes(text: string): IDesignTokenViolation[] {
@@ -121,12 +121,12 @@ export function validateCodiconFontSizes(text: string): IDesignTokenViolation[] 
 
 /** Exact px value -> suggested token var(s). Ambiguous values list alternatives. */
 const FONT_SIZE_RAMP: ReadonlyMap<number, string> = new Map([
-	[26, 'var(--vscode-fontSize-heading1)'],
-	[18, 'var(--vscode-fontSize-heading2)'],
-	[13, 'var(--vscode-fontSize-body1) or var(--vscode-fontSize-heading3)'],
-	[12, 'var(--vscode-fontSize-label1)'],
-	[11, 'var(--vscode-fontSize-body2) or var(--vscode-fontSize-label2)'],
-	[10, 'var(--vscode-fontSize-label3)'],
+	[26, 'var(--docode-fontSize-heading1)'],
+	[18, 'var(--docode-fontSize-heading2)'],
+	[13, 'var(--docode-fontSize-body1) or var(--docode-fontSize-heading3)'],
+	[12, 'var(--docode-fontSize-label1)'],
+	[11, 'var(--docode-fontSize-body2) or var(--docode-fontSize-label2)'],
+	[10, 'var(--docode-fontSize-label3)'],
 ]);
 
 /**
@@ -244,7 +244,7 @@ export function validateCornerRadiusTokens(text: string): IDesignTokenViolation[
 		const note = exact ? '' : ` (off-scale, ${token.px}px)`;
 		violations.push({
 			line,
-			message: `${pxMatch[1]}px -> var(--vscode-cornerRadius-${token.name})${note}`
+			message: `${pxMatch[1]}px -> var(--docode-cornerRadius-${token.name})${note}`
 		});
 	});
 
@@ -332,7 +332,7 @@ export function validateFontWeightTokens(text: string): IDesignTokenViolation[] 
 		const note = exact ? '' : ' (off-ramp, 400/600 only)';
 		violations.push({
 			line,
-			message: `${shown} -> var(--vscode-fontWeight-${token.name})${note}`
+			message: `${shown} -> var(--docode-fontWeight-${token.name})${note}`
 		});
 	});
 
@@ -372,7 +372,7 @@ function snapSpacing(px: number): number {
 
 /** Maps an on-scale spacing px to its CSS variable (0 -> sizeNone). */
 function spacingVar(px: number): string {
-	return px === 0 ? 'var(--vscode-spacing-sizeNone)' : `var(--vscode-spacing-size${px * 10})`;
+	return px === 0 ? 'var(--docode-spacing-sizeNone)' : `var(--docode-spacing-size${px * 10})`;
 }
 
 /**
@@ -438,7 +438,7 @@ export function validateSpacingTokens(text: string): IDesignTokenViolation[] {
 // ---------------------------------------------------------------------------
 //
 // The design system has a single stroke thickness: 1px. Any border/outline
-// width of exactly 1px should use `var(--vscode-strokeThickness)`. The width is
+// width of exactly 1px should use `var(--docode-strokeThickness)`. The width is
 // the first px length in the value (handles the `border: 1px solid <color>`
 // shorthand as well as `border-width: 1px`). Other widths have no token and are
 // left alone. `border-radius` is intentionally not matched. Declarations whose
@@ -448,7 +448,7 @@ const RE_STROKE_PROP = /(?:^|[\s;])(border(?:-(?:top|right|bottom|left))?(?:-wid
 
 /**
  * Finds `border`/`outline` declarations whose width is exactly `1px` and
- * suggests `var(--vscode-strokeThickness)`. Returns one finding per occurrence.
+ * suggests `var(--docode-strokeThickness)`. Returns one finding per occurrence.
  */
 export function validateStrokeTokens(text: string): IDesignTokenViolation[] {
 	const violations: IDesignTokenViolation[] = [];
@@ -469,7 +469,7 @@ export function validateStrokeTokens(text: string): IDesignTokenViolation[] {
 		}
 		violations.push({
 			line,
-			message: `${decl[1].trim()}: ${value.trim()} -> use var(--vscode-strokeThickness) for the 1px width`
+			message: `${decl[1].trim()}: ${value.trim()} -> use var(--docode-strokeThickness) for the 1px width`
 		});
 	});
 
@@ -480,7 +480,7 @@ export function validateStrokeTokens(text: string): IDesignTokenViolation[] {
 // Deprecated token usage
 // ---------------------------------------------------------------------------
 //
-// Some `--vscode-*` size tokens have been superseded by more generic ones and
+// Some `--docode-*` size tokens have been superseded by more generic ones and
 // are marked `@deprecated` in the size registry. Any remaining usage of a
 // deprecated token var is reported with its drop-in replacement, regardless of
 // which property it appears in.
@@ -492,23 +492,23 @@ interface IDeprecatedToken {
 
 /** Deprecated token var -> its replacement. */
 const DEPRECATED_TOKENS: readonly IDeprecatedToken[] = [
-	{ deprecated: '--vscode-agents-fontSize-heading1', replacement: '--vscode-fontSize-heading1' },
-	{ deprecated: '--vscode-agents-fontSize-heading2', replacement: '--vscode-fontSize-heading2' },
-	{ deprecated: '--vscode-agents-fontSize-heading3', replacement: '--vscode-fontSize-heading3' },
-	{ deprecated: '--vscode-agents-fontSize-body1', replacement: '--vscode-fontSize-body1' },
-	{ deprecated: '--vscode-agents-fontSize-body2', replacement: '--vscode-fontSize-body2' },
-	{ deprecated: '--vscode-agents-fontSize-label1', replacement: '--vscode-fontSize-label1' },
-	{ deprecated: '--vscode-agents-fontSize-label2', replacement: '--vscode-fontSize-label2' },
-	{ deprecated: '--vscode-agents-fontSize-label3', replacement: '--vscode-fontSize-label3' },
-	{ deprecated: '--vscode-agents-fontWeight-regular', replacement: '--vscode-fontWeight-regular' },
-	{ deprecated: '--vscode-agents-fontWeight-semiBold', replacement: '--vscode-fontWeight-semiBold' },
-	{ deprecated: '--vscode-bodyFontSize', replacement: '--vscode-fontSize-body1' },
-	{ deprecated: '--vscode-bodyFontSize-small', replacement: '--vscode-fontSize-label1' },
-	{ deprecated: '--vscode-bodyFontSize-xSmall', replacement: '--vscode-fontSize-body2' },
+	{ deprecated: '--docode-agents-fontSize-heading1', replacement: '--docode-fontSize-heading1' },
+	{ deprecated: '--docode-agents-fontSize-heading2', replacement: '--docode-fontSize-heading2' },
+	{ deprecated: '--docode-agents-fontSize-heading3', replacement: '--docode-fontSize-heading3' },
+	{ deprecated: '--docode-agents-fontSize-body1', replacement: '--docode-fontSize-body1' },
+	{ deprecated: '--docode-agents-fontSize-body2', replacement: '--docode-fontSize-body2' },
+	{ deprecated: '--docode-agents-fontSize-label1', replacement: '--docode-fontSize-label1' },
+	{ deprecated: '--docode-agents-fontSize-label2', replacement: '--docode-fontSize-label2' },
+	{ deprecated: '--docode-agents-fontSize-label3', replacement: '--docode-fontSize-label3' },
+	{ deprecated: '--docode-agents-fontWeight-regular', replacement: '--docode-fontWeight-regular' },
+	{ deprecated: '--docode-agents-fontWeight-semiBold', replacement: '--docode-fontWeight-semiBold' },
+	{ deprecated: '--docode-bodyFontSize', replacement: '--docode-fontSize-body1' },
+	{ deprecated: '--docode-bodyFontSize-small', replacement: '--docode-fontSize-label1' },
+	{ deprecated: '--docode-bodyFontSize-xSmall', replacement: '--docode-fontSize-body2' },
 ];
 
 // Longest-first so a suffixed token (e.g. `-small`) matches before the base
-// token that is its prefix (`--vscode-bodyFontSize`).
+// token that is its prefix (`--docode-bodyFontSize`).
 const DEPRECATED_TOKENS_SORTED = [...DEPRECATED_TOKENS].sort((a, b) => b.deprecated.length - a.deprecated.length);
 
 /**

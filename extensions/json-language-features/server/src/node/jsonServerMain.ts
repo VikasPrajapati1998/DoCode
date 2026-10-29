@@ -10,7 +10,7 @@ import { RequestService, RuntimeEnvironment, startServer } from '../jsonServer.j
 import requestLight, { XHRResponse } from 'request-light';
 import { URI as Uri } from 'vscode-uri';
 import { promises as fs } from 'fs';
-import * as l10n from '@vscode/l10n';
+import * as l10n from '@docode/l10n';
 
 const { xhr, configure: configureHttpRequests, getErrorStatusDescription } = requestLight;
 

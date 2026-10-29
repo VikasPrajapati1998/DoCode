@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CompletionItem, CompletionItemKind, ExtensionContext, languages, Position, Range, SnippetString, TextEdit, TextDocument, CompletionContext, CancellationToken, ProviderResult, CompletionList, FormattingOptions, workspace, l10n } from 'vscode';
+import { CompletionItem, CompletionItemKind, ExtensionContext, languages, Position, Range, SnippetString, TextEdit, TextDocument, CompletionContext, CancellationToken, ProviderResult, CompletionList, FormattingOptions, workspace, l10n } from 'docode';
 import { Disposable, LanguageClientOptions, ProvideCompletionItemsSignature, NotificationType, BaseLanguageClient, DocumentRangeFormattingParams, DocumentRangeFormattingRequest } from 'vscode-languageclient';
 import { getCustomDataSource } from './customData';
 import { RequestService, serveFileSystemRequests } from './requests';

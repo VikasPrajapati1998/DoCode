@@ -3,17 +3,17 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 /**
- * Minimal version of {@link vscode.TextDocument}.
+ * Minimal version of {@link docode.TextDocument}.
  */
 export interface ITextDocument {
-	readonly uri: vscode.Uri;
+	readonly uri: docode.Uri;
 	readonly version: number;
 
-	getText(range?: vscode.Range): string;
+	getText(range?: docode.Range): string;
 
-	positionAt(offset: number): vscode.Position;
+	positionAt(offset: number): docode.Position;
 }
 

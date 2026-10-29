@@ -34,7 +34,7 @@ interface BundleResult {
 /**
  * Helper: create a temp directory with source files, bundle with NLS, and return
  * the generated JS + parsed source map. The NLS stub is automatically placed at
- * `vs/nls.ts` so test files can import from `../vs/nls` (when placed in `test/`).
+ * `do/nls.ts` so test files can import from `../do/nls` (when placed in `test/`).
  */
 async function bundleWithNLS(
 	files: Record<string, string>,
@@ -47,8 +47,8 @@ async function bundleWithNLS(
 	await fs.promises.mkdir(srcDir, { recursive: true });
 	await fs.promises.mkdir(outDir, { recursive: true });
 
-	// Write source files (always include the NLS stub at vs/nls.ts)
-	const allFiles = { 'vs/nls.ts': NLS_STUB, ...files };
+	// Write source files (always include the NLS stub at do/nls.ts)
+	const allFiles = { 'do/nls.ts': NLS_STUB, ...files };
 	for (const [name, content] of Object.entries(allFiles)) {
 		const filePath = path.join(srcDir, name);
 		await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
@@ -135,7 +135,7 @@ suite('NLS plugin source maps', () => {
 
 	test('NLS plugin transforms localize calls into placeholders', async () => {
 		const source = [
-			'import { localize } from "../vs/nls";',
+			'import { localize } from "../do/nls";',
 			'export const msg = localize("testKey", "Test Message");',
 		].join('\n');
 
@@ -177,7 +177,7 @@ suite('NLS plugin source maps', () => {
 
 	test('sourcesContent should contain original source, not NLS-transformed', async () => {
 		const source = [
-			'import { localize } from "../vs/nls";',
+			'import { localize } from "../do/nls";',
 			'export const msg = localize("myKey", "Hello World");',
 			'export function greet(): string {',
 			'\treturn msg;',
@@ -209,7 +209,7 @@ suite('NLS plugin source maps', () => {
 
 	test('NLS-affected nested file keeps a non-duplicated source path', async () => {
 		const source = [
-			'import { localize } from "../../vs/nls";',
+			'import { localize } from "../../do/nls";',
 			'export const msg = localize("myKey", "Hello World");',
 		].join('\n');
 
@@ -231,7 +231,7 @@ suite('NLS plugin source maps', () => {
 
 	test('line mapping correct for code after localize calls', async () => {
 		const source = [
-			'import { localize } from "../vs/nls";',                         // 1
+			'import { localize } from "../do/nls";',                         // 1
 			'const label = localize("key1", "A long message");',            // 2
 			'const label2 = localize("key2", "Another message");',          // 3
 			'export function computeResult(x: number): number {',           // 4
@@ -260,7 +260,7 @@ suite('NLS plugin source maps', () => {
 		// for tokens AFTER the localize call on the same line will drift if
 		// source map mappings point to the NLS-transformed source positions.
 		const source = [
-			'import { localize } from "../vs/nls";',
+			'import { localize } from "../do/nls";',
 			'const x = localize("k", "m"); const z = "FINDME"; export { x, z };',
 		].join('\n');
 
@@ -296,7 +296,7 @@ suite('NLS plugin source maps', () => {
 
 	test('class with localize - method positions map correctly', async () => {
 		const source = [
-			'import { localize } from "../vs/nls";',                                       // 1
+			'import { localize } from "../do/nls";',                                       // 1
 			'',                                                                             // 2
 			'export class MyWidget {',                                                      // 3
 			'\tprivate readonly label = localize("widgetLabel", "My Cool Widget");',        // 4
@@ -331,7 +331,7 @@ suite('NLS plugin source maps', () => {
 
 	test('many localize calls - line mappings remain correct', async () => {
 		const source = [
-			'import { localize } from "../vs/nls";',                        // 1
+			'import { localize } from "../do/nls";',                        // 1
 			'',                                                              // 2
 			'const a = localize("a", "Alpha");',                            // 3
 			'const b = localize("b", "Bravo with a longer message");',      // 4
@@ -362,7 +362,7 @@ suite('NLS plugin source maps', () => {
 
 	test('post-processed NLS - source map still has original content', async () => {
 		const source = [
-			'import { localize } from "../vs/nls";',
+			'import { localize } from "../do/nls";',
 			'export const msg = localize("greeting", "Hello World");',
 		].join('\n');
 
@@ -396,7 +396,7 @@ suite('NLS plugin source maps', () => {
 		// replacements (e.g. "0"). Without source map adjustment the columns for
 		// tokens AFTER the replacement drift by the cumulative length delta.
 		const source = [
-			'import { localize } from "../vs/nls";',                                   // 1
+			'import { localize } from "../do/nls";',                                   // 1
 			'export const a = localize("k1", "Alpha"); export const MARKER = "FINDME";',   // 2
 		].join('\n');
 
@@ -432,7 +432,7 @@ suite('NLS plugin source maps', () => {
 		// Multiple NLS replacements compound their column shifts. A function
 		// defined after several localize() calls must still map correctly.
 		const source = [
-			'import { localize } from "../vs/nls";',                               // 1
+			'import { localize } from "../do/nls";',                               // 1
 			'',                                                                     // 2
 			'export const a = localize("k1", "Alpha message");',                   // 3
 			'export const b = localize("k2", "Bravo message that is quite long");', // 4

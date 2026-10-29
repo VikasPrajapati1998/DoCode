@@ -97,9 +97,9 @@ All other arguments are passed through to the sanity test runner.
 
 `test-copilot-shim` is intentionally separate from the normal sanity runner. It does not use the single-quality `TestContext`, capability-based skipping, fresh-install helpers, or Mocha retry behavior from `src/index.ts`. It requires an explicit fixture manifest, one explicit package format, and an explicit Mocha selector; it always runs with `retries: 0` and bails after a stateful failure.
 
-The suite must run as root **only inside a provisioned disposable Linux container or VM**. Root and an environment flag are not sufficient evidence of isolation. The runner refuses non-Linux hosts, unavailable `dpkg`/`rpm`, a missing marker, a marker from another mount namespace, bind/subdirectory mounts for `/usr` or `/etc`, non-provisioned marker directories, existing `code`/`code-insiders`/`code-oss` packages, `/etc/vscode/policy.json`, or existing `/usr/bin/copilot`, `/usr/local/bin/copilot`, VS Code payload directories, and launcher entries. It never falls back to a skipped scenario.
+The suite must run as root **only inside a provisioned disposable Linux container or VM**. Root and an environment flag are not sufficient evidence of isolation. The runner refuses non-Linux hosts, unavailable `dpkg`/`rpm`, a missing marker, a marker from another mount namespace, bind/subdirectory mounts for `/usr` or `/etc`, non-provisioned marker directories, existing `code`/`code-insiders`/`code-oss` packages, `/etc/docode/policy.json`, or existing `/usr/bin/copilot`, `/usr/local/bin/copilot`, VS Code payload directories, and launcher entries. It never falls back to a skipped scenario.
 
-The marker is created only by `scripts/provision-copilot-shim-runner.sh`. It requires a unique `VSCODE_COPILOT_SHIM_RUNNER_ID`, creates root-owned probes under `/usr/share/vscode-copilot-shim-package-lifecycle/<id>` and `/etc/vscode-copilot-shim-package-lifecycle/<id>`, and writes a mount-namespace-bound marker at `/run/vscode-copilot-shim-package-lifecycle/<id>/marker.json`. The harness accepts only that marker layout and uses the marker's test-owned work/evidence roots. Successful scenarios remove only fixture packages and paths introduced by the scenario. Failed scenarios retain package state and write their command transcript to the marker's evidence root.
+The marker is created only by `scripts/provision-copilot-shim-runner.sh`. It requires a unique `DOCODE_COPILOT_SHIM_RUNNER_ID`, creates root-owned probes under `/usr/share/docode-copilot-shim-package-lifecycle/<id>` and `/etc/docode-copilot-shim-package-lifecycle/<id>`, and writes a mount-namespace-bound marker at `/run/docode-copilot-shim-package-lifecycle/<id>/marker.json`. The harness accepts only that marker layout and uses the marker's test-owned work/evidence roots. Successful scenarios remove only fixture packages and paths introduced by the scenario. Failed scenarios retain package state and write their command transcript to the marker's evidence root.
 
 For a prepared workspace, the safe source-only helper check is:
 
@@ -107,7 +107,7 @@ For a prepared workspace, the safe source-only helper check is:
 npm run test-copilot-shim-rendering
 ```
 
-It verifies the checked-in `resources/linux/copilot-link.sh` source has no unresolved rendering markers or RPM macros, has literal Stable/Insiders targets, and defines `vscode_copilot_link`. It does not invoke a package manager or mutate package state.
+It verifies the checked-in `resources/linux/copilot-link.sh` source has no unresolved rendering markers or RPM macros, has literal Stable/Insiders targets, and defines `docode_copilot_link`. It does not invoke a package manager or mutate package state.
 
 On Linux, this check runs the same helper with `sh` and `bash` against stub shims and a temporary link path. It covers the `CopilotCliCommand` policy that each shim reports, the DEB `add-copilot-command` debconf answer, and hand-over on removal. It doesn't need root and doesn't touch `/usr/bin/copilot`:
 
@@ -121,18 +121,18 @@ The generated manifest is self-contained: package paths are relative to the mani
 
 Use [`fixtures/copilot-shim-fixture-plan.example.json`](fixtures/copilot-shim-fixture-plan.example.json) as a plan template. A complete plan supplies, for **both DEB and RPM**, branded `code` and `code-insiders` initial, strictly newer upgrade, and older no-shim inputs; `code-oss` initial/upgrade negative inputs; and no manually assembled VS Code package. The generator creates its own tiny foreign-command package only for the test case that proves package-manager ownership preservation. It does not duplicate the VS Code link helper or relabel an OSS package.
 
-Each source root in the plan must be a disposable, already branded source/build copy rather than this checkout. Put the prepared payload that production Gulp expects beside it as `../VSCode-linux-<arch>`, then create this marker in the disposable source root before running the generator:
+Each source root in the plan must be a disposable, already branded source/build copy rather than this checkout. Put the prepared payload that production Gulp expects beside it as `../DoCode-linux-<arch>`, then create this marker in the disposable source root before running the generator:
 
 ```json
 {
 	"schemaVersion": 1,
-	"purpose": "vscode-copilot-shim-fixture-source",
+	"purpose": "docode-copilot-shim-fixture-source",
 	"disposable": true,
 	"sourceRevision": "<exact-source-commit>"
 }
 ```
 
-Keep every entry in its own parent directory so its prepared payload cannot be confused with another revision or identity. For example, the `code-initial` plan entry uses `/fixtures/code-initial/source` and its prepared payload is `/fixtures/code-initial/VSCode-linux-x64`; `code-upgrade` uses a different `/fixtures/code-upgrade/` parent. The source root's real `product.json` must already name `code`, `code-insiders`, or `code-oss`; the tool only reads that branding and fails on a mismatch. It does not modify the live checkout's branding. `sourceKind: "prepared-payload"` means the prepared payload was supplied before package construction; `sourceKind: "source-build"` records that the disposable copy built it. In both cases the generator invokes the actual production `vscode-linux-<arch>-prepare-deb/build-deb` and `prepare-rpm/build-rpm` Gulp tasks, so it consumes the real templates, package file lists, `resources/linux/copilot-link.sh`, and build rendering callbacks. It copies generated DEB controls and RPM specs into `provenance/` beside the manifest for review.
+Keep every entry in its own parent directory so its prepared payload cannot be confused with another revision or identity. For example, the `code-initial` plan entry uses `/fixtures/code-initial/source` and its prepared payload is `/fixtures/code-initial/DoCode-linux-x64`; `code-upgrade` uses a different `/fixtures/code-upgrade/` parent. The source root's real `product.json` must already name `code`, `code-insiders`, or `code-oss`; the tool only reads that branding and fails on a mismatch. It does not modify the live checkout's branding. `sourceKind: "prepared-payload"` means the prepared payload was supplied before package construction; `sourceKind: "source-build"` records that the disposable copy built it. In both cases the generator invokes the actual production `docode-linux-<arch>-prepare-deb/build-deb` and `prepare-rpm/build-rpm` Gulp tasks, so it consumes the real templates, package file lists, `resources/linux/copilot-link.sh`, and build rendering callbacks. It copies generated DEB controls and RPM specs into `provenance/` beside the manifest for review.
 
 From `test/sanity`, after compiling this package and preparing the disposable inputs:
 
@@ -179,7 +179,7 @@ bash scripts/run-copilot-shim-container.sh \
 
 The wrapper invokes `scripts/provision-copilot-shim-runner.sh` before the package suite and retains diagnostics under `artifacts/copilot-shim-evidence/<runner-id>/` if a test fails. For a VM or another runner launcher, set the marker variables described above, run the provisioning script inside that disposable root filesystem, and then run the corresponding package-local command. Never run the suite directly against a developer or CI host image that contains user packages, policy, `/usr`, or `/etc` state.
 
-The suite inspects actual DEB control scripts and actual RPM `rpm -qp --scripts` output after macro expansion, compares the embedded helper byte-for-byte with the provenance source, checks unresolved markers, literal targets, and lifecycle call sites, and verifies `/usr/bin/copilot` is absent from package payload/file lists. During transactions it checks nested payload ownership with `dpkg-query`/`rpm -qf`, verifies the shared path has no package owner except in the deliberate foreign-owner fixture, records real helper mutation order through narrowly scoped wrappers for `/usr/bin/copilot` and `copilot.vscode-copilot.*` staging paths, and blocks `curl`/`wget` to prove package scripts did not install or download the real Copilot CLI. It also seeds an independent CLI and user-data sentinel in the test-owned home and verifies both remain unchanged.
+The suite inspects actual DEB control scripts and actual RPM `rpm -qp --scripts` output after macro expansion, compares the embedded helper byte-for-byte with the provenance source, checks unresolved markers, literal targets, and lifecycle call sites, and verifies `/usr/bin/copilot` is absent from package payload/file lists. During transactions it checks nested payload ownership with `dpkg-query`/`rpm -qf`, verifies the shared path has no package owner except in the deliberate foreign-owner fixture, records real helper mutation order through narrowly scoped wrappers for `/usr/bin/copilot` and `copilot.docode-copilot.*` staging paths, and blocks `curl`/`wget` to prove package scripts did not install or download the real Copilot CLI. It also seeds an independent CLI and user-data sentinel in the test-owned home and verifies both remain unchanged.
 
 | Acceptance coverage | Focused assertions |
 | --- | --- |
@@ -194,7 +194,7 @@ The focused suite is an implementation gate for source-built fixtures, not an of
 
 ## Containers
 
-Docker container definitions and their supported architecture matrix are maintained in [vscode-linux-build-agent](https://github.com/microsoft/vscode-linux-build-agent/tree/main/sanity-tests). The `containers/entrypoint.sh` script runs inside those prebuilt images from `vscodehub.azurecr.io/vscode-linux-build-agent/sanity-tests`:
+Docker container definitions and their supported architecture matrix are maintained in [docode-linux-build-agent](https://github.com/microsoft/vscode-linux-build-agent/tree/main/sanity-tests). The `containers/entrypoint.sh` script runs inside those prebuilt images from `docodehub.azurecr.io/docode-linux-build-agent/sanity-tests`:
 
 |Container|Base Image|Description|
 |-----------|------------|-------------|
@@ -277,8 +277,6 @@ Debian 13 ARM32 is excluded because its time64 libraries do not satisfy the ARMH
 
 ### Pipeline Files
 
-- [product-sanity-tests.yml](../../build/azure-pipelines/product-sanity-tests.yml) - Main pipeline definition
-- [sanity-tests.yml](../../build/azure-pipelines/common/sanity-tests.yml) - Reusable job template
 
 ### macOS Diagnostics
 

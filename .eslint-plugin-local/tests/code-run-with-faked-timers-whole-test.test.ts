@@ -12,7 +12,7 @@ import rule from '../code-run-with-faked-timers-whole-test.ts';
 RuleTester.describe = suite;
 RuleTester.it = test;
 
-const filename = resolve(import.meta.dirname, '../../src/vs/workbench/test/browser/example.test.ts');
+const filename = resolve(import.meta.dirname, '../../src/do/workbench/test/browser/example.test.ts');
 const imports = `import { runWithFakedTimers } from '../../../base/test/common/timeTravelScheduler.js';\n`;
 const code = (body: string) => imports + body;
 const errors = (...messageIds: string[]) => messageIds.map(messageId => ({ messageId }));
@@ -72,6 +72,6 @@ new RuleTester({ languageOptions: { parser: tseslint.parser } }).run('code-run-w
 		{ filename, code: code(`await runWithFakedTimers({}, async () => { });`), errors: errors('partial') },
 		// aliased import and relative import of the module itself
 		{ filename, code: `import { runWithFakedTimers as rwft } from '../../../base/test/common/timeTravelScheduler.js';\ntest('x', async () => { setup(); await rwft({}, async () => { }); });`, errors: errors('partial') },
-		{ filename: resolve(import.meta.dirname, '../../src/vs/base/test/common/virtualScheduling/example.test.ts'), code: `import { runWithFakedTimers } from './index.js';\ntest('x', async () => { setup(); await runWithFakedTimers({}, async () => { }); });`, errors: errors('partial') },
+		{ filename: resolve(import.meta.dirname, '../../src/do/base/test/common/virtualScheduling/example.test.ts'), code: `import { runWithFakedTimers } from './index.js';\ntest('x', async () => { setup(); await runWithFakedTimers({}, async () => { }); });`, errors: errors('partial') },
 	],
 });

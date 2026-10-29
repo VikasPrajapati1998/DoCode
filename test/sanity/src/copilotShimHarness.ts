@@ -29,9 +29,9 @@ import {
 	assertEmbeddedCopilotLinkHelper,
 } from './copilotShimRendering.js';
 
-const runnerMarkerEnvironmentVariable = 'VSCODE_COPILOT_SHIM_RUNNER_MARKER';
-const runnerMarkerDirectory = '/run/vscode-copilot-shim-package-lifecycle';
-const runnerMarkerPurpose = 'vscode-copilot-shim-package-lifecycle';
+const runnerMarkerEnvironmentVariable = 'DOCODE_COPILOT_SHIM_RUNNER_MARKER';
+const runnerMarkerDirectory = '/run/docode-copilot-shim-package-lifecycle';
+const runnerMarkerPurpose = 'docode-copilot-shim-package-lifecycle';
 const sharedCommandPath = '/usr/bin/copilot';
 const knownPackageNames = ['code', 'code-insiders', 'code-oss'];
 
@@ -323,7 +323,7 @@ export class CopilotShimPackageHarness {
 	 */
 	public assertWarning(result: ICommandResult, description: string): void {
 		const output = `${result.stdout}\n${result.stderr}`;
-		assert.match(output, /warning:\s*vscode_copilot_link:/iu, `${description} did not emit a vscode_copilot_link warning.\n${this.formatCommandResult(result)}`);
+		assert.match(output, /warning:\s*docode_copilot_link:/iu, `${description} did not emit a docode_copilot_link warning.\n${this.formatCommandResult(result)}`);
 	}
 
 	/**
@@ -471,8 +471,8 @@ export class CopilotShimPackageHarness {
 		const helperPath = path.join(scenario.root, 'copilot-link-helper.sh');
 		fs.writeFileSync(helperPath, this.helperSource, { mode: 0o700 });
 		const script = `. ${shellQuote(helperPath)}
-vscode_copilot_link install ${shellQuote(applicationName)}
-vscode_copilot_link remove ${shellQuote(applicationName)}
+docode_copilot_link install ${shellQuote(applicationName)}
+docode_copilot_link remove ${shellQuote(applicationName)}
 `;
 		const result = this.run(this.findRequiredExecutable('sh'), ['-c', script]);
 		this.assertCommandSucceeded(result, `unrecognized application helper no-op for ${applicationName}`);
@@ -563,9 +563,9 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 		if (this.currentMountNamespace() !== this.marker.mountNamespace) {
 			throw new Error('The Copilot shim runner marker belongs to a different mount namespace. Refusing to mutate package state.');
 		}
-		this.assertProvisionedDirectory(this.marker.workRoot, '/var/lib/vscode-copilot-shim-package-lifecycle', 'workRoot');
-		this.assertProvisionedDirectory(this.marker.usrProbe, '/usr/share/vscode-copilot-shim-package-lifecycle', 'usrProbe');
-		this.assertProvisionedDirectory(this.marker.etcProbe, '/etc/vscode-copilot-shim-package-lifecycle', 'etcProbe');
+		this.assertProvisionedDirectory(this.marker.workRoot, '/var/lib/docode-copilot-shim-package-lifecycle', 'workRoot');
+		this.assertProvisionedDirectory(this.marker.usrProbe, '/usr/share/docode-copilot-shim-package-lifecycle', 'usrProbe');
+		this.assertProvisionedDirectory(this.marker.etcProbe, '/etc/docode-copilot-shim-package-lifecycle', 'etcProbe');
 		if (!fs.statSync(this.marker.evidenceRoot).isDirectory()) {
 			throw new Error(`Runner evidenceRoot is not a directory: ${this.marker.evidenceRoot}.`);
 		}
@@ -589,7 +589,7 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 		const normalizedMarkerPath = path.resolve(markerPath);
 		const relativeMarkerPath = path.relative(runnerMarkerDirectory, normalizedMarkerPath);
 		if (relativeMarkerPath.startsWith(`..${path.sep}`) || path.isAbsolute(relativeMarkerPath) || !relativeMarkerPath.endsWith(`${path.sep}marker.json`)) {
-			throw new Error(`${runnerMarkerEnvironmentVariable} must point to /run/vscode-copilot-shim-package-lifecycle/<runner-id>/marker.json.`);
+			throw new Error(`${runnerMarkerEnvironmentVariable} must point to /run/docode-copilot-shim-package-lifecycle/<runner-id>/marker.json.`);
 		}
 
 		const markerStat = fs.lstatSync(normalizedMarkerPath);
@@ -622,9 +622,9 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 		if (normalizedMarkerPath !== expectedMarkerPath) {
 			throw new Error(`Runner marker path does not match its runnerId. Expected ${expectedMarkerPath}, got ${normalizedMarkerPath}.`);
 		}
-		if (marker.workRoot !== path.join('/var/lib/vscode-copilot-shim-package-lifecycle', marker.runnerId, 'work')
-			|| marker.usrProbe !== path.join('/usr/share/vscode-copilot-shim-package-lifecycle', marker.runnerId)
-			|| marker.etcProbe !== path.join('/etc/vscode-copilot-shim-package-lifecycle', marker.runnerId)) {
+		if (marker.workRoot !== path.join('/var/lib/docode-copilot-shim-package-lifecycle', marker.runnerId, 'work')
+			|| marker.usrProbe !== path.join('/usr/share/docode-copilot-shim-package-lifecycle', marker.runnerId)
+			|| marker.etcProbe !== path.join('/etc/docode-copilot-shim-package-lifecycle', marker.runnerId)) {
 			throw new Error('Runner marker has noncanonical provisioned paths. Run scripts/provision-copilot-shim-runner.sh inside a fresh disposable runner.');
 		}
 		return marker;
@@ -696,7 +696,7 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 		]);
 		for (const entry of [
 			...commandEntries,
-			'/etc/vscode/policy.json',
+			'/etc/docode/policy.json',
 			'/usr/share/code',
 			'/usr/share/code-insiders',
 			'/usr/share/code-oss',
@@ -829,7 +829,7 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 		}
 
 		if (fixture.role === 'legacy-no-shim') {
-			assert.ok(!combined.includes('vscode_copilot_link'), `${scriptName} must not add Copilot link lifecycle handling.`);
+			assert.ok(!combined.includes('docode_copilot_link'), `${scriptName} must not add Copilot link lifecycle handling.`);
 		}
 	}
 
@@ -840,7 +840,7 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 			return;
 		}
 
-		assert.match(removeScript, /if \[ "\$1" = 0 \]; then[\s\S]*vscode_copilot_link remove/u, `${scriptName} must remove or fall back only for final RPM erase.`);
+		assert.match(removeScript, /if \[ "\$1" = 0 \]; then[\s\S]*docode_copilot_link remove/u, `${scriptName} must remove or fall back only for final RPM erase.`);
 		assert.ok(!/\bposttrans scriptlet\b/iu.test(removeScript), `${scriptName} must not add a posttrans reselection hook.`);
 	}
 
@@ -967,7 +967,7 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 	private createDownloadWrappers(): void {
 		for (const command of ['curl', 'wget']) {
 			const wrapperPath = path.join(this.requireScenario().wrapperDirectory, command);
-			fs.writeFileSync(wrapperPath, `#!/bin/sh\nprintf '%s\\n' "${command}:$*" >> "$VSCODE_COPILOT_SHIM_DOWNLOAD_LOG"\nexit 97\n`, { mode: 0o755 });
+			fs.writeFileSync(wrapperPath, `#!/bin/sh\nprintf '%s\\n' "${command}:$*" >> "$DOCODE_COPILOT_SHIM_DOWNLOAD_LOG"\nexit 97\n`, { mode: 0o755 });
 		}
 	}
 
@@ -979,7 +979,7 @@ vscode_copilot_link remove ${shellQuote(applicationName)}
 		const contents = `#!/bin/sh
 is_copilot_lifecycle_path() {
 	case "$1" in
-		${sharedCommandPath}|${sharedCommandPath}.vscode-copilot.*)
+		${sharedCommandPath}|${sharedCommandPath}.docode-copilot.*)
 			return 0
 			;;
 	esac
@@ -994,8 +994,8 @@ for argument in "$@"; do
 	fi
 done
 
-if [ "$matches" -eq 1 ] && [ "$VSCODE_COPILOT_SHIM_FAIL_MUTATION" = ${escapedCommand} ]; then
-	printf '%s\\n' "${command}: injected failure: $*" >> "$VSCODE_COPILOT_SHIM_HOOK_LOG"
+if [ "$matches" -eq 1 ] && [ "$DOCODE_COPILOT_SHIM_FAIL_MUTATION" = ${escapedCommand} ]; then
+	printf '%s\\n' "${command}: injected failure: $*" >> "$DOCODE_COPILOT_SHIM_HOOK_LOG"
 	exit 73
 fi
 
@@ -1004,9 +1004,9 @@ status=$?
 if [ "$matches" -eq 1 ] && [ "$status" -eq 0 ]; then
 	target=$(readlink -n -- ${sharedCommandPath} 2>/dev/null || :)
 	if [ -n "$target" ]; then
-		printf '%s\\t%s\\n' "${command}" "$target" >> "$VSCODE_COPILOT_SHIM_HOOK_LOG"
+		printf '%s\\t%s\\n' "${command}" "$target" >> "$DOCODE_COPILOT_SHIM_HOOK_LOG"
 	else
-		printf '%s\\t<removed>\\n' "${command}" >> "$VSCODE_COPILOT_SHIM_HOOK_LOG"
+		printf '%s\\t<removed>\\n' "${command}" >> "$DOCODE_COPILOT_SHIM_HOOK_LOG"
 	fi
 fi
 exit "$status"
@@ -1066,10 +1066,10 @@ exit "$status"
 		};
 		if (scenario) {
 			environment.PATH = `${scenario.wrapperDirectory}:${process.env.PATH ?? '/usr/sbin:/usr/bin:/sbin:/bin'}`;
-			environment.VSCODE_COPILOT_SHIM_DOWNLOAD_LOG = scenario.downloadLogPath;
-			environment.VSCODE_COPILOT_SHIM_HOOK_LOG = scenario.hookLogPath;
+			environment.DOCODE_COPILOT_SHIM_DOWNLOAD_LOG = scenario.downloadLogPath;
+			environment.DOCODE_COPILOT_SHIM_HOOK_LOG = scenario.hookLogPath;
 			environment[copilotShimInstallHookLogEnvironmentVariable] = scenario.installHookLogPath;
-			environment.VSCODE_COPILOT_SHIM_FAIL_MUTATION = scenario.mutationFailure ?? '';
+			environment.DOCODE_COPILOT_SHIM_FAIL_MUTATION = scenario.mutationFailure ?? '';
 		}
 
 		const result = spawnSync(command, args, {

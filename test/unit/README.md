@@ -21,7 +21,7 @@ Unit tests from layers `common` and `browser` are run inside `chromium`, `webkit
 
 - these tests are part of the continuous build, that means you might have test failures that only happen with webkit on _windows_ or _chromium_ on linux
 - you can run these tests locally via `npm run test-browser -- --browser chromium --browser webkit`
-- to debug, open `<vscode>/test/unit/browser/renderer.html` inside a browser and use the `?m=<amd_module>`-query to specify what AMD module to load, e.g `file:///Users/jrieken/Code/vscode/test/unit/browser/renderer.html?m=vs/base/test/common/strings.test` runs all tests from `strings.test.ts`
+- to debug, open `<docode>/test/unit/browser/renderer.html` inside a browser and use the `?m=<amd_module>`-query to specify what AMD module to load, e.g `file:///Users/jrieken/Code/docode/test/unit/browser/renderer.html?m=do/base/test/common/strings.test` runs all tests from `strings.test.ts`
 - to run only a subset of tests use the `--run` or `--glob` options
 - test module import failures abort the run with a nonzero exit code, even when `--grep` would exclude the module's tests
 - if no test progress is reported for 5 minutes (e.g. the page is frozen), the run aborts and prints the in-flight test, whether the page still responds, and the browser processes' CPU usage; on macOS it also writes native stack samples to `.build/logs/browser-unit-stall`. Use `--stall-timeout <seconds>` to change the limit or `--stall-timeout 0` to disable it (it is always disabled with `--debug`)
@@ -31,13 +31,13 @@ Unit tests from layers `common` and `browser` are run inside `chromium`, `webkit
 
 ## Run (with node)
 
-    npm run test-node -- --run src/vs/editor/test/browser/controller/cursor.test.ts
+    npm run test-node -- --run src/do/editor/test/browser/controller/cursor.test.ts
 
 The default test timeout is 5 seconds locally and 30 seconds in CI, matching the Electron runner. CI is detected through `BUILD_ARTIFACTSTAGINGDIRECTORY` or `GITHUB_WORKSPACE`.
 
 Use `--timeout <ms>` (or `-t <ms>`) to override the default, or `--timeout 0` to disable timeouts. Explicit suite and test timeouts still take precedence.
 
-    npm run test-node -- --timeout 10000 --run src/vs/base/test/common/async.test.ts
+    npm run test-node -- --timeout 10000 --run src/do/base/test/common/async.test.ts
 
 Use `--grep <pattern>` to run only the tests whose full title matches `<pattern>`. The runner's own loader and unexpected-error checks still run regardless of the filter.
 
@@ -47,10 +47,10 @@ A rerun must exit normally with an exit code matching its reported results. A st
 
 ## Run only the tests a change can affect
 
-All three runners accept `--runList=<file>`: a file listing test files (such as `src/vs/base/test/common/strings.test.ts`), one per line. A runner given a list runs the tests it would run by default, but only from the listed files, so the same list works for every runner. `scripts/test-integration.sh` and `scripts/test-agent-host-e2e.sh` accept it too, for the node.js integration tests and the Agent Host E2E suites. In pull requests, the macOS and Windows unit test jobs run the files that [ripple](../../build/ripple/README.md) selects for the change, and their Electron jobs the selected integration tests; Linux runs every unit and integration test. To do the same locally for the commits of your branch and your uncommitted changes (`git stash create` saves the working tree as a commit without changing anything; `git add` new files first):
+All three runners accept `--runList=<file>`: a file listing test files (such as `src/do/base/test/common/strings.test.ts`), one per line. A runner given a list runs the tests it would run by default, but only from the listed files, so the same list works for every runner. `scripts/test-integration.sh` and `scripts/test-agent-host-e2e.sh` accept it too, for the node.js integration tests and the Agent Host E2E suites. In pull requests, the macOS and Windows unit test jobs run the files that [ripple](../../build/ripple/README.md) selects for the change, and their Electron jobs the selected integration tests; Linux runs every unit and integration test. To do the same locally for the commits of your branch and your uncommitted changes (`git stash create` saves the working tree as a commit without changing anything; `git add` new files first):
 
     head=$(git stash create)
-    build/ripple/target/release/ripple affected --config build/ripple/vscode.jsonc --base "$(git merge-base origin/main HEAD)" --head "${head:-HEAD}" > .build/affected-tests.txt
+    build/ripple/target/release/ripple affected --config build/ripple/docode.jsonc --base "$(git merge-base origin/main HEAD)" --head "${head:-HEAD}" > .build/affected-tests.txt
     ./scripts/test.sh --runList=.build/affected-tests.txt
 
 ## Coverage

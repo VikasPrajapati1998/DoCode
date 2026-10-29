@@ -249,7 +249,7 @@
                             <div style="display: inline-block; font-size: 11px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: nowrap;">
                                 register FS provider
                                 <br/>
-                                for vscode-interactive schema
+                                for docode-interactive schema
                             </div>
                         </div>
                     </div>

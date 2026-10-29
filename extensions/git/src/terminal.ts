@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ExtensionContext, l10n, LogOutputChannel, TerminalShellExecutionEndEvent, window, workspace } from 'vscode';
+import { ExtensionContext, l10n, LogOutputChannel, TerminalShellExecutionEndEvent, window, workspace } from 'docode';
 import { dispose, filterEvent, IDisposable } from './util';
 import { Model } from './model';
 

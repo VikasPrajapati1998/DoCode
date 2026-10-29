@@ -11,7 +11,7 @@ import * as path from 'path';
 import { ApplicationOptions, getBuildProductPath } from '../../../../automation';
 
 const POLICY_NAME = 'ExtensionsAutoUpdate';
-const LINUX_POLICY_PATH = '/etc/vscode/policy.json';
+const LINUX_POLICY_PATH = '/etc/docode/policy.json';
 
 export interface NativePolicyFixture {
 	set(): void;

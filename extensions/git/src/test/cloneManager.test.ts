@@ -11,7 +11,7 @@ import * as path from 'path';
 import { CloneManager } from '../cloneManager';
 import type { RepositoryCacheInfo } from '../repositoryCache';
 import * as sinon from 'sinon';
-import { CancellationTokenSource, ProgressLocation, window } from 'vscode';
+import { CancellationTokenSource, ProgressLocation, window } from 'docode';
 import type { ICloneOptions } from '../git';
 
 interface ICloneManagerHarness {
@@ -76,7 +76,7 @@ suite('CloneManager', () => {
 	});
 
 	test('clones again when a cached repository path was deleted', async () => {
-		const workspacePath = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'vscode-git-clone-manager-'));
+		const workspacePath = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'docode-git-clone-manager-'));
 		const repositoryPath = path.join(workspacePath, 'deleted-repository');
 		const calls: { url: string; parentPath: string | undefined }[] = [];
 		try {

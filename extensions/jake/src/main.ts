@@ -6,7 +6,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as cp from 'child_process';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 type AutoDetect = 'on' | 'off';
 
@@ -49,17 +49,17 @@ function isTestTask(name: string): boolean {
 	return false;
 }
 
-let _channel: vscode.OutputChannel;
-function getOutputChannel(): vscode.OutputChannel {
+let _channel: docode.OutputChannel;
+function getOutputChannel(): docode.OutputChannel {
 	if (!_channel) {
-		_channel = vscode.window.createOutputChannel('Jake Auto Detection');
+		_channel = docode.window.createOutputChannel('Jake Auto Detection');
 	}
 	return _channel;
 }
 
 function showError() {
-	vscode.window.showWarningMessage(vscode.l10n.t("Problem finding jake tasks. See the output for more information."),
-		vscode.l10n.t("Go to output")).then(() => {
+	docode.window.showWarningMessage(docode.l10n.t("Problem finding jake tasks. See the output for more information."),
+		docode.l10n.t("Go to output")).then(() => {
 			getOutputChannel().show(true);
 		});
 }
@@ -77,38 +77,38 @@ async function findJakeCommand(rootPath: string): Promise<string> {
 	return jakeCommand;
 }
 
-interface JakeTaskDefinition extends vscode.TaskDefinition {
+interface JakeTaskDefinition extends docode.TaskDefinition {
 	task: string;
 	file?: string;
 }
 
 class FolderDetector {
 
-	private fileWatcher: vscode.FileSystemWatcher | undefined;
-	private promise: Thenable<vscode.Task[]> | undefined;
+	private fileWatcher: docode.FileSystemWatcher | undefined;
+	private promise: Thenable<docode.Task[]> | undefined;
 
 	constructor(
-		private _workspaceFolder: vscode.WorkspaceFolder,
+		private _workspaceFolder: docode.WorkspaceFolder,
 		private _jakeCommand: Promise<string>) {
 	}
 
-	public get workspaceFolder(): vscode.WorkspaceFolder {
+	public get workspaceFolder(): docode.WorkspaceFolder {
 		return this._workspaceFolder;
 	}
 
 	public isEnabled(): boolean {
-		return vscode.workspace.getConfiguration('jake', this._workspaceFolder.uri).get<AutoDetect>('autoDetect') === 'on';
+		return docode.workspace.getConfiguration('jake', this._workspaceFolder.uri).get<AutoDetect>('autoDetect') === 'on';
 	}
 
 	public start(): void {
 		const pattern = path.join(this._workspaceFolder.uri.fsPath, '{node_modules,Jakefile,Jakefile.js}');
-		this.fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+		this.fileWatcher = docode.workspace.createFileSystemWatcher(pattern);
 		this.fileWatcher.onDidChange(() => this.promise = undefined);
 		this.fileWatcher.onDidCreate(() => this.promise = undefined);
 		this.fileWatcher.onDidDelete(() => this.promise = undefined);
 	}
 
-	public async getTasks(): Promise<vscode.Task[]> {
+	public async getTasks(): Promise<docode.Task[]> {
 		if (this.isEnabled()) {
 			if (!this.promise) {
 				this.promise = this.computeTasks();
@@ -119,20 +119,20 @@ class FolderDetector {
 		}
 	}
 
-	public async getTask(_task: vscode.Task): Promise<vscode.Task | undefined> {
+	public async getTask(_task: docode.Task): Promise<docode.Task | undefined> {
 		const jakeTask = _task.definition.task;
 		if (jakeTask) {
 			const kind = _task.definition as JakeTaskDefinition;
-			const options: vscode.ShellExecutionOptions = { cwd: this.workspaceFolder.uri.fsPath };
-			const task = new vscode.Task(kind, this.workspaceFolder, jakeTask, 'jake', new vscode.ShellExecution(await this._jakeCommand, [jakeTask], options));
+			const options: docode.ShellExecutionOptions = { cwd: this.workspaceFolder.uri.fsPath };
+			const task = new docode.Task(kind, this.workspaceFolder, jakeTask, 'jake', new docode.ShellExecution(await this._jakeCommand, [jakeTask], options));
 			return task;
 		}
 		return undefined;
 	}
 
-	private async computeTasks(): Promise<vscode.Task[]> {
+	private async computeTasks(): Promise<docode.Task[]> {
 		const rootPath = this._workspaceFolder.uri.scheme === 'file' ? this._workspaceFolder.uri.fsPath : undefined;
-		const emptyTasks: vscode.Task[] = [];
+		const emptyTasks: docode.Task[] = [];
 		if (!rootPath) {
 			return emptyTasks;
 		}
@@ -151,7 +151,7 @@ class FolderDetector {
 				getOutputChannel().appendLine(stderr);
 				showError();
 			}
-			const result: vscode.Task[] = [];
+			const result: docode.Task[] = [];
 			if (stdout) {
 				const lines = stdout.split(/\r{0,1}\n/);
 				for (const line of lines) {
@@ -166,14 +166,14 @@ class FolderDetector {
 							type: 'jake',
 							task: taskName
 						};
-						const options: vscode.ShellExecutionOptions = { cwd: this.workspaceFolder.uri.fsPath };
-						const task = new vscode.Task(kind, taskName, 'jake', new vscode.ShellExecution(`${await this._jakeCommand} ${taskName}`, options));
+						const options: docode.ShellExecutionOptions = { cwd: this.workspaceFolder.uri.fsPath };
+						const task = new docode.Task(kind, taskName, 'jake', new docode.ShellExecution(`${await this._jakeCommand} ${taskName}`, options));
 						result.push(task);
 						const lowerCaseLine = line.toLowerCase();
 						if (isBuildTask(lowerCaseLine)) {
-							task.group = vscode.TaskGroup.Build;
+							task.group = docode.TaskGroup.Build;
 						} else if (isTestTask(lowerCaseLine)) {
-							task.group = vscode.TaskGroup.Test;
+							task.group = docode.TaskGroup.Test;
 						}
 					}
 				}
@@ -187,7 +187,7 @@ class FolderDetector {
 			if (err.stdout) {
 				channel.appendLine(err.stdout);
 			}
-			channel.appendLine(vscode.l10n.t("Auto detecting Jake for folder {0} failed with error: {1}', this.workspaceFolder.name, err.error ? err.error.toString() : 'unknown"));
+			channel.appendLine(docode.l10n.t("Auto detecting Jake for folder {0} failed with error: {1}', this.workspaceFolder.name, err.error ? err.error.toString() : 'unknown"));
 			showError();
 			return emptyTasks;
 		}
@@ -203,19 +203,19 @@ class FolderDetector {
 
 class TaskDetector {
 
-	private taskProvider: vscode.Disposable | undefined;
+	private taskProvider: docode.Disposable | undefined;
 	private detectors: Map<string, FolderDetector> = new Map();
 
 	constructor() {
 	}
 
 	public start(): void {
-		const folders = vscode.workspace.workspaceFolders;
+		const folders = docode.workspace.workspaceFolders;
 		if (folders) {
 			this.updateWorkspaceFolders(folders, []);
 		}
-		vscode.workspace.onDidChangeWorkspaceFolders((event) => this.updateWorkspaceFolders(event.added, event.removed));
-		vscode.workspace.onDidChangeConfiguration(this.updateConfiguration, this);
+		docode.workspace.onDidChangeWorkspaceFolders((event) => this.updateWorkspaceFolders(event.added, event.removed));
+		docode.workspace.onDidChangeConfiguration(this.updateConfiguration, this);
 	}
 
 	public dispose(): void {
@@ -226,7 +226,7 @@ class TaskDetector {
 		this.detectors.clear();
 	}
 
-	private updateWorkspaceFolders(added: readonly vscode.WorkspaceFolder[], removed: readonly vscode.WorkspaceFolder[]): void {
+	private updateWorkspaceFolders(added: readonly docode.WorkspaceFolder[], removed: readonly docode.WorkspaceFolder[]): void {
 		for (const remove of removed) {
 			const detector = this.detectors.get(remove.uri.toString());
 			if (detector) {
@@ -249,7 +249,7 @@ class TaskDetector {
 			detector.dispose();
 			this.detectors.delete(detector.workspaceFolder.uri.toString());
 		}
-		const folders = vscode.workspace.workspaceFolders;
+		const folders = docode.workspace.workspaceFolders;
 		if (folders) {
 			for (const folder of folders) {
 				if (!this.detectors.has(folder.uri.toString())) {
@@ -267,11 +267,11 @@ class TaskDetector {
 	private updateProvider(): void {
 		if (!this.taskProvider && this.detectors.size > 0) {
 			const thisCapture = this;
-			this.taskProvider = vscode.tasks.registerTaskProvider('jake', {
-				provideTasks(): Promise<vscode.Task[]> {
+			this.taskProvider = docode.tasks.registerTaskProvider('jake', {
+				provideTasks(): Promise<docode.Task[]> {
 					return thisCapture.getTasks();
 				},
-				resolveTask(_task: vscode.Task): Promise<vscode.Task | undefined> {
+				resolveTask(_task: docode.Task): Promise<docode.Task | undefined> {
 					return thisCapture.getTask(_task);
 				}
 			});
@@ -282,22 +282,22 @@ class TaskDetector {
 		}
 	}
 
-	public getTasks(): Promise<vscode.Task[]> {
+	public getTasks(): Promise<docode.Task[]> {
 		return this.computeTasks();
 	}
 
-	private computeTasks(): Promise<vscode.Task[]> {
+	private computeTasks(): Promise<docode.Task[]> {
 		if (this.detectors.size === 0) {
 			return Promise.resolve([]);
 		} else if (this.detectors.size === 1) {
 			return this.detectors.values().next().value!.getTasks();
 		} else {
-			const promises: Promise<vscode.Task[]>[] = [];
+			const promises: Promise<docode.Task[]>[] = [];
 			for (const detector of this.detectors.values()) {
 				promises.push(detector.getTasks().then((value) => value, () => []));
 			}
 			return Promise.all(promises).then((values) => {
-				const result: vscode.Task[] = [];
+				const result: docode.Task[] = [];
 				for (const tasks of values) {
 					if (tasks && tasks.length > 0) {
 						result.push(...tasks);
@@ -308,13 +308,13 @@ class TaskDetector {
 		}
 	}
 
-	public async getTask(task: vscode.Task): Promise<vscode.Task | undefined> {
+	public async getTask(task: docode.Task): Promise<docode.Task | undefined> {
 		if (this.detectors.size === 0) {
 			return undefined;
 		} else if (this.detectors.size === 1) {
 			return this.detectors.values().next().value!.getTask(task);
 		} else {
-			if ((task.scope === vscode.TaskScope.Workspace) || (task.scope === vscode.TaskScope.Global)) {
+			if ((task.scope === docode.TaskScope.Workspace) || (task.scope === docode.TaskScope.Global)) {
 				// Not supported, we don't have enough info to create the task.
 				return undefined;
 			} else if (task.scope) {
@@ -329,7 +329,7 @@ class TaskDetector {
 }
 
 let detector: TaskDetector;
-export function activate(_context: vscode.ExtensionContext): void {
+export function activate(_context: docode.ExtensionContext): void {
 	detector = new TaskDetector();
 	detector.start();
 }

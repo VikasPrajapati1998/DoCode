@@ -65,7 +65,7 @@
 			get execPath() { return process.execPath; },
 
 			cwd() {
-				return process.env.VSCODE_CWD || process.execPath.substr(0, process.execPath.lastIndexOf(process.platform === 'win32' ? '\\' : '/'));
+				return process.env.DOCODE_CWD || process.execPath.substr(0, process.execPath.lastIndexOf(process.platform === 'win32' ? '\\' : '/'));
 			},
 
 			getProcessMemoryInfo() {
@@ -81,12 +81,12 @@
 
 	if (process.contextIsolated) {
 		try {
-			contextBridge.exposeInMainWorld('vscode', globals);
+			contextBridge.exposeInMainWorld('docode', globals);
 		} catch (error) {
 			console.error(error);
 		}
 	} else {
 		// @ts-ignore
-		window.vscode = globals;
+		window.docode = globals;
 	}
 }());

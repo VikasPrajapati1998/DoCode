@@ -73,9 +73,9 @@ if (util.inspect && util.inspect.defaultOptions) {
 	util.inspect.defaultOptions.customInspect = false;
 }
 
-// VSCODE_GLOBALS: package/product.json
-globalThis._VSCODE_PRODUCT_JSON = require('../../../product.json');
-globalThis._VSCODE_PACKAGE_JSON = require('../../../package.json');
+// DOCODE_GLOBALS: package/product.json
+globalThis._DOCODE_PRODUCT_JSON = require('../../../product.json');
+globalThis._DOCODE_PACKAGE_JSON = require('../../../package.json');
 
 // Test file operations that are common across platforms. Used for test infra, namely snapshot tests
 Object.assign(globalThis, {
@@ -106,7 +106,7 @@ function initNls(opts) {
 		// when running from `out-build`, ensure to load the default
 		// messages file, because all `nls.localize` calls have their
 		// english values removed and replaced by an index.
-		globalThis._VSCODE_NLS_MESSAGES = require(`../../../out-build/nls.messages.json`);
+		globalThis._DOCODE_NLS_MESSAGES = require(`../../../out-build/nls.messages.json`);
 	}
 }
 
@@ -115,7 +115,7 @@ function initLoadFn(opts) {
 	const out = path.join(__dirname, `../../../${outdir}`);
 
 	const baseUrl = pathToFileURL(path.join(__dirname, `../../../${outdir}/`));
-	globalThis._VSCODE_FILE_ROOT = baseUrl.href;
+	globalThis._DOCODE_FILE_ROOT = baseUrl.href;
 
 	// set loader
 	function importModules(modules) {
@@ -174,7 +174,7 @@ async function loadTestModules(opts) {
 		files = files.filter(file => !excludedFiles.has(file));
 	}
 	if (opts.runList) {
-		// --runList: the listed test files as compiled modules relative to the output folder (src/vs/a.test.ts is vs/a.test.js)
+		// --runList: the listed test files as compiled modules relative to the output folder (src/do/a.test.ts is do/a.test.js)
 		const runList = new Set(fs.readFileSync(opts.runList, 'utf8').split(/\r?\n/).map(line => line.trim().replace(/\\/g, '/')).filter(line => line.length > 0).map(line => line.replace(/^src\//, '').replace(/\.ts$/, '.js')));
 		files = files.filter(file => runList.has(file));
 		console.log(`Running the ${files.length} test files of the ${runList.size} files listed in ${opts.runList}`);
@@ -213,8 +213,8 @@ async function loadTests(opts) {
 		'cleans up old snapshots', // self-testing
 		'issue #149412: VS Code hangs when bad semantic token data is received', // https://github.com/microsoft/vscode/issues/192440
 		'issue #134973: invalid semantic tokens should be handled better', // https://github.com/microsoft/vscode/issues/192440
-		'issue #148651: VSCode UI process can hang if a semantic token with negative values is returned by language service', // https://github.com/microsoft/vscode/issues/192440
-		'issue #149130: vscode freezes because of Bracket Pair Colorization', // https://github.com/microsoft/vscode/issues/192440
+		'issue #148651: DoCode UI process can hang if a semantic token with negative values is returned by language service', // https://github.com/microsoft/vscode/issues/192440
+		'issue #149130: docode freezes because of Bracket Pair Colorization', // https://github.com/microsoft/vscode/issues/192440
 		'property limits', // https://github.com/microsoft/vscode/issues/192443
 		'Error events', // https://github.com/microsoft/vscode/issues/192443
 		'fetch returns keybinding with user first if title and id matches', //
@@ -253,7 +253,7 @@ async function loadTests(opts) {
 		'Search Model: Search reports timed telemetry on search when error is called'
 	]);
 
-	const errors = await loadFn('vs/base/common/errors');
+	const errors = await loadFn('do/base/common/errors');
 	const onUnexpectedError = function (err) {
 		if (err.name === 'Canceled') {
 			return; // ignore canceled errors that are common
@@ -284,7 +284,7 @@ async function loadTests(opts) {
 	errors.setUnexpectedErrorHandler(onUnexpectedError);
 	//#endregion
 
-	const { assertCleanState } = await loadFn('vs/workbench/test/common/utils');
+	const { assertCleanState } = await loadFn('do/workbench/test/common/utils');
 
 	suite('Tests are using suiteSetup and setup correctly', () => {
 		test('assertCleanState - check that registries are clean at the start of test running', () => {
@@ -447,10 +447,10 @@ const setTimeout0 = (() => {
 		const pending = [];
 
 		$globalThis.addEventListener('message', (e) => {
-			if (e.data && e.data.vscodeScheduleAsyncWork) {
+			if (e.data && e.data.docodeScheduleAsyncWork) {
 				for (let i = 0, len = pending.length; i < len; i++) {
 					const candidate = pending[i];
-					if (candidate.id === e.data.vscodeScheduleAsyncWork) {
+					if (candidate.id === e.data.docodeScheduleAsyncWork) {
 						pending.splice(i, 1);
 						candidate.callback();
 						return;
@@ -465,7 +465,7 @@ const setTimeout0 = (() => {
 				id: myId,
 				callback: callback
 			});
-			$globalThis.postMessage({ vscodeScheduleAsyncWork: myId }, '*');
+			$globalThis.postMessage({ docodeScheduleAsyncWork: myId }, '*');
 		};
 	}
 	return (callback) => setTimeout(callback);
@@ -510,7 +510,7 @@ ipcRenderer.on('run', async (_e, opts) => {
 	initNls(opts);
 	initLoadFn(opts);
 
-	await Promise.resolve(globalThis._VSCODE_TEST_INIT);
+	await Promise.resolve(globalThis._DOCODE_TEST_INIT);
 
 	try {
 		await runTests(opts);

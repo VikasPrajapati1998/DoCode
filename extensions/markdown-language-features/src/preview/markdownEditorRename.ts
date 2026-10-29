@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import type { MarkdownEditorHost } from './markdownEditorProtocol';
 
@@ -15,7 +15,7 @@ export class MarkdownEditorRename {
 	#session: RenameSession | undefined;
 
 	constructor(
-		readonly document: vscode.TextDocument,
+		readonly document: docode.TextDocument,
 		drain: () => Promise<void>,
 		snapshot: () => RenameSnapshot,
 		isActive: () => boolean,
@@ -34,20 +34,20 @@ export class MarkdownEditorRename {
 		this.#checkCurrent(session);
 		const snapshot = this.#snapshot();
 		if (request.editEpoch !== snapshot.editEpoch || request.offset > snapshot.text.length) {
-			throw new Error(vscode.l10n.t('The document changed. Start rename again.'));
+			throw new Error(docode.l10n.t('The document changed. Start rename again.'));
 		}
 		const mirror = TextDocument.create(this.document.uri.toString(), 'markdown', 0, snapshot.text);
 		const position = mirror.positionAt(request.offset);
 		const version = this.document.version;
-		const prepared = await this.#api.prepare(this.document.uri, new vscode.Position(position.line, position.character));
+		const prepared = await this.#api.prepare(this.document.uri, new docode.Position(position.line, position.character));
 		this.#checkCurrent(session);
 		if (version !== this.document.version || snapshot.editEpoch !== this.#snapshot().editEpoch) {
-			throw new Error(vscode.l10n.t('The document changed. Start rename again.'));
+			throw new Error(docode.l10n.t('The document changed. Start rename again.'));
 		}
 		if (!prepared) {
-			throw new Error(vscode.l10n.t('This symbol cannot be renamed.'));
+			throw new Error(docode.l10n.t('This symbol cannot be renamed.'));
 		}
-		session.prepared = { position: new vscode.Position(position.line, position.character), version, editEpoch: snapshot.editEpoch };
+		session.prepared = { position: new docode.Position(position.line, position.character), version, editEpoch: snapshot.editEpoch };
 		return {
 			start: mirror.offsetAt(prepared.range.start),
 			endExclusive: mirror.offsetAt(prepared.range.end),
@@ -58,13 +58,13 @@ export class MarkdownEditorRename {
 	async rename(request: Parameters<MarkdownEditorHost['rename']>[0]): Promise<void> {
 		const session = this.#session;
 		if (session?.requestId !== request.requestId || !session.prepared) {
-			throw new Error(vscode.l10n.t('Start rename again before applying a new name.'));
+			throw new Error(docode.l10n.t('Start rename again before applying a new name.'));
 		}
 		if (!request.newName.trim() || /[\r\n]/.test(request.newName)) {
-			throw new Error(vscode.l10n.t('Enter a non-empty, single-line name.'));
+			throw new Error(docode.l10n.t('Enter a non-empty, single-line name.'));
 		}
 		if (session.submitting) {
-			throw new Error(vscode.l10n.t('A rename is already in progress.'));
+			throw new Error(docode.l10n.t('A rename is already in progress.'));
 		}
 		session.submitting = true;
 		try {
@@ -81,26 +81,26 @@ export class MarkdownEditorRename {
 		const checkVersion = (): void => {
 			this.#checkCurrent(session);
 			if (version !== this.document.version || editEpoch !== this.#snapshot().editEpoch) {
-				throw new Error(vscode.l10n.t('The document changed. Start rename again.'));
+				throw new Error(docode.l10n.t('The document changed. Start rename again.'));
 			}
 		};
 		checkVersion();
-		const versions = new Map(vscode.workspace.textDocuments.map(document => [document.uri.toString(), document.version]));
+		const versions = new Map(docode.workspace.textDocuments.map(document => [document.uri.toString(), document.version]));
 		const edit = await this.#api.rename(this.document.uri, position, newName);
 		await this.#drain();
 		checkVersion();
 		if (!edit) {
-			throw new Error(vscode.l10n.t('The rename provider returned no changes.'));
+			throw new Error(docode.l10n.t('The rename provider returned no changes.'));
 		}
 		for (const [uri] of edit.entries()) {
 			const key = uri.toString();
-			const current = vscode.workspace.textDocuments.find(document => document.uri.toString() === key);
+			const current = docode.workspace.textDocuments.find(document => document.uri.toString() === key);
 			if (current && versions.has(key) && current.version !== versions.get(key)) {
-				throw new Error(vscode.l10n.t('A document changed while computing the rename. Start rename again.'));
+				throw new Error(docode.l10n.t('A document changed while computing the rename. Start rename again.'));
 			}
 		}
 		if (!await this.#api.apply(edit)) {
-			throw new Error(vscode.l10n.t('The workspace rejected the rename.'));
+			throw new Error(docode.l10n.t('The workspace rejected the rename.'));
 		}
 		if (this.#session === session) {
 			this.#session = undefined;
@@ -115,14 +115,14 @@ export class MarkdownEditorRename {
 
 	#checkCurrent(session: RenameSession): void {
 		if (this.#session !== session || !this.#isActive() || this.document.isClosed) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 	}
 }
 
 interface RenameSession {
 	readonly requestId: number;
-	prepared?: { readonly position: vscode.Position; readonly version: number; readonly editEpoch: number };
+	prepared?: { readonly position: docode.Position; readonly version: number; readonly editEpoch: number };
 	submitting?: boolean;
 }
 
@@ -132,13 +132,13 @@ interface RenameSnapshot {
 }
 
 export interface MarkdownRenameApi {
-	prepare(uri: vscode.Uri, position: vscode.Position): Promise<{ range: vscode.Range; placeholder: string } | undefined>;
-	rename(uri: vscode.Uri, position: vscode.Position, newName: string): Promise<vscode.WorkspaceEdit | undefined>;
-	apply(edit: vscode.WorkspaceEdit): Thenable<boolean>;
+	prepare(uri: docode.Uri, position: docode.Position): Promise<{ range: docode.Range; placeholder: string } | undefined>;
+	rename(uri: docode.Uri, position: docode.Position, newName: string): Promise<docode.WorkspaceEdit | undefined>;
+	apply(edit: docode.WorkspaceEdit): Thenable<boolean>;
 }
 
 const renameApi: MarkdownRenameApi = {
-	prepare: async (uri, position) => vscode.commands.executeCommand('vscode.prepareRename', uri, position),
-	rename: async (uri, position, newName) => vscode.commands.executeCommand('vscode.executeDocumentRenameProvider', uri, position, newName),
-	apply: edit => vscode.workspace.applyEdit(edit),
+	prepare: async (uri, position) => docode.commands.executeCommand('docode.prepareRename', uri, position),
+	rename: async (uri, position, newName) => docode.commands.executeCommand('docode.executeDocumentRenameProvider', uri, position, newName),
+	apply: edit => docode.workspace.applyEdit(edit),
 };

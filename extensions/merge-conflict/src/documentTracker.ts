@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MergeConflictParser } from './mergeConflictParser';
 import * as interfaces from './interfaces';
 import { Delayer } from './delayer';
-import TelemetryReporter from '@vscode/extension-telemetry';
+import TelemetryReporter from '@docode/extension-telemetry';
 
 class ScanTask {
 	public origins: Set<string> = new Set<string>();
@@ -31,26 +31,26 @@ class OriginDocumentMergeConflictTracker implements interfaces.IDocumentMergeCon
 	constructor(private parent: DocumentMergeConflictTracker, private origin: string) {
 	}
 
-	getConflicts(document: vscode.TextDocument): PromiseLike<interfaces.IDocumentMergeConflict[]> {
+	getConflicts(document: docode.TextDocument): PromiseLike<interfaces.IDocumentMergeConflict[]> {
 		return this.parent.getConflicts(document, this.origin);
 	}
 
-	isPending(document: vscode.TextDocument): boolean {
+	isPending(document: docode.TextDocument): boolean {
 		return this.parent.isPending(document, this.origin);
 	}
 
-	forget(document: vscode.TextDocument) {
+	forget(document: docode.TextDocument) {
 		this.parent.forget(document);
 	}
 }
 
-export default class DocumentMergeConflictTracker implements vscode.Disposable, interfaces.IDocumentMergeConflictTrackerService {
+export default class DocumentMergeConflictTracker implements docode.Disposable, interfaces.IDocumentMergeConflictTrackerService {
 	private cache: Map<string, ScanTask> = new Map();
 	private delayExpireTime: number = 0;
 
 	constructor(private readonly telemetryReporter: TelemetryReporter) { }
 
-	getConflicts(document: vscode.TextDocument, origin: string): PromiseLike<interfaces.IDocumentMergeConflict[]> {
+	getConflicts(document: docode.TextDocument, origin: string): PromiseLike<interfaces.IDocumentMergeConflict[]> {
 		// Attempt from cache
 
 		const key = this.getCacheKey(document);
@@ -78,7 +78,7 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
 		});
 	}
 
-	isPending(document: vscode.TextDocument, origin: string): boolean {
+	isPending(document: docode.TextDocument, origin: string): boolean {
 		if (!document) {
 			return false;
 		}
@@ -100,7 +100,7 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
 		return new OriginDocumentMergeConflictTracker(this, origin);
 	}
 
-	forget(document: vscode.TextDocument) {
+	forget(document: docode.TextDocument) {
 		const key = this.getCacheKey(document);
 
 		if (key) {
@@ -114,7 +114,7 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
 
 	private readonly seenDocumentsWithConflicts = new Set<string>();
 
-	private getConflictsOrEmpty(document: vscode.TextDocument, _origins: string[]): interfaces.IDocumentMergeConflict[] {
+	private getConflictsOrEmpty(document: docode.TextDocument, _origins: string[]): interfaces.IDocumentMergeConflict[] {
 		const containsConflict = MergeConflictParser.containsConflict(document);
 
 		if (!containsConflict) {
@@ -144,7 +144,7 @@ export default class DocumentMergeConflictTracker implements vscode.Disposable, 
 		return conflicts;
 	}
 
-	private getCacheKey(document: vscode.TextDocument): string | null {
+	private getCacheKey(document: docode.TextDocument): string | null {
 		if (document.uri) {
 			return document.uri.toString();
 		}

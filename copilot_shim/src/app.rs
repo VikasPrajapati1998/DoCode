@@ -44,12 +44,12 @@ const NOT_INSTALLED_EXIT_CODE: i32 = 127;
 /// Exit code after Ctrl+C, as a shell reports a command that SIGINT ended.
 const CANCELLED_EXIT_CODE: i32 = 130;
 
-/// Turns on verbose diagnostics like `--vscode-shim verbose`, where arguments can't be changed, such as in scripts.
-const VERBOSE_VARIABLE: &str = "VSCODE_COPILOT_SHIM_VERBOSE";
+/// Turns on verbose diagnostics like `--docode-shim verbose`, where arguments can't be changed, such as in scripts.
+const VERBOSE_VARIABLE: &str = "DOCODE_COPILOT_SHIM_VERBOSE";
 
 /// Points to the verbose diagnostics after a failure that they explain.
 const VERBOSE_HINT: &str =
-	"For details, run copilot --vscode-shim verbose, or set VSCODE_COPILOT_SHIM_VERBOSE=1.";
+	"For details, run copilot --docode-shim verbose, or set DOCODE_COPILOT_SHIM_VERBOSE=1.";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) enum ApplicationExit {
@@ -937,7 +937,7 @@ mod tests {
 		let exit = run(
 			&runtime,
 			vec![
-				OsString::from("--vscode-shim"),
+				OsString::from("--docode-shim"),
 				OsString::from("clear"),
 				OsString::from("--clear"),
 				OsString::new(),
@@ -998,7 +998,7 @@ mod tests {
 		let verbose = configured_runtime();
 		let verbose_exit = run(
 			&verbose,
-			vec![OsString::from("--vscode-shim"), OsString::from("verbose")],
+			vec![OsString::from("--docode-shim"), OsString::from("verbose")],
 			Some(HostTarget::LinuxGnuX64),
 		);
 
@@ -1527,7 +1527,7 @@ mod tests {
 	fn macos_interactive_install_only_reuses_installation_without_prompting_or_launching() {
 		let invocation = || {
 			vec![
-				OsString::from("--vscode-shim"),
+				OsString::from("--docode-shim"),
 				OsString::from("install"),
 				OsString::from("--interactive"),
 			]
@@ -1619,7 +1619,7 @@ mod tests {
 	fn macos_install_only_reports_success_after_homebrew_or_script_installation() {
 		let invocation = || {
 			vec![
-				OsString::from("--vscode-shim"),
+				OsString::from("--docode-shim"),
 				OsString::from("install"),
 				OsString::from("--interactive"),
 			]
@@ -1672,7 +1672,7 @@ mod tests {
 	#[test]
 	fn macos_install_only_cancellation_and_missing_cli_are_terminal() {
 		let arguments = vec![
-			OsString::from("--vscode-shim"),
+			OsString::from("--docode-shim"),
 			OsString::from("install"),
 			OsString::from("--interactive"),
 		];
@@ -1738,7 +1738,7 @@ mod tests {
 	fn install_only_preserves_fallback_tty_policy_tools_and_nonmacos_dispatch() {
 		let arguments = || {
 			vec![
-				OsString::from("--vscode-shim"),
+				OsString::from("--docode-shim"),
 				OsString::from("install"),
 				OsString::from("--interactive"),
 			]
@@ -1875,7 +1875,7 @@ mod tests {
 		let exit = run(
 			&runtime,
 			vec![
-				OsString::from("--vscode-shim"),
+				OsString::from("--docode-shim"),
 				OsString::from("probe"),
 				OsString::from("--result-file"),
 				result_file.as_os_str().to_os_string(),
@@ -1918,9 +1918,9 @@ mod tests {
 			let exit = run(
 				&runtime,
 				vec![
-					OsString::from("--vscode-shim"),
+					OsString::from("--docode-shim"),
 					OsString::from("verbose"),
-					OsString::from("--vscode-shim"),
+					OsString::from("--docode-shim"),
 					OsString::from("policy"),
 				],
 				Some(HostTarget::LinuxGnuX64),
@@ -1967,7 +1967,7 @@ mod tests {
 		let exit = run(
 			&runtime,
 			vec![
-				OsString::from("--vscode-shim"),
+				OsString::from("--docode-shim"),
 				OsString::from("install"),
 				OsString::from("--interactive"),
 			],

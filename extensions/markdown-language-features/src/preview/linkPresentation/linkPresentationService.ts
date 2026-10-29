@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { autorun, type IObservable } from '@vscode/observables';
-import * as vscode from 'vscode';
+import { autorun, type IObservable } from '@docode/observables';
+import * as docode from 'docode';
 import type { ILogger } from '../../logging';
 import { Disposable } from '../../util/dispose';
 import { GitLinkPresentationResolver, resolveGitCommitHref } from './gitLinkPresentationResolver';
@@ -17,14 +17,14 @@ export const linkPresentationProviderIds = [
 	'markdown.workspaceFileLinkPresentations',
 ] as const;
 
-export interface LinkPresentationWatch extends vscode.Disposable {
+export interface LinkPresentationWatch extends docode.Disposable {
 	readonly presentation: IObservable<LinkPresentation>;
 }
 
 interface LinkPresentationEntry {
 	readonly presentation: IObservable<LinkPresentation>;
 	readonly refreshOnInterval: boolean;
-	readonly subscription: vscode.Disposable;
+	readonly subscription: docode.Disposable;
 	references: number;
 }
 
@@ -32,7 +32,7 @@ export class LinkPresentationService extends Disposable {
 	readonly #logger: ILogger;
 	readonly #resolvers: readonly LinkPresentationResolver[];
 	readonly #entries = new Map<string, LinkPresentationEntry>();
-	readonly #onDidRequestRefresh = this._register(new vscode.EventEmitter<void>());
+	readonly #onDidRequestRefresh = this._register(new docode.EventEmitter<void>());
 	#refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
 	constructor(resolvers: readonly LinkPresentationResolver[], logger: ILogger) {
@@ -71,7 +71,7 @@ export class LinkPresentationService extends Disposable {
 		};
 	}
 
-	async openLink(href: string, fromResource?: vscode.Uri): Promise<boolean> {
+	async openLink(href: string, fromResource?: docode.Uri): Promise<boolean> {
 		href = resolveGitCommitHref(href, fromResource);
 		for (const resolver of this.#resolvers) {
 			if (resolver.open && await resolver.open(href)) {
@@ -148,8 +148,8 @@ export function createSharedLinkPresentationService(logger: ILogger): LinkPresen
 	], logger);
 }
 
-export function registerLinkPresentationProvider(service: LinkPresentationService): vscode.Disposable {
-	const provider: vscode.LinkPresentationProvider = {
+export function registerLinkPresentationProvider(service: LinkPresentationService): docode.Disposable {
+	const provider: docode.LinkPresentationProvider = {
 		provideLinkPresentationWatcher: resource => {
 			const href = resource.toString(true);
 			const watch = service.watch(href);
@@ -159,16 +159,16 @@ export function registerLinkPresentationProvider(service: LinkPresentationServic
 			return new ExtensionLinkPresentationWatcher(watch);
 		},
 	};
-	return vscode.Disposable.from(...linkPresentationProviderIds.map(id => vscode.window.registerLinkPresentationProvider(id, provider)));
+	return docode.Disposable.from(...linkPresentationProviderIds.map(id => docode.window.registerLinkPresentationProvider(id, provider)));
 }
 
-class ExtensionLinkPresentationWatcher extends Disposable implements vscode.LinkPresentationWatcher {
-	readonly #onDidChangePresentation = this._register(new vscode.EventEmitter<void>());
+class ExtensionLinkPresentationWatcher extends Disposable implements docode.LinkPresentationWatcher {
+	readonly #onDidChangePresentation = this._register(new docode.EventEmitter<void>());
 	readonly onDidChangePresentation = this.#onDidChangePresentation.event;
 	#source: LinkPresentation;
-	#presentation: vscode.LinkPresentationData;
+	#presentation: docode.LinkPresentationData;
 
-	get presentation(): vscode.LinkPresentationData {
+	get presentation(): docode.LinkPresentationData {
 		return this.#presentation;
 	}
 
@@ -188,7 +188,7 @@ class ExtensionLinkPresentationWatcher extends Disposable implements vscode.Link
 	}
 }
 
-function toApiPresentation(presentation: LinkPresentation): vscode.LinkPresentationData {
+function toApiPresentation(presentation: LinkPresentation): docode.LinkPresentationData {
 	return {
 		kind: presentation.kind,
 		...(presentation.title ? { title: presentation.title } : {}),

@@ -7,7 +7,7 @@
 
 /**
  * Fixture for chat-simulation benchmarks.
- * Simplified from src/vs/base/common/strings.ts for stable perf testing.
+ * Simplified from src/do/base/common/strings.ts for stable perf testing.
  */
 
 export function format(value: string, ...args: any[]): string {

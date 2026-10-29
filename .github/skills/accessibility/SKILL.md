@@ -42,7 +42,7 @@ An accessibility help dialog tells the user what the feature does, which keyboar
    - `getProvider(accessor)` returns an `AccessibleContentProvider`.
 
 2. **Create a content-provider class** implementing `IAccessibleViewContentProvider`.
-   - `id` — add a new entry in the `AccessibleViewProviderId` enum in `src/vs/platform/accessibility/browser/accessibleView.ts`.
+   - `id` — add a new entry in the `AccessibleViewProviderId` enum in `src/do/platform/accessibility/browser/accessibleView.ts`.
    - `verbositySettingKey` — reference the new `AccessibilityVerbositySettingId` entry (see §3).
    - `options` — `{ type: AccessibleViewType.Help }`.
    - `provideContent()` — return localized, multi-line help text.
@@ -160,7 +160,7 @@ A verbosity setting controls whether a hint such as "press Alt+F1 for accessibil
 
 ### Steps
 
-1. **Add an entry** to `AccessibilityVerbositySettingId` in `src/vs/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts`:
+1. **Add an entry** to `AccessibilityVerbositySettingId` in `src/do/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts`:
    ```ts
    export const enum AccessibilityVerbositySettingId {
        // … existing entries …
@@ -216,7 +216,7 @@ this._accessibilitySignalService.playSignal(AccessibilitySignal.error, { userGes
 
 ## 5. ARIA Alerts vs. Status Messages
 
-Use the `alert()` and `status()` functions from `src/vs/base/browser/ui/aria/aria.ts` to announce dynamic changes to screen readers.
+Use the `alert()` and `status()` functions from `src/do/base/browser/ui/aria/aria.ts` to announce dynamic changes to screen readers.
 
 ### `alert(msg)` — Assertive live region (`role="alert"`)
 - **Use for**: Urgent, important information that the user must know immediately.
@@ -299,8 +299,8 @@ All interactive UI elements must have appropriate ARIA attributes so screen read
 
 ## Key Files
 
-- `src/vs/platform/accessibility/browser/accessibleView.ts` — `AccessibleViewProviderId`, `AccessibleContentProvider`, `IAccessibleViewContentProvider`
-- `src/vs/platform/accessibility/browser/accessibleViewRegistry.ts` — `AccessibleViewRegistry`, `IAccessibleViewImplementation`
-- `src/vs/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts` — `AccessibilityVerbositySettingId`, verbosity setting registration
-- `src/vs/platform/accessibilitySignal/browser/accessibilitySignalService.ts` — `IAccessibilitySignalService`, `AccessibilitySignal`
-- `src/vs/base/browser/ui/aria/aria.ts` — `alert()`, `status()` for ARIA live region announcements
+- `src/do/platform/accessibility/browser/accessibleView.ts` — `AccessibleViewProviderId`, `AccessibleContentProvider`, `IAccessibleViewContentProvider`
+- `src/do/platform/accessibility/browser/accessibleViewRegistry.ts` — `AccessibleViewRegistry`, `IAccessibleViewImplementation`
+- `src/do/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts` — `AccessibilityVerbositySettingId`, verbosity setting registration
+- `src/do/platform/accessibilitySignal/browser/accessibilitySignalService.ts` — `IAccessibilitySignalService`, `AccessibilitySignal`
+- `src/do/base/browser/ui/aria/aria.ts` — `alert()`, `status()` for ARIA live region announcements

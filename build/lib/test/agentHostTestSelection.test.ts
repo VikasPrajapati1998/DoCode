@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import { detectAgentHostE2EChanges } from '../../../.github/actions/detect-agent-host-e2e-changes/detect.ts';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '../../..');
-const profilePath = path.join(repositoryRoot, 'src/vs/platform/agentHost/test/node/agentHostTestProfile.ts');
+const profilePath = path.join(repositoryRoot, 'src/do/platform/agentHost/test/node/agentHostTestProfile.ts');
 
 async function detect(files: readonly { filename: string; previous_filename?: string }[], expectedCount = files.length, failure?: Error) {
 	const outputs: Record<string, string> = {};
@@ -28,7 +28,7 @@ async function detect(files: readonly { filename: string; previous_filename?: st
 		},
 		rest: { pulls: { listFiles: {} } },
 	}, {
-		repo: { owner: 'microsoft', repo: 'vscode' },
+		repo: { owner: 'microsoft', repo: 'docode' },
 		issue: { number: 1 },
 		payload: { pull_request: { changed_files: expectedCount } },
 	}, {
@@ -43,10 +43,10 @@ suite('Agent Host PR test selection', () => {
 	test('keeps unrelated changes out of the parallel runner and relevant changes in the PR profile', async () => {
 		const results = [];
 		for (const filename of [
-			'src/vs/workbench/browser/editor.ts',
+			'src/do/workbench/browser/editor.ts',
 			'README.md',
-			'src/vs/platform/agentHost/node/copilot/copilotAgent.ts',
-			'src/vs/base/common/async.ts',
+			'src/do/platform/agentHost/node/copilot/copilotAgent.ts',
+			'src/do/base/common/async.ts',
 		]) {
 			const { outputs } = await detect([{ filename }]);
 			results.push({ affected: outputs.affected, profile: outputs.profile });
@@ -61,12 +61,12 @@ suite('Agent Host PR test selection', () => {
 
 	test('test artifacts, dependencies and infrastructure force full coverage in their own PR', async () => {
 		const filenames = [
-			'src/vs/platform/agentHost/test/node/e2e/suites/newSuite.ts',
-			'src/vs/platform/agentHost/test/node/e2e/captures/new.yaml',
-			'src/vs/platform/agentHost/test/node/e2e/providers/__snapshots__/new.prompt.md',
-			'src/vs/platform/agentHost/test/node/providerIntegration/copilotOtel.integrationTest.ts',
-			'src/vs/platform/agentHost/test/node/agentHostTestProfile.ts',
-			'src/vs/platform/agentHost/test/common/agent.test.ts',
+			'src/do/platform/agentHost/test/node/e2e/suites/newSuite.ts',
+			'src/do/platform/agentHost/test/node/e2e/captures/new.yaml',
+			'src/do/platform/agentHost/test/node/e2e/providers/__snapshots__/new.prompt.md',
+			'src/do/platform/agentHost/test/node/providerIntegration/copilotOtel.integrationTest.ts',
+			'src/do/platform/agentHost/test/node/agentHostTestProfile.ts',
+			'src/do/platform/agentHost/test/common/agent.test.ts',
 			'test/integration/agentHost/runner.ts',
 			'test/unit/electron/index.js',
 			'.github/actions/detect-agent-host-e2e-changes/detect.ts',
@@ -81,7 +81,6 @@ suite('Agent Host PR test selection', () => {
 			'package-lock.json',
 			'remote/package.json',
 			'remote/package-lock.json',
-			'extensions/copilot/package.json',
 			'.npmrc',
 			'.nvmrc',
 			'product.json',
@@ -97,9 +96,9 @@ suite('Agent Host PR test selection', () => {
 	test('both sides of a rename participate in selection', async () => {
 		const results = [];
 		for (const file of [
-			{ filename: 'archive/old.yaml', previous_filename: 'src/vs/platform/agentHost/test/node/e2e/captures/old.yaml' },
-			{ filename: 'src/vs/platform/agentHost/test/node/e2e/captures/new.yaml', previous_filename: 'archive/new.yaml' },
-			{ filename: 'archive/agent.ts', previous_filename: 'src/vs/platform/agentHost/node/agent.ts' },
+			{ filename: 'archive/old.yaml', previous_filename: 'src/do/platform/agentHost/test/node/e2e/captures/old.yaml' },
+			{ filename: 'src/do/platform/agentHost/test/node/e2e/captures/new.yaml', previous_filename: 'archive/new.yaml' },
+			{ filename: 'archive/agent.ts', previous_filename: 'src/do/platform/agentHost/node/agent.ts' },
 		]) {
 			const { outputs } = await detect([file]);
 			results.push([outputs.affected, outputs.profile]);
@@ -185,7 +184,7 @@ suite('Agent Host PR test selection', () => {
 					runList: runList.test(agentHost.run ?? ''),
 					profile: agentHost.env.AGENT_HOST_TEST_PROFILE,
 					reason: agentHost.env.AGENT_HOST_TEST_PROFILE_REASON,
-					skip: agentHost.env.VSCODE_SKIP_AGENT_HOST_E2E,
+					skip: agentHost.env.DOCODE_SKIP_AGENT_HOST_E2E,
 				},
 				integration: {
 					id: integration.id,
@@ -292,7 +291,7 @@ suite('Agent Host PR test selection', () => {
 	});
 
 	test('the Agent Host E2E runner runs exactly the files that the integration scripts exclude', () => {
-		const e2eDirectory = 'src/vs/platform/agentHost/test/node/e2e';
+		const e2eDirectory = 'src/do/platform/agentHost/test/node/e2e';
 		const shellGlob = readFileSync(path.join(repositoryRoot, 'scripts/test-integration.sh'), 'utf8').match(/^AGENT_HOST_E2E_GLOB="(?<glob>[^"]+)"$/m)?.groups?.glob;
 		const batchGlob = readFileSync(path.join(repositoryRoot, 'scripts/test-integration.bat'), 'utf8').match(/--excludeRunGlob "(?<glob>[^"]+)"/)?.groups?.glob;
 		assert.ok(shellGlob);
@@ -351,7 +350,7 @@ suite('Agent Host PR test selection', () => {
 			.map(file => path.posix.join(directory, file.split(path.sep).join('/')));
 		// The extension host tests do not run any Agent Host E2E entrypoints.
 		const unitRun = /test-(integration|agent-host-e2e)\.(sh|bat)\b(?![^\n]*--(run|runGlob|suite|only-extension-host-tests)\b)/;
-		const pairs = [...pipelineFiles('.github/workflows'), ...pipelineFiles('build/azure-pipelines')].sort().flatMap(file => {
+		const pairs = pipelineFiles('.github/workflows').sort().flatMap(file => {
 			const steps = commandSteps(load(readFileSync(path.join(repositoryRoot, file), 'utf8')));
 			const integration = steps.filter(step => unitRun.test(step.command) && step.command.includes('test-integration.'));
 			const agentHost = steps.filter(step => unitRun.test(step.command) && step.command.includes('test-agent-host-e2e.'));
@@ -362,7 +361,7 @@ suite('Agent Host PR test selection', () => {
 			// tests run in parts, the node.js part is the one that excludes the Agent Host E2E entrypoints.
 			const signature = (step: ICommandStep) => JSON.stringify({
 				command: step.command.replace('test-agent-host-e2e.', 'test-integration.').replace(' --only-node-tests', ''),
-				environment: Object.fromEntries(Object.entries(step.environment).filter(([name]) => name !== 'VSCODE_SKIP_AGENT_HOST_E2E').sort()),
+				environment: Object.fromEntries(Object.entries(step.environment).filter(([name]) => name !== 'DOCODE_SKIP_AGENT_HOST_E2E').sort()),
 			});
 			const agentHostSignatures = agentHost.map(signature).sort();
 			return [{
@@ -375,12 +374,6 @@ suite('Agent Host PR test selection', () => {
 			'.github/workflows/pr-darwin-test.yml',
 			'.github/workflows/pr-linux-test.yml',
 			'.github/workflows/pr-win32-test.yml',
-			'build/azure-pipelines/darwin/product-smoke-flaky-darwin.yml',
-			'build/azure-pipelines/darwin/steps/product-build-darwin-test.yml',
-			'build/azure-pipelines/linux/product-smoke-flaky-linux.yml',
-			'build/azure-pipelines/linux/steps/product-build-linux-test.yml',
-			'build/azure-pipelines/win32/product-smoke-flaky-win32.yml',
-			'build/azure-pipelines/win32/steps/product-build-win32-test.yml',
 		].map(file => ({ file, integrationSteps: 1, pairedWithAgentHostE2E: true })));
 	});
 });
@@ -413,10 +406,10 @@ suite('Agent Host test profile registration', () => {
 	test('the initial full-only inventory contains only the intended variations', () => {
 		const titles: string[] = [];
 		for (const relativePath of [
-			'src/vs/platform/agentHost/test/node/e2e/suites/fileOperationsSuite.ts',
-			'src/vs/platform/agentHost/test/node/e2e/suites/multiChatSuite.ts',
-			'src/vs/platform/agentHost/test/node/e2e/suites/copilotCoverageSuite.ts',
-			'src/vs/platform/agentHost/test/node/providerIntegration/copilotOtel.integrationTest.ts',
+			'src/do/platform/agentHost/test/node/e2e/suites/fileOperationsSuite.ts',
+			'src/do/platform/agentHost/test/node/e2e/suites/multiChatSuite.ts',
+			'src/do/platform/agentHost/test/node/e2e/suites/copilotCoverageSuite.ts',
+			'src/do/platform/agentHost/test/node/providerIntegration/copilotOtel.integrationTest.ts',
 		]) {
 			const source = ts.createSourceFile(relativePath, readFileSync(path.join(repositoryRoot, relativePath), 'utf8'), ts.ScriptTarget.Latest, true);
 			const visit = (node: ts.Node): void => {

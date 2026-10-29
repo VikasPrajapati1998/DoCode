@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ArgumentParserResult, parseArguments } from './autocomplete-parser/parseArguments';
 import type { FigState } from './autocomplete/fig/hooks';
 import { createGeneratorState } from './autocomplete/state/generators';
@@ -25,7 +25,7 @@ export interface IFigSpecSuggestionsResult {
 	fileExtensions?: string[];
 	fileNames?: string[];
 	hasCurrentArg: boolean;
-	items: vscode.TerminalCompletionItem[];
+	items: docode.TerminalCompletionItem[];
 }
 
 export async function getFigSuggestions(
@@ -34,11 +34,11 @@ export async function getFigSuggestions(
 	availableCommands: ICompletionResource[],
 	currentCommandAndArgString: string,
 	tokenType: TokenType,
-	shellIntegrationCwd: vscode.Uri | undefined,
+	shellIntegrationCwd: docode.Uri | undefined,
 	env: Record<string, string>,
 	name: string,
 	executeExternals: IFigExecuteExternals,
-	token?: vscode.CancellationToken,
+	token?: docode.CancellationToken,
 ): Promise<IFigSpecSuggestionsResult> {
 	const result: IFigSpecSuggestionsResult = {
 		showFiles: false,
@@ -73,14 +73,14 @@ export async function getFigSuggestions(
 
 			// push it to the completion items
 			if (tokenType === TokenType.Command) {
-				if (availableCommand.kind !== vscode.TerminalCompletionItemKind.Alias) {
+				if (availableCommand.kind !== docode.TerminalCompletionItemKind.Alias) {
 					const description = getFixSuggestionDescription(spec);
 					result.items.push(createCompletionItem(
 						terminalContext.cursorIndex,
 						currentCommandAndArgString,
 						{
 							label: { label: specLabel, description },
-							kind: vscode.TerminalCompletionItemKind.Method
+							kind: docode.TerminalCompletionItemKind.Method
 						},
 						description,
 						availableCommand.detail
@@ -124,11 +124,11 @@ async function getFigSpecSuggestions(
 	spec: Fig.Spec,
 	terminalContext: { commandLine: string; cursorIndex: number },
 	prefix: string,
-	shellIntegrationCwd: vscode.Uri | undefined,
+	shellIntegrationCwd: docode.Uri | undefined,
 	env: Record<string, string>,
 	name: string,
 	executeExternals: IFigExecuteExternals,
-	token?: vscode.CancellationToken,
+	token?: docode.CancellationToken,
 ): Promise<IFigSpecSuggestionsResult | undefined> {
 	let showFiles = false;
 	let showDirectories = false;
@@ -148,7 +148,7 @@ async function getFigSpecSuggestions(
 	};
 	const parsedArguments: ArgumentParserResult = await parseArguments(command, shellContext, spec, executeExternals);
 
-	const items: vscode.TerminalCompletionItem[] = [];
+	const items: docode.TerminalCompletionItem[] = [];
 	// TODO: Pass in and respect cancellation token
 	const completionItemResult = await collectCompletionItemResult(command, parsedArguments, prefix, terminalContext, shellIntegrationCwd, env, items, executeExternals);
 	if (token?.isCancellationRequested) {
@@ -179,9 +179,9 @@ export async function collectCompletionItemResult(
 	parsedArguments: ArgumentParserResult,
 	prefix: string,
 	terminalContext: { commandLine: string; cursorIndex: number },
-	shellIntegrationCwd: vscode.Uri | undefined,
+	shellIntegrationCwd: docode.Uri | undefined,
 	env: Record<string, string>,
-	items: vscode.TerminalCompletionItem[],
+	items: docode.TerminalCompletionItem[],
 	executeExternals: IFigExecuteExternals
 ): Promise<{ showFiles: boolean; showDirectories: boolean; fileExtensions: string[] | undefined; fileNames: string[] | undefined } | undefined> {
 	let showFiles = false;
@@ -189,8 +189,8 @@ export async function collectCompletionItemResult(
 	let fileExtensions: string[] | undefined;
 	let fileNames: string[] | undefined;
 
-	const addSuggestions = async (specArgs: SpecArg[] | Record<string, SpecArg> | undefined, kind: vscode.TerminalCompletionItemKind, parsedArguments?: ArgumentParserResult) => {
-		if (kind === vscode.TerminalCompletionItemKind.Argument && parsedArguments?.currentArg?.generators) {
+	const addSuggestions = async (specArgs: SpecArg[] | Record<string, SpecArg> | undefined, kind: docode.TerminalCompletionItemKind, parsedArguments?: ArgumentParserResult) => {
+		if (kind === docode.TerminalCompletionItemKind.Argument && parsedArguments?.currentArg?.generators) {
 			const generators = parsedArguments.currentArg.generators;
 			const initialFigState: FigState = {
 				buffer: terminalContext.commandLine,
@@ -274,7 +274,7 @@ export async function collectCompletionItemResult(
 		if (!specArgs) {
 			return { showFiles, showDirectories };
 		}
-		const flagsToExclude = kind === vscode.TerminalCompletionItemKind.Flag ? parsedArguments?.passedOptions.map(option => option.name).flat() : undefined;
+		const flagsToExclude = kind === docode.TerminalCompletionItemKind.Flag ? parsedArguments?.passedOptions.map(option => option.name).flat() : undefined;
 
 		function addItem(label: string, item: SpecArg) {
 			if (flagsToExclude?.includes(label)) {
@@ -285,11 +285,11 @@ export async function collectCompletionItemResult(
 			const lastArgType: string | undefined = parsedArguments?.annotations.at(-1)?.type;
 			if (lastArgType === 'subcommand_arg') {
 				if (typeof item === 'object' && Object.hasOwn(item, 'args') && (asArray((item as Fig.Option).args ?? [])).length > 0) {
-					itemKind = vscode.TerminalCompletionItemKind.Option;
+					itemKind = docode.TerminalCompletionItemKind.Option;
 				}
 			}
 			else if (lastArgType === 'option_arg') {
-				itemKind = vscode.TerminalCompletionItemKind.OptionValue;
+				itemKind = docode.TerminalCompletionItemKind.OptionValue;
 			}
 
 			// Add <argName> for every argument
@@ -341,14 +341,14 @@ export async function collectCompletionItemResult(
 	};
 
 	if (parsedArguments.suggestionFlags & SuggestionFlag.Args) {
-		await addSuggestions(parsedArguments.currentArg?.suggestions, vscode.TerminalCompletionItemKind.Argument, parsedArguments);
+		await addSuggestions(parsedArguments.currentArg?.suggestions, docode.TerminalCompletionItemKind.Argument, parsedArguments);
 	}
 	if (parsedArguments.suggestionFlags & SuggestionFlag.Subcommands) {
-		await addSuggestions(parsedArguments.completionObj.subcommands, vscode.TerminalCompletionItemKind.Method);
+		await addSuggestions(parsedArguments.completionObj.subcommands, docode.TerminalCompletionItemKind.Method);
 	}
 	if (parsedArguments.suggestionFlags & SuggestionFlag.Options) {
-		await addSuggestions(parsedArguments.completionObj.options, vscode.TerminalCompletionItemKind.Flag, parsedArguments);
-		await addSuggestions(parsedArguments.completionObj.persistentOptions, vscode.TerminalCompletionItemKind.Flag, parsedArguments);
+		await addSuggestions(parsedArguments.completionObj.options, docode.TerminalCompletionItemKind.Flag, parsedArguments);
+		await addSuggestions(parsedArguments.completionObj.persistentOptions, docode.TerminalCompletionItemKind.Flag, parsedArguments);
 	}
 
 	return { showFiles, showDirectories, fileExtensions, fileNames };
@@ -378,15 +378,15 @@ export function getFigSuggestionLabel(spec: Fig.Spec | Fig.Arg | Fig.Suggestion 
 	return spec.name;
 }
 
-function convertIconToKind(icon: string | undefined): vscode.TerminalCompletionItemKind | undefined {
+function convertIconToKind(icon: string | undefined): docode.TerminalCompletionItemKind | undefined {
 	switch (icon) {
-		case 'vscode://icon?type=10': return vscode.TerminalCompletionItemKind.ScmCommit;
-		case 'vscode://icon?type=11': return vscode.TerminalCompletionItemKind.ScmBranch;
-		case 'vscode://icon?type=12': return vscode.TerminalCompletionItemKind.ScmTag;
-		case 'vscode://icon?type=13': return vscode.TerminalCompletionItemKind.ScmStash;
-		case 'vscode://icon?type=14': return vscode.TerminalCompletionItemKind.ScmRemote;
-		case 'vscode://icon?type=15': return vscode.TerminalCompletionItemKind.PullRequest;
-		case 'vscode://icon?type=16': return vscode.TerminalCompletionItemKind.PullRequestDone;
+		case 'docode://icon?type=10': return docode.TerminalCompletionItemKind.ScmCommit;
+		case 'docode://icon?type=11': return docode.TerminalCompletionItemKind.ScmBranch;
+		case 'docode://icon?type=12': return docode.TerminalCompletionItemKind.ScmTag;
+		case 'docode://icon?type=13': return docode.TerminalCompletionItemKind.ScmStash;
+		case 'docode://icon?type=14': return docode.TerminalCompletionItemKind.ScmRemote;
+		case 'docode://icon?type=15': return docode.TerminalCompletionItemKind.PullRequest;
+		case 'docode://icon?type=16': return docode.TerminalCompletionItemKind.PullRequestDone;
 		default: return undefined;
 	}
 }

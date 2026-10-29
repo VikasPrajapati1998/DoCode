@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../../configuration/documentSelector';
 import { LanguageDescription } from '../../configuration/languageDescription';
 import { CachedResponse } from '../../tsServer/cachedResponse';
@@ -39,7 +39,7 @@ export class TypeScriptReferencesCodeLensProvider extends TypeScriptBaseCodeLens
 		this._register(this._showOnAllFunctions.onDidChange(() => this.changeEmitter.fire()));
 	}
 
-	override async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<ReferencesCodeLens[]> {
+	override async provideCodeLenses(document: docode.TextDocument, token: docode.CancellationToken): Promise<ReferencesCodeLens[]> {
 		const enabled = this._enabled.getValue(document);
 		if (!enabled) {
 			return [];
@@ -48,7 +48,7 @@ export class TypeScriptReferencesCodeLensProvider extends TypeScriptBaseCodeLens
 		return super.provideCodeLenses(document, token);
 	}
 
-	public async resolveCodeLens(codeLens: ReferencesCodeLens, token: vscode.CancellationToken): Promise<vscode.CodeLens> {
+	public async resolveCodeLens(codeLens: ReferencesCodeLens, token: docode.CancellationToken): Promise<docode.CodeLens> {
 		const args = typeConverters.Position.toFileLocationRequestArgs(codeLens.file, codeLens.range.start);
 		const response = await this.client.execute('references', args, token, {
 			lowPriority: true,
@@ -75,17 +75,17 @@ export class TypeScriptReferencesCodeLensProvider extends TypeScriptBaseCodeLens
 		return codeLens;
 	}
 
-	private getCodeLensLabel(locations: ReadonlyArray<vscode.Location>): string {
+	private getCodeLensLabel(locations: ReadonlyArray<docode.Location>): string {
 		return locations.length === 1
-			? vscode.l10n.t("1 reference")
-			: vscode.l10n.t("{0} references", locations.length);
+			? docode.l10n.t("1 reference")
+			: docode.l10n.t("{0} references", locations.length);
 	}
 
 	protected extractSymbol(
-		document: vscode.TextDocument,
+		document: docode.TextDocument,
 		item: Proto.NavigationTree,
 		parent: Proto.NavigationTree | undefined
-	): vscode.Range | undefined {
+	): docode.Range | undefined {
 		if (parent?.kind === PConst.Kind.enum) {
 			return getSymbolRange(document, item);
 		}
@@ -156,7 +156,7 @@ export function register(
 		requireHasModifiedUnifiedConfig(Config.enabled, language.id),
 		requireSomeCapability(client, ClientCapability.Semantic),
 	], () => {
-		return vscode.languages.registerCodeLensProvider(selector.semantic,
+		return docode.languages.registerCodeLensProvider(selector.semantic,
 			new TypeScriptReferencesCodeLensProvider(client, cachedResponse));
 	});
 }

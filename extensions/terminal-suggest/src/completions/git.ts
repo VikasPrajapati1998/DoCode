@@ -5,7 +5,7 @@
 
 /* eslint-disable local/code-no-unexternalized-strings */
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 function ai(...args: any[]): undefined { return undefined; }
 
@@ -91,7 +91,7 @@ const postProcessBranches =
 									name: branch.replaceAll("*", "").trim(),
 									description: "Current branch",
 									priority: 100,
-									icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmBranch}`
+									icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmBranch}`
 								};
 							} else if (oldParts[0] === "+") {
 								name = branch.replaceAll("+", "").trim();
@@ -113,7 +113,7 @@ const postProcessBranches =
 						return {
 							name,
 							description,
-							icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmBranch}`,
+							icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmBranch}`,
 							priority: 75,
 						};
 					}
@@ -134,7 +134,7 @@ const postProcessBranches =
 					return {
 						name,
 						description,
-						icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmBranch}`,
+						icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmBranch}`,
 						priority,
 					};
 				})
@@ -179,7 +179,7 @@ export const gitGenerators = {
 			return lines.map((line) => {
 				return {
 					name: line.substring(0, hashLength),
-					icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmCommit}`,
+					icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmCommit}`,
 					description: line.substring(descriptionStart),
 				};
 			});
@@ -225,7 +225,7 @@ export const gitGenerators = {
 			return output.split("\n").map((line) => {
 				return {
 					name: line.substring(0, 7),
-					icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmCommit}`,
+					icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmCommit}`,
 					description: line.substring(7),
 				};
 			});
@@ -248,7 +248,7 @@ export const gitGenerators = {
 					// account for conventional commit messages
 					name: file.split(":").slice(2).join(":"),
 					insertValue: file.split(":")[0],
-					icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmStash}`,
+					icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmStash}`,
 				};
 			});
 		},
@@ -354,7 +354,7 @@ export const gitGenerators = {
 			return Object.keys(remoteURLs).map((remote) => {
 				return {
 					name: remote,
-					icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmRemote}`,
+					icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmRemote}`,
 					description: "Remote",
 				};
 			});
@@ -372,7 +372,7 @@ export const gitGenerators = {
 		postProcess: function (output) {
 			return output.split("\n").map((tag) => ({
 				name: tag,
-				icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmTag}`
+				icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmTag}`
 			}));
 		},
 	} satisfies Fig.Generator,
@@ -8640,7 +8640,7 @@ const completionSpec: Fig.Spec = {
 						{
 							name: "-",
 							description: "Switch to the last used branch",
-							icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmBranch}`
+							icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmBranch}`
 						},
 						{
 							name: "--",
@@ -9806,7 +9806,7 @@ const completionSpec: Fig.Spec = {
 						{
 							name: "-",
 							description: "Switch to the last used branch",
-							icon: `vscode://icon?type=${vscode.TerminalCompletionItemKind.ScmBranch}`
+							icon: `docode://icon?type=${docode.TerminalCompletionItemKind.ScmBranch}`
 						},
 					],
 				},

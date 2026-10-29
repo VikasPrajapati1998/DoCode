@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type { Repository } from './typings/git.d.ts';
 
 export class DisposableStore {
 
-	private disposables = new Set<vscode.Disposable>();
+	private disposables = new Set<docode.Disposable>();
 	private isDisposed = false;
 
-	add(disposable: vscode.Disposable): void {
+	add(disposable: docode.Disposable): void {
 		if (this.isDisposed) {
 			// The store was already disposed, so nothing would ever dispose this.
 			disposable.dispose();

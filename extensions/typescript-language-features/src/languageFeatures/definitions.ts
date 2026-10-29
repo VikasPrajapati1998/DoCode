@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { API } from '../tsServer/api';
 import * as typeConverters from '../typeConverters';
@@ -12,13 +12,13 @@ import DefinitionProviderBase from './definitionProviderBase';
 import { readUnifiedConfig } from '../utils/configuration';
 import { conditionalRegistration, requireSomeCapability } from './util/dependentRegistration';
 
-export default class TypeScriptDefinitionProvider extends DefinitionProviderBase implements vscode.DefinitionProvider {
+export default class TypeScriptDefinitionProvider extends DefinitionProviderBase implements docode.DefinitionProvider {
 
 	public async provideDefinition(
-		document: vscode.TextDocument,
-		position: vscode.Position,
-		token: vscode.CancellationToken
-	): Promise<vscode.DefinitionLink[] | vscode.Definition | undefined> {
+		document: docode.TextDocument,
+		position: docode.Position,
+		token: docode.CancellationToken
+	): Promise<docode.DefinitionLink[] | docode.Definition | undefined> {
 		const filepath = this.client.toOpenTsFilePath(document);
 		if (!filepath) {
 			return undefined;
@@ -41,7 +41,7 @@ export default class TypeScriptDefinitionProvider extends DefinitionProviderBase
 		}
 
 		return definitions
-			.map((location): vscode.DefinitionLink => {
+			.map((location): docode.DefinitionLink => {
 				const target = typeConverters.Location.fromTextSpan(this.client.toResource(location.file), location);
 				if (location.contextStart && location.contextEnd) {
 					return {
@@ -67,7 +67,7 @@ export function register(
 	return conditionalRegistration([
 		requireSomeCapability(client, ClientCapability.EnhancedSyntax, ClientCapability.Semantic),
 	], () => {
-		return vscode.languages.registerDefinitionProvider(selector.syntax,
+		return docode.languages.registerDefinitionProvider(selector.syntax,
 			new TypeScriptDefinitionProvider(client));
 	});
 }

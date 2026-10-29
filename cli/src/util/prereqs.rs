@@ -188,8 +188,8 @@ async fn check_is_nixos() -> bool {
 ///    minimum requirements.
 #[cfg(not(windows))]
 pub async fn skip_requirements_check() -> bool {
-	std::env::var("VSCODE_SERVER_CUSTOM_GLIBC_LINKER").is_ok()
-		|| fs::metadata("/tmp/vscode-skip-server-requirements-check")
+	std::env::var("DOCODE_SERVER_CUSTOM_GLIBC_LINKER").is_ok()
+		|| fs::metadata("/tmp/docode-skip-server-requirements-check")
 			.await
 			.is_ok()
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Config } from '../config';
 import { AuthProviderType } from '../github';
 import { AccountLinks } from '../common/accountLinks';
@@ -27,7 +27,7 @@ const TOKEN_REVOCATION_URL = `https://api.github.com/applications/${Config.gitHu
 const USER_INFO_URL = 'https://api.github.com/user';
 const STORAGE_KEY = 'github.auth.microsoftAccountLinks';
 const ACCOUNT: IGitHubUserInfo = { id: '42', accountName: 'mona_contoso', avatarUrl: undefined };
-const MICROSOFT_ACCOUNT: vscode.AuthenticationSessionAccountInformation = { id: 'entra-oid', label: 'mona@contoso.com' };
+const MICROSOFT_ACCOUNT: docode.AuthenticationSessionAccountInformation = { id: 'entra-oid', label: 'mona@contoso.com' };
 
 const enum Action {
 	SignIn = 0,

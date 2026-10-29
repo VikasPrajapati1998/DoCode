@@ -21,7 +21,7 @@ if [ "$1" = "configure" ]; then
 			fi
 			;;
 	esac
-	vscode_copilot_link install "@@NAME@@" || :
+	docode_copilot_link install "@@NAME@@" || :
 fi
 
 # Register code in the alternatives system
@@ -47,8 +47,8 @@ if [ "@@NAME@@" != "code-oss" ]; then
 
 	# Register apt repository
 	eval $(apt-config shell APT_SOURCE_PARTS Dir::Etc::sourceparts/d APT_SOURCES_LIST Dir::Etc::sourcelist/f)
-	CODE_SOURCE_PART=${APT_SOURCE_PARTS}vscode.list
-	CODE_SOURCE_PART_DEB822=${APT_SOURCE_PARTS}vscode.sources
+	CODE_SOURCE_PART=${APT_SOURCE_PARTS}docode.list
+	CODE_SOURCE_PART_DEB822=${APT_SOURCE_PARTS}docode.sources
 
 	CODE_TRUSTED_PART=/usr/share/keyrings/microsoft.gpg
 	CODE_TRUSTED_PART_OLD="/etc/apt/trusted.gpg.d/microsoft.gpg"

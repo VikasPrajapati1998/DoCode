@@ -1,0 +1,190 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.agent-global-configuration-settings {
+	height: 100%;
+	overflow: auto;
+}
+
+.agent-global-configuration-settings-content {
+	box-sizing: border-box;
+	max-width: 720px;
+	margin: 0 auto;
+	padding: var(--docode-spacing-size320) var(--docode-spacing-size280) var(--docode-spacing-size400);
+}
+
+.agent-global-configuration-settings-content h1 {
+	font-size: 24px;
+	font-weight: var(--docode-fontWeight-semiBold);
+	line-height: 32px;
+	margin: 0 0 var(--docode-spacing-size40);
+}
+
+.agent-global-configuration-settings-intro,
+.agent-global-configuration-settings-section-description,
+.agent-global-configuration-settings-description {
+	color: var(--docode-descriptionForeground);
+}
+
+.agent-global-configuration-settings-intro {
+	font-size: var(--docode-fontSize-body1);
+	line-height: 20px;
+	margin: 0 0 var(--docode-spacing-size240);
+}
+
+.agent-global-configuration-settings-section {
+	margin-top: var(--docode-spacing-size240);
+}
+
+.agent-global-configuration-settings-section h2 {
+	font-size: 15px;
+	font-weight: var(--docode-fontWeight-semiBold);
+	line-height: 22px;
+	margin: 0 0 var(--docode-spacing-size20);
+}
+
+.agent-global-configuration-settings-section-description {
+	font-size: var(--docode-fontSize-label1);
+	line-height: 18px;
+	margin: 0 0 var(--docode-spacing-size100);
+}
+
+.agent-global-configuration-settings-section-description:empty {
+	display: none;
+}
+
+.agent-global-configuration-settings-card {
+	border: var(--docode-strokeThickness) solid var(--docode-agentsPanel-border);
+	border-radius: var(--docode-cornerRadius-small);
+	overflow: hidden;
+}
+
+.agent-global-configuration-settings-row {
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	min-height: 54px;
+	padding: var(--docode-spacing-size100) var(--docode-spacing-size120);
+	gap: var(--docode-spacing-size160);
+}
+
+.agent-global-configuration-settings-row + .agent-global-configuration-settings-row,
+.agent-global-configuration-settings-row + .agent-global-configuration-settings-text-row,
+.agent-global-configuration-settings-text-row + .agent-global-configuration-settings-row,
+.agent-global-configuration-settings-text-row + .agent-global-configuration-settings-text-row {
+	border-top: var(--docode-strokeThickness) solid var(--docode-widget-border, var(--docode-agentsPanel-border));
+}
+
+.agent-global-configuration-settings-labels {
+	min-width: 0;
+	flex: 1;
+}
+
+.agent-global-configuration-settings-label {
+	font-size: var(--docode-fontSize-body1);
+	font-weight: var(--docode-fontWeight-semiBold);
+	line-height: 19px;
+}
+
+.agent-global-configuration-settings-description {
+	font-size: var(--docode-fontSize-label1);
+	line-height: 17px;
+}
+
+.agent-global-configuration-settings-action,
+.agent-global-configuration-settings-select,
+.agent-global-configuration-settings-checkbox,
+.agent-global-configuration-settings-input {
+	margin-left: auto;
+	flex: none;
+}
+
+.agent-global-configuration-settings-select,
+.agent-global-configuration-settings-input {
+	box-sizing: border-box;
+	width: 168px;
+}
+
+.agent-global-configuration-settings-select .monaco-select-box {
+	width: 100%;
+	min-height: 26px;
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size240) var(--docode-spacing-size20) var(--docode-spacing-size80);
+}
+
+.agent-global-configuration-settings-input,
+.agent-global-configuration-settings-text {
+	border: 1px solid var(--docode-input-border, transparent);
+	border-radius: var(--docode-cornerRadius-xSmall);
+	outline: none;
+	background: var(--docode-input-background);
+	color: var(--docode-input-foreground);
+	font-family: inherit;
+	font-size: var(--docode-fontSize-label1);
+}
+
+.agent-global-configuration-settings-input {
+	height: 26px;
+	padding: var(--docode-spacing-size20) var(--docode-spacing-size80);
+}
+
+.agent-global-configuration-settings-text-row {
+	display: block;
+	padding: var(--docode-spacing-size120);
+}
+
+.agent-global-configuration-settings-text {
+	box-sizing: border-box;
+	display: block;
+	width: 100%;
+	min-height: 76px;
+	margin-top: var(--docode-spacing-size80);
+	padding: var(--docode-spacing-size60) var(--docode-spacing-size80);
+	resize: vertical;
+	line-height: 18px;
+}
+
+.agent-global-configuration-settings-input:focus,
+.agent-global-configuration-settings-text:focus {
+	border-color: var(--docode-focusBorder);
+}
+
+.agent-global-configuration-settings-actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: var(--docode-spacing-size80);
+}
+
+.agent-global-configuration-settings-actions .monaco-button {
+	flex: none;
+	width: auto;
+}
+
+.agent-global-configuration-settings-status {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--docode-spacing-size80);
+	padding: var(--docode-spacing-size120);
+	color: var(--docode-descriptionForeground);
+	line-height: 18px;
+}
+
+.agent-global-configuration-settings-status.error .codicon {
+	color: var(--docode-errorForeground);
+}
+
+.agent-global-configuration-settings.narrow .agent-global-configuration-settings-content {
+	padding: var(--docode-spacing-size240) var(--docode-spacing-size160) var(--docode-spacing-size400);
+}
+
+.agent-global-configuration-settings.narrow .agent-global-configuration-settings-row {
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
+
+.agent-global-configuration-settings.narrow .agent-global-configuration-settings-select,
+.agent-global-configuration-settings.narrow .agent-global-configuration-settings-input {
+	width: 100%;
+	margin-left: 0;
+}

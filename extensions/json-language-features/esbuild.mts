@@ -32,9 +32,9 @@ await Promise.all([
 		outdir: path.join(extensionRoot, 'server', 'dist', 'node'),
 		additionalOptions: {
 			tsconfig: path.join(extensionRoot, 'server', 'tsconfig.json'),
-			external: ['vscode', 'typescript', 'fs'],
+			external: ['docode', 'typescript', 'fs'],
 			banner: {
-				// `@vscode/l10n` is bundled as CommonJS and still calls `require('fs')` internally.
+				// `@docode/l10n` is bundled as CommonJS and still calls `require('fs')` internally.
 				// Provide Node's `require` in the generated ESM output so those imports keep working.
 				js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`,
 			},

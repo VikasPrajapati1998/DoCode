@@ -5,7 +5,7 @@
 import mermaid, { MermaidConfig } from 'mermaid';
 import { buildMermaidConfig, createMermaidErrorElement, loadExtensionConfig, markVsCodeContextAsError } from '../shared';
 import { VsCodeMermaidThemeTracker } from '../shared/vsCodeTheme';
-import { VsCodeApi } from './vscodeApi';
+import { VsCodeApi } from './docodeApi';
 
 interface PanZoomState {
 	readonly scale: number;
@@ -44,7 +44,7 @@ export class PanZoomHandler {
 	constructor(
 		private readonly container: HTMLElement,
 		private readonly content: HTMLElement,
-		private readonly vscode: VsCodeApi,
+		private readonly docode: VsCodeApi,
 		private readonly options: PanZoomOptions = {}
 	) {
 		this.container = container;
@@ -222,8 +222,8 @@ export class PanZoomHandler {
 
 	private saveState(): void {
 		this.hasInteracted = true;
-		const currentState = this.vscode.getState() || {};
-		this.vscode.setState({
+		const currentState = this.docode.getState() || {};
+		this.docode.setState({
 			...currentState,
 			panZoom: {
 				scale: this.scale,
@@ -234,7 +234,7 @@ export class PanZoomHandler {
 	}
 
 	private restoreState(): boolean {
-		const state = this.vscode.getState();
+		const state = this.docode.getState();
 		if (state?.panZoom) {
 			const panZoom = state.panZoom as PanZoomState;
 			this.updateFitScale();
@@ -343,9 +343,9 @@ export class PanZoomHandler {
 		this.applyTransform(); // Apply scale first so content size is correct
 
 		// Clear the saved pan/zoom state
-		const currentState = this.vscode.getState() || {};
+		const currentState = this.docode.getState() || {};
 		delete currentState.panZoom;
-		this.vscode.setState(currentState);
+		this.docode.setState(currentState);
 
 		// Use requestAnimationFrame to ensure layout is updated before resetting the view
 		requestAnimationFrame(() => {
@@ -410,7 +410,7 @@ async function rerenderMermaidDiagram(
 	});
 }
 
-export async function initializeMermaidWebview(vscode: VsCodeApi, options?: PanZoomOptions): Promise<PanZoomHandler | undefined> {
+export async function initializeMermaidWebview(docode: VsCodeApi, options?: PanZoomOptions): Promise<PanZoomHandler | undefined> {
 	const diagram = document.querySelector<HTMLElement>('.mermaid');
 	if (!diagram) {
 		return;
@@ -424,8 +424,8 @@ export async function initializeMermaidWebview(vscode: VsCodeApi, options?: PanZ
 	};
 
 	// Save the mermaid source in the webview state
-	const currentState: PersistedState = vscode.getState() || {};
-	vscode.setState({
+	const currentState: PersistedState = docode.getState() || {};
+	docode.setState({
 		...currentState,
 		mermaidSource: diagramText
 	});
@@ -461,7 +461,7 @@ export async function initializeMermaidWebview(vscode: VsCodeApi, options?: PanZ
 	// Show the diagram now that it's rendered
 	diagram.classList.add('rendered');
 
-	const panZoomHandler = new PanZoomHandler(wrapper, content, vscode, options);
+	const panZoomHandler = new PanZoomHandler(wrapper, content, docode, options);
 	panZoomHandler.initialize();
 
 	// Listen for messages from the extension

@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { activate as keepNotebookModelStoreInSync } from './notebookModelStoreSync';
 import { notebookImagePasteSetup } from './notebookImagePaste';
 import { AttachmentCleaner } from './notebookAttachmentCleaner';
@@ -29,10 +29,10 @@ type NotebookMetadata = {
 	[propName: string]: unknown;
 };
 
-type OptionsWithCellContentMetadata = vscode.NotebookDocumentContentOptions & { cellContentMetadata: { attachments: boolean } };
+type OptionsWithCellContentMetadata = docode.NotebookDocumentContentOptions & { cellContentMetadata: { attachments: boolean } };
 
 
-export function activate(context: vscode.ExtensionContext, serializer: vscode.NotebookSerializer) {
+export function activate(context: docode.ExtensionContext, serializer: docode.NotebookSerializer) {
 	keepNotebookModelStoreInSync(context);
 	const notebookSerializerOptions: OptionsWithCellContentMetadata = {
 		transientOutputs: false,
@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext, serializer: vscode.No
 			attachments: true
 		}
 	};
-	context.subscriptions.push(vscode.workspace.registerNotebookSerializer('jupyter-notebook', serializer, notebookSerializerOptions));
+	context.subscriptions.push(docode.workspace.registerNotebookSerializer('jupyter-notebook', serializer, notebookSerializerOptions));
 
 	const interactiveSerializeOptions: OptionsWithCellContentMetadata = {
 		transientOutputs: false,
@@ -64,47 +64,47 @@ export function activate(context: vscode.ExtensionContext, serializer: vscode.No
 			attachments: true
 		}
 	};
-	context.subscriptions.push(vscode.workspace.registerNotebookSerializer('interactive', serializer, interactiveSerializeOptions));
+	context.subscriptions.push(docode.workspace.registerNotebookSerializer('interactive', serializer, interactiveSerializeOptions));
 
-	vscode.languages.registerCodeLensProvider({ pattern: '**/*.ipynb' }, {
+	docode.languages.registerCodeLensProvider({ pattern: '**/*.ipynb' }, {
 		provideCodeLenses: (document) => {
 			if (
-				document.uri.scheme === 'vscode-notebook-cell' ||
-				document.uri.scheme === 'vscode-notebook-cell-metadata' ||
-				document.uri.scheme === 'vscode-notebook-cell-output'
+				document.uri.scheme === 'docode-notebook-cell' ||
+				document.uri.scheme === 'docode-notebook-cell-metadata' ||
+				document.uri.scheme === 'docode-notebook-cell-output'
 			) {
 				return [];
 			}
-			const codelens = new vscode.CodeLens(new vscode.Range(0, 0, 0, 0), { title: 'Open in Notebook Editor', command: 'ipynb.openIpynbInNotebookEditor', arguments: [document.uri] });
+			const codelens = new docode.CodeLens(new docode.Range(0, 0, 0, 0), { title: 'Open in Notebook Editor', command: 'ipynb.openIpynbInNotebookEditor', arguments: [document.uri] });
 			return [codelens];
 		}
 	});
 
-	context.subscriptions.push(vscode.commands.registerCommand('ipynb.newUntitledIpynb', async () => {
+	context.subscriptions.push(docode.commands.registerCommand('ipynb.newUntitledIpynb', async () => {
 		const language = 'python';
-		const cell = new vscode.NotebookCellData(vscode.NotebookCellKind.Code, '', language);
-		const data = new vscode.NotebookData([cell]);
+		const cell = new docode.NotebookCellData(docode.NotebookCellKind.Code, '', language);
+		const data = new docode.NotebookData([cell]);
 		data.metadata = {
 			cells: [],
 			metadata: {},
 			nbformat: defaultNotebookFormat.major,
 			nbformat_minor: defaultNotebookFormat.minor,
 		};
-		const doc = await vscode.workspace.openNotebookDocument('jupyter-notebook', data);
-		await vscode.window.showNotebookDocument(doc);
+		const doc = await docode.workspace.openNotebookDocument('jupyter-notebook', data);
+		await docode.window.showNotebookDocument(doc);
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('ipynb.openIpynbInNotebookEditor', async (uri: vscode.Uri) => {
-		if (vscode.window.activeTextEditor?.document.uri.toString() === uri.toString()) {
-			await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+	context.subscriptions.push(docode.commands.registerCommand('ipynb.openIpynbInNotebookEditor', async (uri: docode.Uri) => {
+		if (docode.window.activeTextEditor?.document.uri.toString() === uri.toString()) {
+			await docode.commands.executeCommand('workbench.action.closeActiveEditor');
 		}
-		const document = await vscode.workspace.openNotebookDocument(uri);
-		await vscode.window.showNotebookDocument(document);
+		const document = await docode.workspace.openNotebookDocument(uri);
+		await docode.window.showNotebookDocument(document);
 	}));
 
 	context.subscriptions.push(notebookImagePasteSetup());
 
-	const enabled = vscode.workspace.getConfiguration('ipynb').get('pasteImagesAsAttachments.enabled', false);
+	const enabled = docode.workspace.getConfiguration('ipynb').get('pasteImagesAsAttachments.enabled', false);
 	if (enabled) {
 		const cleaner = new AttachmentCleaner();
 		context.subscriptions.push(cleaner);
@@ -114,24 +114,24 @@ export function activate(context: vscode.ExtensionContext, serializer: vscode.No
 		get dropCustomMetadata() {
 			return true;
 		},
-		exportNotebook: (notebook: vscode.NotebookData): Promise<string> => {
+		exportNotebook: (notebook: docode.NotebookData): Promise<string> => {
 			return Promise.resolve(serializeNotebookToString(notebook));
 		},
-		setNotebookMetadata: async (resource: vscode.Uri, metadata: Partial<NotebookMetadata>): Promise<boolean> => {
-			const document = vscode.workspace.notebookDocuments.find(doc => doc.uri.toString() === resource.toString());
+		setNotebookMetadata: async (resource: docode.Uri, metadata: Partial<NotebookMetadata>): Promise<boolean> => {
+			const document = docode.workspace.notebookDocuments.find(doc => doc.uri.toString() === resource.toString());
 			if (!document) {
 				return false;
 			}
 
-			const edit = new vscode.WorkspaceEdit();
-			edit.set(resource, [vscode.NotebookEdit.updateNotebookMetadata({
+			const edit = new docode.WorkspaceEdit();
+			edit.set(resource, [docode.NotebookEdit.updateNotebookMetadata({
 				...document.metadata,
 				metadata: {
 					...(document.metadata.metadata ?? {}),
 					...metadata
 				} satisfies NotebookMetadata,
 			})]);
-			return vscode.workspace.applyEdit(edit);
+			return docode.workspace.applyEdit(edit);
 		},
 	};
 }

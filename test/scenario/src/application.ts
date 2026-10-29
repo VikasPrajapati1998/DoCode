@@ -7,7 +7,7 @@ import { getDevElectronPath, Quality, ConsoleLogger, FileLogger, Logger, MultiLo
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
-import * as sqlite3 from '@vscode/sqlite3';
+import * as sqlite3 from '@docode/sqlite3';
 import type { Page } from '@playwright/test';
 import { createApp, parseVersion } from './utils';
 import { opts } from './options';
@@ -17,9 +17,9 @@ export type JSONValue = string | number | boolean | null | JSONValue[] | { [key:
 type ApplicationLaunchOptions = { recordVideo?: boolean; workspacePath?: string; userSettings?: Record<string, JSONValue>; extraArgs?: string[]; extraEnv?: Readonly<Record<string, string | undefined>> };
 
 const rootPath = path.join(__dirname, '..', '..', '..');
-const logsRootPath = path.join(rootPath, '.build', 'vscode-playwright-mcp', 'logs');
-const crashesRootPath = path.join(rootPath, '.build', 'vscode-playwright-mcp', 'crashes');
-const videoRootPath = path.join(rootPath, '.build', 'vscode-playwright-mcp', 'videos');
+const logsRootPath = path.join(rootPath, '.build', 'docode-playwright-mcp', 'logs');
+const crashesRootPath = path.join(rootPath, '.build', 'docode-playwright-mcp', 'crashes');
+const videoRootPath = path.join(rootPath, '.build', 'docode-playwright-mcp', 'videos');
 const sourceVersion = (JSON.parse(fs.readFileSync(path.join(rootPath, 'package.json'), 'utf8')) as { version: string }).version;
 
 const logger = createLogger();
@@ -107,11 +107,11 @@ function readBuildQuality(root: string): string | undefined {
 }
 
 function parseQuality(stamped?: string): Quality {
-	if (!stamped && process.env.VSCODE_DEV === '1') {
+	if (!stamped && process.env.DOCODE_DEV === '1') {
 		return Quality.Dev;
 	}
 
-	const quality = stamped ?? process.env.VSCODE_QUALITY ?? '';
+	const quality = stamped ?? process.env.DOCODE_QUALITY ?? '';
 
 	switch (quality) {
 		case 'stable':
@@ -199,9 +199,9 @@ if (!opts.web) {
 	} else {
 		testCodePath = getDevElectronPath();
 		electronPath = testCodePath;
-		process.env.VSCODE_REPOSITORY = rootPath;
-		process.env.VSCODE_DEV = '1';
-		process.env.VSCODE_CLI = '1';
+		process.env.DOCODE_REPOSITORY = rootPath;
+		process.env.DOCODE_DEV = '1';
+		process.env.DOCODE_CLI = '1';
 	}
 
 	if (!fs.existsSync(electronPath || '')) {
@@ -229,7 +229,7 @@ if (!opts.web) {
 // #### Web Smoke Tests ####
 //
 else {
-	const testCodeServerPath = opts.build || process.env.VSCODE_REMOTE_SERVER_PATH;
+	const testCodeServerPath = opts.build || process.env.DOCODE_REMOTE_SERVER_PATH;
 
 	if (typeof testCodeServerPath === 'string') {
 		if (!fs.existsSync(testCodeServerPath)) {
@@ -240,9 +240,9 @@ else {
 	}
 
 	if (!testCodeServerPath) {
-		process.env.VSCODE_REPOSITORY = rootPath;
-		process.env.VSCODE_DEV = '1';
-		process.env.VSCODE_CLI = '1';
+		process.env.DOCODE_REPOSITORY = rootPath;
+		process.env.DOCODE_DEV = '1';
+		process.env.DOCODE_CLI = '1';
 
 		logger.log(`Running web smoke out of sources`);
 	}
@@ -280,7 +280,7 @@ export async function getApplication({ recordVideo, workspacePath, userSettings,
 	assertNoProfileOverrides(extraArgs);
 	// The from-source environment is resolved once at module load, which is also
 	// where the Electron path is validated. Re-applying it here would set
-	// `VSCODE_DEV=1` for `--build` runs as well: a packaged build then behaves as
+	// `DOCODE_DEV=1` for `--build` runs as well: a packaged build then behaves as
 	// if it were running from a checkout and never opens a window, so launching
 	// against an installed build times out waiting for its first window.
 	delete process.env.ELECTRON_RUN_AS_NODE; // Ensure we run as Node.js

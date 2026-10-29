@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TelemetryReporter } from '../logging/telemetry';
 import { isImplicitProjectConfigFile, openOrCreateConfig, ProjectType } from '../tsconfig';
 import { ITypeScriptServiceClient } from '../typescriptService';
@@ -15,14 +15,14 @@ interface Hint {
 
 class ExcludeHintItem {
 	public configFileName?: string;
-	private readonly _item: vscode.StatusBarItem;
+	private readonly _item: docode.StatusBarItem;
 	private _currentHint?: Hint;
 
 	constructor(
 		private readonly telemetryReporter: TelemetryReporter
 	) {
-		this._item = vscode.window.createStatusBarItem('status.typescript.exclude', vscode.StatusBarAlignment.Right, 98 /* to the right of typescript version status (99) */);
-		this._item.name = vscode.l10n.t("TypeScript: Configure Excludes");
+		this._item = docode.window.createStatusBarItem('status.typescript.exclude', docode.StatusBarAlignment.Right, 98 /* to the right of typescript version status (99) */);
+		this._item.name = docode.l10n.t("TypeScript: Configure Excludes");
 		this._item.command = 'js.projectStatus.command';
 	}
 
@@ -37,12 +37,12 @@ class ExcludeHintItem {
 	public show(largeRoots?: string) {
 		this._currentHint = {
 			message: largeRoots
-				? vscode.l10n.t("To enable project-wide JavaScript/TypeScript language features, exclude folders with many files, like: {0}", largeRoots)
-				: vscode.l10n.t("To enable project-wide JavaScript/TypeScript language features, exclude large folders with source files that you do not work on.")
+				? docode.l10n.t("To enable project-wide JavaScript/TypeScript language features, exclude folders with many files, like: {0}", largeRoots)
+				: docode.l10n.t("To enable project-wide JavaScript/TypeScript language features, exclude large folders with source files that you do not work on.")
 		};
 		this._item.tooltip = this._currentHint.message;
-		this._item.text = vscode.l10n.t("Configure Excludes");
-		this._item.tooltip = vscode.l10n.t("To enable project-wide JavaScript/TypeScript language features, exclude large folders with source files that you do not work on.");
+		this._item.text = docode.l10n.t("Configure Excludes");
+		this._item.tooltip = docode.l10n.t("To enable project-wide JavaScript/TypeScript language features, exclude large folders with source files that you do not work on.");
 		this._item.color = '#A5DF3B';
 		this._item.show();
 		/* __GDPR__
@@ -58,9 +58,9 @@ class ExcludeHintItem {
 }
 
 
-function createLargeProjectMonitorFromTypeScript(item: ExcludeHintItem, client: ITypeScriptServiceClient): vscode.Disposable {
+function createLargeProjectMonitorFromTypeScript(item: ExcludeHintItem, client: ITypeScriptServiceClient): docode.Disposable {
 
-	interface LargeProjectMessageItem extends vscode.MessageItem {
+	interface LargeProjectMessageItem extends docode.MessageItem {
 		index: number;
 	}
 
@@ -72,9 +72,9 @@ function createLargeProjectMonitorFromTypeScript(item: ExcludeHintItem, client: 
 			const configFileName = body.projectName;
 			if (configFileName) {
 				item.configFileName = configFileName;
-				vscode.window.showWarningMessage<LargeProjectMessageItem>(item.getCurrentHint().message,
+				docode.window.showWarningMessage<LargeProjectMessageItem>(item.getCurrentHint().message,
 					{
-						title: vscode.l10n.t("Configure Excludes"),
+						title: docode.l10n.t("Configure Excludes"),
 						index: 0
 					}).then(selected => {
 						if (selected?.index === 0) {
@@ -91,10 +91,10 @@ function onConfigureExcludesSelected(
 	configFileName: string
 ) {
 	if (!isImplicitProjectConfigFile(configFileName)) {
-		vscode.workspace.openTextDocument(configFileName)
-			.then(vscode.window.showTextDocument);
+		docode.workspace.openTextDocument(configFileName)
+			.then(docode.window.showTextDocument);
 	} else {
-		const root = client.getWorkspaceRootForResource(vscode.Uri.file(configFileName));
+		const root = client.getWorkspaceRootForResource(docode.Uri.file(configFileName));
 		if (root) {
 			openOrCreateConfig(
 				client.apiVersion,
@@ -107,19 +107,19 @@ function onConfigureExcludesSelected(
 
 export function create(
 	client: ITypeScriptServiceClient,
-): vscode.Disposable {
-	const toDispose: vscode.Disposable[] = [];
+): docode.Disposable {
+	const toDispose: docode.Disposable[] = [];
 
 	const item = new ExcludeHintItem(client.telemetryReporter);
-	toDispose.push(vscode.commands.registerCommand('js.projectStatus.command', () => {
+	toDispose.push(docode.commands.registerCommand('js.projectStatus.command', () => {
 		if (item.configFileName) {
 			onConfigureExcludesSelected(client, item.configFileName);
 		}
 		const { message } = item.getCurrentHint();
-		return vscode.window.showInformationMessage(message);
+		return docode.window.showInformationMessage(message);
 	}));
 
 	toDispose.push(createLargeProjectMonitorFromTypeScript(item, client));
 
-	return vscode.Disposable.from(...toDispose);
+	return docode.Disposable.from(...toDispose);
 }

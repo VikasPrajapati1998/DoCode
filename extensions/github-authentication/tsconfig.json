@@ -17,11 +17,11 @@
 	},
 	"include": [
 		"src/**/*",
-		"../../src/vscode-dts/vscode.d.ts",
-		"../../src/vscode-dts/vscode.proposed.authIssuers.d.ts",
-		"../../src/vscode-dts/vscode.proposed.authProviderSpecific.d.ts",
-		"../../src/vscode-dts/vscode.proposed.authSessionAccountIcon.d.ts",
-		"../../src/vscode-dts/vscode.proposed.authSessionExpiration.d.ts",
-		"../../src/vscode-dts/vscode.proposed.notificationTelemetry.d.ts"
+		"../../src/docode-dts/docode.d.ts",
+		"../../src/docode-dts/docode.proposed.authIssuers.d.ts",
+		"../../src/docode-dts/docode.proposed.authProviderSpecific.d.ts",
+		"../../src/docode-dts/docode.proposed.authSessionAccountIcon.d.ts",
+		"../../src/docode-dts/docode.proposed.authSessionExpiration.d.ts",
+		"../../src/docode-dts/docode.proposed.notificationTelemetry.d.ts"
 	]
 }

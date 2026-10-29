@@ -73,8 +73,8 @@ Format the result as a markdown table:
 ```
 | Status | File | +/- |
 |--------|------|-----|
-| DIRECT | src/vs/foo/bar.ts | +120/-5 |
-| VIA_RENAME | src/vs/baz/qux.ts | +300 |
+| DIRECT | src/do/foo/bar.ts | +120/-5 |
+| VIA_RENAME | src/do/baz/qux.ts | +300 |
 | ... | ... | ... |
 
 **Total: N files, +X/-Y lines**
@@ -162,7 +162,7 @@ print(f'\nTotal: {len(results)} files')
 
 ### Alternative Script
 
-After following the process above, run this script to cross-check files touched by an author against the branch diff.   You can do this both with an without src/vs/sessions.
+After following the process above, run this script to cross-check files touched by an author against the branch diff.   You can do this both with an without src/do/sessions.
 
 ```
 AUTHOR=""
@@ -170,17 +170,17 @@ AUTHOR=""
 # 1. Find commits by author on this branch (not on main)
 git log main...HEAD --author="$AUTHOR" --format="%H"
 
-# 2. Get unique files touched across all those commits, excluding src/vs/sessions/
+# 2. Get unique files touched across all those commits, excluding src/do/sessions/
 git log main...HEAD --author="$AUTHOR" --format="%H" \
   | xargs -I{} git diff-tree --no-commit-id -r --name-only {} \
   | sort -u \
-  | grep -v '^src/vs/sessions/'
+  | grep -v '^src/do/sessions/'
 
 # 3. Cross-reference with branch diff to keep only files still changed vs main
 git log main...HEAD --author="$AUTHOR" --format="%H" \
   | xargs -I{} git diff-tree --no-commit-id -r --name-only {} \
   | sort -u \
-  | grep -v '^src/vs/sessions/' \
+  | grep -v '^src/do/sessions/' \
   | while read f; do git diff main...HEAD --name-only -- "$f" 2>/dev/null; done \
   | sort -u
 ```

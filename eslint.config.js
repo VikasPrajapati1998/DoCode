@@ -12,7 +12,6 @@ import tseslint from 'typescript-eslint';
 
 import stylistic from '@stylistic/eslint-plugin';
 import * as pluginLocal from './.eslint-plugin-local/index.ts';
-import * as pluginCopilotLocal from './extensions/copilot/.eslintplugin/index.ts';
 import pluginImport from 'eslint-plugin-import';
 import pluginJsdoc from 'eslint-plugin-jsdoc';
 
@@ -111,7 +110,7 @@ export default defineConfig(
 			'local/code-policy-localization-key-match': 'warn',
 			'local/code-no-localization-template-literals': 'error',
 			'local/code-no-icons-in-localized-strings': 'warn',
-			'local/code-no-http-import': ['warn', { target: 'src/vs/**' }],
+			'local/code-no-http-import': ['warn', { target: 'src/do/**' }],
 			'local/code-no-deep-import-of-internal': ['error', { '.*Internal': true, 'searchExtTypesInternal': false }],
 			'local/code-no-private-agent-host-meta-import': 'error',
 			'local/code-layering': [
@@ -160,16 +159,16 @@ export default defineConfig(
 		ignores: [
 			// Bootstrap entry points and the AMD loader retain their startup I/O.
 			'src/*',
-			'src/vs/amdX.ts',
-			'src/vs/code/electron-main/main.ts',
+			'src/do/amdX.ts',
+			'src/do/code/electron-main/main.ts',
 			// Core synchronous helpers and startup/shutdown infrastructure.
-			'src/vs/base/node/pfs.ts',
-			'src/vs/platform/environment/node/wait.ts',
-			'src/vs/server/node/remoteExtensionHostAgentServer.ts',
-			'src/vs/server/node/server.main.ts',
-			'src/vs/workbench/api/node/extHostCLIServer.ts',
-			'src/vs/workbench/api/node/extHostExtensionService.ts',
-			'src/vs/workbench/api/node/extHostStoragePaths.ts',
+			'src/do/base/node/pfs.ts',
+			'src/do/platform/environment/node/wait.ts',
+			'src/do/server/node/remoteExtensionHostAgentServer.ts',
+			'src/do/server/node/server.main.ts',
+			'src/do/workbench/api/node/extHostCLIServer.ts',
+			'src/do/workbench/api/node/extHostExtensionService.ts',
+			'src/do/workbench/api/node/extHostStoragePaths.ts',
 			'**/test/**',
 			'**/tests/**',
 			'**/fixtures/**',
@@ -177,11 +176,11 @@ export default defineConfig(
 			'**/scripts/**',
 			'**/script/**',
 			'**/build/**',
-			'extensions/vscode-test-resolver/**',
-			'extensions/vscode-api-tests/**',
+			'extensions/docode-test-resolver/**',
+			'extensions/docode-api-tests/**',
 			// These isolated CLI/askpass processes do not share the application's event loop.
-			'src/vs/code/node/cli.ts',
-			'src/vs/server/node/server.cli.ts',
+			'src/do/code/node/cli.ts',
+			'src/do/server/node/server.cli.ts',
 			'extensions/git/src/askpass-main.ts',
 		],
 		rules: {
@@ -242,13 +241,13 @@ export default defineConfig(
 	},
 	{
 		files: [
-			'src/vs/platform/agentHost/test/**/missionControl*.test.ts',
-			'src/vs/platform/agentHost/test/**/protocolServerHandler.test.ts',
-			'src/vs/platform/agentHost/test/**/agentHostProtocolClient.test.ts',
-			'src/vs/platform/agentHost/test/**/webPubSubRelayTransport.test.ts',
-			'src/vs/platform/agentHost/test/common/webPubSub/*.test.ts',
-			'src/vs/workbench/contrib/chat/test/browser/remoteAgentHost/cloudSandbox*.test.ts',
-			'src/vs/sessions/contrib/providers/remoteAgentHost/test/browser/remoteAgentHost.contribution.test.ts',
+			'src/do/platform/agentHost/test/**/missionControl*.test.ts',
+			'src/do/platform/agentHost/test/**/protocolServerHandler.test.ts',
+			'src/do/platform/agentHost/test/**/agentHostProtocolClient.test.ts',
+			'src/do/platform/agentHost/test/**/webPubSubRelayTransport.test.ts',
+			'src/do/platform/agentHost/test/common/webPubSub/*.test.ts',
+			'src/do/workbench/contrib/chat/test/browser/remoteAgentHost/cloudSandbox*.test.ts',
+			'src/do/sessions/contrib/providers/remoteAgentHost/test/browser/remoteAgentHost.contribution.test.ts',
 		],
 		plugins: {
 			'agent-host-test': {
@@ -308,7 +307,6 @@ export default defineConfig(
 			'src/bootstrap-node.ts',
 			'build/lib/extensions.ts',
 			'build/lib/test/render.test.ts',
-			'extensions/copilot/**/*',
 			'extensions/debug-auto-launch/src/extension.ts',
 			'extensions/emmet/src/updateImageSize.ts',
 			'extensions/emmet/src/util.ts',
@@ -316,129 +314,129 @@ export default defineConfig(
 			'extensions/tunnel-forwarding/src/extension.ts',
 			'extensions/typescript-language-features/src/utils/platform.ts',
 			'extensions/typescript-language-features/web/src/webServer.ts',
-			'src/vs/base/browser/broadcast.ts',
-			'src/vs/base/browser/canIUse.ts',
-			'src/vs/base/browser/dom.ts',
-			'src/vs/base/browser/markdownRenderer.ts',
-			'src/vs/base/browser/touch.ts',
-			'src/vs/base/common/async.ts',
-			'src/vs/base/common/desktopEnvironmentInfo.ts',
-			'src/vs/base/common/objects.ts',
-			'src/vs/base/common/observableInternal/logging/consoleObservableLogger.ts',
-			'src/vs/base/common/observableInternal/logging/debugger/devToolsLogger.ts',
-			'src/vs/base/test/common/snapshot.ts',
-			'src/vs/base/test/common/timeTravelScheduler.ts',
-			'src/vs/editor/browser/controller/editContext/native/debugEditContext.ts',
-			'src/vs/editor/browser/gpu/gpuUtils.ts',
-			'src/vs/editor/browser/gpu/taskQueue.ts',
-			'src/vs/editor/browser/view.ts',
-			'src/vs/editor/browser/widget/diffEditor/diffEditorWidget.ts',
-			'src/vs/editor/browser/widget/diffEditor/utils.ts',
-			'src/vs/editor/browser/widget/multiDiffEditor/multiDiffEditorWidgetImpl.ts',
-			'src/vs/editor/common/config/editorOptions.ts',
-			'src/vs/editor/contrib/dropOrPasteInto/browser/copyPasteContribution.ts',
-			'src/vs/editor/contrib/dropOrPasteInto/browser/copyPasteController.ts',
-			'src/vs/editor/contrib/dropOrPasteInto/browser/edit.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/model/provideInlineCompletions.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/view/ghostText/ghostTextView.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/view/inlineEdits/inlineEditsViews/debugVisualization.ts',
-			'src/vs/platform/accessibilitySignal/browser/accessibilitySignalService.ts',
-			'src/vs/platform/configuration/common/configuration.ts',
-			'src/vs/platform/configuration/common/configurationModels.ts',
-			'src/vs/platform/contextkey/browser/contextKeyService.ts',
-			'src/vs/platform/contextkey/test/common/scanner.test.ts',
-			'src/vs/platform/dataChannel/browser/forwardingTelemetryService.ts',
-			'src/vs/platform/hover/browser/hoverService.ts',
-			'src/vs/platform/hover/browser/hoverWidget.ts',
-			'src/vs/platform/instantiation/common/instantiationService.ts',
-			'src/vs/platform/mcp/common/mcpManagementCli.ts',
-			'src/vs/workbench/api/browser/mainThreadChatSessions.ts',
-			'src/vs/workbench/api/browser/mainThreadDebugService.ts',
-			'src/vs/workbench/api/browser/mainThreadTesting.ts',
-			'src/vs/workbench/api/common/extHost.api.impl.ts',
-			'src/vs/workbench/api/common/extHostChatAgents2.ts',
-			'src/vs/workbench/api/common/extHostChatSessions.ts',
-			'src/vs/workbench/api/common/extHostDebugService.ts',
-			'src/vs/workbench/api/common/extHostNotebookKernels.ts',
-			'src/vs/workbench/api/common/extHostQuickOpen.ts',
-			'src/vs/workbench/api/common/extHostRequireInterceptor.ts',
-			'src/vs/workbench/api/common/extHostTypeConverters.ts',
-			'src/vs/workbench/api/common/extHostTypes.ts',
-			'src/vs/workbench/api/node/loopbackServer.ts',
-			'src/vs/workbench/api/node/proxyResolver.ts',
-			'src/vs/workbench/api/test/common/extHostTypeConverters.test.ts',
-			'src/vs/workbench/api/test/common/testRPCProtocol.ts',
-			'src/vs/workbench/api/worker/extHostExtensionService.ts',
-			'src/vs/workbench/browser/parts/paneCompositeBar.ts',
-			'src/vs/workbench/browser/parts/titlebar/titlebarPart.ts',
-			'src/vs/workbench/browser/workbench.ts',
-			'src/vs/workbench/common/notifications.ts',
-			'src/vs/workbench/contrib/accessibility/browser/accessibleView.ts',
-			'src/vs/workbench/contrib/chat/browser/attachments/chatAttachmentResolveService.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatAttachmentsContentPart.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatConfirmationWidget.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatElicitationContentPart.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatReferencesContentPart.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatTreeContentPart.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/toolInvocationParts/abstractToolConfirmationSubPart.ts',
-			'src/vs/workbench/contrib/chat/browser/chatEditing/chatEditingSession.ts',
-			'src/vs/workbench/contrib/chat/browser/chatEditing/chatEditingSessionStorage.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/chatContentParts/chatInlineAnchorWidget.ts',
-			'src/vs/workbench/contrib/chat/browser/accessibility/chatResponseAccessibleView.ts',
-			'src/vs/workbench/contrib/chat/browser/widget/input/editor/chatInputCompletions.ts',
-			'src/vs/workbench/contrib/chat/common/model/chatModel.ts',
-			'src/vs/workbench/contrib/chat/test/common/promptSyntax/testUtils/mockFilesystem.test.ts',
-			'src/vs/workbench/contrib/chat/test/common/promptSyntax/testUtils/mockFilesystem.ts',
-			'src/vs/workbench/contrib/chat/test/common/tools/builtinTools/manageTodoListTool.test.ts',
-			'src/vs/workbench/contrib/debug/browser/debugAdapterManager.ts',
-			'src/vs/workbench/contrib/debug/browser/variablesView.ts',
-			'src/vs/workbench/contrib/debug/browser/watchExpressionsView.ts',
-			'src/vs/workbench/contrib/debug/common/debugModel.ts',
-			'src/vs/workbench/contrib/debug/common/debugger.ts',
-			'src/vs/workbench/contrib/debug/common/replAccessibilityAnnouncer.ts',
-			'src/vs/workbench/contrib/editSessions/browser/editSessionsStorageService.ts',
-			'src/vs/workbench/contrib/editTelemetry/browser/helpers/documentWithAnnotatedEdits.ts',
-			'src/vs/workbench/contrib/extensions/common/extensionQuery.ts',
-			'src/vs/workbench/contrib/interactive/browser/interactiveEditorInput.ts',
-			'src/vs/workbench/contrib/issue/browser/issueFormService.ts',
-			'src/vs/workbench/contrib/issue/browser/issueQuickAccess.ts',
-			'src/vs/workbench/contrib/markers/browser/markersView.ts',
-			'src/vs/workbench/contrib/mcp/browser/mcpElicitationService.ts',
-			'src/vs/workbench/contrib/mcp/common/mcpLanguageModelToolContribution.ts',
-			'src/vs/workbench/contrib/mcp/common/mcpResourceFilesystem.ts',
-			'src/vs/workbench/contrib/mcp/common/mcpSamplingLog.ts',
-			'src/vs/workbench/contrib/mcp/common/mcpServer.ts',
-			'src/vs/workbench/contrib/mcp/common/mcpServerRequestHandler.ts',
-			'src/vs/workbench/contrib/mcp/test/common/mcpRegistryTypes.ts',
-			'src/vs/workbench/contrib/mcp/test/common/mcpServerRequestHandler.test.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/cellOutputActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/chat/notebook.chat.contribution.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/coreActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/view/renderers/backLayerWebView.ts',
-			'src/vs/workbench/contrib/notebook/browser/viewParts/notebookKernelView.ts',
-			'src/vs/workbench/contrib/output/browser/outputView.ts',
-			'src/vs/workbench/contrib/preferences/browser/settingsTree.ts',
-			'src/vs/workbench/contrib/remoteTunnel/electron-browser/remoteTunnel.contribution.ts',
-			'src/vs/workbench/contrib/testing/browser/explorerProjections/listProjection.ts',
-			'src/vs/workbench/contrib/testing/browser/explorerProjections/treeProjection.ts',
-			'src/vs/workbench/contrib/testing/browser/testCoverageBars.ts',
-			'src/vs/workbench/contrib/testing/browser/testExplorerActions.ts',
-			'src/vs/workbench/contrib/testing/browser/testingOutputPeek.ts',
-			'src/vs/workbench/contrib/testing/browser/testingProgressUiService.ts',
-			'src/vs/workbench/contrib/testing/browser/testResultsView/testResultsTree.ts',
-			'src/vs/workbench/contrib/testing/common/testCoverageService.ts',
-			'src/vs/workbench/contrib/testing/common/testResultService.ts',
-			'src/vs/workbench/contrib/testing/common/testingChatAgentTool.ts',
-			'src/vs/workbench/contrib/testing/test/browser/testObjectTree.ts',
-			'src/vs/workbench/contrib/themes/browser/themes.contribution.ts',
-			'src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution.ts',
-			'src/vs/workbench/services/environment/electron-browser/environmentService.ts',
-			'src/vs/workbench/services/keybinding/common/keybindingIO.ts',
-			'src/vs/workbench/services/preferences/common/preferencesValidation.ts',
-			'src/vs/workbench/services/remote/common/tunnelModel.ts',
-			'src/vs/workbench/services/search/common/textSearchManager.ts',
-			'src/vs/workbench/test/browser/workbenchTestServices.ts',
-			'src/vs/platform/agentHost/common/state/protocol/**',
+			'src/do/base/browser/broadcast.ts',
+			'src/do/base/browser/canIUse.ts',
+			'src/do/base/browser/dom.ts',
+			'src/do/base/browser/markdownRenderer.ts',
+			'src/do/base/browser/touch.ts',
+			'src/do/base/common/async.ts',
+			'src/do/base/common/desktopEnvironmentInfo.ts',
+			'src/do/base/common/objects.ts',
+			'src/do/base/common/observableInternal/logging/consoleObservableLogger.ts',
+			'src/do/base/common/observableInternal/logging/debugger/devToolsLogger.ts',
+			'src/do/base/test/common/snapshot.ts',
+			'src/do/base/test/common/timeTravelScheduler.ts',
+			'src/do/editor/browser/controller/editContext/native/debugEditContext.ts',
+			'src/do/editor/browser/gpu/gpuUtils.ts',
+			'src/do/editor/browser/gpu/taskQueue.ts',
+			'src/do/editor/browser/view.ts',
+			'src/do/editor/browser/widget/diffEditor/diffEditorWidget.ts',
+			'src/do/editor/browser/widget/diffEditor/utils.ts',
+			'src/do/editor/browser/widget/multiDiffEditor/multiDiffEditorWidgetImpl.ts',
+			'src/do/editor/common/config/editorOptions.ts',
+			'src/do/editor/contrib/dropOrPasteInto/browser/copyPasteContribution.ts',
+			'src/do/editor/contrib/dropOrPasteInto/browser/copyPasteController.ts',
+			'src/do/editor/contrib/dropOrPasteInto/browser/edit.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/model/provideInlineCompletions.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/view/ghostText/ghostTextView.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/view/inlineEdits/inlineEditsViews/debugVisualization.ts',
+			'src/do/platform/accessibilitySignal/browser/accessibilitySignalService.ts',
+			'src/do/platform/configuration/common/configuration.ts',
+			'src/do/platform/configuration/common/configurationModels.ts',
+			'src/do/platform/contextkey/browser/contextKeyService.ts',
+			'src/do/platform/contextkey/test/common/scanner.test.ts',
+			'src/do/platform/dataChannel/browser/forwardingTelemetryService.ts',
+			'src/do/platform/hover/browser/hoverService.ts',
+			'src/do/platform/hover/browser/hoverWidget.ts',
+			'src/do/platform/instantiation/common/instantiationService.ts',
+			'src/do/platform/mcp/common/mcpManagementCli.ts',
+			'src/do/workbench/api/browser/mainThreadChatSessions.ts',
+			'src/do/workbench/api/browser/mainThreadDebugService.ts',
+			'src/do/workbench/api/browser/mainThreadTesting.ts',
+			'src/do/workbench/api/common/extHost.api.impl.ts',
+			'src/do/workbench/api/common/extHostChatAgents2.ts',
+			'src/do/workbench/api/common/extHostChatSessions.ts',
+			'src/do/workbench/api/common/extHostDebugService.ts',
+			'src/do/workbench/api/common/extHostNotebookKernels.ts',
+			'src/do/workbench/api/common/extHostQuickOpen.ts',
+			'src/do/workbench/api/common/extHostRequireInterceptor.ts',
+			'src/do/workbench/api/common/extHostTypeConverters.ts',
+			'src/do/workbench/api/common/extHostTypes.ts',
+			'src/do/workbench/api/node/loopbackServer.ts',
+			'src/do/workbench/api/node/proxyResolver.ts',
+			'src/do/workbench/api/test/common/extHostTypeConverters.test.ts',
+			'src/do/workbench/api/test/common/testRPCProtocol.ts',
+			'src/do/workbench/api/worker/extHostExtensionService.ts',
+			'src/do/workbench/browser/parts/paneCompositeBar.ts',
+			'src/do/workbench/browser/parts/titlebar/titlebarPart.ts',
+			'src/do/workbench/browser/workbench.ts',
+			'src/do/workbench/common/notifications.ts',
+			'src/do/workbench/contrib/accessibility/browser/accessibleView.ts',
+			'src/do/workbench/contrib/chat/browser/attachments/chatAttachmentResolveService.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/chatAttachmentsContentPart.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/chatConfirmationWidget.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/chatElicitationContentPart.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/chatReferencesContentPart.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/chatTreeContentPart.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/toolInvocationParts/abstractToolConfirmationSubPart.ts',
+			'src/do/workbench/contrib/chat/browser/chatEditing/chatEditingSession.ts',
+			'src/do/workbench/contrib/chat/browser/chatEditing/chatEditingSessionStorage.ts',
+			'src/do/workbench/contrib/chat/browser/widget/chatContentParts/chatInlineAnchorWidget.ts',
+			'src/do/workbench/contrib/chat/browser/accessibility/chatResponseAccessibleView.ts',
+			'src/do/workbench/contrib/chat/browser/widget/input/editor/chatInputCompletions.ts',
+			'src/do/workbench/contrib/chat/common/model/chatModel.ts',
+			'src/do/workbench/contrib/chat/test/common/promptSyntax/testUtils/mockFilesystem.test.ts',
+			'src/do/workbench/contrib/chat/test/common/promptSyntax/testUtils/mockFilesystem.ts',
+			'src/do/workbench/contrib/chat/test/common/tools/builtinTools/manageTodoListTool.test.ts',
+			'src/do/workbench/contrib/debug/browser/debugAdapterManager.ts',
+			'src/do/workbench/contrib/debug/browser/variablesView.ts',
+			'src/do/workbench/contrib/debug/browser/watchExpressionsView.ts',
+			'src/do/workbench/contrib/debug/common/debugModel.ts',
+			'src/do/workbench/contrib/debug/common/debugger.ts',
+			'src/do/workbench/contrib/debug/common/replAccessibilityAnnouncer.ts',
+			'src/do/workbench/contrib/editSessions/browser/editSessionsStorageService.ts',
+			'src/do/workbench/contrib/editTelemetry/browser/helpers/documentWithAnnotatedEdits.ts',
+			'src/do/workbench/contrib/extensions/common/extensionQuery.ts',
+			'src/do/workbench/contrib/interactive/browser/interactiveEditorInput.ts',
+			'src/do/workbench/contrib/issue/browser/issueFormService.ts',
+			'src/do/workbench/contrib/issue/browser/issueQuickAccess.ts',
+			'src/do/workbench/contrib/markers/browser/markersView.ts',
+			'src/do/workbench/contrib/mcp/browser/mcpElicitationService.ts',
+			'src/do/workbench/contrib/mcp/common/mcpLanguageModelToolContribution.ts',
+			'src/do/workbench/contrib/mcp/common/mcpResourceFilesystem.ts',
+			'src/do/workbench/contrib/mcp/common/mcpSamplingLog.ts',
+			'src/do/workbench/contrib/mcp/common/mcpServer.ts',
+			'src/do/workbench/contrib/mcp/common/mcpServerRequestHandler.ts',
+			'src/do/workbench/contrib/mcp/test/common/mcpRegistryTypes.ts',
+			'src/do/workbench/contrib/mcp/test/common/mcpServerRequestHandler.test.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/cellOutputActions.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/chat/notebook.chat.contribution.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/coreActions.ts',
+			'src/do/workbench/contrib/notebook/browser/view/renderers/backLayerWebView.ts',
+			'src/do/workbench/contrib/notebook/browser/viewParts/notebookKernelView.ts',
+			'src/do/workbench/contrib/output/browser/outputView.ts',
+			'src/do/workbench/contrib/preferences/browser/settingsTree.ts',
+			'src/do/workbench/contrib/remoteTunnel/electron-browser/remoteTunnel.contribution.ts',
+			'src/do/workbench/contrib/testing/browser/explorerProjections/listProjection.ts',
+			'src/do/workbench/contrib/testing/browser/explorerProjections/treeProjection.ts',
+			'src/do/workbench/contrib/testing/browser/testCoverageBars.ts',
+			'src/do/workbench/contrib/testing/browser/testExplorerActions.ts',
+			'src/do/workbench/contrib/testing/browser/testingOutputPeek.ts',
+			'src/do/workbench/contrib/testing/browser/testingProgressUiService.ts',
+			'src/do/workbench/contrib/testing/browser/testResultsView/testResultsTree.ts',
+			'src/do/workbench/contrib/testing/common/testCoverageService.ts',
+			'src/do/workbench/contrib/testing/common/testResultService.ts',
+			'src/do/workbench/contrib/testing/common/testingChatAgentTool.ts',
+			'src/do/workbench/contrib/testing/test/browser/testObjectTree.ts',
+			'src/do/workbench/contrib/themes/browser/themes.contribution.ts',
+			'src/do/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.contribution.ts',
+			'src/do/workbench/services/environment/electron-browser/environmentService.ts',
+			'src/do/workbench/services/keybinding/common/keybindingIO.ts',
+			'src/do/workbench/services/preferences/common/preferencesValidation.ts',
+			'src/do/workbench/services/remote/common/tunnelModel.ts',
+			'src/do/workbench/services/search/common/textSearchManager.ts',
+			'src/do/workbench/test/browser/workbenchTestServices.ts',
+			'src/do/platform/agentHost/common/state/protocol/**',
 			'test/automation/src/playwrightDriver.ts',
 			'.eslint-plugin-local/**/*',
 		],
@@ -452,10 +450,10 @@ export default defineConfig(
 	// Guard the agent host protocol `_meta` bag: no untyped field access or casts.
 	{
 		files: [
-			'src/vs/platform/agentHost/**/*.ts',
-			'src/vs/workbench/contrib/chat/browser/agentSessions/**/*.ts',
-			'src/vs/workbench/services/agentHost/**/*.ts',
-			'src/vs/sessions/**/*.ts',
+			'src/do/platform/agentHost/**/*.ts',
+			'src/do/workbench/contrib/chat/browser/agentSessions/**/*.ts',
+			'src/do/workbench/services/agentHost/**/*.ts',
+			'src/do/sessions/**/*.ts',
 		],
 		ignores: [
 			// Tests assert on the raw `_meta` wire shape on purpose (verifying
@@ -465,12 +463,12 @@ export default defineConfig(
 			'**/*.integrationTest.ts',
 			// This directory is the validation boundary for typed metadata
 			// readers. Callers elsewhere must consume those readers.
-			'src/vs/platform/agentHost/common/meta/**',
+			'src/do/platform/agentHost/common/meta/**',
 			// Copilot SDK metadata is already typed and is not an AHP `_meta`
 			// bag. Keep its access isolated in one adapter.
-			'src/vs/platform/agentHost/node/copilot/copilotSdkMeta.ts',
+			'src/do/platform/agentHost/node/copilot/copilotSdkMeta.ts',
 			// Codex's own generated app-server protocol (not AHP `_meta`).
-			'src/vs/platform/agentHost/node/codex/protocol/**',
+			'src/do/platform/agentHost/node/codex/protocol/**',
 		],
 		plugins: {
 			'local': pluginLocal,
@@ -486,7 +484,7 @@ export default defineConfig(
 			'extensions/git/src/**/*.ts',
 			'extensions/git-base/src/**/*.ts',
 			'extensions/github/src/**/*.ts',
-			// vscode
+			// docode
 			'src/**/*.ts',
 		],
 		ignores: [
@@ -497,413 +495,413 @@ export default defineConfig(
 			'extensions/git/src/util.ts',
 			'extensions/git-base/src/decorators.ts',
 			'extensions/github/src/util.ts',
-			// vscode d.ts
-			'src/vs/amdX.ts',
-			'src/vs/monaco.d.ts',
-			'src/vscode-dts/**',
+			// docode d.ts
+			'src/do/amdX.ts',
+			'src/do/monaco.d.ts',
+			'src/docode-dts/**',
 			// Base
-			'src/vs/base/browser/dom.ts',
-			'src/vs/base/browser/mouseEvent.ts',
-			'src/vs/base/node/processes.ts',
-			'src/vs/base/common/arrays.ts',
-			'src/vs/base/common/async.ts',
-			'src/vs/base/common/console.ts',
-			'src/vs/base/common/decorators.ts',
-			'src/vs/base/common/errorMessage.ts',
-			'src/vs/base/common/errors.ts',
-			'src/vs/base/common/event.ts',
-			'src/vs/base/common/hotReload.ts',
-			'src/vs/base/common/hotReloadHelpers.ts',
-			'src/vs/base/common/json.ts',
-			'src/vs/base/common/jsonSchema.ts',
-			'src/vs/base/common/lifecycle.ts',
-			'src/vs/base/common/map.ts',
-			'src/vs/base/common/marshalling.ts',
-			'src/vs/base/common/objects.ts',
-			'src/vs/base/common/performance.ts',
-			'src/vs/base/common/platform.ts',
-			'src/vs/base/common/processes.ts',
-			'src/vs/base/common/types.ts',
-			'src/vs/base/common/uriIpc.ts',
-			'src/vs/base/common/verifier.ts',
-			'src/vs/base/common/observableInternal/base.ts',
-			'src/vs/base/common/observableInternal/changeTracker.ts',
-			'src/vs/base/common/observableInternal/set.ts',
-			'src/vs/base/common/observableInternal/transaction.ts',
-			'src/vs/base/common/worker/webWorkerBootstrap.ts',
-			'src/vs/base/test/common/mock.ts',
-			'src/vs/base/test/common/snapshot.ts',
-			'src/vs/base/test/common/timeTravelScheduler.ts',
-			'src/vs/base/test/common/troubleshooting.ts',
-			'src/vs/base/test/common/utils.ts',
-			'src/vs/base/browser/ui/breadcrumbs/breadcrumbsWidget.ts',
-			'src/vs/base/browser/ui/grid/grid.ts',
-			'src/vs/base/browser/ui/grid/gridview.ts',
-			'src/vs/base/browser/ui/list/listPaging.ts',
-			'src/vs/base/browser/ui/list/listView.ts',
-			'src/vs/base/browser/ui/list/listWidget.ts',
-			'src/vs/base/browser/ui/list/rowCache.ts',
-			'src/vs/base/browser/ui/sash/sash.ts',
-			'src/vs/base/browser/ui/table/tableWidget.ts',
-			'src/vs/base/parts/ipc/common/ipc.net.ts',
-			'src/vs/base/parts/ipc/common/ipc.ts',
-			'src/vs/base/parts/ipc/electron-main/ipcMain.ts',
-			'src/vs/base/parts/ipc/node/ipc.cp.ts',
-			'src/vs/base/common/observableInternal/experimental/reducer.ts',
-			'src/vs/base/common/observableInternal/experimental/utils.ts',
-			'src/vs/base/common/observableInternal/logging/consoleObservableLogger.ts',
-			'src/vs/base/common/observableInternal/logging/debugGetDependencyGraph.ts',
-			'src/vs/base/common/observableInternal/logging/logging.ts',
-			'src/vs/base/common/observableInternal/observables/baseObservable.ts',
-			'src/vs/base/common/observableInternal/observables/derived.ts',
-			'src/vs/base/common/observableInternal/observables/derivedImpl.ts',
-			'src/vs/base/common/observableInternal/observables/observableFromEvent.ts',
-			'src/vs/base/common/observableInternal/observables/observableSignalFromEvent.ts',
-			'src/vs/base/common/observableInternal/reactions/autorunImpl.ts',
-			'src/vs/base/common/observableInternal/utils/utils.ts',
-			'src/vs/base/common/observableInternal/utils/utilsCancellation.ts',
-			'src/vs/base/parts/ipc/test/node/testService.ts',
-			'src/vs/base/common/observableInternal/logging/debugger/debuggerRpc.ts',
-			'src/vs/base/common/observableInternal/logging/debugger/devToolsLogger.ts',
-			'src/vs/base/common/observableInternal/logging/debugger/rpc.ts',
-			'src/vs/base/test/browser/ui/grid/util.ts',
+			'src/do/base/browser/dom.ts',
+			'src/do/base/browser/mouseEvent.ts',
+			'src/do/base/node/processes.ts',
+			'src/do/base/common/arrays.ts',
+			'src/do/base/common/async.ts',
+			'src/do/base/common/console.ts',
+			'src/do/base/common/decorators.ts',
+			'src/do/base/common/errorMessage.ts',
+			'src/do/base/common/errors.ts',
+			'src/do/base/common/event.ts',
+			'src/do/base/common/hotReload.ts',
+			'src/do/base/common/hotReloadHelpers.ts',
+			'src/do/base/common/json.ts',
+			'src/do/base/common/jsonSchema.ts',
+			'src/do/base/common/lifecycle.ts',
+			'src/do/base/common/map.ts',
+			'src/do/base/common/marshalling.ts',
+			'src/do/base/common/objects.ts',
+			'src/do/base/common/performance.ts',
+			'src/do/base/common/platform.ts',
+			'src/do/base/common/processes.ts',
+			'src/do/base/common/types.ts',
+			'src/do/base/common/uriIpc.ts',
+			'src/do/base/common/verifier.ts',
+			'src/do/base/common/observableInternal/base.ts',
+			'src/do/base/common/observableInternal/changeTracker.ts',
+			'src/do/base/common/observableInternal/set.ts',
+			'src/do/base/common/observableInternal/transaction.ts',
+			'src/do/base/common/worker/webWorkerBootstrap.ts',
+			'src/do/base/test/common/mock.ts',
+			'src/do/base/test/common/snapshot.ts',
+			'src/do/base/test/common/timeTravelScheduler.ts',
+			'src/do/base/test/common/troubleshooting.ts',
+			'src/do/base/test/common/utils.ts',
+			'src/do/base/browser/ui/breadcrumbs/breadcrumbsWidget.ts',
+			'src/do/base/browser/ui/grid/grid.ts',
+			'src/do/base/browser/ui/grid/gridview.ts',
+			'src/do/base/browser/ui/list/listPaging.ts',
+			'src/do/base/browser/ui/list/listView.ts',
+			'src/do/base/browser/ui/list/listWidget.ts',
+			'src/do/base/browser/ui/list/rowCache.ts',
+			'src/do/base/browser/ui/sash/sash.ts',
+			'src/do/base/browser/ui/table/tableWidget.ts',
+			'src/do/base/parts/ipc/common/ipc.net.ts',
+			'src/do/base/parts/ipc/common/ipc.ts',
+			'src/do/base/parts/ipc/electron-main/ipcMain.ts',
+			'src/do/base/parts/ipc/node/ipc.cp.ts',
+			'src/do/base/common/observableInternal/experimental/reducer.ts',
+			'src/do/base/common/observableInternal/experimental/utils.ts',
+			'src/do/base/common/observableInternal/logging/consoleObservableLogger.ts',
+			'src/do/base/common/observableInternal/logging/debugGetDependencyGraph.ts',
+			'src/do/base/common/observableInternal/logging/logging.ts',
+			'src/do/base/common/observableInternal/observables/baseObservable.ts',
+			'src/do/base/common/observableInternal/observables/derived.ts',
+			'src/do/base/common/observableInternal/observables/derivedImpl.ts',
+			'src/do/base/common/observableInternal/observables/observableFromEvent.ts',
+			'src/do/base/common/observableInternal/observables/observableSignalFromEvent.ts',
+			'src/do/base/common/observableInternal/reactions/autorunImpl.ts',
+			'src/do/base/common/observableInternal/utils/utils.ts',
+			'src/do/base/common/observableInternal/utils/utilsCancellation.ts',
+			'src/do/base/parts/ipc/test/node/testService.ts',
+			'src/do/base/common/observableInternal/logging/debugger/debuggerRpc.ts',
+			'src/do/base/common/observableInternal/logging/debugger/devToolsLogger.ts',
+			'src/do/base/common/observableInternal/logging/debugger/rpc.ts',
+			'src/do/base/test/browser/ui/grid/util.ts',
 			// Platform
-			'src/vs/platform/commands/common/commands.ts',
-			'src/vs/platform/contextkey/browser/contextKeyService.ts',
-			'src/vs/platform/contextkey/common/contextkey.ts',
-			'src/vs/platform/contextview/browser/contextView.ts',
-			'src/vs/platform/debug/common/extensionHostDebugIpc.ts',
-			'src/vs/platform/debug/electron-main/extensionHostDebugIpc.ts',
-			'src/vs/platform/diagnostics/common/diagnostics.ts',
-			'src/vs/platform/download/common/downloadIpc.ts',
-			'src/vs/platform/extensions/common/extensions.ts',
-			'src/vs/platform/instantiation/common/descriptors.ts',
-			'src/vs/platform/instantiation/common/extensions.ts',
-			'src/vs/platform/instantiation/common/instantiation.ts',
-			'src/vs/platform/instantiation/common/instantiationService.ts',
-			'src/vs/platform/instantiation/common/serviceCollection.ts',
-			'src/vs/platform/keybinding/common/keybinding.ts',
-			'src/vs/platform/keybinding/common/keybindingResolver.ts',
-			'src/vs/platform/keybinding/common/keybindingsRegistry.ts',
-			'src/vs/platform/keybinding/common/resolvedKeybindingItem.ts',
-			'src/vs/platform/languagePacks/node/languagePacks.ts',
-			'src/vs/platform/list/browser/listService.ts',
-			'src/vs/platform/log/browser/log.ts',
-			'src/vs/platform/log/common/log.ts',
-			'src/vs/platform/log/common/logIpc.ts',
-			'src/vs/platform/log/electron-main/logIpc.ts',
-			'src/vs/platform/meteredConnection/electron-main/meteredConnectionChannel.ts',
-			'src/vs/platform/observable/common/wrapInHotClass.ts',
-			'src/vs/platform/observable/common/wrapInReloadableClass.ts',
-			'src/vs/platform/policy/common/policyIpc.ts',
-			'src/vs/platform/profiling/common/profilingTelemetrySpec.ts',
-			'src/vs/platform/quickinput/browser/quickInputActions.ts',
-			'src/vs/platform/quickinput/common/quickInput.ts',
-			'src/vs/platform/registry/common/platform.ts',
-			'src/vs/platform/remote/browser/browserSocketFactory.ts',
-			'src/vs/platform/remote/browser/remoteAuthorityResolverService.ts',
-			'src/vs/platform/remote/common/remoteAgentConnection.ts',
-			'src/vs/platform/remote/common/remoteAuthorityResolver.ts',
-			'src/vs/platform/remote/electron-browser/electronRemoteResourceLoader.ts',
-			'src/vs/platform/remote/electron-browser/remoteAuthorityResolverService.ts',
-			'src/vs/platform/remoteTunnel/node/remoteTunnelService.ts',
-			'src/vs/platform/request/common/request.ts',
-			'src/vs/platform/request/common/requestIpc.ts',
-			'src/vs/platform/request/electron-utility/requestService.ts',
-			'src/vs/platform/request/node/proxy.ts',
-			'src/vs/platform/telemetry/browser/errorTelemetry.ts',
-			'src/vs/platform/telemetry/common/errorTelemetry.ts',
-			'src/vs/platform/telemetry/common/remoteTelemetryChannel.ts',
-			'src/vs/platform/telemetry/node/errorTelemetry.ts',
-			'src/vs/platform/theme/common/iconRegistry.ts',
-			'src/vs/platform/theme/common/tokenClassificationRegistry.ts',
-			'src/vs/platform/update/common/updateIpc.ts',
-			'src/vs/platform/update/electron-main/updateService.snap.ts',
-			'src/vs/platform/url/common/urlIpc.ts',
-			'src/vs/platform/userDataProfile/common/userDataProfileIpc.ts',
-			'src/vs/platform/userDataProfile/electron-main/userDataProfileStorageIpc.ts',
-			'src/vs/platform/userDataSync/common/abstractSynchronizer.ts',
-			'src/vs/platform/userDataSync/common/extensionsMerge.ts',
-			'src/vs/platform/userDataSync/common/extensionsSync.ts',
-			'src/vs/platform/userDataSync/common/globalStateMerge.ts',
-			'src/vs/platform/userDataSync/common/globalStateSync.ts',
-			'src/vs/platform/userDataSync/common/settingsMerge.ts',
-			'src/vs/platform/userDataSync/common/settingsSync.ts',
-			'src/vs/platform/userDataSync/common/userDataSync.ts',
-			'src/vs/platform/userDataSync/common/userDataSyncIpc.ts',
-			'src/vs/platform/userDataSync/common/userDataSyncServiceIpc.ts',
-			'src/vs/platform/webview/common/webviewManagerService.ts',
-			'src/vs/platform/instantiation/test/common/instantiationServiceMock.ts',
-			'src/vs/platform/keybinding/test/common/mockKeybindingService.ts',
+			'src/do/platform/commands/common/commands.ts',
+			'src/do/platform/contextkey/browser/contextKeyService.ts',
+			'src/do/platform/contextkey/common/contextkey.ts',
+			'src/do/platform/contextview/browser/contextView.ts',
+			'src/do/platform/debug/common/extensionHostDebugIpc.ts',
+			'src/do/platform/debug/electron-main/extensionHostDebugIpc.ts',
+			'src/do/platform/diagnostics/common/diagnostics.ts',
+			'src/do/platform/download/common/downloadIpc.ts',
+			'src/do/platform/extensions/common/extensions.ts',
+			'src/do/platform/instantiation/common/descriptors.ts',
+			'src/do/platform/instantiation/common/extensions.ts',
+			'src/do/platform/instantiation/common/instantiation.ts',
+			'src/do/platform/instantiation/common/instantiationService.ts',
+			'src/do/platform/instantiation/common/serviceCollection.ts',
+			'src/do/platform/keybinding/common/keybinding.ts',
+			'src/do/platform/keybinding/common/keybindingResolver.ts',
+			'src/do/platform/keybinding/common/keybindingsRegistry.ts',
+			'src/do/platform/keybinding/common/resolvedKeybindingItem.ts',
+			'src/do/platform/languagePacks/node/languagePacks.ts',
+			'src/do/platform/list/browser/listService.ts',
+			'src/do/platform/log/browser/log.ts',
+			'src/do/platform/log/common/log.ts',
+			'src/do/platform/log/common/logIpc.ts',
+			'src/do/platform/log/electron-main/logIpc.ts',
+			'src/do/platform/meteredConnection/electron-main/meteredConnectionChannel.ts',
+			'src/do/platform/observable/common/wrapInHotClass.ts',
+			'src/do/platform/observable/common/wrapInReloadableClass.ts',
+			'src/do/platform/policy/common/policyIpc.ts',
+			'src/do/platform/profiling/common/profilingTelemetrySpec.ts',
+			'src/do/platform/quickinput/browser/quickInputActions.ts',
+			'src/do/platform/quickinput/common/quickInput.ts',
+			'src/do/platform/registry/common/platform.ts',
+			'src/do/platform/remote/browser/browserSocketFactory.ts',
+			'src/do/platform/remote/browser/remoteAuthorityResolverService.ts',
+			'src/do/platform/remote/common/remoteAgentConnection.ts',
+			'src/do/platform/remote/common/remoteAuthorityResolver.ts',
+			'src/do/platform/remote/electron-browser/electronRemoteResourceLoader.ts',
+			'src/do/platform/remote/electron-browser/remoteAuthorityResolverService.ts',
+			'src/do/platform/remoteTunnel/node/remoteTunnelService.ts',
+			'src/do/platform/request/common/request.ts',
+			'src/do/platform/request/common/requestIpc.ts',
+			'src/do/platform/request/electron-utility/requestService.ts',
+			'src/do/platform/request/node/proxy.ts',
+			'src/do/platform/telemetry/browser/errorTelemetry.ts',
+			'src/do/platform/telemetry/common/errorTelemetry.ts',
+			'src/do/platform/telemetry/common/remoteTelemetryChannel.ts',
+			'src/do/platform/telemetry/node/errorTelemetry.ts',
+			'src/do/platform/theme/common/iconRegistry.ts',
+			'src/do/platform/theme/common/tokenClassificationRegistry.ts',
+			'src/do/platform/update/common/updateIpc.ts',
+			'src/do/platform/update/electron-main/updateService.snap.ts',
+			'src/do/platform/url/common/urlIpc.ts',
+			'src/do/platform/userDataProfile/common/userDataProfileIpc.ts',
+			'src/do/platform/userDataProfile/electron-main/userDataProfileStorageIpc.ts',
+			'src/do/platform/userDataSync/common/abstractSynchronizer.ts',
+			'src/do/platform/userDataSync/common/extensionsMerge.ts',
+			'src/do/platform/userDataSync/common/extensionsSync.ts',
+			'src/do/platform/userDataSync/common/globalStateMerge.ts',
+			'src/do/platform/userDataSync/common/globalStateSync.ts',
+			'src/do/platform/userDataSync/common/settingsMerge.ts',
+			'src/do/platform/userDataSync/common/settingsSync.ts',
+			'src/do/platform/userDataSync/common/userDataSync.ts',
+			'src/do/platform/userDataSync/common/userDataSyncIpc.ts',
+			'src/do/platform/userDataSync/common/userDataSyncServiceIpc.ts',
+			'src/do/platform/webview/common/webviewManagerService.ts',
+			'src/do/platform/instantiation/test/common/instantiationServiceMock.ts',
+			'src/do/platform/keybinding/test/common/mockKeybindingService.ts',
 			// Editor
-			'src/vs/editor/standalone/browser/standaloneEditor.ts',
-			'src/vs/editor/standalone/browser/standaloneLanguages.ts',
-			'src/vs/editor/standalone/browser/standaloneServices.ts',
-			'src/vs/editor/test/browser/testCodeEditor.ts',
-			'src/vs/editor/test/common/testTextModel.ts',
-			'src/vs/editor/contrib/bracketMatching/browser/bracketMatching.ts',
-			'src/vs/editor/contrib/codeAction/browser/codeAction.ts',
-			'src/vs/editor/contrib/codeAction/browser/codeActionCommands.ts',
-			'src/vs/editor/contrib/codeAction/common/types.ts',
-			'src/vs/editor/contrib/colorPicker/browser/colorDetector.ts',
-			'src/vs/editor/contrib/diffEditorBreadcrumbs/browser/contribution.ts',
-			'src/vs/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution.ts',
-			'src/vs/editor/contrib/find/browser/findController.ts',
-			'src/vs/editor/contrib/find/browser/findModel.ts',
-			'src/vs/editor/contrib/gotoSymbol/browser/goToCommands.ts',
-			'src/vs/editor/contrib/gotoSymbol/browser/symbolNavigation.ts',
-			'src/vs/editor/contrib/hover/browser/hoverActions.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/structuredLogger.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/utils.ts',
-			'src/vs/editor/contrib/smartSelect/browser/smartSelect.ts',
-			'src/vs/editor/contrib/stickyScroll/browser/stickyScrollModelProvider.ts',
-			'src/vs/editor/contrib/unicodeHighlighter/browser/unicodeHighlighter.ts',
-			'src/vs/editor/contrib/wordHighlighter/browser/wordHighlighter.ts',
-			'src/vs/editor/standalone/common/monarch/monarchCommon.ts',
-			'src/vs/editor/standalone/common/monarch/monarchCompile.ts',
-			'src/vs/editor/standalone/common/monarch/monarchLexer.ts',
-			'src/vs/editor/standalone/common/monarch/monarchTypes.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/controller/commands.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/model/inlineCompletionsModel.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/model/typingSpeed.ts',
-			'src/vs/editor/contrib/inlineCompletions/test/browser/utils.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/view/ghostText/ghostTextView.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/view/inlineEdits/components/gutterIndicatorView.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/view/inlineEdits/inlineEditsViews/debugVisualization.ts',
-			'src/vs/editor/contrib/inlineCompletions/browser/view/inlineEdits/utils/utils.ts',
+			'src/do/editor/standalone/browser/standaloneEditor.ts',
+			'src/do/editor/standalone/browser/standaloneLanguages.ts',
+			'src/do/editor/standalone/browser/standaloneServices.ts',
+			'src/do/editor/test/browser/testCodeEditor.ts',
+			'src/do/editor/test/common/testTextModel.ts',
+			'src/do/editor/contrib/bracketMatching/browser/bracketMatching.ts',
+			'src/do/editor/contrib/codeAction/browser/codeAction.ts',
+			'src/do/editor/contrib/codeAction/browser/codeActionCommands.ts',
+			'src/do/editor/contrib/codeAction/common/types.ts',
+			'src/do/editor/contrib/colorPicker/browser/colorDetector.ts',
+			'src/do/editor/contrib/diffEditorBreadcrumbs/browser/contribution.ts',
+			'src/do/editor/contrib/dropOrPasteInto/browser/dropIntoEditorContribution.ts',
+			'src/do/editor/contrib/find/browser/findController.ts',
+			'src/do/editor/contrib/find/browser/findModel.ts',
+			'src/do/editor/contrib/gotoSymbol/browser/goToCommands.ts',
+			'src/do/editor/contrib/gotoSymbol/browser/symbolNavigation.ts',
+			'src/do/editor/contrib/hover/browser/hoverActions.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/structuredLogger.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/utils.ts',
+			'src/do/editor/contrib/smartSelect/browser/smartSelect.ts',
+			'src/do/editor/contrib/stickyScroll/browser/stickyScrollModelProvider.ts',
+			'src/do/editor/contrib/unicodeHighlighter/browser/unicodeHighlighter.ts',
+			'src/do/editor/contrib/wordHighlighter/browser/wordHighlighter.ts',
+			'src/do/editor/standalone/common/monarch/monarchCommon.ts',
+			'src/do/editor/standalone/common/monarch/monarchCompile.ts',
+			'src/do/editor/standalone/common/monarch/monarchLexer.ts',
+			'src/do/editor/standalone/common/monarch/monarchTypes.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/controller/commands.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/model/inlineCompletionsModel.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/model/typingSpeed.ts',
+			'src/do/editor/contrib/inlineCompletions/test/browser/utils.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/view/ghostText/ghostTextView.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/view/inlineEdits/components/gutterIndicatorView.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/view/inlineEdits/inlineEditsViews/debugVisualization.ts',
+			'src/do/editor/contrib/inlineCompletions/browser/view/inlineEdits/utils/utils.ts',
 			// Workbench
-			'src/vs/workbench/api/browser/mainThreadChatSessions.ts',
-			'src/vs/workbench/api/common/extHost.api.impl.ts',
-			'src/vs/workbench/api/common/extHost.protocol.ts',
-			'src/vs/workbench/api/common/extHostChatSessions.ts',
-			'src/vs/workbench/api/common/extHostCodeInsets.ts',
-			'src/vs/workbench/api/common/extHostCommands.ts',
-			'src/vs/workbench/api/common/extHostConsoleForwarder.ts',
-			'src/vs/workbench/api/common/extHostDataChannels.ts',
-			'src/vs/workbench/api/common/extHostDebugService.ts',
-			'src/vs/workbench/api/common/extHostExtensionActivator.ts',
-			'src/vs/workbench/api/common/extHostExtensionService.ts',
-			'src/vs/workbench/api/common/extHostFileSystemConsumer.ts',
-			'src/vs/workbench/api/common/extHostFileSystemEventService.ts',
-			'src/vs/workbench/api/common/extHostLanguageFeatures.ts',
-			'src/vs/workbench/api/common/extHostLanguageModelTools.ts',
-			'src/vs/workbench/api/common/extHostMcp.ts',
-			'src/vs/workbench/api/common/extHostMemento.ts',
-			'src/vs/workbench/api/common/extHostMessageService.ts',
-			'src/vs/workbench/api/common/extHostNotebookDocument.ts',
-			'src/vs/workbench/api/common/extHostNotebookDocumentSaveParticipant.ts',
-			'src/vs/workbench/api/common/extHostRequireInterceptor.ts',
-			'src/vs/workbench/api/common/extHostRpcService.ts',
-			'src/vs/workbench/api/common/extHostSCM.ts',
-			'src/vs/workbench/api/common/extHostSearch.ts',
-			'src/vs/workbench/api/common/extHostStatusBar.ts',
-			'src/vs/workbench/api/common/extHostStoragePaths.ts',
-			'src/vs/workbench/api/common/extHostTelemetry.ts',
-			'src/vs/workbench/api/common/extHostTesting.ts',
-			'src/vs/workbench/api/common/extHostTextEditor.ts',
-			'src/vs/workbench/api/common/extHostTimeline.ts',
-			'src/vs/workbench/api/common/extHostTreeViews.ts',
-			'src/vs/workbench/api/common/extHostTypeConverters.ts',
-			'src/vs/workbench/api/common/extHostTypes.ts',
-			'src/vs/workbench/api/common/extHostTypes/es5ClassCompat.ts',
-			'src/vs/workbench/api/common/extHostTypes/location.ts',
-			'src/vs/workbench/api/common/extHostWebview.ts',
-			'src/vs/workbench/api/common/extHostWebviewMessaging.ts',
-			'src/vs/workbench/api/common/extHostWebviewPanels.ts',
-			'src/vs/workbench/api/common/extHostWebviewView.ts',
-			'src/vs/workbench/api/common/extHostWorkspace.ts',
-			'src/vs/workbench/api/common/extensionHostMain.ts',
-			'src/vs/workbench/api/node/extHostAuthentication.ts',
-			'src/vs/workbench/api/node/extHostCLIServer.ts',
-			'src/vs/workbench/api/node/extHostConsoleForwarder.ts',
-			'src/vs/workbench/api/node/extHostDownloadService.ts',
-			'src/vs/workbench/api/node/extHostExtensionService.ts',
-			'src/vs/workbench/api/node/extHostMcpNode.ts',
-			'src/vs/workbench/api/node/extensionHostProcess.ts',
-			'src/vs/workbench/api/node/proxyResolver.ts',
-			'src/vs/workbench/api/test/common/testRPCProtocol.ts',
-			'src/vs/workbench/api/worker/extHostConsoleForwarder.ts',
-			'src/vs/workbench/api/worker/extHostExtensionService.ts',
-			'src/vs/workbench/api/worker/extensionHostWorker.ts',
-			'src/vs/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts',
-			'src/vs/workbench/contrib/accessibilitySignals/browser/commands.ts',
-			'src/vs/workbench/contrib/authentication/browser/actions/manageTrustedMcpServersForAccountAction.ts',
-			'src/vs/workbench/contrib/bulkEdit/browser/bulkTextEdits.ts',
-			'src/vs/workbench/contrib/bulkEdit/browser/preview/bulkEditPane.ts',
-			'src/vs/workbench/contrib/bulkEdit/browser/preview/bulkEditPreview.ts',
-			'src/vs/workbench/contrib/codeEditor/browser/inspectEditorTokens/inspectEditorTokens.ts',
-			'src/vs/workbench/contrib/codeEditor/browser/outline/documentSymbolsOutline.ts',
-			'src/vs/workbench/contrib/codeEditor/electron-browser/selectionClipboard.ts',
-			'src/vs/workbench/contrib/commands/common/commands.contribution.ts',
-			'src/vs/workbench/contrib/comments/browser/commentsTreeViewer.ts',
-			'src/vs/workbench/contrib/comments/browser/commentsView.ts',
-			'src/vs/workbench/contrib/comments/browser/reactionsAction.ts',
-			'src/vs/workbench/contrib/customEditor/browser/customEditorInputFactory.ts',
-			'src/vs/workbench/contrib/customEditor/browser/customEditors.ts',
-			'src/vs/workbench/contrib/customEditor/common/customEditor.ts',
-			'src/vs/workbench/contrib/debug/browser/debugActionViewItems.ts',
-			'src/vs/workbench/contrib/debug/browser/debugAdapterManager.ts',
-			'src/vs/workbench/contrib/debug/browser/debugCommands.ts',
-			'src/vs/workbench/contrib/debug/browser/debugConfigurationManager.ts',
-			'src/vs/workbench/contrib/debug/browser/debugEditorActions.ts',
-			'src/vs/workbench/contrib/debug/browser/debugEditorContribution.ts',
-			'src/vs/workbench/contrib/debug/browser/debugHover.ts',
-			'src/vs/workbench/contrib/debug/browser/debugService.ts',
-			'src/vs/workbench/contrib/debug/browser/debugSession.ts',
-			'src/vs/workbench/contrib/debug/browser/rawDebugSession.ts',
-			'src/vs/workbench/contrib/debug/browser/repl.ts',
-			'src/vs/workbench/contrib/debug/browser/replViewer.ts',
-			'src/vs/workbench/contrib/debug/browser/variablesView.ts',
-			'src/vs/workbench/contrib/debug/browser/watchExpressionsView.ts',
-			'src/vs/workbench/contrib/debug/common/abstractDebugAdapter.ts',
-			'src/vs/workbench/contrib/debug/common/debugger.ts',
-			'src/vs/workbench/contrib/debug/common/replModel.ts',
-			'src/vs/workbench/contrib/debug/test/common/mockDebug.ts',
-			'src/vs/workbench/contrib/editSessions/common/workspaceStateSync.ts',
-			'src/vs/workbench/contrib/editTelemetry/browser/helpers/documentWithAnnotatedEdits.ts',
-			'src/vs/workbench/contrib/editTelemetry/browser/helpers/utils.ts',
-			'src/vs/workbench/contrib/editTelemetry/browser/telemetry/arcTelemetrySender.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionEditor.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionRecommendationNotificationService.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensions.contribution.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionsActions.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionsActivationProgress.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionsViewer.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionsViews.ts',
-			'src/vs/workbench/contrib/extensions/browser/extensionsWorkbenchService.ts',
-			'src/vs/workbench/contrib/extensions/common/extensions.ts',
-			'src/vs/workbench/contrib/extensions/electron-browser/runtimeExtensionsEditor.ts',
-			'src/vs/workbench/contrib/inlineChat/browser/inlineChatActions.ts',
-			'src/vs/workbench/contrib/inlineChat/browser/inlineChatController.ts',
-			'src/vs/workbench/contrib/inlineChat/browser/inlineChatStrategies.ts',
-			'src/vs/workbench/contrib/markdown/browser/markdownDocumentRenderer.ts',
-			'src/vs/workbench/contrib/markers/browser/markers.contribution.ts',
-			'src/vs/workbench/contrib/markers/browser/markersView.ts',
-			'src/vs/workbench/contrib/mergeEditor/browser/commands/commands.ts',
-			'src/vs/workbench/contrib/mergeEditor/browser/utils.ts',
-			'src/vs/workbench/contrib/mergeEditor/browser/view/editorGutter.ts',
-			'src/vs/workbench/contrib/mergeEditor/browser/view/mergeEditor.ts',
-			'src/vs/workbench/contrib/notebook/browser/contrib/clipboard/notebookClipboard.ts',
-			'src/vs/workbench/contrib/notebook/browser/contrib/find/notebookFind.ts',
-			'src/vs/workbench/contrib/notebook/browser/contrib/layout/layoutActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/contrib/profile/notebookProfile.ts',
-			'src/vs/workbench/contrib/notebook/browser/contrib/troubleshoot/layout.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/chat/cellChatActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/coreActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/editActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/notebookIndentationActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/controller/sectionActions.ts',
-			'src/vs/workbench/contrib/notebook/browser/diff/diffComponents.ts',
-			'src/vs/workbench/contrib/notebook/browser/diff/inlineDiff/notebookDeletedCellDecorator.ts',
-			'src/vs/workbench/contrib/notebook/browser/notebookBrowser.ts',
-			'src/vs/workbench/contrib/notebook/browser/outputEditor/notebookOutputEditor.ts',
-			'src/vs/workbench/contrib/notebook/browser/services/notebookEditorServiceImpl.ts',
-			'src/vs/workbench/contrib/notebook/browser/view/notebookCellList.ts',
-			'src/vs/workbench/contrib/notebook/browser/view/renderers/backLayerWebView.ts',
-			'src/vs/workbench/contrib/notebook/browser/view/renderers/webviewMessages.ts',
-			'src/vs/workbench/contrib/notebook/browser/view/renderers/webviewPreloads.ts',
-			'src/vs/workbench/contrib/notebook/browser/viewModel/markupCellViewModel.ts',
-			'src/vs/workbench/contrib/notebook/browser/viewParts/notebookEditorStickyScroll.ts',
-			'src/vs/workbench/contrib/notebook/browser/viewParts/notebookHorizontalTracker.ts',
-			'src/vs/workbench/contrib/notebook/browser/viewParts/notebookKernelQuickPickStrategy.ts',
-			'src/vs/workbench/contrib/notebook/common/model/notebookCellTextModel.ts',
-			'src/vs/workbench/contrib/notebook/common/model/notebookMetadataTextModel.ts',
-			'src/vs/workbench/contrib/notebook/common/model/notebookTextModel.ts',
-			'src/vs/workbench/contrib/notebook/common/notebookCommon.ts',
-			'src/vs/workbench/contrib/notebook/common/notebookEditorModelResolverServiceImpl.ts',
-			'src/vs/workbench/contrib/notebook/test/browser/testNotebookEditor.ts',
-			'src/vs/workbench/contrib/performance/electron-browser/startupProfiler.ts',
-			'src/vs/workbench/contrib/preferences/browser/preferences.contribution.ts',
-			'src/vs/workbench/contrib/preferences/browser/preferencesRenderers.ts',
-			'src/vs/workbench/contrib/preferences/browser/settingsEditor2.ts',
-			'src/vs/workbench/contrib/preferences/browser/settingsTree.ts',
-			'src/vs/workbench/contrib/preferences/browser/settingsTreeModels.ts',
-			'src/vs/workbench/contrib/remote/browser/tunnelView.ts',
-			'src/vs/workbench/contrib/search/browser/AISearch/aiSearchModel.ts',
-			'src/vs/workbench/contrib/search/browser/AISearch/aiSearchModelBase.ts',
-			'src/vs/workbench/contrib/search/browser/notebookSearch/notebookSearchModel.ts',
-			'src/vs/workbench/contrib/search/browser/notebookSearch/notebookSearchModelBase.ts',
-			'src/vs/workbench/contrib/search/browser/notebookSearch/searchNotebookHelpers.ts',
-			'src/vs/workbench/contrib/search/browser/replace.ts',
-			'src/vs/workbench/contrib/search/browser/replaceService.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsCopy.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsBase.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsFind.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsNav.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsRemoveReplace.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsTextQuickAccess.ts',
-			'src/vs/workbench/contrib/search/browser/searchActionsTopBar.ts',
-			'src/vs/workbench/contrib/search/browser/searchMessage.ts',
-			'src/vs/workbench/contrib/search/browser/searchResultsView.ts',
-			'src/vs/workbench/contrib/search/browser/searchTreeModel/fileMatch.ts',
-			'src/vs/workbench/contrib/search/browser/searchTreeModel/folderMatch.ts',
-			'src/vs/workbench/contrib/search/browser/searchTreeModel/searchModel.ts',
-			'src/vs/workbench/contrib/search/browser/searchTreeModel/searchResult.ts',
-			'src/vs/workbench/contrib/search/browser/searchTreeModel/searchTreeCommon.ts',
-			'src/vs/workbench/contrib/search/browser/searchTreeModel/textSearchHeading.ts',
-			'src/vs/workbench/contrib/search/browser/searchView.ts',
-			'src/vs/workbench/contrib/search/test/browser/mockSearchTree.ts',
-			'src/vs/workbench/contrib/searchEditor/browser/searchEditor.contribution.ts',
-			'src/vs/workbench/contrib/searchEditor/browser/searchEditorActions.ts',
-			'src/vs/workbench/contrib/searchEditor/browser/searchEditorInput.ts',
-			'src/vs/workbench/contrib/snippets/browser/commands/configureSnippets.ts',
-			'src/vs/workbench/contrib/snippets/browser/commands/insertSnippet.ts',
-			'src/vs/workbench/contrib/snippets/browser/snippetsService.ts',
-			'src/vs/workbench/contrib/testing/common/storedValue.ts',
-			'src/vs/workbench/contrib/testing/test/browser/testObjectTree.ts',
-			'src/vs/workbench/contrib/typeHierarchy/browser/typeHierarchy.contribution.ts',
-			'src/vs/workbench/contrib/typeHierarchy/common/typeHierarchy.ts',
-			'src/vs/workbench/contrib/webview/browser/overlayWebview.ts',
-			'src/vs/workbench/contrib/webview/browser/webview.ts',
-			'src/vs/workbench/contrib/webview/browser/webviewElement.ts',
-			'src/vs/workbench/contrib/webviewPanel/browser/webviewEditor.ts',
-			'src/vs/workbench/contrib/webviewPanel/browser/webviewEditorInputSerializer.ts',
-			'src/vs/workbench/contrib/webviewPanel/browser/webviewWorkbenchService.ts',
-			'src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStartedService.ts',
-			'src/vs/workbench/contrib/welcomeWalkthrough/browser/walkThroughPart.ts',
-			'src/vs/workbench/services/authentication/common/authentication.ts',
-			'src/vs/workbench/services/authentication/test/browser/authenticationQueryServiceMocks.ts',
-			'src/vs/workbench/services/commands/common/commandService.ts',
-			'src/vs/workbench/services/configurationResolver/common/configurationResolver.ts',
-			'src/vs/workbench/services/configurationResolver/common/configurationResolverExpression.ts',
-			'src/vs/workbench/services/extensions/common/extensionHostManager.ts',
-			'src/vs/workbench/services/extensions/common/extensionsRegistry.ts',
-			'src/vs/workbench/services/extensions/common/lazyPromise.ts',
-			'src/vs/workbench/services/extensions/common/polyfillNestedWorker.protocol.ts',
-			'src/vs/workbench/services/extensions/common/rpcProtocol.ts',
-			'src/vs/workbench/services/extensions/worker/polyfillNestedWorker.ts',
-			'src/vs/workbench/services/keybinding/browser/keybindingService.ts',
-			'src/vs/workbench/services/keybinding/browser/keyboardLayoutService.ts',
-			'src/vs/workbench/services/keybinding/common/keybindingEditing.ts',
-			'src/vs/workbench/services/keybinding/common/keymapInfo.ts',
-			'src/vs/workbench/services/language/common/languageService.ts',
-			'src/vs/workbench/services/outline/browser/outline.ts',
-			'src/vs/workbench/services/outline/browser/outlineService.ts',
-			'src/vs/workbench/services/preferences/common/preferences.ts',
-			'src/vs/workbench/services/preferences/common/preferencesModels.ts',
-			'src/vs/workbench/services/preferences/common/preferencesValidation.ts',
-			'src/vs/workbench/services/remote/common/tunnelModel.ts',
-			'src/vs/workbench/services/search/common/replace.ts',
-			'src/vs/workbench/services/search/common/search.ts',
-			'src/vs/workbench/services/search/common/searchExtConversionTypes.ts',
-			'src/vs/workbench/services/search/common/searchExtTypes.ts',
-			'src/vs/workbench/services/search/node/fileSearch.ts',
-			'src/vs/workbench/services/search/node/rawSearchService.ts',
-			'src/vs/workbench/services/search/node/ripgrepTextSearchEngine.ts',
-			'src/vs/workbench/services/textMate/common/TMGrammarFactory.ts',
-			'src/vs/workbench/services/themes/browser/fileIconThemeData.ts',
-			'src/vs/workbench/services/themes/browser/productIconThemeData.ts',
-			'src/vs/workbench/services/themes/common/colorThemeData.ts',
-			'src/vs/workbench/services/themes/common/plistParser.ts',
-			'src/vs/workbench/services/themes/common/themeExtensionPoints.ts',
-			'src/vs/workbench/services/themes/common/workbenchThemeService.ts',
-			'src/vs/workbench/test/browser/workbenchTestServices.ts',
-			'src/vs/workbench/test/common/workbenchTestServices.ts',
-			'src/vs/workbench/test/electron-browser/workbenchTestServices.ts',
+			'src/do/workbench/api/browser/mainThreadChatSessions.ts',
+			'src/do/workbench/api/common/extHost.api.impl.ts',
+			'src/do/workbench/api/common/extHost.protocol.ts',
+			'src/do/workbench/api/common/extHostChatSessions.ts',
+			'src/do/workbench/api/common/extHostCodeInsets.ts',
+			'src/do/workbench/api/common/extHostCommands.ts',
+			'src/do/workbench/api/common/extHostConsoleForwarder.ts',
+			'src/do/workbench/api/common/extHostDataChannels.ts',
+			'src/do/workbench/api/common/extHostDebugService.ts',
+			'src/do/workbench/api/common/extHostExtensionActivator.ts',
+			'src/do/workbench/api/common/extHostExtensionService.ts',
+			'src/do/workbench/api/common/extHostFileSystemConsumer.ts',
+			'src/do/workbench/api/common/extHostFileSystemEventService.ts',
+			'src/do/workbench/api/common/extHostLanguageFeatures.ts',
+			'src/do/workbench/api/common/extHostLanguageModelTools.ts',
+			'src/do/workbench/api/common/extHostMcp.ts',
+			'src/do/workbench/api/common/extHostMemento.ts',
+			'src/do/workbench/api/common/extHostMessageService.ts',
+			'src/do/workbench/api/common/extHostNotebookDocument.ts',
+			'src/do/workbench/api/common/extHostNotebookDocumentSaveParticipant.ts',
+			'src/do/workbench/api/common/extHostRequireInterceptor.ts',
+			'src/do/workbench/api/common/extHostRpcService.ts',
+			'src/do/workbench/api/common/extHostSCM.ts',
+			'src/do/workbench/api/common/extHostSearch.ts',
+			'src/do/workbench/api/common/extHostStatusBar.ts',
+			'src/do/workbench/api/common/extHostStoragePaths.ts',
+			'src/do/workbench/api/common/extHostTelemetry.ts',
+			'src/do/workbench/api/common/extHostTesting.ts',
+			'src/do/workbench/api/common/extHostTextEditor.ts',
+			'src/do/workbench/api/common/extHostTimeline.ts',
+			'src/do/workbench/api/common/extHostTreeViews.ts',
+			'src/do/workbench/api/common/extHostTypeConverters.ts',
+			'src/do/workbench/api/common/extHostTypes.ts',
+			'src/do/workbench/api/common/extHostTypes/es5ClassCompat.ts',
+			'src/do/workbench/api/common/extHostTypes/location.ts',
+			'src/do/workbench/api/common/extHostWebview.ts',
+			'src/do/workbench/api/common/extHostWebviewMessaging.ts',
+			'src/do/workbench/api/common/extHostWebviewPanels.ts',
+			'src/do/workbench/api/common/extHostWebviewView.ts',
+			'src/do/workbench/api/common/extHostWorkspace.ts',
+			'src/do/workbench/api/common/extensionHostMain.ts',
+			'src/do/workbench/api/node/extHostAuthentication.ts',
+			'src/do/workbench/api/node/extHostCLIServer.ts',
+			'src/do/workbench/api/node/extHostConsoleForwarder.ts',
+			'src/do/workbench/api/node/extHostDownloadService.ts',
+			'src/do/workbench/api/node/extHostExtensionService.ts',
+			'src/do/workbench/api/node/extHostMcpNode.ts',
+			'src/do/workbench/api/node/extensionHostProcess.ts',
+			'src/do/workbench/api/node/proxyResolver.ts',
+			'src/do/workbench/api/test/common/testRPCProtocol.ts',
+			'src/do/workbench/api/worker/extHostConsoleForwarder.ts',
+			'src/do/workbench/api/worker/extHostExtensionService.ts',
+			'src/do/workbench/api/worker/extensionHostWorker.ts',
+			'src/do/workbench/contrib/accessibility/browser/accessibilityConfiguration.ts',
+			'src/do/workbench/contrib/accessibilitySignals/browser/commands.ts',
+			'src/do/workbench/contrib/authentication/browser/actions/manageTrustedMcpServersForAccountAction.ts',
+			'src/do/workbench/contrib/bulkEdit/browser/bulkTextEdits.ts',
+			'src/do/workbench/contrib/bulkEdit/browser/preview/bulkEditPane.ts',
+			'src/do/workbench/contrib/bulkEdit/browser/preview/bulkEditPreview.ts',
+			'src/do/workbench/contrib/codeEditor/browser/inspectEditorTokens/inspectEditorTokens.ts',
+			'src/do/workbench/contrib/codeEditor/browser/outline/documentSymbolsOutline.ts',
+			'src/do/workbench/contrib/codeEditor/electron-browser/selectionClipboard.ts',
+			'src/do/workbench/contrib/commands/common/commands.contribution.ts',
+			'src/do/workbench/contrib/comments/browser/commentsTreeViewer.ts',
+			'src/do/workbench/contrib/comments/browser/commentsView.ts',
+			'src/do/workbench/contrib/comments/browser/reactionsAction.ts',
+			'src/do/workbench/contrib/customEditor/browser/customEditorInputFactory.ts',
+			'src/do/workbench/contrib/customEditor/browser/customEditors.ts',
+			'src/do/workbench/contrib/customEditor/common/customEditor.ts',
+			'src/do/workbench/contrib/debug/browser/debugActionViewItems.ts',
+			'src/do/workbench/contrib/debug/browser/debugAdapterManager.ts',
+			'src/do/workbench/contrib/debug/browser/debugCommands.ts',
+			'src/do/workbench/contrib/debug/browser/debugConfigurationManager.ts',
+			'src/do/workbench/contrib/debug/browser/debugEditorActions.ts',
+			'src/do/workbench/contrib/debug/browser/debugEditorContribution.ts',
+			'src/do/workbench/contrib/debug/browser/debugHover.ts',
+			'src/do/workbench/contrib/debug/browser/debugService.ts',
+			'src/do/workbench/contrib/debug/browser/debugSession.ts',
+			'src/do/workbench/contrib/debug/browser/rawDebugSession.ts',
+			'src/do/workbench/contrib/debug/browser/repl.ts',
+			'src/do/workbench/contrib/debug/browser/replViewer.ts',
+			'src/do/workbench/contrib/debug/browser/variablesView.ts',
+			'src/do/workbench/contrib/debug/browser/watchExpressionsView.ts',
+			'src/do/workbench/contrib/debug/common/abstractDebugAdapter.ts',
+			'src/do/workbench/contrib/debug/common/debugger.ts',
+			'src/do/workbench/contrib/debug/common/replModel.ts',
+			'src/do/workbench/contrib/debug/test/common/mockDebug.ts',
+			'src/do/workbench/contrib/editSessions/common/workspaceStateSync.ts',
+			'src/do/workbench/contrib/editTelemetry/browser/helpers/documentWithAnnotatedEdits.ts',
+			'src/do/workbench/contrib/editTelemetry/browser/helpers/utils.ts',
+			'src/do/workbench/contrib/editTelemetry/browser/telemetry/arcTelemetrySender.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionEditor.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionRecommendationNotificationService.ts',
+			'src/do/workbench/contrib/extensions/browser/extensions.contribution.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionsActions.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionsActivationProgress.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionsViewer.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionsViews.ts',
+			'src/do/workbench/contrib/extensions/browser/extensionsWorkbenchService.ts',
+			'src/do/workbench/contrib/extensions/common/extensions.ts',
+			'src/do/workbench/contrib/extensions/electron-browser/runtimeExtensionsEditor.ts',
+			'src/do/workbench/contrib/inlineChat/browser/inlineChatActions.ts',
+			'src/do/workbench/contrib/inlineChat/browser/inlineChatController.ts',
+			'src/do/workbench/contrib/inlineChat/browser/inlineChatStrategies.ts',
+			'src/do/workbench/contrib/markdown/browser/markdownDocumentRenderer.ts',
+			'src/do/workbench/contrib/markers/browser/markers.contribution.ts',
+			'src/do/workbench/contrib/markers/browser/markersView.ts',
+			'src/do/workbench/contrib/mergeEditor/browser/commands/commands.ts',
+			'src/do/workbench/contrib/mergeEditor/browser/utils.ts',
+			'src/do/workbench/contrib/mergeEditor/browser/view/editorGutter.ts',
+			'src/do/workbench/contrib/mergeEditor/browser/view/mergeEditor.ts',
+			'src/do/workbench/contrib/notebook/browser/contrib/clipboard/notebookClipboard.ts',
+			'src/do/workbench/contrib/notebook/browser/contrib/find/notebookFind.ts',
+			'src/do/workbench/contrib/notebook/browser/contrib/layout/layoutActions.ts',
+			'src/do/workbench/contrib/notebook/browser/contrib/profile/notebookProfile.ts',
+			'src/do/workbench/contrib/notebook/browser/contrib/troubleshoot/layout.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/chat/cellChatActions.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/coreActions.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/editActions.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/notebookIndentationActions.ts',
+			'src/do/workbench/contrib/notebook/browser/controller/sectionActions.ts',
+			'src/do/workbench/contrib/notebook/browser/diff/diffComponents.ts',
+			'src/do/workbench/contrib/notebook/browser/diff/inlineDiff/notebookDeletedCellDecorator.ts',
+			'src/do/workbench/contrib/notebook/browser/notebookBrowser.ts',
+			'src/do/workbench/contrib/notebook/browser/outputEditor/notebookOutputEditor.ts',
+			'src/do/workbench/contrib/notebook/browser/services/notebookEditorServiceImpl.ts',
+			'src/do/workbench/contrib/notebook/browser/view/notebookCellList.ts',
+			'src/do/workbench/contrib/notebook/browser/view/renderers/backLayerWebView.ts',
+			'src/do/workbench/contrib/notebook/browser/view/renderers/webviewMessages.ts',
+			'src/do/workbench/contrib/notebook/browser/view/renderers/webviewPreloads.ts',
+			'src/do/workbench/contrib/notebook/browser/viewModel/markupCellViewModel.ts',
+			'src/do/workbench/contrib/notebook/browser/viewParts/notebookEditorStickyScroll.ts',
+			'src/do/workbench/contrib/notebook/browser/viewParts/notebookHorizontalTracker.ts',
+			'src/do/workbench/contrib/notebook/browser/viewParts/notebookKernelQuickPickStrategy.ts',
+			'src/do/workbench/contrib/notebook/common/model/notebookCellTextModel.ts',
+			'src/do/workbench/contrib/notebook/common/model/notebookMetadataTextModel.ts',
+			'src/do/workbench/contrib/notebook/common/model/notebookTextModel.ts',
+			'src/do/workbench/contrib/notebook/common/notebookCommon.ts',
+			'src/do/workbench/contrib/notebook/common/notebookEditorModelResolverServiceImpl.ts',
+			'src/do/workbench/contrib/notebook/test/browser/testNotebookEditor.ts',
+			'src/do/workbench/contrib/performance/electron-browser/startupProfiler.ts',
+			'src/do/workbench/contrib/preferences/browser/preferences.contribution.ts',
+			'src/do/workbench/contrib/preferences/browser/preferencesRenderers.ts',
+			'src/do/workbench/contrib/preferences/browser/settingsEditor2.ts',
+			'src/do/workbench/contrib/preferences/browser/settingsTree.ts',
+			'src/do/workbench/contrib/preferences/browser/settingsTreeModels.ts',
+			'src/do/workbench/contrib/remote/browser/tunnelView.ts',
+			'src/do/workbench/contrib/search/browser/AISearch/aiSearchModel.ts',
+			'src/do/workbench/contrib/search/browser/AISearch/aiSearchModelBase.ts',
+			'src/do/workbench/contrib/search/browser/notebookSearch/notebookSearchModel.ts',
+			'src/do/workbench/contrib/search/browser/notebookSearch/notebookSearchModelBase.ts',
+			'src/do/workbench/contrib/search/browser/notebookSearch/searchNotebookHelpers.ts',
+			'src/do/workbench/contrib/search/browser/replace.ts',
+			'src/do/workbench/contrib/search/browser/replaceService.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsCopy.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsBase.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsFind.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsNav.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsRemoveReplace.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsTextQuickAccess.ts',
+			'src/do/workbench/contrib/search/browser/searchActionsTopBar.ts',
+			'src/do/workbench/contrib/search/browser/searchMessage.ts',
+			'src/do/workbench/contrib/search/browser/searchResultsView.ts',
+			'src/do/workbench/contrib/search/browser/searchTreeModel/fileMatch.ts',
+			'src/do/workbench/contrib/search/browser/searchTreeModel/folderMatch.ts',
+			'src/do/workbench/contrib/search/browser/searchTreeModel/searchModel.ts',
+			'src/do/workbench/contrib/search/browser/searchTreeModel/searchResult.ts',
+			'src/do/workbench/contrib/search/browser/searchTreeModel/searchTreeCommon.ts',
+			'src/do/workbench/contrib/search/browser/searchTreeModel/textSearchHeading.ts',
+			'src/do/workbench/contrib/search/browser/searchView.ts',
+			'src/do/workbench/contrib/search/test/browser/mockSearchTree.ts',
+			'src/do/workbench/contrib/searchEditor/browser/searchEditor.contribution.ts',
+			'src/do/workbench/contrib/searchEditor/browser/searchEditorActions.ts',
+			'src/do/workbench/contrib/searchEditor/browser/searchEditorInput.ts',
+			'src/do/workbench/contrib/snippets/browser/commands/configureSnippets.ts',
+			'src/do/workbench/contrib/snippets/browser/commands/insertSnippet.ts',
+			'src/do/workbench/contrib/snippets/browser/snippetsService.ts',
+			'src/do/workbench/contrib/testing/common/storedValue.ts',
+			'src/do/workbench/contrib/testing/test/browser/testObjectTree.ts',
+			'src/do/workbench/contrib/typeHierarchy/browser/typeHierarchy.contribution.ts',
+			'src/do/workbench/contrib/typeHierarchy/common/typeHierarchy.ts',
+			'src/do/workbench/contrib/webview/browser/overlayWebview.ts',
+			'src/do/workbench/contrib/webview/browser/webview.ts',
+			'src/do/workbench/contrib/webview/browser/webviewElement.ts',
+			'src/do/workbench/contrib/webviewPanel/browser/webviewEditor.ts',
+			'src/do/workbench/contrib/webviewPanel/browser/webviewEditorInputSerializer.ts',
+			'src/do/workbench/contrib/webviewPanel/browser/webviewWorkbenchService.ts',
+			'src/do/workbench/contrib/welcomeGettingStarted/browser/gettingStartedService.ts',
+			'src/do/workbench/contrib/welcomeWalkthrough/browser/walkThroughPart.ts',
+			'src/do/workbench/services/authentication/common/authentication.ts',
+			'src/do/workbench/services/authentication/test/browser/authenticationQueryServiceMocks.ts',
+			'src/do/workbench/services/commands/common/commandService.ts',
+			'src/do/workbench/services/configurationResolver/common/configurationResolver.ts',
+			'src/do/workbench/services/configurationResolver/common/configurationResolverExpression.ts',
+			'src/do/workbench/services/extensions/common/extensionHostManager.ts',
+			'src/do/workbench/services/extensions/common/extensionsRegistry.ts',
+			'src/do/workbench/services/extensions/common/lazyPromise.ts',
+			'src/do/workbench/services/extensions/common/polyfillNestedWorker.protocol.ts',
+			'src/do/workbench/services/extensions/common/rpcProtocol.ts',
+			'src/do/workbench/services/extensions/worker/polyfillNestedWorker.ts',
+			'src/do/workbench/services/keybinding/browser/keybindingService.ts',
+			'src/do/workbench/services/keybinding/browser/keyboardLayoutService.ts',
+			'src/do/workbench/services/keybinding/common/keybindingEditing.ts',
+			'src/do/workbench/services/keybinding/common/keymapInfo.ts',
+			'src/do/workbench/services/language/common/languageService.ts',
+			'src/do/workbench/services/outline/browser/outline.ts',
+			'src/do/workbench/services/outline/browser/outlineService.ts',
+			'src/do/workbench/services/preferences/common/preferences.ts',
+			'src/do/workbench/services/preferences/common/preferencesModels.ts',
+			'src/do/workbench/services/preferences/common/preferencesValidation.ts',
+			'src/do/workbench/services/remote/common/tunnelModel.ts',
+			'src/do/workbench/services/search/common/replace.ts',
+			'src/do/workbench/services/search/common/search.ts',
+			'src/do/workbench/services/search/common/searchExtConversionTypes.ts',
+			'src/do/workbench/services/search/common/searchExtTypes.ts',
+			'src/do/workbench/services/search/node/fileSearch.ts',
+			'src/do/workbench/services/search/node/rawSearchService.ts',
+			'src/do/workbench/services/search/node/ripgrepTextSearchEngine.ts',
+			'src/do/workbench/services/textMate/common/TMGrammarFactory.ts',
+			'src/do/workbench/services/themes/browser/fileIconThemeData.ts',
+			'src/do/workbench/services/themes/browser/productIconThemeData.ts',
+			'src/do/workbench/services/themes/common/colorThemeData.ts',
+			'src/do/workbench/services/themes/common/plistParser.ts',
+			'src/do/workbench/services/themes/common/themeExtensionPoints.ts',
+			'src/do/workbench/services/themes/common/workbenchThemeService.ts',
+			'src/do/workbench/test/browser/workbenchTestServices.ts',
+			'src/do/workbench/test/common/workbenchTestServices.ts',
+			'src/do/workbench/test/electron-browser/workbenchTestServices.ts',
 			// Server
-			'src/vs/server/node/remoteAgentEnvironmentImpl.ts',
-			'src/vs/server/node/remoteExtensionHostAgentServer.ts',
-			'src/vs/server/node/remoteExtensionsScanner.ts',
+			'src/do/server/node/remoteAgentEnvironmentImpl.ts',
+			'src/do/server/node/remoteExtensionHostAgentServer.ts',
+			'src/do/server/node/remoteExtensionsScanner.ts',
 			// Tests
 			'**/*.test.ts',
 			'**/*.integrationTest.ts'
@@ -954,10 +952,10 @@ export default defineConfig(
 			]
 		}
 	},
-	// vscode tests specific rules
+	// docode tests specific rules
 	{
 		files: [
-			'src/vs/**/*.test.ts'
+			'src/do/**/*.test.ts'
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -971,7 +969,7 @@ export default defineConfig(
 				{
 					// Files should (only) be removed from the list they adopt the leak detector
 					'exclude': [
-						'src/vs/workbench/services/userActivity/test/browser/domActivityTracker.test.ts',
+						'src/do/workbench/services/userActivity/test/browser/domActivityTracker.test.ts',
 					]
 				}
 			],
@@ -981,8 +979,8 @@ export default defineConfig(
 				{
 					// Files should (only) be removed from the list once they no longer poll
 					'exclude': [
-						'src/vs/sessions/contrib/layout/test/browser/chatLayoutOwnership.test.ts',
-						'src/vs/sessions/contrib/layout/test/browser/desktopLayoutController.test.ts',
+						'src/do/sessions/contrib/layout/test/browser/chatLayoutOwnership.test.ts',
+						'src/do/sessions/contrib/layout/test/browser/desktopLayoutController.test.ts',
 					]
 				}
 			]
@@ -1018,11 +1016,11 @@ export default defineConfig(
 			]
 		}
 	},
-	// vscode API
+	// docode API
 	{
 		files: [
-			'**/vscode.d.ts',
-			'**/vscode.proposed.*.d.ts'
+			'**/docode.d.ts',
+			'**/docode.proposed.*.d.ts'
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -1038,15 +1036,15 @@ export default defineConfig(
 					'message': 'Use Array<...> for arrays of union types.'
 				},
 			],
-			'local/vscode-dts-create-func': 'warn',
-			'local/vscode-dts-literal-or-types': 'warn',
-			'local/vscode-dts-string-type-literals': 'warn',
-			'local/vscode-dts-interface-naming': 'warn',
-			'local/vscode-dts-cancellation': 'warn',
-			'local/vscode-dts-use-export': 'warn',
-			'local/vscode-dts-use-thenable': 'warn',
-			'local/vscode-dts-vscode-in-comments': 'warn',
-			'local/vscode-dts-provider-naming': [
+			'local/docode-dts-create-func': 'warn',
+			'local/docode-dts-literal-or-types': 'warn',
+			'local/docode-dts-string-type-literals': 'warn',
+			'local/docode-dts-interface-naming': 'warn',
+			'local/docode-dts-cancellation': 'warn',
+			'local/docode-dts-use-export': 'warn',
+			'local/docode-dts-use-thenable': 'warn',
+			'local/docode-dts-docode-in-comments': 'warn',
+			'local/docode-dts-provider-naming': [
 				'warn',
 				{
 					'allowed': [
@@ -1061,7 +1059,7 @@ export default defineConfig(
 					]
 				}
 			],
-			'local/vscode-dts-event-naming': [
+			'local/docode-dts-event-naming': [
 				'warn',
 				{
 					'allowed': [
@@ -1112,10 +1110,10 @@ export default defineConfig(
 			]
 		}
 	},
-	// vscode.d.ts
+	// docode.d.ts
 	{
 		files: [
-			'**/vscode.d.ts'
+			'**/docode.d.ts'
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -1207,10 +1205,10 @@ export default defineConfig(
 	// that would be synchronously loaded on startup
 	{
 		files: [
-			'src/vs/code/electron-main/**/*.ts',
-			'src/vs/code/node/**/*.ts',
-			'src/vs/platform/*/electron-main/**/*.ts',
-			'src/vs/platform/*/node/**/*.ts',
+			'src/do/code/electron-main/**/*.ts',
+			'src/do/code/node/**/*.ts',
+			'src/do/platform/*/electron-main/**/*.ts',
+			'src/do/platform/*/node/**/*.ts',
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -1222,11 +1220,11 @@ export default defineConfig(
 			'local/code-no-static-node-module-import': [
 				'error',
 				// Files that run in separate processes, not on the electron-main startup path
-				'src/vs/platform/agentHost/node/**/*.ts',
-				'src/vs/platform/files/node/watcher/**/*.ts',
-				'src/vs/platform/terminal/node/**/*.ts',
+				'src/do/platform/agentHost/node/**/*.ts',
+				'src/do/platform/files/node/watcher/**/*.ts',
+				'src/do/platform/terminal/node/**/*.ts',
 				// Files that use small, safe modules
-				'src/vs/platform/environment/node/argv.ts',
+				'src/do/platform/environment/node/argv.ts',
 			]
 		}
 	},
@@ -1649,13 +1647,13 @@ export default defineConfig(
 						'@microsoft/dev-tunnels-contracts',
 						'@microsoft/dev-tunnels-management',
 						'@parcel/watcher',
-						'@vscode/sqlite3',
-						'@vscode/vscode-languagedetection',
-						'@vscode/ripgrep-universal',
-						'@vscode/iconv-lite-umd',
+						'@docode/sqlite3',
+						'@docode/languagedetection',
+						'@docode/ripgrep-universal',
+						'@docode/iconv-lite-umd',
 						'@vscode/native-watchdog',
 						'@vscode/policy-watcher',
-						'@vscode/proxy-agent',
+						'@docode/proxy-agent',
 						'@vscode/spdlog',
 						'@vscode/windows-process-tree',
 						'assert',
@@ -1679,7 +1677,7 @@ export default defineConfig(
 						'net',
 						'node-pty',
 						'os',
-						// 'path', NOT allowed: use src/vs/base/common/path.ts instead
+						// 'path', NOT allowed: use src/do/base/common/path.ts instead
 						'perf_hooks',
 						'readline',
 						'ssh2',
@@ -1693,7 +1691,7 @@ export default defineConfig(
 						'url',
 						'module',
 						'util',
-						'vscode-regexpp',
+						'@docode/regexpp',
 						'vscode-textmate',
 						'worker_threads',
 						'ws',
@@ -1738,61 +1736,61 @@ export default defineConfig(
 				// which will be substituted with one or more layers.
 				//
 				// When /~ is used in the target, the rule will be expanded to 14 distinct rules.
-				// e.g. 'src/vs/base/~' will be expanded to:
-				//  - src/vs/base/common
-				//  - src/vs/base/worker
-				//  - src/vs/base/browser
-				//  - src/vs/base/electron-browser
-				//  - src/vs/base/node
-				//  - src/vs/base/electron-main
-				//  - src/vs/base/test/common
-				//  - src/vs/base/test/worker
-				//  - src/vs/base/test/browser
-				//  - src/vs/base/test/electron-browser
-				//  - src/vs/base/test/node
-				//  - src/vs/base/test/electron-main
+				// e.g. 'src/do/base/~' will be expanded to:
+				//  - src/do/base/common
+				//  - src/do/base/worker
+				//  - src/do/base/browser
+				//  - src/do/base/electron-browser
+				//  - src/do/base/node
+				//  - src/do/base/electron-main
+				//  - src/do/base/test/common
+				//  - src/do/base/test/worker
+				//  - src/do/base/test/browser
+				//  - src/do/base/test/electron-browser
+				//  - src/do/base/test/node
+				//  - src/do/base/test/electron-main
 				//
 				// When /~ is used in the restrictions, it will be replaced with the correct
-				// layers that can be used e.g. 'src/vs/base/electron-browser' will be able
+				// layers that can be used e.g. 'src/do/base/electron-browser' will be able
 				// to import '{common,browser,electron-sanbox}', etc.
 				//
 				// It is possible to use /~ in the restrictions property even without using it in
 				// the target property by adding a layer property.
 				{
-					'target': 'src/vs/base/~',
+					'target': 'src/do/base/~',
 					'restrictions': [
-						'vs/base/~'
+						'do/base/~'
 					]
 				},
 				{
-					'target': 'src/vs/base/parts/*/~',
+					'target': 'src/do/base/parts/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~'
+						'do/base/~',
+						'do/base/parts/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/platform/agentHost/node/diffWorkerMain.ts',
+					'target': 'src/do/platform/agentHost/node/diffWorkerMain.ts',
 					'layer': 'node',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/common/diff/**', // diffing logic used by the agent host
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/common/diff/**', // diffing logic used by the agent host
 					]
 				},
 				{
-					'target': 'src/vs/platform/agentHost/~',
+					'target': 'src/do/platform/agentHost/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
 						'tas-client', // node module allowed even in /common/
 						'@microsoft/1ds-core-js', // node module allowed even in /common/
 						'@microsoft/1ds-post-js', // node module allowed even in /common/
 						'@xterm/headless', // node module allowed even in /common/
 						'@vscode/fs-copyfile', // used by agentHost for file copying after worktree creation
-						'@vscode/tree-sitter-wasm', // used by agentHost for command auto-approval
+						'@docode/tree-sitter-wasm', // used by agentHost for command auto-approval
 						'@vscode/copilot-api', // used by agentHost for Copilot API requests
 						'@anthropic-ai/sdk', // used by agentHost for Anthropic API requests
 						'@anthropic-ai/claude-agent-sdk', // used by agentHost for Claude Agent SDK session enumeration / queries
@@ -1804,135 +1802,135 @@ export default defineConfig(
 					]
 				},
 				{
-					'target': 'src/vs/platform/*/~',
+					'target': 'src/do/platform/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
 						'tas-client', // node module allowed even in /common/
 						'@microsoft/1ds-core-js', // node module allowed even in /common/
 						'@microsoft/1ds-post-js', // node module allowed even in /common/
 						'@xterm/headless', // node module allowed even in /common/
-						'@vscode/tree-sitter-wasm' // used by agentHost for command auto-approval
+						'@docode/tree-sitter-wasm' // used by agentHost for command auto-approval
 					]
 				},
 				{
-					'target': 'src/vs/editor/~',
+					'target': 'src/do/editor/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'@vscode/tree-sitter-wasm', // node module allowed even in /common/
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'@docode/tree-sitter-wasm', // node module allowed even in /common/
 						'@vscode/diff' // type import (loaded at runtime via resolveAmdNodeModulePath)
 					]
 				},
 				{
-					'target': 'src/vs/editor/contrib/*/~',
+					'target': 'src/do/editor/contrib/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/editor/standalone/~',
+					'target': 'src/do/editor/standalone/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/standalone/~',
-						'@vscode/tree-sitter-wasm' // type import
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/standalone/~',
+						'@docode/tree-sitter-wasm' // type import
 					]
 				},
 				{
-					'target': 'src/vs/editor/editor.all.ts',
+					'target': 'src/do/editor/editor.all.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/editor/editor.worker.start.ts',
+					'target': 'src/do/editor/editor.worker.start.ts',
 					'layer': 'worker',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~'
 					]
 				},
 				{
-					'target': 'src/vs/editor/{editor.api.ts,editor.main.ts}',
+					'target': 'src/do/editor/{editor.api.ts,editor.main.ts}',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/standalone/~',
-						'vs/editor/*'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/standalone/~',
+						'do/editor/*'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/~',
+					'target': 'src/do/workbench/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/services/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/services/*/~',
 						'assert',
 						{
 							'when': 'test',
-							'pattern': 'vs/workbench/contrib/*/~'
+							'pattern': 'do/workbench/contrib/*/~'
 						} // TODO@layers
 					]
 				},
 				{
-					'target': 'src/vs/workbench/api/~',
+					'target': 'src/do/workbench/api/~',
 					'restrictions': [
-						'vscode',
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/api/~',
-						'vs/workbench/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/workbench/contrib/terminalContrib/*/~'
+						'docode',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/api/~',
+						'do/workbench/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/workbench/contrib/terminalContrib/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/services/*/~',
+					'target': 'src/do/workbench/services/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/services/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/services/*/~',
 						{
 							'when': 'test',
-							'pattern': 'vs/workbench/contrib/*/~'
+							'pattern': 'do/workbench/contrib/*/~'
 						}, // TODO@layers
 						'tas-client', // node module allowed even in /common/
 						'vscode-textmate', // node module allowed even in /common/
-						'@vscode/vscode-languagedetection', // node module allowed even in /common/
-						'@vscode/tree-sitter-wasm', // type import
+						'@docode/languagedetection', // node module allowed even in /common/
+						'@docode/tree-sitter-wasm', // type import
 						{
 							'when': 'hasBrowser',
 							'pattern': '@xterm/xterm'
@@ -1940,21 +1938,21 @@ export default defineConfig(
 					]
 				},
 				{
-					'target': 'src/vs/workbench/contrib/*/~',
+					'target': 'src/do/workbench/contrib/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/~',
-						'vs/workbench/contrib/terminal/terminalContribChatExports*',
-						'vs/workbench/contrib/terminal/terminalContribExports*',
-						'vscode-notebook-renderer', // Type only import
-						'@vscode/tree-sitter-wasm', // type import
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/~',
+						'do/workbench/contrib/terminal/terminalContribChatExports*',
+						'do/workbench/contrib/terminal/terminalContribExports*',
+						'docode-notebook-renderer', // Type only import
+						'@docode/tree-sitter-wasm', // type import
 						{
 							'when': 'hasBrowser',
 							'pattern': '@xterm/xterm'
@@ -1970,21 +1968,21 @@ export default defineConfig(
 					]
 				},
 				{
-					'target': 'src/vs/workbench/contrib/terminalContrib/*/~',
+					'target': 'src/do/workbench/contrib/terminalContrib/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
 						// Only allow terminalContrib to import from itself, this works because
 						// terminalContrib is one extra folder deep
-						'vs/workbench/contrib/terminalContrib/*/~',
-						'vscode-notebook-renderer', // Type only import
-						'@vscode/tree-sitter-wasm', // type import
+						'do/workbench/contrib/terminalContrib/*/~',
+						'docode-notebook-renderer', // Type only import
+						'@docode/tree-sitter-wasm', // type import
 						{
 							'when': 'hasBrowser',
 							'pattern': '@xterm/xterm'
@@ -2001,363 +1999,363 @@ export default defineConfig(
 					]
 				},
 				{
-					'target': 'src/vs/code/~',
+					'target': 'src/do/code/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/code/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/code/~',
 						{
 							'when': 'hasBrowser',
-							'pattern': 'vs/workbench/workbench.web.main.js'
+							'pattern': 'do/workbench/workbench.web.main.js'
 						},
 						{
 							'when': 'hasBrowser',
-							'pattern': 'vs/workbench/workbench.web.main.internal.js'
+							'pattern': 'do/workbench/workbench.web.main.internal.js'
 						},
 						{
 							'when': 'hasBrowser',
-							'pattern': 'vs/workbench/~'
+							'pattern': 'do/workbench/~'
 						},
 						{
 							'when': 'hasBrowser',
-							'pattern': 'vs/workbench/services/*/~'
+							'pattern': 'do/workbench/services/*/~'
 						}
 					]
 				},
 				{
-					'target': 'src/vs/sessions/electron-browser/sessions.ts',
+					'target': 'src/do/sessions/electron-browser/sessions.ts',
 					'layer': 'electron-browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/sessions/~',
-						'vs/sessions/sessions.desktop.main.js'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/sessions/~',
+						'do/sessions/sessions.desktop.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/server/~',
+					'target': 'src/do/server/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/server/~'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/server/~'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/contrib/terminal/terminal.all.ts',
+					'target': 'src/do/workbench/contrib/terminal/terminal.all.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/workbench/contrib/**'
+						'do/workbench/contrib/**'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/contrib/terminal/terminalContribChatExports.ts',
+					'target': 'src/do/workbench/contrib/terminal/terminalContribChatExports.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/workbench/contrib/terminalContrib/*/~'
+						'do/workbench/contrib/terminalContrib/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/contrib/terminal/terminalContribExports.ts',
+					'target': 'src/do/workbench/contrib/terminal/terminalContribExports.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/platform/*/~',
-						'vs/workbench/contrib/terminalContrib/*/~'
+						'do/platform/*/~',
+						'do/workbench/contrib/terminalContrib/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/workbench.common.main.ts',
+					'target': 'src/do/workbench/workbench.common.main.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/workbench/contrib/terminal/terminal.all.js',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/workbench/contrib/terminal/terminal.all.js',
 					]
 				},
 				{
-					'target': 'src/vs/workbench/workbench.web.main.ts',
+					'target': 'src/do/workbench/workbench.web.main.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/workbench/workbench.common.main.js'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/workbench/workbench.common.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/workbench.web.main.internal.ts',
+					'target': 'src/do/workbench/workbench.web.main.internal.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/workbench/workbench.web.main.js'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/workbench/workbench.web.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/workbench/workbench.desktop.main.ts',
+					'target': 'src/do/workbench/workbench.desktop.main.ts',
 					'layer': 'electron-browser',
 					'restrictions': [
-						'vs/base/*/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/workbench/workbench.common.main.js'
+						'do/base/*/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/workbench/workbench.common.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/amdX.ts',
+					'target': 'src/do/amdX.ts',
 					'restrictions': [
-						'vs/base/common/*'
+						'do/base/common/*'
 					]
 				},
 				{
-					'target': 'src/vs/{monaco.d.ts,nls.ts}',
+					'target': 'src/do/{monaco.d.ts,nls.ts}',
 					'restrictions': []
 				},
 				{
-					'target': 'src/vscode-dts/**',
+					'target': 'src/docode-dts/**',
 					'restrictions': []
 				},
 				{
-					'target': 'src/vs/nls.ts',
+					'target': 'src/do/nls.ts',
 					'restrictions': [
-						'vs/*'
+						'do/*'
 					]
 				},
 				{
 					'target': 'src/{bootstrap-cli.ts,bootstrap-esm.ts,bootstrap-fork.ts,bootstrap-import.ts,bootstrap-meta.ts,bootstrap-node.ts,bootstrap-server.ts,cli.ts,main.ts,mainImpl.ts,server-cli.ts,server-main.ts}',
 					'restrictions': [
-						'vs/**/common/*',
-						'vs/**/node/*',
-						'vs/nls.js',
+						'do/**/common/*',
+						'do/**/node/*',
+						'do/nls.js',
 						'src/*.js',
 						'*' // node.js
 					]
 				},
 				{
-					'target': 'src/vs/sessions/sessions.common.main.ts',
+					'target': 'src/do/sessions/sessions.common.main.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/sessions/~',
-						'vs/sessions/services/*/~',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/contrib/providers/*/~',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/workbench/contrib/terminal/terminal.all.js',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/sessions/~',
+						'do/sessions/services/*/~',
+						'do/sessions/contrib/*/~',
+						'do/sessions/contrib/providers/*/~',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/workbench/contrib/terminal/terminal.all.js',
 					]
 				},
 				{
-					'target': 'src/vs/sessions/sessions.desktop.main.ts',
+					'target': 'src/do/sessions/sessions.desktop.main.ts',
 					'layer': 'electron-browser',
 					'restrictions': [
-						'vs/base/*/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/sessions/~',
-						'vs/sessions/services/*/~',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/contrib/providers/*/~',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/sessions.common.main.js'
+						'do/base/*/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/sessions/~',
+						'do/sessions/services/*/~',
+						'do/sessions/contrib/*/~',
+						'do/sessions/contrib/providers/*/~',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/sessions.common.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/sessions/sessions.web.main.ts',
+					'target': 'src/do/sessions/sessions.web.main.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/editor/editor.all.js',
-						'vs/sessions/~',
-						'vs/sessions/services/*/~',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/contrib/providers/*/~',
-						'vs/workbench/~',
-						'vs/workbench/api/~',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/sessions.common.main.js'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/editor/editor.all.js',
+						'do/sessions/~',
+						'do/sessions/services/*/~',
+						'do/sessions/contrib/*/~',
+						'do/sessions/contrib/providers/*/~',
+						'do/workbench/~',
+						'do/workbench/api/~',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/sessions.common.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/sessions/sessions.web.main.internal.ts',
+					'target': 'src/do/sessions/sessions.web.main.internal.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/sessions/~',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/contrib/providers/*/~',
-						'vs/workbench/~',
-						'vs/workbench/browser/**',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/sessions.web.main.js'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/sessions/~',
+						'do/sessions/contrib/*/~',
+						'do/sessions/contrib/providers/*/~',
+						'do/workbench/~',
+						'do/workbench/browser/**',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/sessions.web.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/sessions/test/sessions.web.test.internal.ts',
+					'target': 'src/do/sessions/test/sessions.web.test.internal.ts',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/sessions/~',
-						'vs/sessions/test/**',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/contrib/providers/*/~',
-						'vs/workbench/~',
-						'vs/workbench/browser/**',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/sessions.web.main.js'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/sessions/~',
+						'do/sessions/test/**',
+						'do/sessions/contrib/*/~',
+						'do/sessions/contrib/providers/*/~',
+						'do/workbench/~',
+						'do/workbench/browser/**',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/sessions.web.main.js'
 					]
 				},
 				{
-					'target': 'src/vs/sessions/test/{web.test.ts,web.test.factory.ts}',
+					'target': 'src/do/sessions/test/{web.test.ts,web.test.factory.ts}',
 					'layer': 'browser',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/sessions/~',
-						'vs/sessions/test/**',
-						'vs/sessions/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/browser/**',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/sessions/~',
+						'do/sessions/test/**',
+						'do/sessions/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/browser/**',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/sessions/~',
+					'target': 'src/do/sessions/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/browser/**',
-						'vs/workbench/services/*/~',
-						'vs/sessions/~',
-						'vs/sessions/services/*/~'
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/browser/**',
+						'do/workbench/services/*/~',
+						'do/sessions/~',
+						'do/sessions/services/*/~'
 					]
 				},
 				{
-					'target': 'src/vs/sessions/contrib/providers/*/~',
+					'target': 'src/do/sessions/contrib/providers/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/browser/**',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/~',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/contrib/providers/*/~',
-						'vs/sessions/services/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/browser/**',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/~',
+						'do/sessions/contrib/*/~',
+						'do/sessions/contrib/providers/*/~',
+						'do/sessions/services/*/~',
 						'@microsoft/dev-tunnels-connections', // type-only browser bundle conformance check
 						'@microsoft/dev-tunnels-management', // type-only browser bundle conformance check
 					]
 				},
 				{
-					'target': 'src/vs/sessions/contrib/*/~',
+					'target': 'src/do/sessions/contrib/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/browser/**',
-						'vs/workbench/services/*/~',
-						'vs/workbench/contrib/*/~',
-						'vs/sessions/~',
-						'vs/sessions/contrib/*/~',
-						'vs/sessions/services/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/browser/**',
+						'do/workbench/services/*/~',
+						'do/workbench/contrib/*/~',
+						'do/sessions/~',
+						'do/sessions/contrib/*/~',
+						'do/sessions/services/*/~',
 					]
 				},
 				{
-					'target': 'src/vs/sessions/services/*/~',
+					'target': 'src/do/sessions/services/*/~',
 					'restrictions': [
-						'vs/base/~',
-						'vs/base/parts/*/~',
-						'vs/platform/*/~',
-						'vs/editor/~',
-						'vs/editor/contrib/*/~',
-						'vs/workbench/~',
-						'vs/workbench/services/*/~',
-						'vs/sessions/~',
-						'vs/sessions/services/*/~',
-						'vs/workbench/contrib/*/~',
+						'do/base/~',
+						'do/base/parts/*/~',
+						'do/platform/*/~',
+						'do/editor/~',
+						'do/editor/contrib/*/~',
+						'do/workbench/~',
+						'do/workbench/services/*/~',
+						'do/sessions/~',
+						'do/sessions/services/*/~',
+						'do/workbench/contrib/*/~',
 						{
 							'when': 'test',
-							'pattern': 'vs/workbench/contrib/*/~'
+							'pattern': 'do/workbench/contrib/*/~'
 						}, // TODO@layers
 						'tas-client', // node module allowed even in /common/
 						'vscode-textmate', // node module allowed even in /common/
-						'@vscode/vscode-languagedetection', // node module allowed even in /common/
-						'@vscode/tree-sitter-wasm', // type import
+						'@docode/languagedetection', // node module allowed even in /common/
+						'@docode/tree-sitter-wasm', // type import
 						{
 							'when': 'hasBrowser',
 							'pattern': '@xterm/xterm'
@@ -2385,7 +2383,7 @@ export default defineConfig(
 					'restrictions': [
 						'test/automation',
 						'test/smoke/**',
-						'@vscode/*',
+						'@docode/*',
 						'@parcel/*',
 						'@playwright/*',
 						'*' // node modules
@@ -2402,7 +2400,7 @@ export default defineConfig(
 					'target': 'test/automation/**',
 					'restrictions': [
 						'test/automation/**',
-						'@vscode/*',
+						'@docode/*',
 						'@parcel/*',
 						'playwright-core/**',
 						'@playwright/*',
@@ -2413,7 +2411,7 @@ export default defineConfig(
 					'target': 'test/integration/**',
 					'restrictions': [
 						'test/integration/**',
-						'@vscode/*',
+						'@docode/*',
 						'@parcel/*',
 						'@playwright/*',
 						'*' // node modules
@@ -2423,7 +2421,7 @@ export default defineConfig(
 					'target': 'test/monaco/**',
 					'restrictions': [
 						'test/monaco/**',
-						'@vscode/*',
+						'@docode/*',
 						'@parcel/*',
 						'@playwright/*',
 						'*' // node modules
@@ -2434,7 +2432,7 @@ export default defineConfig(
 					'restrictions': [
 						'test/automation',
 						'test/scenario/**',
-						'@vscode/*',
+						'@docode/*',
 						'@parcel/*',
 						'@playwright/*',
 						'*' // node modules
@@ -2452,16 +2450,16 @@ export default defineConfig(
 		}
 	},
 	{
-		files: ['src/vs/**/*.ts'],
+		files: ['src/do/**/*.ts'],
 		rules: {
 			'local/code-no-legacy-notification-parsing': ['error', {
 				allowedFiles: [
-					'src/vs/workbench/api/browser/mainThreadMessageService.ts',
-					'src/vs/workbench/api/browser/mainThreadProgress.ts',
-					'src/vs/platform/notification/test/common/notificationMessage.test.ts',
-					'src/vs/workbench/test/common/notifications.test.ts',
-					'src/vs/workbench/test/browser/notificationsList.test.ts',
-					'src/vs/workbench/services/progress/test/browser/progressService.test.ts',
+					'src/do/workbench/api/browser/mainThreadMessageService.ts',
+					'src/do/workbench/api/browser/mainThreadProgress.ts',
+					'src/do/platform/notification/test/common/notificationMessage.test.ts',
+					'src/do/workbench/test/common/notifications.test.ts',
+					'src/do/workbench/test/browser/notificationsList.test.ts',
+					'src/do/workbench/services/progress/test/browser/progressService.test.ts',
 				],
 			}],
 		},
@@ -2470,12 +2468,12 @@ export default defineConfig(
 		// `IAgentSessionsService` and the agent sessions model are provider-internal
 		// to Copilot. Only the Copilot chat sessions provider may consume them; the
 		// rest of the Agents window (sessions workbench) must stay provider-agnostic.
-		// See src/vs/sessions/SESSIONS.md.
+		// See src/do/sessions/SESSIONS.md.
 		files: [
-			'src/vs/sessions/**/*.ts'
+			'src/do/sessions/**/*.ts'
 		],
 		ignores: [
-			'src/vs/sessions/contrib/providers/copilotChatSessions/**/*.ts'
+			'src/do/sessions/contrib/providers/copilotChatSessions/**/*.ts'
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -2491,7 +2489,7 @@ export default defineConfig(
 						},
 						{
 							'group': ['**/agentSessions/agentSessionsService', '**/agentSessions/agentSessionsService.js'],
-							'message': 'IAgentSessionsService is provider-internal to Copilot. Only contrib/providers/copilotChatSessions may import it; the rest of the Agents window must stay provider-agnostic. See src/vs/sessions/SESSIONS.md.'
+							'message': 'IAgentSessionsService is provider-internal to Copilot. Only contrib/providers/copilotChatSessions may import it; the rest of the Agents window must stay provider-agnostic. See src/do/sessions/SESSIONS.md.'
 						}
 					]
 				}
@@ -2500,7 +2498,7 @@ export default defineConfig(
 	},
 	{
 		files: [
-			'src/vs/workbench/contrib/notebook/browser/view/renderers/*.ts'
+			'src/do/workbench/contrib/notebook/browser/view/renderers/*.ts'
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -2512,7 +2510,7 @@ export default defineConfig(
 			'local/code-no-runtime-import': [
 				'error',
 				{
-					'src/vs/workbench/contrib/notebook/browser/view/renderers/webviewPreloads.ts': [
+					'src/do/workbench/contrib/notebook/browser/view/renderers/webviewPreloads.ts': [
 						'**/*'
 					]
 				}
@@ -2520,7 +2518,7 @@ export default defineConfig(
 			'local/code-limited-top-functions': [
 				'error',
 				{
-					'src/vs/workbench/contrib/notebook/browser/view/renderers/webviewPreloads.ts': [
+					'src/do/workbench/contrib/notebook/browser/view/renderers/webviewPreloads.ts': [
 						'webviewPreloads',
 						'preloadsScriptStr'
 					]
@@ -2531,8 +2529,8 @@ export default defineConfig(
 	// Terminal
 	{
 		files: [
-			'src/vs/workbench/contrib/terminal/**/*.ts',
-			'src/vs/workbench/contrib/terminalContrib/**/*.ts',
+			'src/do/workbench/contrib/terminal/**/*.ts',
+			'src/do/workbench/contrib/terminalContrib/**/*.ts',
 		],
 		languageOptions: {
 			parser: tseslint.parser,
@@ -2563,7 +2561,6 @@ export default defineConfig(
 		],
 		ignores: [
 			'extensions/**/*.test.ts',
-			'extensions/copilot/**/*',
 		],
 		rules: {
 			'no-restricted-syntax': [
@@ -2641,406 +2638,6 @@ export default defineConfig(
 			'@typescript-eslint/prefer-optional-chain': 'warn',
 			'@typescript-eslint/prefer-readonly': 'warn',
 			'@typescript-eslint/consistent-generic-constructors': ['warn', 'constructor'],
-		}
-	},
-	// copilot extension - main sources
-	{
-		files: [
-			'extensions/copilot/src/**/*.{ts,tsx}',
-			'extensions/copilot/test/**/*.{ts,tsx}',
-		],
-		ignores: [
-			'extensions/copilot/**/.esbuild.ts',
-			'extensions/copilot/src/extension/completions-core/vscode-node/bridge/src/completionsTelemetryServiceBridge.ts',
-		],
-		languageOptions: {
-			parser: tseslint.parser,
-		},
-		plugins: {
-			'import': fixupPluginRules(pluginImport),
-			'copilot-local': pluginCopilotLocal,
-		},
-		rules: {
-			'local/code-no-dangerous-type-assertions': 'off',
-			'local/code-no-any-casts': 'off',
-			'local/code-no-deep-import-of-internal': 'off',
-			'no-restricted-imports': [
-				'warn',
-				// node: builtins
-				...builtinModules,
-				// node: dependencies
-				'@humanwhocodes/gitignore-to-minimatch',
-				'@vscode/extension-telemetry',
-				'applicationinsights',
-				'ignore',
-				'isbinaryfile',
-				'minimatch',
-				'source-map-support',
-				'vscode-tas-client',
-				'web-tree-sitter'
-			],
-			'import/no-restricted-paths': [
-				'warn',
-				{
-					zones: [
-						{
-							target: '**/common/**',
-							from: [
-								'**/vscode/**',
-								'**/node/**',
-								'**/vscode-node/**',
-								'**/worker/**',
-								'**/vscode-worker/**'
-							]
-						},
-						{
-							target: '**/vscode/**',
-							from: [
-								'**/node/**',
-								'**/vscode-node/**',
-								'**/worker/**',
-								'**/vscode-worker/**'
-							]
-						},
-						{
-							target: '**/node/**',
-							from: [
-								'**/vscode/**',
-								'**/vscode-node/**',
-								'**/worker/**',
-								'**/vscode-worker/**'
-							]
-						},
-						{
-							target: '**/vscode-node/**',
-							from: [
-								'**/worker/**',
-								'**/vscode-worker/**'
-							]
-						},
-						{
-							target: '**/worker/**',
-							from: [
-								'**/vscode/**',
-								'**/node/**',
-								'**/vscode-node/**',
-								'**/vscode-worker/**'
-							]
-						},
-						{
-							target: '**/vscode-worker/**',
-							from: [
-								'**/node/**',
-								'**/vscode-node/**'
-							]
-						},
-						{
-							target: './extensions/copilot/src/',
-							from: './extensions/copilot/test/'
-						},
-						{
-							target: './extensions/copilot/src/shared-fetch-utils',
-							from: ['./extensions/copilot/src/extension', './extensions/copilot/src/platform', './extensions/copilot/src/util', './extensions/copilot/src/lib']
-						},
-						{
-							target: './extensions/copilot/src/util',
-							from: ['./extensions/copilot/src/platform', './extensions/copilot/src/extension']
-						},
-						{
-							target: './extensions/copilot/src/platform',
-							from: ['./extensions/copilot/src/extension']
-						},
-						{
-							target: ['./extensions/copilot/test', '!./extensions/copilot/test/base/extHostContext/*.ts'],
-							from: ['**/vscode-node/**', '**/vscode-worker/**']
-						},
-						{
-							target: 'extensions/copilot/src/!(lib)/**',
-							from: './extensions/copilot/src/lib'
-						}
-					]
-				}
-			],
-			'copilot-local/no-instanceof-uri': ['warn'],
-			'copilot-local/no-test-imports': ['warn'],
-			'copilot-local/no-runtime-import': [
-				'warn',
-				{
-					test: ['vscode'],
-					'src/**/common/**/*': ['vscode'],
-					'src/**/node/**/*': ['vscode']
-				}
-			],
-			'copilot-local/no-funny-filename': ['warn'],
-			'copilot-local/no-bad-gdpr-comment': ['warn'],
-			'copilot-local/no-gdpr-event-name-mismatch': ['warn'],
-			'copilot-local/no-unlayered-files': ['warn'],
-			'copilot-local/no-restricted-copilot-pr-string': [
-				'warn',
-				{
-					className: 'GitHubPullRequestProviders',
-					string: 'Generate with Copilot'
-				}
-			],
-			'copilot-local/no-nls-localize': ['warn'],
-		}
-	},
-	// copilot extension - allow node imports in node layer
-	{
-		files: [
-			'extensions/copilot/**/{vscode-node,node}/**/*.ts',
-			'extensions/copilot/**/{vscode-node,node}/**/*.tsx',
-		],
-		rules: {
-			'no-restricted-imports': 'off'
-		}
-	},
-	// copilot extension - override files (tests, build, etc.)
-	{
-		files: [
-			'extensions/copilot/test/**',
-			'extensions/copilot/src/vscodeTypes.ts',
-			'extensions/copilot/script/**',
-			'extensions/copilot/src/extension/*.d.ts',
-			'extensions/copilot/build/**',
-		],
-		rules: {
-			'copilot-local/no-unlayered-files': 'off',
-			'no-restricted-imports': 'off'
-		}
-	},
-	// copilot extension - TSX linebreak rule
-	{
-		files: [
-			'extensions/copilot/src/extension/**/*.tsx',
-		],
-		plugins: {
-			'copilot-local': pluginCopilotLocal,
-		},
-		rules: {
-			'copilot-local/no-missing-linebreak': 'warn'
-		}
-	},
-	// copilot extension - test-only rule
-	{
-		files: [
-			'extensions/copilot/**/*.test.ts',
-			'extensions/copilot/**/*.test.tsx',
-		],
-		plugins: {
-			'copilot-local': pluginCopilotLocal,
-		},
-		rules: {
-			'copilot-local/no-test-only': 'warn'
-		}
-	},
-	// copilot extension - no-explicit-any
-	{
-		files: [
-			'extensions/copilot/src/**/*.ts',
-		],
-		ignores: [
-			'extensions/copilot/src/util/vs/**/*.ts',
-			'extensions/copilot/src/**/*.spec.ts',
-			'extensions/copilot/src/extension/agents/copilotcli/node/nodePtyShim.ts',
-			'extensions/copilot/src/extension/byok/common/anthropicMessageConverter.ts',
-			'extensions/copilot/src/extension/byok/common/geminiFunctionDeclarationConverter.ts',
-			'extensions/copilot/src/extension/byok/common/geminiMessageConverter.ts',
-			'extensions/copilot/src/extension/byok/vscode-node/anthropicProvider.ts',
-			'extensions/copilot/src/extension/byok/vscode-node/geminiNativeProvider.ts',
-			'extensions/copilot/src/extension/byok/vscode-node/ollamaProvider.ts',
-			'extensions/copilot/src/extension/chatSessions/vscode-node/copilotCloudSessionContentBuilder.ts',
-			'extensions/copilot/src/extension/chatSessions/vscode-node/copilotCloudSessionsProvider.ts',
-			'extensions/copilot/src/extension/codeBlocks/node/codeBlockProcessor.ts',
-			'extensions/copilot/src/extension/codeBlocks/vscode-node/provider.ts',
-			'extensions/copilot/src/extension/configuration/vscode-node/configurationMigration.ts',
-			'extensions/copilot/src/extension/context/node/resolvers/genericInlineIntentInvocation.ts',
-			'extensions/copilot/src/extension/context/node/resolvers/genericPanelIntentInvocation.ts',
-			'extensions/copilot/src/extension/context/node/resolvers/inlineFixIntentInvocation.ts',
-			'extensions/copilot/src/extension/context/node/resolvers/promptWorkspaceLabels.ts',
-			'extensions/copilot/src/extension/contextKeys/vscode-node/contextKeys.contribution.ts',
-			'extensions/copilot/src/extension/conversation/vscode-node/userActions.ts',
-			'extensions/copilot/src/extension/extension/vscode/services.ts',
-			'extensions/copilot/src/extension/inlineChat/node/rendererVisualization.ts',
-			'extensions/copilot/src/extension/inlineChat/vscode-node/inlineChatCommands.ts',
-			'extensions/copilot/src/extension/inlineEdits/common/observableWorkspaceRecordingReplayer.ts',
-			'extensions/copilot/src/extension/inlineEdits/vscode-node/parts/vscodeWorkspace.ts',
-			'extensions/copilot/src/extension/intents/node/editCodeIntent.ts',
-			'extensions/copilot/src/extension/intents/node/editCodeStep.ts',
-			'extensions/copilot/src/extension/intents/node/fixIntent.ts',
-			'extensions/copilot/src/extension/intents/node/newIntent.ts',
-			'extensions/copilot/src/extension/intents/node/searchIntent.ts',
-			'extensions/copilot/src/extension/languageContextProvider/vscode-node/languageContextProviderService.ts',
-			'extensions/copilot/src/extension/linkify/common/commands.ts',
-			'extensions/copilot/src/extension/linkify/common/responseStreamWithLinkification.ts',
-			'extensions/copilot/src/extension/linkify/test/node/util.ts',
-			'extensions/copilot/src/extension/log/vscode-node/loggingActions.ts',
-			'extensions/copilot/src/extension/log/vscode-node/requestLogTree.ts',
-			'extensions/copilot/src/extension/mcp/test/vscode-node/util.ts',
-			'extensions/copilot/src/extension/mcp/vscode-node/commands.ts',
-			'extensions/copilot/src/extension/mcp/vscode-node/nuget.ts',
-			'extensions/copilot/src/extension/onboardDebug/node/copilotDebugWorker/rpc.ts',
-			'extensions/copilot/src/extension/onboardDebug/node/parseLaunchConfigFromResponse.ts',
-			'extensions/copilot/src/extension/onboardDebug/vscode-node/copilotDebugCommandHandle.ts',
-			'extensions/copilot/src/extension/prompt/common/toolCallRound.ts',
-			'extensions/copilot/src/extension/prompt/node/chatMLFetcher.ts',
-			'extensions/copilot/src/extension/prompt/node/chatParticipantTelemetry.ts',
-			'extensions/copilot/src/extension/prompt/node/editGeneration.ts',
-			'extensions/copilot/src/extension/prompt/node/intents.ts',
-			'extensions/copilot/src/extension/prompt/node/todoListContextProvider.ts',
-			'extensions/copilot/src/extension/prompt/vscode-node/endpointProviderImpl.ts',
-			'extensions/copilot/src/extension/prompt/vscode-node/requestLoggerImpl.ts',
-			'extensions/copilot/src/extension/prompts/node/agent/promptRegistry.ts',
-			'extensions/copilot/src/extension/prompts/node/base/promptElement.ts',
-			'extensions/copilot/src/extension/prompts/node/base/promptRenderer.ts',
-			'extensions/copilot/src/extension/prompts/node/test/utils.ts',
-			'extensions/copilot/src/extension/replay/common/chatReplayResponses.ts',
-			'extensions/copilot/src/extension/replay/node/replayParser.ts',
-			'extensions/copilot/src/extension/replay/vscode-node/replayDebugSession.ts',
-			'extensions/copilot/src/extension/review/node/githubReviewAgent.ts',
-			'extensions/copilot/src/extension/test/node/services.ts',
-			'extensions/copilot/src/extension/test/vscode-node/extension.test.ts',
-			'extensions/copilot/src/extension/test/vscode-node/sanity.sanity-test.ts',
-			'extensions/copilot/src/extension/test/vscode-node/session.test.ts',
-			'extensions/copilot/src/extension/tools/common/toolSchemaNormalizer.ts',
-			'extensions/copilot/src/extension/tools/common/toolsService.ts',
-			'extensions/copilot/src/extension/typescriptContext/common/serverProtocol.ts',
-			'extensions/copilot/src/extension/typescriptContext/serverPlugin/src/common/baseContextProviders.ts',
-			'extensions/copilot/src/extension/typescriptContext/serverPlugin/src/common/contextProvider.ts',
-			'extensions/copilot/src/extension/typescriptContext/serverPlugin/src/common/protocol.ts',
-			'extensions/copilot/src/extension/typescriptContext/serverPlugin/src/common/typescripts.ts',
-			'extensions/copilot/src/extension/typescriptContext/serverPlugin/src/common/utils.ts',
-			'extensions/copilot/src/extension/typescriptContext/vscode-node/inspector.ts',
-			'extensions/copilot/src/extension/typescriptContext/vscode-node/languageContextService.ts',
-			'extensions/copilot/src/extension/workspaceRecorder/vscode-node/workspaceListenerService.ts',
-			'extensions/copilot/src/extension/workspaceSemanticSearch/node/semanticSearchTextSearchProvider.ts',
-			'extensions/copilot/src/lib/node/chatLibMain.ts',
-			'extensions/copilot/src/platform/authentication/test/node/simulationTestCopilotTokenManager.ts',
-			'extensions/copilot/src/platform/chat/common/blockedExtensionService.ts',
-			'extensions/copilot/src/platform/chunking/common/chunkingEndpointClientImpl.ts',
-			'extensions/copilot/src/platform/commands/common/mockRunCommandExecutionService.ts',
-			'extensions/copilot/src/platform/commands/common/runCommandExecutionService.ts',
-			'extensions/copilot/src/platform/commands/vscode/runCommandExecutionServiceImpl.ts',
-			'extensions/copilot/src/platform/configuration/common/configurationService.ts',
-			'extensions/copilot/src/platform/configuration/common/validator.ts',
-			'extensions/copilot/src/platform/configuration/test/common/inMemoryConfigurationService.ts',
-			'extensions/copilot/src/platform/configuration/vscode/configurationServiceImpl.ts',
-			'extensions/copilot/src/platform/customInstructions/common/customInstructionsService.ts',
-			'extensions/copilot/src/platform/debug/vscode/debugOutputListener.ts',
-			'extensions/copilot/src/platform/diff/node/diffWorkerMain.ts',
-			'extensions/copilot/src/platform/editing/common/notebookDocumentSnapshot.ts',
-			'extensions/copilot/src/platform/editing/common/textDocumentSnapshot.ts',
-			'extensions/copilot/src/platform/embeddings/common/embeddingsGrouper.ts',
-			'extensions/copilot/src/platform/embeddings/common/embeddingsIndex.ts',
-			'extensions/copilot/src/platform/embeddings/common/remoteEmbeddingsComputer.ts',
-			'extensions/copilot/src/platform/endpoint/node/modelMetadataFetcher.ts',
-			'extensions/copilot/src/platform/endpoint/test/node/openaiCompatibleEndpoint.ts',
-			'extensions/copilot/src/platform/env/common/packagejson.ts',
-			'extensions/copilot/src/platform/extensions/common/extensionsService.ts',
-			'extensions/copilot/src/platform/filesystem/common/fileSystemService.ts',
-			'extensions/copilot/src/platform/github/common/githubService.ts',
-			'extensions/copilot/src/platform/github/common/nullOctokitServiceImpl.ts',
-			'extensions/copilot/src/platform/inlineEdits/common/dataTypes/edit.ts',
-			'extensions/copilot/src/platform/inlineEdits/common/dataTypes/textEditLengthHelper/length.ts',
-			'extensions/copilot/src/platform/inlineEdits/common/editReason.ts',
-			'extensions/copilot/src/platform/inlineEdits/common/statelessNextEditProvider.ts',
-			'extensions/copilot/src/platform/inlineEdits/common/utils/observable.ts',
-			'extensions/copilot/src/platform/languages/common/languageDiagnosticsService.ts',
-			'extensions/copilot/src/platform/log/common/logExecTime.ts',
-			'extensions/copilot/src/platform/log/common/logService.ts',
-			'extensions/copilot/src/platform/log/vscode/outputChannelLogTarget.ts',
-			'extensions/copilot/src/platform/nesFetch/common/completionsFetchService.ts',
-			'extensions/copilot/src/platform/nesFetch/node/completionsFetchServiceImpl.ts',
-			'extensions/copilot/src/platform/networking/common/fetch.ts',
-			'extensions/copilot/src/platform/networking/common/fetcherService.ts',
-			'extensions/copilot/src/platform/networking/common/networking.ts',
-			'extensions/copilot/src/platform/networking/common/openai.ts',
-			'extensions/copilot/src/platform/networking/node/baseFetchFetcher.ts',
-			'extensions/copilot/src/platform/networking/node/chatStream.ts',
-			'extensions/copilot/src/platform/networking/node/fetcherFallback.ts',
-			'extensions/copilot/src/platform/networking/node/nodeFetchFetcher.ts',
-			'extensions/copilot/src/platform/networking/node/nodeFetcher.ts',
-			'extensions/copilot/src/platform/networking/node/stream.ts',
-			'extensions/copilot/src/platform/networking/node/test/nodeFetcherService.ts',
-			'extensions/copilot/src/platform/networking/vscode-node/electronFetcher.ts',
-			'extensions/copilot/src/platform/networking/vscode-node/fetcherServiceImpl.ts',
-			'extensions/copilot/src/platform/notification/common/notificationService.ts',
-			'extensions/copilot/src/platform/notification/vscode/notificationServiceImpl.ts',
-			'extensions/copilot/src/platform/openai/node/fetch.ts',
-			'extensions/copilot/src/platform/parser/node/nodes.ts',
-			'extensions/copilot/src/platform/parser/node/parserServiceImpl.ts',
-			'extensions/copilot/src/platform/parser/node/parserWorker.ts',
-			'extensions/copilot/src/platform/parser/node/treeSitterQueries.ts',
-			'extensions/copilot/src/platform/remoteCodeSearch/common/githubCodeSearchService.ts',
-			'extensions/copilot/src/platform/remoteSearch/node/codeOrDocsSearchClientImpl.ts',
-			'extensions/copilot/src/platform/review/vscode/reviewServiceImpl.ts',
-			'extensions/copilot/src/platform/scopeSelection/vscode-node/scopeSelectionImpl.ts',
-			'extensions/copilot/src/platform/snippy/common/snippyTypes.ts',
-			'extensions/copilot/src/platform/survey/vscode/surveyServiceImpl.ts',
-			'extensions/copilot/src/platform/tasks/vscode/tasksService.ts',
-			'extensions/copilot/src/platform/telemetry/common/failingTelemetryReporter.ts',
-			'extensions/copilot/src/platform/telemetry/common/telemetryData.ts',
-			'extensions/copilot/src/platform/telemetry/node/azureInsightsReporter.ts',
-			'extensions/copilot/src/platform/telemetry/node/spyingTelemetryService.ts',
-			'extensions/copilot/src/platform/terminal/common/terminalService.ts',
-			'extensions/copilot/src/platform/terminal/vscode/terminalServiceImpl.ts',
-			'extensions/copilot/src/platform/test/common/endpointTestFixtures.ts',
-			'extensions/copilot/src/platform/test/common/testExtensionsService.ts',
-			'extensions/copilot/src/platform/test/node/extensionContext.ts',
-			'extensions/copilot/src/platform/test/node/fetcher.ts',
-			'extensions/copilot/src/platform/test/node/services.ts',
-			'extensions/copilot/src/platform/test/node/simulationWorkspace.ts',
-			'extensions/copilot/src/platform/test/node/telemetry.ts',
-			'extensions/copilot/src/platform/test/node/testWorkbenchService.ts',
-			'extensions/copilot/src/platform/testing/common/nullWorkspaceMutationManager.ts',
-			'extensions/copilot/src/platform/thinking/common/thinking.ts',
-			'extensions/copilot/src/platform/tokenizer/node/tikTokenizerWorker.ts',
-			'extensions/copilot/src/platform/tokenizer/node/tokenizer.ts',
-			'extensions/copilot/src/platform/workbench/common/workbenchService.ts',
-			'extensions/copilot/src/platform/workbench/vscode/workbenchServiceImpt.ts',
-			'extensions/copilot/src/platform/workspaceChunkSearch/node/nullWorkspaceFileIndex.ts',
-			'extensions/copilot/src/platform/workspaceChunkSearch/node/tfidfChunkSearch.ts',
-			'extensions/copilot/src/platform/workspaceChunkSearch/node/workspaceFileIndex.ts',
-			'extensions/copilot/src/platform/workspaceRecorder/common/resolvedRecording/resolvedRecording.ts',
-			'extensions/copilot/src/util/common/async.ts',
-			'extensions/copilot/src/util/common/cache.ts',
-			'extensions/copilot/src/util/common/chatResponseStreamImpl.ts',
-			'extensions/copilot/src/util/common/debounce.ts',
-			'extensions/copilot/src/util/common/debugValueEditorGlobals.ts',
-			'extensions/copilot/src/util/common/diff.ts',
-			'extensions/copilot/src/util/common/progress.ts',
-			'extensions/copilot/src/util/common/test/shims/chatTypes.ts',
-			'extensions/copilot/src/util/common/test/shims/editing.ts',
-			'extensions/copilot/src/util/common/test/shims/l10n.ts',
-			'extensions/copilot/src/util/common/test/shims/notebookDocument.ts',
-			'extensions/copilot/src/util/common/test/shims/vscodeTypesShim.ts',
-			'extensions/copilot/src/util/common/test/simpleMock.ts',
-			'extensions/copilot/src/util/common/timeTravelScheduler.ts',
-			'extensions/copilot/src/util/common/types.ts',
-			'extensions/copilot/src/util/node/worker.ts',
-		],
-		languageOptions: {
-			parser: tseslint.parser,
-		},
-		plugins: {
-			'@typescript-eslint': tseslint.plugin,
-		},
-		rules: {
-			'@typescript-eslint/no-explicit-any': [
-				'warn',
-				{
-					'fixToUnknown': true
-				}
-			]
-		}
-	},
-	// copilot extension - chatLibMain exception
-	{
-		files: [
-			'extensions/copilot/src/lib/node/chatLibMain.ts',
-		],
-		rules: {
-			'import/no-restricted-paths': 'off'
 		}
 	},
 	// Allow querySelector/querySelectorAll in test files - it's acceptable for test assertions

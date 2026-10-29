@@ -5,12 +5,12 @@
 
 import * as assert from 'assert';
 import 'mocha';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { InMemoryDocument } from '../client/inMemoryDocument';
 import { createNewMarkdownEngine } from './engine';
 
 
-const testFileName = vscode.Uri.file('test.md');
+const testFileName = docode.Uri.file('test.md');
 
 suite('markdown.engine', () => {
 	suite('rendering', () => {
@@ -57,15 +57,15 @@ suite('markdown.engine', () => {
 		let originalValue: string | undefined;
 
 		suiteSetup(() => {
-			originalValue = vscode.workspace.getConfiguration('markdown').inspect<string>(settingName)?.globalValue;
+			originalValue = docode.workspace.getConfiguration('markdown').inspect<string>(settingName)?.globalValue;
 		});
 
 		suiteTeardown(async () => {
-			await vscode.workspace.getConfiguration('markdown').update(settingName, originalValue, vscode.ConfigurationTarget.Global);
+			await docode.workspace.getConfiguration('markdown').update(settingName, originalValue, docode.ConfigurationTarget.Global);
 		});
 
 		async function setStyle(style: string) {
-			await vscode.workspace.getConfiguration('markdown').update(settingName, style, vscode.ConfigurationTarget.Global);
+			await docode.workspace.getConfiguration('markdown').update(settingName, style, docode.ConfigurationTarget.Global);
 		}
 
 		test('Hides frontmatter when style is "hide"', async () => {
@@ -91,7 +91,7 @@ suite('markdown.engine', () => {
 			const engine = createNewMarkdownEngine();
 			assert.strictEqual(
 				(await engine.render(input)).html,
-				'<table class="frontmatter" title="Frontmatter" data-vscode-context=\'{&quot;webviewSection&quot;:&quot;frontMatter&quot;}\'><tbody><tr><th>title</th><td>Hello</td></tr></tbody></table>\n'
+				'<table class="frontmatter" title="Frontmatter" data-docode-context=\'{&quot;webviewSection&quot;:&quot;frontMatter&quot;}\'><tbody><tr><th>title</th><td>Hello</td></tr></tbody></table>\n'
 				+ '<h1 data-line="4" class="code-line" dir="auto" id="world">World</h1>\n'
 			);
 		});

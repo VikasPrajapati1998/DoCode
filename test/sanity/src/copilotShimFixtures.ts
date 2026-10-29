@@ -13,7 +13,7 @@ export const copilotShimTargets = {
 } as const;
 
 export const debPackageMetadataFormat = '${Package}\\n${Version}\\n${Architecture}\\n';
-export const copilotShimInstallHookLogEnvironmentVariable = 'VSCODE_COPILOT_SHIM_INSTALL_HOOK_LOG';
+export const copilotShimInstallHookLogEnvironmentVariable = 'DOCODE_COPILOT_SHIM_INSTALL_HOOK_LOG';
 export const copilotShimInstallHookInstrumentation = 'test-only-install-hook-order';
 
 export type CopilotShimPackageFormat = 'deb' | 'rpm';
@@ -53,7 +53,7 @@ export interface ICopilotShimFixture {
 export interface ICopilotShimHelperProvenance {
 	sourcePath: string;
 	sha256: string;
-	functionName: 'vscode_copilot_link';
+	functionName: 'docode_copilot_link';
 	templateMarker: '@@COPILOT_LINK_HELPER@@';
 }
 
@@ -67,7 +67,7 @@ export interface ICopilotShimFixtureManifest {
 
 const currentIdentities: readonly CopilotShimIdentity[] = ['code', 'code-insiders'];
 const requiredProductionTemplatePaths = [
-	'build/gulpfile.vscode.linux.ts',
+	'build/gulpfile.docode.linux.ts',
 	'resources/linux/copilot-link.sh',
 	'resources/linux/debian/postinst.template',
 	'resources/linux/debian/postrm.template',
@@ -244,8 +244,8 @@ function validateFixtureManifest(manifest: ICopilotShimFixtureManifest, manifest
 	if (Number.isNaN(Date.parse(manifest.generatedAt))) {
 		throw new Error(`Fixture manifest generatedAt is not an ISO date: ${manifest.generatedAt}.`);
 	}
-	if (manifest.helper.functionName !== 'vscode_copilot_link') {
-		throw new Error(`Fixture helper function must be vscode_copilot_link, got ${manifest.helper.functionName}.`);
+	if (manifest.helper.functionName !== 'docode_copilot_link') {
+		throw new Error(`Fixture helper function must be docode_copilot_link, got ${manifest.helper.functionName}.`);
 	}
 	if (manifest.helper.templateMarker !== '@@COPILOT_LINK_HELPER@@') {
 		throw new Error(`Fixture helper marker must be @@COPILOT_LINK_HELPER@@, got ${manifest.helper.templateMarker}.`);

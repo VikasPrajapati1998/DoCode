@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { LanguageDescription } from '../configuration/languageDescription';
 import type * as Proto from '../tsServer/protocol/protocol';
@@ -12,18 +12,18 @@ import { ITypeScriptServiceClient } from '../typescriptService';
 import FileConfigurationManager from './fileConfigurationManager';
 import { conditionalRegistration, requireGlobalUnifiedConfig } from './util/dependentRegistration';
 
-class TypeScriptFormattingProvider implements vscode.DocumentRangeFormattingEditProvider, vscode.OnTypeFormattingEditProvider {
+class TypeScriptFormattingProvider implements docode.DocumentRangeFormattingEditProvider, docode.OnTypeFormattingEditProvider {
 	public constructor(
 		private readonly client: ITypeScriptServiceClient,
 		private readonly fileConfigurationManager: FileConfigurationManager
 	) { }
 
 	public async provideDocumentRangeFormattingEdits(
-		document: vscode.TextDocument,
-		range: vscode.Range,
-		options: vscode.FormattingOptions,
-		token: vscode.CancellationToken
-	): Promise<vscode.TextEdit[] | undefined> {
+		document: docode.TextDocument,
+		range: docode.Range,
+		options: docode.FormattingOptions,
+		token: docode.CancellationToken
+	): Promise<docode.TextEdit[] | undefined> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return undefined;
@@ -41,12 +41,12 @@ class TypeScriptFormattingProvider implements vscode.DocumentRangeFormattingEdit
 	}
 
 	public async provideOnTypeFormattingEdits(
-		document: vscode.TextDocument,
-		position: vscode.Position,
+		document: docode.TextDocument,
+		position: docode.Position,
 		ch: string,
-		options: vscode.FormattingOptions,
-		token: vscode.CancellationToken
-	): Promise<vscode.TextEdit[] | undefined> {
+		options: docode.FormattingOptions,
+		token: docode.CancellationToken
+	): Promise<docode.TextEdit[] | undefined> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return undefined;
@@ -63,7 +63,7 @@ class TypeScriptFormattingProvider implements vscode.DocumentRangeFormattingEdit
 			return [];
 		}
 
-		const result: vscode.TextEdit[] = [];
+		const result: docode.TextEdit[] = [];
 		for (const edit of response.body) {
 			const textEdit = typeConverters.TextEdit.fromCodeEdit(edit);
 			const range = textEdit.range;
@@ -95,9 +95,9 @@ export function register(
 		requireGlobalUnifiedConfig('format.enabled', { fallbackSection: language.id, fallbackSubSectionNameOverride: 'format.enable' }),
 	], () => {
 		const formattingProvider = new TypeScriptFormattingProvider(client, fileConfigurationManager);
-		return vscode.Disposable.from(
-			vscode.languages.registerOnTypeFormattingEditProvider(selector.syntax, formattingProvider, ';', '}', '\n'),
-			vscode.languages.registerDocumentRangeFormattingEditProvider(selector.syntax, formattingProvider),
+		return docode.Disposable.from(
+			docode.languages.registerOnTypeFormattingEditProvider(selector.syntax, formattingProvider, ';', '}', '\n'),
+			docode.languages.registerDocumentRangeFormattingEditProvider(selector.syntax, formattingProvider),
 		);
 	});
 }

@@ -13,7 +13,7 @@ case "$1" in
 		if [ -e '/usr/share/debconf/confmodule' ]; then
 			. /usr/share/debconf/confmodule
 		fi
-		vscode_copilot_link remove "@@NAME@@" || :
+		docode_copilot_link remove "@@NAME@@" || :
 		;;
 esac
 
@@ -34,7 +34,7 @@ if [ -e '/usr/share/debconf/confmodule' ]; then
 fi
 if [ "$RET" = "true" ]; then
 	eval $(apt-config shell APT_SOURCE_PARTS Dir::Etc::sourceparts/d)
-	CODE_SOURCE_PART=${APT_SOURCE_PARTS}vscode.sources
+	CODE_SOURCE_PART=${APT_SOURCE_PARTS}docode.sources
 	rm -f $CODE_SOURCE_PART
 
 	CODE_TRUSTED_PART=/usr/share/keyrings/microsoft.gpg

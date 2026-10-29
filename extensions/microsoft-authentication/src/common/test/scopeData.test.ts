@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { ScopeData } from '../scopeData';
-import { Uri } from 'vscode';
+import { Uri } from 'docode';
 
 suite('ScopeData', () => {
 	test('should include default scopes if not present', () => {
@@ -34,44 +34,44 @@ suite('ScopeData', () => {
 	});
 
 	test('should filter out internal VS Code scopes for scopesToSend', () => {
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_CLIENT_ID:some_id']);
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_CLIENT_ID:some_id']);
 		assert.deepStrictEqual(scopeData.scopesToSend, ['custom_scope']);
 	});
 
-	test('should use the default client ID if no VSCODE_CLIENT_ID scope is present', () => {
+	test('should use the default client ID if no DOCODE_CLIENT_ID scope is present', () => {
 		const scopeData = new ScopeData(['custom_scope']);
 		assert.strictEqual(scopeData.clientId, 'aebc6443-996d-45c2-90f0-388ff96faa56');
 	});
 
-	test('should use the VSCODE_CLIENT_ID scope if present', () => {
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_CLIENT_ID:some_id']);
+	test('should use the DOCODE_CLIENT_ID scope if present', () => {
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_CLIENT_ID:some_id']);
 		assert.strictEqual(scopeData.clientId, 'some_id');
 	});
 
-	test('should use the default tenant ID if no VSCODE_TENANT scope is present', () => {
+	test('should use the default tenant ID if no DOCODE_TENANT scope is present', () => {
 		const scopeData = new ScopeData(['custom_scope']);
 		assert.strictEqual(scopeData.tenant, 'organizations');
 	});
 
-	test('should use the VSCODE_TENANT scope if present', () => {
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_TENANT:some_tenant']);
+	test('should use the DOCODE_TENANT scope if present', () => {
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_TENANT:some_tenant']);
 		assert.strictEqual(scopeData.tenant, 'some_tenant');
 	});
 
-	test('should have tenantId be undefined if no VSCODE_TENANT scope is present', () => {
+	test('should have tenantId be undefined if no DOCODE_TENANT scope is present', () => {
 		const scopeData = new ScopeData(['custom_scope']);
 		assert.strictEqual(scopeData.tenantId, undefined);
 	});
 
 	test('should have tenantId be undefined if typical tenant values are present', () => {
 		for (const element of ['common', 'organizations', 'consumers']) {
-			const scopeData = new ScopeData(['custom_scope', `VSCODE_TENANT:${element}`]);
+			const scopeData = new ScopeData(['custom_scope', `DOCODE_TENANT:${element}`]);
 			assert.strictEqual(scopeData.tenantId, undefined);
 		}
 	});
 
-	test('should have tenantId be the value of VSCODE_TENANT scope if set to a specific value', () => {
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_TENANT:some_guid']);
+	test('should have tenantId be the value of DOCODE_TENANT scope if set to a specific value', () => {
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_TENANT:some_guid']);
 		assert.strictEqual(scopeData.tenantId, 'some_guid');
 	});
 
@@ -97,9 +97,9 @@ suite('ScopeData', () => {
 		assert.strictEqual(scopeData.tenant, 'organizations');
 	});
 
-	test('should prioritize authorization server URL over VSCODE_TENANT scope', () => {
+	test('should prioritize authorization server URL over DOCODE_TENANT scope', () => {
 		const authorizationServer = Uri.parse('https://login.microsoftonline.com/url_tenant/oauth2/v2.0');
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_TENANT:scope_tenant'], undefined, authorizationServer);
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_TENANT:scope_tenant'], undefined, authorizationServer);
 		assert.strictEqual(scopeData.tenant, 'url_tenant');
 	});
 
@@ -114,8 +114,8 @@ suite('ScopeData', () => {
 		assert.strictEqual(scopeData.clientId, 'my-custom-client-id');
 	});
 
-	test('should use explicit clientId over VSCODE_CLIENT_ID scope', () => {
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_CLIENT_ID:scope_id'], undefined, undefined, 'override-id');
+	test('should use explicit clientId over DOCODE_CLIENT_ID scope', () => {
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_CLIENT_ID:scope_id'], undefined, undefined, 'override-id');
 		assert.strictEqual(scopeData.clientId, 'override-id');
 	});
 
@@ -127,8 +127,8 @@ suite('ScopeData', () => {
 		assert.strictEqual(whitespace.clientId, 'aebc6443-996d-45c2-90f0-388ff96faa56');
 	});
 
-	test('should ignore empty clientId and fall back to VSCODE_CLIENT_ID scope', () => {
-		const scopeData = new ScopeData(['custom_scope', 'VSCODE_CLIENT_ID:scope_id'], undefined, undefined, '');
+	test('should ignore empty clientId and fall back to DOCODE_CLIENT_ID scope', () => {
+		const scopeData = new ScopeData(['custom_scope', 'DOCODE_CLIENT_ID:scope_id'], undefined, undefined, '');
 		assert.strictEqual(scopeData.clientId, 'scope_id');
 	});
 });

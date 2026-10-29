@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, autorun, observableValue } from '@vscode/observables';
+import { Disposable, autorun, observableValue } from '@docode/observables';
 import type { MarkdownDiagnostic } from '../src/preview/markdownEditorProtocol';
 
 export class DiagnosticHover extends Disposable {

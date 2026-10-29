@@ -10,15 +10,15 @@ case "$(uname -m)" in
 esac
 
 npm run gulp core-ci
-npm run gulp "vscode-linux-${ARCH}-min-ci"
-npm run gulp "vscode-linux-${ARCH}-prepare-deb"
-npm run gulp "vscode-linux-${ARCH}-build-deb"
-npm run gulp "vscode-linux-${ARCH}-prepare-rpm"
-npm run gulp "vscode-linux-${ARCH}-build-rpm"
+npm run gulp "docode-linux-${ARCH}-min-ci"
+npm run gulp "docode-linux-${ARCH}-prepare-deb"
+npm run gulp "docode-linux-${ARCH}-build-deb"
+npm run gulp "docode-linux-${ARCH}-prepare-rpm"
+npm run gulp "docode-linux-${ARCH}-build-rpm"
 
 mkdir -p installer/linux
 find .build/linux -name '*.deb' -exec cp {} "installer/linux/DoCode-linux-${ARCH}.deb" \;
 find .build/linux -name '*.rpm' -exec cp {} "installer/linux/DoCode-linux-${ARCH}.rpm" \;
-tar -czf "installer/linux/DoCode-linux-${ARCH}.tar.gz" -C .. "VSCode-linux-${ARCH}"
+tar -czf "installer/linux/DoCode-linux-${ARCH}.tar.gz" -C .. "DoCode-linux-${ARCH}"
 
 echo "Done. Installers are in $(pwd)/installer/linux"

@@ -6,14 +6,14 @@
 import * as sinon from 'sinon';
 import type * as nbformat from '@jupyterlab/nbformat';
 import * as assert from 'assert';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { jupyterNotebookModelToNotebookData } from '../deserializers';
 import { activate } from '../notebookModelStoreSync';
 
 
 suite(`ipynb Clear Outputs`, () => {
-	const disposables: vscode.Disposable[] = [];
-	const context = { subscriptions: disposables } as vscode.ExtensionContext;
+	const disposables: docode.Disposable[] = [];
+	const context = { subscriptions: disposables } as docode.ExtensionContext;
 	setup(() => {
 		disposables.length = 0;
 		activate(context);
@@ -22,7 +22,7 @@ suite(`ipynb Clear Outputs`, () => {
 		disposables.forEach(d => d.dispose());
 		disposables.length = 0;
 		sinon.restore();
-		await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+		await docode.commands.executeCommand('workbench.action.closeAllEditors');
 	});
 
 	test.skip('Clear outputs after opening Notebook', async () => {
@@ -48,12 +48,12 @@ suite(`ipynb Clear Outputs`, () => {
 		];
 		const notebook = jupyterNotebookModelToNotebookData({ cells }, 'python');
 
-		const notebookDocumentPromise = vscode.workspace.openNotebookDocument('jupyter-notebook', notebook);
+		const notebookDocumentPromise = docode.workspace.openNotebookDocument('jupyter-notebook', notebook);
 		await raceTimeout(notebookDocumentPromise, 5000, () => {
 			throw new Error('Timeout waiting for notebook to open');
 		});
 		const notebookDocument = await notebookDocumentPromise;
-		await raceTimeout(vscode.window.showNotebookDocument(notebookDocument), 20000, () => {
+		await raceTimeout(docode.window.showNotebookDocument(notebookDocument), 20000, () => {
 			throw new Error('Timeout waiting for notebook to open');
 		});
 
@@ -63,7 +63,7 @@ suite(`ipynb Clear Outputs`, () => {
 		assert.strictEqual(notebookDocument.cellAt(2).metadata.execution_count, undefined);
 
 		// Clear all outputs
-		await raceTimeout(vscode.commands.executeCommand('notebook.clearAllCellsOutputs'), 5000, () => {
+		await raceTimeout(docode.commands.executeCommand('notebook.clearAllCellsOutputs'), 5000, () => {
 			throw new Error('Timeout waiting for notebook to clear outputs');
 		});
 
@@ -74,7 +74,7 @@ suite(`ipynb Clear Outputs`, () => {
 			assert.strictEqual(notebookDocument.cellAt(2).metadata.execution_count, undefined);
 		};
 
-		vscode.workspace.onDidChangeNotebookDocument(() => verifyMetadataChanges(), undefined, disposables);
+		docode.workspace.onDidChangeNotebookDocument(() => verifyMetadataChanges(), undefined, disposables);
 
 		await new Promise<void>((resolve, reject) => {
 			const interval = setInterval(() => {
@@ -101,7 +101,7 @@ suite(`ipynb Clear Outputs`, () => {
 
 
 	// test('Serialize', async () => {
-	// 	const markdownCell = new vscode.NotebookCellData(vscode.NotebookCellKind.Markup, '# header1', 'markdown');
+	// 	const markdownCell = new docode.NotebookCellData(docode.NotebookCellKind.Markup, '# header1', 'markdown');
 	// 	markdownCell.metadata = {
 	// 		attachments: {
 	// 			'image.png': {
@@ -127,7 +127,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// 		}
 	// 	});
 
-	// 	const markdownCell2 = new vscode.NotebookCellData(vscode.NotebookCellKind.Markup, '# header1', 'markdown');
+	// 	const markdownCell2 = new docode.NotebookCellData(docode.NotebookCellKind.Markup, '# header1', 'markdown');
 	// 	markdownCell2.metadata = {
 	// 		id: '123',
 	// 		metadata: {
@@ -162,7 +162,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// suite('Outputs', () => {
 	// 	function validateCellOutputTranslation(
 	// 		outputs: nbformat.IOutput[],
-	// 		expectedOutputs: vscode.NotebookCellOutput[],
+	// 		expectedOutputs: docode.NotebookCellOutput[],
 	// 		propertiesToExcludeFromComparison: string[] = []
 	// 	) {
 	// 		const cells: nbformat.ICell[] = [
@@ -204,10 +204,10 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr('Error')], {
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stderr('Error')], {
 	// 					outputType: 'stream'
 	// 				}),
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout('NoError')], {
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout('NoError')], {
 	// 					outputType: 'stream'
 	// 				})
 	// 			]
@@ -228,7 +228,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout('Line1\n\nLine3\nLine4')], {
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout('Line1\n\nLine3\nLine4')], {
 	// 					outputType: 'stream'
 	// 				})
 	// 			]
@@ -249,7 +249,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout('Hello\nHello\nHello\nHello\nHello\nHello\n')], {
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout('Hello\nHello\nHello\nHello\nHello\nHello\n')], {
 	// 					outputType: 'stream'
 	// 				})
 	// 			]
@@ -276,7 +276,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stdout(['Epoch 1/5\n',
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stdout(['Epoch 1/5\n',
 	// 					'...\n',
 	// 					'Epoch 2/5\n',
 	// 					'...\n',
@@ -313,7 +313,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr(['Epoch 1/5\n',
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stderr(['Epoch 1/5\n',
 	// 					'...\n',
 	// 					'Epoch 2/5\n',
 	// 					'...\n',
@@ -341,8 +341,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput(
-	// 					[vscode.NotebookCellOutputItem.stderr('\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
+	// 				new docode.NotebookCellOutput(
+	// 					[docode.NotebookCellOutputItem.stderr('\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
 	// 					{
 	// 						outputType: 'stream'
 	// 					}
@@ -361,7 +361,7 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput([vscode.NotebookCellOutputItem.stderr('1 is < 2')], {
+	// 				new docode.NotebookCellOutput([docode.NotebookCellOutputItem.stderr('1 is < 2')], {
 	// 					outputType: 'stream'
 	// 				})
 	// 			]
@@ -378,8 +378,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput(
-	// 					[vscode.NotebookCellOutputItem.stderr('1 is < 2\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
+	// 				new docode.NotebookCellOutput(
+	// 					[docode.NotebookCellOutputItem.stderr('1 is < 2\u001b[K\u001b[33m✅ \u001b[0m Loading\n')],
 	// 					{
 	// 						outputType: 'stream'
 	// 					}
@@ -399,9 +399,9 @@ suite(`ipynb Clear Outputs`, () => {
 	// 				}
 	// 			],
 	// 			[
-	// 				new vscode.NotebookCellOutput(
+	// 				new docode.NotebookCellOutput(
 	// 					[
-	// 						vscode.NotebookCellOutputItem.error({
+	// 						docode.NotebookCellOutputItem.error({
 	// 							name: 'Error Name',
 	// 							message: 'Error Value',
 	// 							stack: ['stack1', 'stack2', 'stack3'].join('\n')
@@ -447,8 +447,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 						}
 	// 					],
 	// 					[
-	// 						new vscode.NotebookCellOutput(
-	// 							[new vscode.NotebookCellOutputItem(Buffer.from('Hello World!', 'utf8'), 'text/plain')],
+	// 						new docode.NotebookCellOutput(
+	// 							[new docode.NotebookCellOutputItem(Buffer.from('Hello World!', 'utf8'), 'text/plain')],
 	// 							{
 	// 								outputType: output_type,
 	// 								metadata: {}, // display_data & execute_result always have metadata.
@@ -474,10 +474,10 @@ suite(`ipynb Clear Outputs`, () => {
 	// 						}
 	// 					],
 	// 					[
-	// 						new vscode.NotebookCellOutput(
+	// 						new docode.NotebookCellOutput(
 	// 							[
-	// 								new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png'),
-	// 								new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/jpeg')
+	// 								new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png'),
+	// 								new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/jpeg')
 	// 							],
 	// 							{
 	// 								executionCount: 1,
@@ -505,8 +505,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 						}
 	// 					],
 	// 					[
-	// 						new vscode.NotebookCellOutput(
-	// 							[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+	// 						new docode.NotebookCellOutput(
+	// 							[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 	// 							{
 	// 								executionCount: 1,
 	// 								metadata: {
@@ -535,8 +535,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 						}
 	// 					],
 	// 					[
-	// 						new vscode.NotebookCellOutput(
-	// 							[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+	// 						new docode.NotebookCellOutput(
+	// 							[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 	// 							{
 	// 								executionCount: 1,
 	// 								metadata: {
@@ -565,8 +565,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 						}
 	// 					],
 	// 					[
-	// 						new vscode.NotebookCellOutput(
-	// 							[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+	// 						new docode.NotebookCellOutput(
+	// 							[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 	// 							{
 	// 								executionCount: 1,
 	// 								metadata: {
@@ -596,8 +596,8 @@ suite(`ipynb Clear Outputs`, () => {
 	// 						}
 	// 					],
 	// 					[
-	// 						new vscode.NotebookCellOutput(
-	// 							[new vscode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
+	// 						new docode.NotebookCellOutput(
+	// 							[new docode.NotebookCellOutputItem(Buffer.from(base64EncodedImage, 'base64'), 'image/png')],
 	// 							{
 	// 								executionCount: 1,
 	// 								metadata: {

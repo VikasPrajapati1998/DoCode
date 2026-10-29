@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.terminal-sticky-scroll {
+	display: none;
+	position: absolute;
+	left: 0;
+	right: 14px; /* Don't overlap terminal scroll bar */
+	z-index: 32; /* Must be higher than decorations */
+	background: var(--docode-terminalStickyScroll-background, var(--docode-terminal-background, var(--docode-panel-background)));
+	box-shadow: var(--docode-scrollbar-shadow) 0 3px 2px -2px;
+	border-bottom: 1px solid var(--docode-terminalStickyScroll-border, transparent);
+}
+.part.sidebar .terminal-sticky-scroll,
+.part.auxiliarybar .terminal-sticky-scroll {
+	background: var(--docode-terminalStickyScroll-background, var(--docode-terminal-background, var(--docode-sideBar-background)));
+}
+.editor-instance .terminal-sticky-scroll {
+	background: var(--docode-terminalStickyScroll-background, var(--docode-terminal-background, var(--docode-editor-background)));
+}
+
+.terminal-sticky-scroll.visible {
+	display:block;
+}
+
+.terminal-sticky-scroll:hover {
+	cursor: pointer !important;
+}
+
+.terminal-sticky-scroll .xterm {
+	position: relative !important;
+	pointer-events: none;
+	padding-bottom: 0 !important;
+}
+
+.terminal-sticky-scroll .hover-overlay {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	cursor: pointer !important;
+}
+
+.terminal-sticky-scroll .hover-overlay:hover {
+	background-color: var(--docode-terminalStickyScrollHover-background, transparent);
+}

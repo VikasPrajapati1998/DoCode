@@ -3,15 +3,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as performance from './vs/base/common/performance.js';
+import * as performance from './do/base/common/performance.js';
 import { removeGlobalNodeJsModuleLookupPaths, devInjectNodeModuleLookupPath } from './bootstrap-node.js';
 import { bootstrapESM } from './bootstrap-esm.js';
-import { enableNodeCompileCache, getNodeCompileCacheKindForUtilityProcess } from './vs/base/node/nodeCompileCache.js';
+import { enableNodeCompileCache, getNodeCompileCacheKindForUtilityProcess } from './do/base/node/nodeCompileCache.js';
 
 performance.mark('code/fork/start');
 
-const nodeCompileCacheKind = getNodeCompileCacheKindForUtilityProcess(process.env['VSCODE_CRASH_REPORTER_PROCESS_TYPE'] ?? '');
-const esmEntryPoint = process.env['VSCODE_ESM_ENTRYPOINT'];
+const nodeCompileCacheKind = getNodeCompileCacheKindForUtilityProcess(process.env['DOCODE_CRASH_REPORTER_PROCESS_TYPE'] ?? '');
+const esmEntryPoint = process.env['DOCODE_ESM_ENTRYPOINT'];
 if (nodeCompileCacheKind && esmEntryPoint) {
 	enableNodeCompileCache(nodeCompileCacheKind);
 }
@@ -144,7 +144,7 @@ function pipeLoggingToParent(): void {
 	}
 
 	// Pass console logging to the outside so that we have it in the main side if told so
-	if (process.env['VSCODE_VERBOSE_LOGGING'] === 'true') {
+	if (process.env['DOCODE_VERBOSE_LOGGING'] === 'true') {
 		wrapConsoleMethod('info', 'log');
 		wrapConsoleMethod('log', 'log');
 		wrapConsoleMethod('warn', 'warn');
@@ -174,7 +174,7 @@ function handleExceptions(): void {
 }
 
 function terminateWhenParentTerminates(): void {
-	const parentPid = Number(process.env['VSCODE_PARENT_PID']);
+	const parentPid = Number(process.env['DOCODE_PARENT_PID']);
 
 	if (typeof parentPid === 'number' && !isNaN(parentPid)) {
 		setInterval(function () {
@@ -188,7 +188,7 @@ function terminateWhenParentTerminates(): void {
 }
 
 function configureCrashReporter(): void {
-	const crashReporterProcessType = process.env['VSCODE_CRASH_REPORTER_PROCESS_TYPE'];
+	const crashReporterProcessType = process.env['DOCODE_CRASH_REPORTER_PROCESS_TYPE'];
 	if (crashReporterProcessType) {
 		try {
 			//@ts-expect-error
@@ -210,22 +210,22 @@ configureCrashReporter();
 // Remove global paths from the node module lookup (node.js only)
 removeGlobalNodeJsModuleLookupPaths();
 
-if (process.env['VSCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH']) {
-	devInjectNodeModuleLookupPath(process.env['VSCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH']);
+if (process.env['DOCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH']) {
+	devInjectNodeModuleLookupPath(process.env['DOCODE_DEV_INJECT_NODE_MODULE_LOOKUP_PATH']);
 }
 
 // Configure: pipe logging to parent process
-if (!!process.send && process.env['VSCODE_PIPE_LOGGING'] === 'true') {
+if (!!process.send && process.env['DOCODE_PIPE_LOGGING'] === 'true') {
 	pipeLoggingToParent();
 }
 
 // Handle Exceptions
-if (!process.env['VSCODE_HANDLES_UNCAUGHT_ERRORS']) {
+if (!process.env['DOCODE_HANDLES_UNCAUGHT_ERRORS']) {
 	handleExceptions();
 }
 
 // Terminate when parent terminates
-if (process.env['VSCODE_PARENT_PID']) {
+if (process.env['DOCODE_PARENT_PID']) {
 	terminateWhenParentTerminates();
 }
 

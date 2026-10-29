@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import { CancellationToken, ConfigurationChangeEvent, Disposable, EventEmitter, FileType, ThemeIcon, Timeline, TimelineItem, TimelineOptions, TimelineProvider, Uri, workspace, l10n, Command, WorkspaceTimelineProvider } from 'vscode';
+import { CancellationToken, ConfigurationChangeEvent, Disposable, EventEmitter, FileType, ThemeIcon, Timeline, TimelineItem, TimelineOptions, TimelineProvider, Uri, workspace, l10n, Command, WorkspaceTimelineProvider } from 'docode';
 import { Model } from './model';
 import { Repository, Resource } from './repository';
 import { debounce } from './decorators';
@@ -433,7 +433,7 @@ export class GitTimelineProvider implements TimelineProvider, WorkspaceTimelineP
 	private ensureProviderRegistration() {
 		if (this.providerDisposable === undefined) {
 			this.providerDisposable = Disposable.from(
-				workspace.registerTimelineProvider(['file', 'git', 'vscode-remote', 'vscode-local-history'], this),
+				workspace.registerTimelineProvider(['file', 'git', 'docode-remote', 'docode-local-history'], this),
 				workspace.registerWorkspaceTimelineProvider(this)
 			);
 		}

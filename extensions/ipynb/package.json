@@ -2,12 +2,12 @@
   "name": "ipynb",
   "displayName": "%displayName%",
   "description": "%description%",
-  "publisher": "vscode",
+  "publisher": "docode",
   "version": "10.0.0",
   "license": "MIT",
   "icon": "media/icon.png",
   "engines": {
-    "vscode": "^1.57.0"
+    "docode": "^1.57.0"
   },
   "enabledApiProposals": [
     "diffContentOptions"
@@ -97,10 +97,10 @@
     ],
     "notebookRenderer": [
       {
-        "id": "vscode.markdown-it-cell-attachment-renderer",
+        "id": "docode.markdown-it-cell-attachment-renderer",
         "displayName": "%markdownAttachmentRenderer.displayName%",
         "entrypoint": {
-          "extends": "vscode.markdown-it-renderer",
+          "extends": "docode.markdown-it-renderer",
           "path": "./notebook-out/cellAttachmentRenderer.js"
         }
       }

@@ -60,38 +60,38 @@ const suites: readonly ISuite[] = [
 	{
 		id: 'conformance',
 		label: 'Conformance',
-		file: 'src/vs/platform/agentHost/test/node/e2e/conformance/agentHostConformance.integrationTest.ts',
+		file: 'src/do/platform/agentHost/test/node/e2e/conformance/agentHostConformance.integrationTest.ts',
 	},
 	{
 		id: 'claude',
 		label: 'Claude',
-		file: 'src/vs/platform/agentHost/test/node/e2e/providers/claudeAgentHostE2E.integrationTest.ts',
+		file: 'src/do/platform/agentHost/test/node/e2e/providers/claudeAgentHostE2E.integrationTest.ts',
 	},
 	{
 		id: 'codex',
 		label: 'Codex',
-		file: 'src/vs/platform/agentHost/test/node/e2e/providers/codexAgentHostE2E.integrationTest.ts',
+		file: 'src/do/platform/agentHost/test/node/e2e/providers/codexAgentHostE2E.integrationTest.ts',
 	},
 	{
 		id: 'copilot',
 		label: 'Copilot',
-		file: 'src/vs/platform/agentHost/test/node/e2e/providers/copilotAgentHostE2E.integrationTest.ts',
+		file: 'src/do/platform/agentHost/test/node/e2e/providers/copilotAgentHostE2E.integrationTest.ts',
 	},
 	{
 		id: 'copilot-otel',
 		label: 'Copilot OTel',
-		file: 'src/vs/platform/agentHost/test/node/e2e/providers/copilotOtelAgentHostE2E.integrationTest.ts',
+		file: 'src/do/platform/agentHost/test/node/e2e/providers/copilotOtelAgentHostE2E.integrationTest.ts',
 	},
 	{
 		id: 'copilot-managed-settings',
 		label: 'Copilot managed settings',
-		file: 'src/vs/platform/agentHost/test/node/e2e/providers/copilotManagedSettingsAgentHostE2E.integrationTest.ts',
+		file: 'src/do/platform/agentHost/test/node/e2e/providers/copilotManagedSettingsAgentHostE2E.integrationTest.ts',
 	},
 ];
 
 async function main(): Promise<void> {
 	validateEnvironment();
-	const { getAgentHostTestProfile } = await import('../../../src/vs/platform/agentHost/test/node/agentHostTestProfile.ts');
+	const { getAgentHostTestProfile } = await import('../../../src/do/platform/agentHost/test/node/agentHostTestProfile.ts');
 	console.log(`Agent Host test profile: ${getAgentHostTestProfile()} (${process.env['AGENT_HOST_TEST_PROFILE_REASON'] ?? 'default'})`);
 	const { jobs, storage, runList, forwardedArgs } = parseArguments(process.argv.slice(2));
 	const selectedSuites = runList === undefined ? suites : listedSuites(runList);
@@ -153,7 +153,7 @@ async function main(): Promise<void> {
 }
 
 function runStoragePasses(storage: 'tmpfs' | 'split', jobs: number, args: readonly string[]): void {
-	const environment: NodeJS.ProcessEnv = { ...process.env, VSCODE_SKIP_PRELAUNCH: '1' };
+	const environment: NodeJS.ProcessEnv = { ...process.env, DOCODE_SKIP_PRELAUNCH: '1' };
 	delete environment.ELECTRON_RUN_AS_NODE;
 	const runnerArgs = [__filename, '--storage', 'disk', '--jobs', String(jobs)];
 	const failedPasses: string[] = [];
@@ -304,7 +304,7 @@ function parseArguments(args: readonly string[]): { jobs: number; storage: Stora
 
 /**
  * The suites whose files a `--runList` file lists, one per line, as the unit test runners read it:
- * `src/vs/a.integrationTest.ts` names the suite of that file.
+ * `src/do/a.integrationTest.ts` names the suite of that file.
  */
 function listedSuites(runList: string): readonly ISuite[] {
 	const normalize = (file: string) => file.trim().replace(/\\/g, '/').replace(/^src\//, '').replace(/\.ts$/, '.js');
@@ -350,7 +350,7 @@ async function runSuite(suite: ISuite, forwardedArgs: readonly string[], surface
 	const startedAt = process.hrtime.bigint();
 	const environment: NodeJS.ProcessEnv = {
 		...process.env,
-		VSCODE_SKIP_PRELAUNCH: '1',
+		DOCODE_SKIP_PRELAUNCH: '1',
 		...(surfaceOutput ? { AGENT_HOST_PROTOCOL_SURFACE_OUT: surfaceOutput } : {}),
 	};
 	delete environment.ELECTRON_RUN_AS_NODE;

@@ -12,13 +12,13 @@ use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-const ENABLE_VARIABLE: &str = "VSCODE_COPILOT_SHIM_NATIVE_POLICY_TEST";
-const RUNNER_DIRECTORY_VARIABLE: &str = "VSCODE_COPILOT_SHIM_NATIVE_POLICY_TEST_ROOT";
-const POLICY_DIRECTORY: &str = "/etc/vscode";
-const POLICY_PATH: &str = "/etc/vscode/policy.json";
+const ENABLE_VARIABLE: &str = "DOCODE_COPILOT_SHIM_NATIVE_POLICY_TEST";
+const RUNNER_DIRECTORY_VARIABLE: &str = "DOCODE_COPILOT_SHIM_NATIVE_POLICY_TEST_ROOT";
+const POLICY_DIRECTORY: &str = "/etc/docode";
+const POLICY_PATH: &str = "/etc/docode/policy.json";
 const ROOT_FALLBACK_CLI_PATH: &str = "/usr/local/bin/copilot";
-const RUNNER_MARKER: &str = ".vscode-copilot-shim-native-policy-isolated-runner";
-const RUNNER_MARKER_CONTENT: &[u8] = b"vscode-copilot-shim-native-policy-isolated-runner\n";
+const RUNNER_MARKER: &str = ".docode-copilot-shim-native-policy-isolated-runner";
+const RUNNER_MARKER_CONTENT: &[u8] = b"docode-copilot-shim-native-policy-isolated-runner\n";
 
 #[derive(Clone, Copy)]
 struct EntryIdentity {
@@ -128,7 +128,7 @@ impl Drop for NativePolicyFixture {
 fn create_fixture_directory(runner_directory: &Path) -> (PathBuf, EntryIdentity) {
 	for attempt in 0..100 {
 		let directory = runner_directory.join(format!(
-			".vscode-copilot-shim-native-policy-fixture-{}-{attempt}",
+			".docode-copilot-shim-native-policy-fixture-{}-{attempt}",
 			std::process::id()
 		));
 		match fs::create_dir(&directory) {
@@ -261,7 +261,7 @@ fn run_shim(path: &Path, arguments: &[&str], home: &Path) -> std::process::Outpu
 }
 
 #[test]
-#[ignore = "requires VSCODE_COPILOT_SHIM_NATIVE_POLICY_TEST=1 in an isolated Linux runner"]
+#[ignore = "requires DOCODE_COPILOT_SHIM_NATIVE_POLICY_TEST=1 in an isolated Linux runner"]
 fn native_binary_dispatches_provisioned_policy() {
 	let runner_directory = provisioned_runner_directory();
 	refuse_existing_policy_path();

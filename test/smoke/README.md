@@ -42,7 +42,7 @@ npm i
 #### Web
 
 There is no support for testing an old version to a new one yet.
-Instead, simply configure the `--build` command line argument to point to the absolute path of the extracted server web build folder (e.g. `<rest of path here>/vscode-server-darwin-x64-web` for macOS). The server web build is available from the builds page (see previous subsection).
+Instead, simply configure the `--build` command line argument to point to the absolute path of the extracted server web build folder (e.g. `<rest of path here>/docode-server-darwin-x64-web` for macOS). The server web build is available from the builds page (see previous subsection).
 
 **macOS**: if you have downloaded the server with web bits, make sure to run the following command before unzipping it to avoid security issues on startup:
 
@@ -101,28 +101,27 @@ npm run smoketest -- --tracing -g 'Agents Window \((SSH )?Dev Container AgentHos
 The Tunnel suite uses a real private Dev Tunnel with remote editor access and agent-host support. The fixture provisions and verifies exactly the editor control port 31545 and agent-host port 31546, then starts the normal `tunnel` command. It is opt-in because ordinary PR smoke jobs do not have account credentials. Supply a GitHub user token authorized to create, connect to, and delete Dev Tunnels, plus a compatible tunnel CLI if it cannot be discovered:
 
 ```bash
-export VSCODE_SMOKE_TEST_TUNNEL_TOKEN="$(gh auth token)"
-export VSCODE_SMOKE_TEST_TUNNEL_CLI="/path/to/code-tunnel-insiders"
+export DOCODE_SMOKE_TEST_TUNNEL_TOKEN="$(gh auth token)"
+export DOCODE_SMOKE_TEST_TUNNEL_CLI="/path/to/code-tunnel-insiders"
 npm run smoketest -- --tracing -g 'Agents Window \(Tunnel Dev Container AgentHost\)'
-unset VSCODE_SMOKE_TEST_TUNNEL_TOKEN
+unset DOCODE_SMOKE_TEST_TUNNEL_TOKEN
 ```
 
-Do not use the repository-scoped GitHub Actions token as a substitute for a user token. A requested Tunnel test fails on invalid credentials or missing prerequisites rather than silently skipping. The CLI must already have accepted server-license consent, or the operator must explicitly set `VSCODE_SMOKE_TEST_TUNNEL_ACCEPT_SERVER_LICENSE_TERMS=1` to indicate agreement.
+Do not use the repository-scoped GitHub Actions token as a substitute for a user token. A requested Tunnel test fails on invalid credentials or missing prerequisites rather than silently skipping. The CLI must already have accepted server-license consent, or the operator must explicitly set `DOCODE_SMOKE_TEST_TUNNEL_ACCEPT_SERVER_LICENSE_TERMS=1` to indicate agreement.
 
 The WSL suite runs on Windows with an explicitly selected WSL 2 distribution. Docker must work inside that distribution, for example through Docker Desktop WSL integration. Supply the Linux path to an extracted VS Code remote server with Dev Container capability support; the fixture uses its Linux Node runtime and native dependencies, independently of the Windows app under test:
 
 ```powershell
-$env:VSCODE_SMOKE_TEST_WSL_DISTRO = 'Ubuntu'
-$env:VSCODE_SMOKE_TEST_WSL_SERVER_PATH = '/path/to/linux/server'
+$env:DOCODE_SMOKE_TEST_WSL_DISTRO = 'Ubuntu'
+$env:DOCODE_SMOKE_TEST_WSL_SERVER_PATH = '/path/to/linux/server'
 npm run smoketest -- --tracing -g 'Agents Window \(WSL Dev Container AgentHost\)'
-Remove-Item Env:VSCODE_SMOKE_TEST_WSL_DISTRO, Env:VSCODE_SMOKE_TEST_WSL_SERVER_PATH
+Remove-Item Env:DOCODE_SMOKE_TEST_WSL_DISTRO, Env:DOCODE_SMOKE_TEST_WSL_SERVER_PATH
 ```
 
-An explicitly selected WSL suite fails on missing prerequisites rather than skipping. CI sets `VSCODE_SMOKE_TEST_WSL_REQUIRED=1` so missing provisioning variables also fail instead of disabling the suite. Ordinary local runs remain opt-in. The fixture copies the test workspace into a private directory inside the distribution, starts an isolated source Agent Host through the real WSL connection flow, and removes only its own processes, containers, and temporary files. It does not install software in the distribution, change Docker integration, or stop the distribution. The Windows mock server must be reachable from WSL and Docker.
+An explicitly selected WSL suite fails on missing prerequisites rather than skipping. CI sets `DOCODE_SMOKE_TEST_WSL_REQUIRED=1` so missing provisioning variables also fail instead of disabling the suite. Ordinary local runs remain opt-in. The fixture copies the test workspace into a private directory inside the distribution, starts an isolated source Agent Host through the real WSL connection flow, and removes only its own processes, containers, and temporary files. It does not install software in the distribution, change Docker integration, or stop the distribution. The Windows mock server must be reachable from WSL and Docker.
 
 The source Agent Host uses a fixture-owned loopback TCP proxy to reach the Windows mock server. This keeps its CAPI override inside the production allowlist even in WSL NAT mode, without changing the distribution's DNS or hosts file. The suite verifies that the source host accepted that override; the proxy and its connections are closed with the fixture.
 
-The GitHub and Azure Pipelines Windows x64 Electron smoke jobs use [wslDevContainer.ps1](wslDevContainer.ps1) to provision a job-owned WSL 2 distribution with Linux Docker Engine and a non-root test user. Azure Pipelines passes `-CI AzureDevOps` to use its source directory, build ID, job attempt, and pipeline variables; GitHub uses its workspace, run identifiers, and step outputs. Azure enables this coverage for Windows x64 builds with Electron tests enabled, and uses the freshly built Windows product. The test suite retains its existing Exploration exclusion; build scripts do not gate on quality. Both cache the Microsoft-signed WSL kernel installer under a daily key, restore the most recent earlier cache if needed, and refresh it in the background for the next build. A cold cache still requires a synchronous download. The installer signature is checked before use and before updating the cache; the pinned Ubuntu rootfs and Linux server are checked against their SHA256 hashes. The unchanged source-host backend uses the pinned published server recorded in the script. Setup verifies a real container and bind mount before running the UI suite. Cleanup runs even after failure or cancellation, removes the owned distribution and its temporary mock-server firewall rule, and retains Docker diagnostics with the smoke logs. The runner must already have the WSL and VirtualMachinePlatform Windows features enabled; setup does not enable features or reboot Windows.
 
 All remote suites drive host connection, remote folder selection, **Use Dev Container**, prompt submission, the rendered response, and reopening the session through the UI. Model requests use the local mock LLM server, not paid models. They also verify that container startup uses the selected SSH/Tunnel/WSL connection and that the turn travels over the nested Dev Container transport.
 

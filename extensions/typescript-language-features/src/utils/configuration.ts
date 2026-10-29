@@ -3,10 +3,10 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Disposable } from './dispose';
 
-export type UnifiedConfigurationScope = vscode.ConfigurationScope | null | undefined;
+export type UnifiedConfigurationScope = docode.ConfigurationScope | null | undefined;
 
 export const unifiedConfigSection = 'js/ts';
 
@@ -26,21 +26,21 @@ export function readUnifiedConfig<T>(
 	options: ReadUnifiedConfigOptions
 ): T {
 	// Check unified setting first
-	const unifiedConfig = vscode.workspace.getConfiguration(unifiedConfigSection, options.scope);
+	const unifiedConfig = docode.workspace.getConfiguration(unifiedConfigSection, options.scope);
 	const unifiedInspect = unifiedConfig.inspect<T>(subSectionName);
 	if (hasModifiedValue(unifiedInspect)) {
 		return unifiedConfig.get<T>(subSectionName, defaultValue);
 	}
 
 	// Fall back to language-specific setting
-	const languageConfig = vscode.workspace.getConfiguration(options.fallbackSection, options.scope);
+	const languageConfig = docode.workspace.getConfiguration(options.fallbackSection, options.scope);
 	return languageConfig.get<T>(options.fallbackSubSectionNameOverride ?? subSectionName, defaultValue);
 }
 
 /**
  * Checks if an inspected configuration value has any user-defined values set.
  */
-function hasModifiedValue(inspect: ReturnType<vscode.WorkspaceConfiguration['inspect']>): boolean {
+function hasModifiedValue(inspect: ReturnType<docode.WorkspaceConfiguration['inspect']>): boolean {
 	if (!inspect) {
 		return false;
 	}
@@ -67,13 +67,13 @@ export function hasModifiedUnifiedConfig(
 	}
 ): boolean {
 	// Check unified setting
-	const unifiedConfig = vscode.workspace.getConfiguration(unifiedConfigSection, options.scope);
+	const unifiedConfig = docode.workspace.getConfiguration(unifiedConfigSection, options.scope);
 	if (hasModifiedValue(unifiedConfig.inspect(subSectionName))) {
 		return true;
 	}
 
 	// Check language-specific setting
-	const languageConfig = vscode.workspace.getConfiguration(options.fallbackSection, options.scope);
+	const languageConfig = docode.workspace.getConfiguration(options.fallbackSection, options.scope);
 	return hasModifiedValue(languageConfig.inspect(subSectionName));
 }
 
@@ -84,7 +84,7 @@ export class UnifiedConfigValue<T> extends Disposable {
 
 	private _value: T;
 
-	private readonly _onDidChange = this._register(new vscode.EventEmitter<T>());
+	private readonly _onDidChange = this._register(new docode.EventEmitter<T>());
 	public get onDidChange() { return this._onDidChange.event; }
 
 	constructor(
@@ -96,7 +96,7 @@ export class UnifiedConfigValue<T> extends Disposable {
 
 		this._value = this.read();
 
-		this._register(vscode.workspace.onDidChangeConfiguration(e => {
+		this._register(docode.workspace.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(`${unifiedConfigSection}.${subSectionName}`, options.scope ?? undefined) ||
 				e.affectsConfiguration(`${options.fallbackSection}.${options.fallbackSubSectionNameOverride ?? subSectionName}`, options.scope ?? undefined)
 			) {
@@ -119,7 +119,7 @@ export class UnifiedConfigValue<T> extends Disposable {
 }
 
 export interface ResourceUnifiedConfigScope {
-	readonly uri: vscode.Uri;
+	readonly uri: docode.Uri;
 	readonly languageId: string;
 }
 
@@ -133,7 +133,7 @@ export class ResourceUnifiedConfigValue<T> extends Disposable {
 
 	private readonly _cache = new Map</* workspace folder */ string, T>();
 
-	private readonly _onDidChange = this._register(new vscode.EventEmitter<void>());
+	private readonly _onDidChange = this._register(new docode.EventEmitter<void>());
 	public readonly onDidChange = this._onDidChange.event;
 
 	constructor(
@@ -147,7 +147,7 @@ export class ResourceUnifiedConfigValue<T> extends Disposable {
 
 		const fallbackName = options?.fallbackSubSectionNameOverride ?? subSectionName;
 
-		this._register(vscode.workspace.onDidChangeConfiguration(e => {
+		this._register(docode.workspace.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(`${unifiedConfigSection}.${subSectionName}`) ||
 				e.affectsConfiguration(`javascript.${fallbackName}`) ||
 				e.affectsConfiguration(`typescript.${fallbackName}`)
@@ -157,7 +157,7 @@ export class ResourceUnifiedConfigValue<T> extends Disposable {
 			}
 		}));
 
-		this._register(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		this._register(docode.workspace.onDidChangeWorkspaceFolders(() => {
 			this._cache.clear();
 			this._onDidChange.fire();
 		}));
@@ -191,7 +191,7 @@ export class ResourceUnifiedConfigValue<T> extends Disposable {
 	}
 
 	private keyFor(scope: ResourceUnifiedConfigScope): string {
-		const folder = vscode.workspace.getWorkspaceFolder(scope.uri);
+		const folder = docode.workspace.getWorkspaceFolder(scope.uri);
 		return folder ? folder.uri.toString() : '';
 	}
 }

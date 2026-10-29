@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { MdLanguageClient } from './client/client';
 import { CommandManager } from './commandManager';
 import { registerMarkdownCommands } from './commands/index';
@@ -26,7 +26,7 @@ import { registerUpdatePastedLinks } from './languageFeatures/updateLinksOnPaste
 import { markdownLanguageIds } from './util/file';
 
 export function activateShared(
-	context: vscode.ExtensionContext,
+	context: docode.ExtensionContext,
 	client: MdLanguageClient,
 	engine: MarkdownItEngine,
 	logger: ILogger,
@@ -51,7 +51,7 @@ export function activateShared(
 	context.subscriptions.push(
 		linkPresentationService,
 		registerLinkPresentationProvider(linkPresentationService),
-		vscode.window.onDidChangeWindowState(event => {
+		docode.window.onDidChangeWindowState(event => {
 			if (event.focused) {
 				linkPresentationService.refresh();
 			}
@@ -68,7 +68,7 @@ export function activateShared(
 	);
 	context.subscriptions.push(markdownEditorProvider);
 	context.subscriptions.push(registerMarkdownEditorCommands(context, markdownEditorProvider));
-	context.subscriptions.push(vscode.window.registerCustomEditorProvider(
+	context.subscriptions.push(docode.window.registerCustomEditorProvider(
 		MarkdownEditorProvider.viewType,
 		markdownEditorProvider,
 		{
@@ -76,15 +76,15 @@ export function activateShared(
 			supportsMultipleEditorsPerDocument: true,
 		}));
 
-	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
+	context.subscriptions.push(docode.workspace.onDidChangeConfiguration(() => {
 		previewManager.updateConfiguration();
 	}));
 }
 
 function registerMarkdownEditorCommands(
-	context: vscode.ExtensionContext,
+	context: docode.ExtensionContext,
 	provider: MarkdownEditorProvider,
-): vscode.Disposable {
+): docode.Disposable {
 	const contributions = context.extension.packageJSON.contributes as {
 		readonly commands?: readonly {
 			readonly command?: unknown;
@@ -98,20 +98,20 @@ function registerMarkdownEditorCommands(
 			if (typeof commandId !== 'string') {
 				throw new TypeError('Generated Markdown editor command is missing its command identifier.');
 			}
-			return vscode.commands.registerCommand(commandId, () => provider.executeCommand(commandId));
+			return docode.commands.registerCommand(commandId, () => provider.executeCommand(commandId));
 		});
-	return vscode.Disposable.from(...registrations,
-		vscode.commands.registerCommand('markdown.editor.rename', () => provider.executeCommand('markdown.editor.rename')),
-		vscode.commands.registerCommand('markdown.editor.triggerSuggest', () => provider.executeCommand('markdown.editor.triggerSuggest')));
+	return docode.Disposable.from(...registrations,
+		docode.commands.registerCommand('markdown.editor.rename', () => provider.executeCommand('markdown.editor.rename')),
+		docode.commands.registerCommand('markdown.editor.triggerSuggest', () => provider.executeCommand('markdown.editor.triggerSuggest')));
 }
 
 function registerMarkdownLanguageFeatures(
 	client: MdLanguageClient,
 	commandManager: CommandManager,
 	parser: IMdParser,
-): vscode.Disposable {
-	const selector: vscode.DocumentSelector = markdownLanguageIds;
-	return vscode.Disposable.from(
+): docode.Disposable {
+	const selector: docode.DocumentSelector = markdownLanguageIds;
+	return docode.Disposable.from(
 		// Language features
 		registerDiagnosticSupport(selector, commandManager),
 		registerFindFileReferenceSupport(commandManager, client),

@@ -17,12 +17,12 @@ import { markdownEditorOverridePlugin, resolveMarkdownEditorPackage } from './ma
 
 test('Markdown editor package selection without dependency links', async t => {
 	const root = await mkdtemp(join(import.meta.dirname, 'markdown-package-override-'));
-	const previous = process.env.VSCODE_MARKDOWN_EDITOR_PATH;
+	const previous = process.env.DOCODE_MARKDOWN_EDITOR_PATH;
 	try {
 		await t.test('uses the installed commands export by default', async () => {
-			delete process.env.VSCODE_MARKDOWN_EDITOR_PATH;
+			delete process.env.DOCODE_MARKDOWN_EDITOR_PATH;
 			assert.deepEqual(await resolveMarkdownEditorPackage(), {
-				commandsUrl: import.meta.resolve('@vscode/markdown-editor/commands'),
+				commandsUrl: import.meta.resolve('@docode/markdown-editor/commands'),
 			});
 
 		});
@@ -41,7 +41,7 @@ test('Markdown editor package selection without dependency links', async t => {
 				await mkdir(join(directory, 'lib'), { recursive: true });
 				await mkdir(join(directory, 'styles'));
 				await writeFile(join(directory, 'package.json'), JSON.stringify({
-					name: '@vscode/markdown-editor', type: 'module',
+					name: '@docode/markdown-editor', type: 'module',
 					exports: {
 						'.': { import: './lib/index.js' },
 						'./commands': { import: './lib/actions.js' },
@@ -50,12 +50,12 @@ test('Markdown editor package selection without dependency links', async t => {
 						'./base.css': './styles/base.css',
 					},
 				}));
-				await writeFile(join(directory, 'lib', 'index.js'), `export { source } from '@vscode/markdown-editor/value';`);
+				await writeFile(join(directory, 'lib', 'index.js'), `export { source } from '@docode/markdown-editor/value';`);
 				await writeFile(join(directory, 'lib', 'value.js'), `export const source = '${name}';`);
 				await writeFile(join(directory, 'lib', 'actions.js'), `export const commands = [{ id: 'markdown.editor.${name}', title: '${name}', keybindings: [], action: { kind: 'cursor', command: 'left', extend: false } }];`);
-				await writeFile(join(directory, 'styles', 'theme.css'), `@import '@vscode/markdown-editor/base.css'; body { --selected-package: ${name}; }`);
+				await writeFile(join(directory, 'styles', 'theme.css'), `@import '@docode/markdown-editor/base.css'; body { --selected-package: ${name}; }`);
 				await writeFile(join(directory, 'styles', 'base.css'), `body { --base-package: ${name}; }`);
-				process.env.VSCODE_MARKDOWN_EDITOR_PATH = relative(process.cwd(), directory);
+				process.env.DOCODE_MARKDOWN_EDITOR_PATH = relative(process.cwd(), directory);
 				const selected = await resolveMarkdownEditorPackage();
 				assert.deepEqual(selected, {
 					directory: await realpath(directory),
@@ -64,7 +64,7 @@ test('Markdown editor package selection without dependency links', async t => {
 				assert.equal((await lstat(directory)).isSymbolicLink(), false);
 				assert.equal(fileURLToPath(selected.commandsUrl), join(selected.directory!, 'lib', 'actions.js'));
 				const build = await esbuild.build({
-					stdin: { contents: `export { source } from '@vscode/markdown-editor'; import '@vscode/markdown-editor/theme.css';`, resolveDir: root },
+					stdin: { contents: `export { source } from '@docode/markdown-editor'; import '@docode/markdown-editor/theme.css';`, resolveDir: root },
 					outfile: join(root, 'bundle.js'), bundle: true, write: false, format: 'esm',
 					plugins: [markdownEditorOverridePlugin(selected.directory!)],
 				});
@@ -74,7 +74,7 @@ test('Markdown editor package selection without dependency links', async t => {
 				assert.match(css, new RegExp(`--selected-package: ${name}`));
 				assert.match(css, new RegExp(`--base-package: ${name}`));
 				await assert.rejects(esbuild.build({
-					stdin: { contents: `import '@vscode/markdown-editor/not-exported';`, resolveDir: root },
+					stdin: { contents: `import '@docode/markdown-editor/not-exported';`, resolveDir: root },
 					bundle: true, write: false, logLevel: 'silent',
 					plugins: [markdownEditorOverridePlugin(selected.directory!)],
 				}), /Could not resolve/);
@@ -94,33 +94,33 @@ test('Markdown editor package selection without dependency links', async t => {
 
 		await t.test('rejects invalid explicit selections instead of using the installed package', async () => {
 			for (const value of ['', '   ']) {
-				process.env.VSCODE_MARKDOWN_EDITOR_PATH = value;
+				process.env.DOCODE_MARKDOWN_EDITOR_PATH = value;
 				await assert.rejects(resolveMarkdownEditorPackage(), /nonempty/);
 			}
-			process.env.VSCODE_MARKDOWN_EDITOR_PATH = join(root, 'missing');
+			process.env.DOCODE_MARKDOWN_EDITOR_PATH = join(root, 'missing');
 			await assert.rejects(resolveMarkdownEditorPackage(), /ENOENT/);
-			process.env.VSCODE_MARKDOWN_EDITOR_PATH = join(root, 'generator', 'package.json');
+			process.env.DOCODE_MARKDOWN_EDITOR_PATH = join(root, 'generator', 'package.json');
 			await assert.rejects(resolveMarkdownEditorPackage(), /ENOTDIR|ENOENT/);
-			process.env.VSCODE_MARKDOWN_EDITOR_PATH = root;
+			process.env.DOCODE_MARKDOWN_EDITOR_PATH = root;
 			await assert.rejects(resolveMarkdownEditorPackage(), /ENOENT/);
 			await writeFile(join(root, 'package.json'), '{');
 			await assert.rejects(resolveMarkdownEditorPackage(), SyntaxError);
 			await writeFile(join(root, 'package.json'), JSON.stringify({ name: 'other-package' }));
 			await assert.rejects(resolveMarkdownEditorPackage(), /Not a Markdown editor package/);
 			for (const exports of [undefined, null, [], './index.js']) {
-				await writeFile(join(root, 'package.json'), JSON.stringify({ name: '@vscode/markdown-editor', exports }));
+				await writeFile(join(root, 'package.json'), JSON.stringify({ name: '@docode/markdown-editor', exports }));
 				await assert.rejects(resolveMarkdownEditorPackage(), /must declare exports/);
 			}
 			for (const exports of [{ '.': './index.js' }, { './commands': './missing.js' }, { './commands': '../outside.js' }]) {
-				await writeFile(join(root, 'package.json'), JSON.stringify({ name: '@vscode/markdown-editor', exports }));
+				await writeFile(join(root, 'package.json'), JSON.stringify({ name: '@docode/markdown-editor', exports }));
 				await assert.rejects(resolveMarkdownEditorPackage(), /Could not resolve/);
 			}
 		});
 	} finally {
 		if (previous === undefined) {
-			delete process.env.VSCODE_MARKDOWN_EDITOR_PATH;
+			delete process.env.DOCODE_MARKDOWN_EDITOR_PATH;
 		} else {
-			process.env.VSCODE_MARKDOWN_EDITOR_PATH = previous;
+			process.env.DOCODE_MARKDOWN_EDITOR_PATH = previous;
 		}
 		await rm(root, { recursive: true, force: true });
 	}

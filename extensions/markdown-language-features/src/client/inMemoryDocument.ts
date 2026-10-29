@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { ITextDocument } from '../types/textDocument';
 
 export class InMemoryDocument implements ITextDocument {
 
 	readonly #doc: TextDocument;
 
-	public readonly uri: vscode.Uri;
+	public readonly uri: docode.Uri;
 	public readonly version: number;
 
 	constructor(
-		uri: vscode.Uri,
+		uri: docode.Uri,
 		contents: string,
 		version: number = 0,
 	) {
@@ -24,12 +24,12 @@ export class InMemoryDocument implements ITextDocument {
 		this.#doc = TextDocument.create(this.uri.toString(), 'markdown', 0, contents);
 	}
 
-	getText(range?: vscode.Range): string {
+	getText(range?: docode.Range): string {
 		return this.#doc.getText(range);
 	}
 
-	positionAt(offset: number): vscode.Position {
+	positionAt(offset: number): docode.Position {
 		const pos = this.#doc.positionAt(offset);
-		return new vscode.Position(pos.line, pos.character);
+		return new docode.Position(pos.line, pos.character);
 	}
 }

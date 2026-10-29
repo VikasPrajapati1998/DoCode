@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 // @ts-check
 
-import * as vscodeGrammarUpdater from 'vscode-grammar-updater';
+import * as docodeGrammarUpdater from 'vscode-grammar-updater';
 
 function patchGrammar(grammar) {
 	grammar.scopeName = 'text.html.cshtml';
@@ -39,6 +39,6 @@ function patchGrammar(grammar) {
 
 const razorGrammarRepo = 'dotnet/roslyn';
 const grammarPath = 'src/Razor/src/Razor/src/Microsoft.VisualStudio.RazorExtension/EmbeddedGrammars/aspnetcorerazor.tmLanguage.json';
-vscodeGrammarUpdater.update(razorGrammarRepo, grammarPath, './syntaxes/cshtml.tmLanguage.json', grammar => patchGrammar(grammar), 'main');
+docodeGrammarUpdater.update(razorGrammarRepo, grammarPath, './syntaxes/cshtml.tmLanguage.json', grammar => patchGrammar(grammar), 'main');
 
 

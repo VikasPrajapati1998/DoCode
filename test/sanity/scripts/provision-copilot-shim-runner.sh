@@ -5,7 +5,7 @@
 
 set -eu
 
-purpose='vscode-copilot-shim-package-lifecycle'
+purpose='docode-copilot-shim-package-lifecycle'
 marker_root="/run/$purpose"
 state_root="/var/lib/$purpose"
 usr_probe_root="/usr/share/$purpose"
@@ -18,12 +18,12 @@ fail() {
 
 [ "$(uname -s)" = Linux ] || fail 'Copilot shim package lifecycle provisioning requires Linux.'
 [ "$(id -u)" -eq 0 ] || fail 'Copilot shim package lifecycle provisioning requires root inside a disposable runner.'
-[ "${VSCODE_COPILOT_SHIM_DISPOSABLE_RUNNER:-}" = 1 ] || fail 'Set VSCODE_COPILOT_SHIM_DISPOSABLE_RUNNER=1 only in a disposable container or VM.'
+[ "${DOCODE_COPILOT_SHIM_DISPOSABLE_RUNNER:-}" = 1 ] || fail 'Set DOCODE_COPILOT_SHIM_DISPOSABLE_RUNNER=1 only in a disposable container or VM.'
 
-runner_id=${VSCODE_COPILOT_SHIM_RUNNER_ID:-}
+runner_id=${DOCODE_COPILOT_SHIM_RUNNER_ID:-}
 case "$runner_id" in
 	''|*[!A-Za-z0-9_-]*)
-		fail 'VSCODE_COPILOT_SHIM_RUNNER_ID must contain only letters, digits, underscores, and dashes.'
+		fail 'DOCODE_COPILOT_SHIM_RUNNER_ID must contain only letters, digits, underscores, and dashes.'
 		;;
 esac
 
@@ -42,12 +42,12 @@ marker_path="$marker_directory/marker.json"
 work_root="$state_root/$runner_id/work"
 usr_probe="$usr_probe_root/$runner_id"
 etc_probe="$etc_probe_root/$runner_id"
-evidence_root=${VSCODE_COPILOT_SHIM_EVIDENCE_DIR:-"$work_root/evidence"}
+evidence_root=${DOCODE_COPILOT_SHIM_EVIDENCE_DIR:-"$work_root/evidence"}
 
 [ ! -e "$marker_path" ] || fail "Runner marker already exists: $marker_path. Provision a new disposable runner instead of reusing state."
-case "${VSCODE_COPILOT_SHIM_RUNNER_MARKER:-$marker_path}" in
+case "${DOCODE_COPILOT_SHIM_RUNNER_MARKER:-$marker_path}" in
 	"$marker_path") ;;
-	*) fail "VSCODE_COPILOT_SHIM_RUNNER_MARKER must be $marker_path." ;;
+	*) fail "DOCODE_COPILOT_SHIM_RUNNER_MARKER must be $marker_path." ;;
 esac
 
 umask 077

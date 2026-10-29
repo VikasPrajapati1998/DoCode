@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Utils } from 'vscode-uri';
 import { Command } from '../commandManager';
 import { createUriListSnippet, linkEditKind } from '../languageFeatures/copyFiles/shared';
@@ -16,18 +16,18 @@ import { Schemes } from '../util/schemes';
 export class InsertLinkFromWorkspace implements Command {
 	public readonly id = 'markdown.editor.insertLinkFromWorkspace';
 
-	public async execute(resources?: vscode.Uri[]) {
-		const activeEditor = vscode.window.activeTextEditor;
+	public async execute(resources?: docode.Uri[]) {
+		const activeEditor = docode.window.activeTextEditor;
 		if (!activeEditor) {
 			return;
 		}
 
-		resources ??= await vscode.window.showOpenDialog({
+		resources ??= await docode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: true,
-			openLabel: vscode.l10n.t("Insert link"),
-			title: vscode.l10n.t("Insert link"),
+			openLabel: docode.l10n.t("Insert link"),
+			title: docode.l10n.t("Insert link"),
 			defaultUri: getDefaultUri(activeEditor.document),
 		});
 		if (!resources) {
@@ -41,21 +41,21 @@ export class InsertLinkFromWorkspace implements Command {
 export class InsertImageFromWorkspace implements Command {
 	public readonly id = 'markdown.editor.insertImageFromWorkspace';
 
-	public async execute(resources?: vscode.Uri[]) {
-		const activeEditor = vscode.window.activeTextEditor;
+	public async execute(resources?: docode.Uri[]) {
+		const activeEditor = docode.window.activeTextEditor;
 		if (!activeEditor) {
 			return;
 		}
 
-		resources ??= await vscode.window.showOpenDialog({
+		resources ??= await docode.window.showOpenDialog({
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: true,
 			filters: {
-				[vscode.l10n.t("Media")]: Array.from(mediaFileExtensions.keys())
+				[docode.l10n.t("Media")]: Array.from(mediaFileExtensions.keys())
 			},
-			openLabel: vscode.l10n.t("Insert image"),
-			title: vscode.l10n.t("Insert image"),
+			openLabel: docode.l10n.t("Insert image"),
+			title: docode.l10n.t("Insert image"),
 			defaultUri: getDefaultUri(activeEditor.document),
 		});
 		if (!resources) {
@@ -66,23 +66,23 @@ export class InsertImageFromWorkspace implements Command {
 	}
 }
 
-function getDefaultUri(document: vscode.TextDocument) {
+function getDefaultUri(document: docode.TextDocument) {
 	const docUri = getParentDocumentUri(document.uri);
 	if (docUri.scheme === Schemes.untitled) {
-		return vscode.workspace.workspaceFolders?.[0]?.uri;
+		return docode.workspace.workspaceFolders?.[0]?.uri;
 	}
 	return Utils.dirname(docUri);
 }
 
-async function insertLink(activeEditor: vscode.TextEditor, selectedFiles: readonly vscode.Uri[], insertAsMedia: boolean): Promise<void> {
+async function insertLink(activeEditor: docode.TextEditor, selectedFiles: readonly docode.Uri[], insertAsMedia: boolean): Promise<void> {
 	const edit = createInsertLinkEdit(activeEditor, selectedFiles, insertAsMedia);
 	if (edit) {
-		await vscode.workspace.applyEdit(edit);
+		await docode.workspace.applyEdit(edit);
 	}
 }
 
-function createInsertLinkEdit(activeEditor: vscode.TextEditor, selectedFiles: readonly vscode.Uri[], insertAsMedia: boolean) {
-	const snippetEdits = coalesce(activeEditor.selections.map((selection, i): vscode.SnippetTextEdit | undefined => {
+function createInsertLinkEdit(activeEditor: docode.TextEditor, selectedFiles: readonly docode.Uri[], insertAsMedia: boolean) {
+	const snippetEdits = coalesce(activeEditor.selections.map((selection, i): docode.SnippetTextEdit | undefined => {
 		const selectionText = activeEditor.document.getText(selection);
 		const snippet = createUriListSnippet(activeEditor.document.uri, selectedFiles.map(uri => ({ uri })), {
 			linkKindHint: insertAsMedia ? 'media' : linkEditKind,
@@ -91,13 +91,13 @@ function createInsertLinkEdit(activeEditor: vscode.TextEditor, selectedFiles: re
 			separator: insertAsMedia ? '\n' : ' ',
 		});
 
-		return snippet ? new vscode.SnippetTextEdit(selection, snippet.snippet) : undefined;
+		return snippet ? new docode.SnippetTextEdit(selection, snippet.snippet) : undefined;
 	}));
 	if (!snippetEdits.length) {
 		return;
 	}
 
-	const edit = new vscode.WorkspaceEdit();
+	const edit = new docode.WorkspaceEdit();
 	edit.set(activeEditor.document.uri, snippetEdits);
 	return edit;
 }

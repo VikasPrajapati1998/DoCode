@@ -4,21 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { RefType } from './api/git.constants';
 import { Model } from './model';
 
-export class GitEditSessionIdentityProvider implements vscode.EditSessionIdentityProvider, vscode.Disposable {
+export class GitEditSessionIdentityProvider implements docode.EditSessionIdentityProvider, docode.Disposable {
 
-	private providerRegistration: vscode.Disposable;
+	private providerRegistration: docode.Disposable;
 
 	constructor(private model: Model) {
-		this.providerRegistration = vscode.Disposable.from(
-			vscode.workspace.registerEditSessionIdentityProvider('file', this),
-			vscode.workspace.onWillCreateEditSessionIdentity((e) => {
+		this.providerRegistration = docode.Disposable.from(
+			docode.workspace.registerEditSessionIdentityProvider('file', this),
+			docode.workspace.onWillCreateEditSessionIdentity((e) => {
 				e.waitUntil(
 					this._onWillCreateEditSessionIdentity(e.workspaceFolder).catch(err => {
-						if (err instanceof vscode.CancellationError) {
+						if (err instanceof docode.CancellationError) {
 							throw err;
 						}
 					})
@@ -31,7 +31,7 @@ export class GitEditSessionIdentityProvider implements vscode.EditSessionIdentit
 		this.providerRegistration.dispose();
 	}
 
-	async provideEditSessionIdentity(workspaceFolder: vscode.WorkspaceFolder, token: vscode.CancellationToken): Promise<string | undefined> {
+	async provideEditSessionIdentity(workspaceFolder: docode.WorkspaceFolder, token: docode.CancellationToken): Promise<string | undefined> {
 		await this.model.openRepository(path.dirname(workspaceFolder.uri.fsPath));
 
 		const repository = this.model.getRepository(workspaceFolder.uri);
@@ -42,7 +42,7 @@ export class GitEditSessionIdentityProvider implements vscode.EditSessionIdentit
 		}
 
 		const remoteUrl = repository.remotes.find((remote) => remote.name === repository.HEAD?.upstream?.remote)?.pushUrl?.replace(/^(git@[^\/:]+)(:)/i, 'ssh://$1/');
-		const remote = remoteUrl ? await vscode.workspace.getCanonicalUri(vscode.Uri.parse(remoteUrl), { targetScheme: 'https' }, token) : null;
+		const remote = remoteUrl ? await docode.workspace.getCanonicalUri(docode.Uri.parse(remoteUrl), { targetScheme: 'https' }, token) : null;
 
 		return JSON.stringify({
 			remote: remote?.toString() ?? remoteUrl,
@@ -51,7 +51,7 @@ export class GitEditSessionIdentityProvider implements vscode.EditSessionIdentit
 		});
 	}
 
-	provideEditSessionIdentityMatch(identity1: string, identity2: string): vscode.EditSessionIdentityMatch {
+	provideEditSessionIdentityMatch(identity1: string, identity2: string): docode.EditSessionIdentityMatch {
 		try {
 			const normalizedIdentity1 = normalizeEditSessionIdentity(identity1);
 			const normalizedIdentity2 = normalizeEditSessionIdentity(identity2);
@@ -60,25 +60,25 @@ export class GitEditSessionIdentityProvider implements vscode.EditSessionIdentit
 				normalizedIdentity1.ref === normalizedIdentity2.ref &&
 				normalizedIdentity1.sha === normalizedIdentity2.sha) {
 				// This is a perfect match
-				return vscode.EditSessionIdentityMatch.Complete;
+				return docode.EditSessionIdentityMatch.Complete;
 			} else if (normalizedIdentity1.remote === normalizedIdentity2.remote &&
 				normalizedIdentity1.ref === normalizedIdentity2.ref &&
 				normalizedIdentity1.sha !== normalizedIdentity2.sha) {
 				// Same branch and remote but different SHA
-				return vscode.EditSessionIdentityMatch.Partial;
+				return docode.EditSessionIdentityMatch.Partial;
 			} else {
-				return vscode.EditSessionIdentityMatch.None;
+				return docode.EditSessionIdentityMatch.None;
 			}
 		} catch (ex) {
-			return vscode.EditSessionIdentityMatch.Partial;
+			return docode.EditSessionIdentityMatch.Partial;
 		}
 	}
 
-	private async _onWillCreateEditSessionIdentity(workspaceFolder: vscode.WorkspaceFolder): Promise<void> {
+	private async _onWillCreateEditSessionIdentity(workspaceFolder: docode.WorkspaceFolder): Promise<void> {
 		await this._doPublish(workspaceFolder);
 	}
 
-	private async _doPublish(workspaceFolder: vscode.WorkspaceFolder) {
+	private async _doPublish(workspaceFolder: docode.WorkspaceFolder) {
 		await this.model.openRepository(path.dirname(workspaceFolder.uri.fsPath));
 
 		const repository = this.model.getRepository(workspaceFolder.uri);
@@ -91,32 +91,32 @@ export class GitEditSessionIdentityProvider implements vscode.EditSessionIdentit
 		if (!repository.HEAD?.commit) {
 			// Handle publishing empty repository with no commits
 
-			const yes = vscode.l10n.t('Yes');
-			const selection = await vscode.window.showInformationMessage(
-				vscode.l10n.t('Would you like to publish this repository to continue working on it elsewhere?'),
+			const yes = docode.l10n.t('Yes');
+			const selection = await docode.window.showInformationMessage(
+				docode.l10n.t('Would you like to publish this repository to continue working on it elsewhere?'),
 				{ modal: true },
 				yes
 			);
 			if (selection !== yes) {
-				throw new vscode.CancellationError();
+				throw new docode.CancellationError();
 			}
 			await repository.commit('Initial commit', { all: true });
-			await vscode.commands.executeCommand('git.publish');
+			await docode.commands.executeCommand('git.publish');
 		} else if (!repository.HEAD?.upstream && repository.HEAD?.type === RefType.Head) {
 			// If this branch hasn't been published to the remote yet,
 			// ensure that it is published before Continue On is invoked
 
-			const publishBranch = vscode.l10n.t('Publish Branch');
-			const selection = await vscode.window.showInformationMessage(
-				vscode.l10n.t('The current branch is not published to the remote. Would you like to publish it to access your changes elsewhere?'),
+			const publishBranch = docode.l10n.t('Publish Branch');
+			const selection = await docode.window.showInformationMessage(
+				docode.l10n.t('The current branch is not published to the remote. Would you like to publish it to access your changes elsewhere?'),
 				{ modal: true },
 				publishBranch
 			);
 			if (selection !== publishBranch) {
-				throw new vscode.CancellationError();
+				throw new docode.CancellationError();
 			}
 
-			await vscode.commands.executeCommand('git.publish');
+			await docode.commands.executeCommand('git.publish');
 		}
 	}
 }

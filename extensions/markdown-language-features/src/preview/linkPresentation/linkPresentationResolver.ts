@@ -3,16 +3,16 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type { LinkPresentation as MarkdownLinkPresentation } from '@vscode/markdown-editor';
-import { derived, observableValue, type IObservable, type ISettableObservable } from '@vscode/observables';
-import * as vscode from 'vscode';
+import type { LinkPresentation as MarkdownLinkPresentation } from '@docode/markdown-editor';
+import { derived, observableValue, type IObservable, type ISettableObservable } from '@docode/observables';
+import * as docode from 'docode';
 import type { ILogger } from '../../logging';
 
 export type LinkPresentation = MarkdownLinkPresentation & {
 	readonly isLoading?: boolean;
 };
 
-export interface LinkPresentationResolver extends vscode.Disposable {
+export interface LinkPresentationResolver extends docode.Disposable {
 	readonly refreshOnInterval: boolean;
 
 	resolve(href: string, context: LinkPresentationResolverContext): IObservable<LinkPresentation> | undefined;
@@ -20,7 +20,7 @@ export interface LinkPresentationResolver extends vscode.Disposable {
 }
 
 export interface LinkPresentationResolverContext {
-	readonly onDidRequestRefresh: vscode.Event<void>;
+	readonly onDidRequestRefresh: docode.Event<void>;
 	readonly logger: ILogger;
 }
 
@@ -58,8 +58,8 @@ export function createAsyncLinkPresentation(
 	context: LinkPresentationResolverContext,
 	resolve: () => Promise<LinkPresentation>,
 	getFailurePresentation: (error: unknown) => LinkPresentation,
-	onDidRequestRefresh: readonly vscode.Event<void>[] = [context.onDidRequestRefresh],
-	resetOnRefresh?: { readonly event: vscode.Event<void>; readonly presentation: LinkPresentation },
+	onDidRequestRefresh: readonly docode.Event<void>[] = [context.onDidRequestRefresh],
+	resetOnRefresh?: { readonly event: docode.Event<void>; readonly presentation: LinkPresentation },
 ): IObservable<LinkPresentation> {
 	return derived(reader => reader.store.add(new AsyncLinkPresentation(
 		href,
@@ -72,9 +72,9 @@ export function createAsyncLinkPresentation(
 	))).map((value, reader) => value.presentation.read(reader));
 }
 
-class AsyncLinkPresentation implements vscode.Disposable {
+class AsyncLinkPresentation implements docode.Disposable {
 	readonly presentation: ISettableObservable<LinkPresentation>;
-	readonly #subscriptions: vscode.Disposable;
+	readonly #subscriptions: docode.Disposable;
 	readonly #resolve: () => Promise<LinkPresentation>;
 	readonly #getFailurePresentation: (error: unknown) => LinkPresentation;
 	readonly #context: LinkPresentationResolverContext;
@@ -87,15 +87,15 @@ class AsyncLinkPresentation implements vscode.Disposable {
 		context: LinkPresentationResolverContext,
 		resolve: () => Promise<LinkPresentation>,
 		getFailurePresentation: (error: unknown) => LinkPresentation,
-		onDidRequestRefresh: readonly vscode.Event<void>[],
-		resetOnRefresh: { readonly event: vscode.Event<void>; readonly presentation: LinkPresentation } | undefined,
+		onDidRequestRefresh: readonly docode.Event<void>[],
+		resetOnRefresh: { readonly event: docode.Event<void>; readonly presentation: LinkPresentation } | undefined,
 	) {
 		this.#href = href;
 		this.#context = context;
 		this.#resolve = resolve;
 		this.#getFailurePresentation = getFailurePresentation;
 		this.presentation = observableValue(`linkPresentation:${href}`, initialPresentation);
-		this.#subscriptions = vscode.Disposable.from(
+		this.#subscriptions = docode.Disposable.from(
 			...onDidRequestRefresh.map(event => event(() => this.#refresh())),
 			...(resetOnRefresh ? [resetOnRefresh.event(() => {
 				this.presentation.set(resetOnRefresh.presentation, undefined);

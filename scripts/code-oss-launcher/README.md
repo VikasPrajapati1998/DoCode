@@ -19,7 +19,7 @@ On macOS/Linux, use `scripts/code-oss-launcher/launch.ts` and appropriate paths.
 | `--skip-prelaunch` | Skip `build/lib/preLaunch.ts`; Electron, compiled output and built-ins must already exist. Without this flag, normal source prelaunch runs first. |
 | `--session-title TITLE` | Set the isolated window title; with `--agents`, set the Agents command-center title instead. |
 | `--disable-workspace-trust` | Forward this opt-in development setting to Code OSS. |
-| `--source-user-data-dir DIR` | Seed from this Code OSS profile; defaults to `CODE_OSS_DEV_AUTHED_USER_DATA_DIR` or `~/.vscode-oss-dev`. A missing profile starts empty. |
+| `--source-user-data-dir DIR` | Seed from this Code OSS profile; defaults to `CODE_OSS_DEV_AUTHED_USER_DATA_DIR` or `~/.docode-oss-dev`. A missing profile starts empty. |
 | `--copy-extensions` | Copy all source-profile extensions. Default: empty isolated extensions directory. `--clone-extensions` is an alias. |
 | `--copy-extensions=publisher.one,publisher.two` | Copy selected extensions and filter the extension manifest. Unknown IDs are usage errors. |
 | `--full` | Copy the complete source profile, including extensions, instead of omitting caches, locks, logs and workspace history. |
@@ -45,7 +45,7 @@ With `--wait`, keep draining stderr after reading readiness and wait for process
 
 ## Profile and authentication isolation
 
-Each run has separate user-data, extensions and shared-data directories. The source profile is read, never modified. Slim copies preserve authentication-related files and set `files.simpleDialog.enable` in the copy. On Windows the launcher also seeds application-shared storage from `CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR`, `VSCODE_PORTABLE\shared-data`, or the product's default shared-data directory. Existing credentials remain subject to OS encryption and must be usable by the same local user/machine. Sign in to the source Code OSS profile first to seed future launches; no tokens are printed.
+Each run has separate user-data, extensions and shared-data directories. The source profile is read, never modified. Slim copies preserve authentication-related files and set `files.simpleDialog.enable` in the copy. On Windows the launcher also seeds application-shared storage from `CODE_OSS_DEV_AUTHED_SHARED_DATA_DIR`, `DOCODE_PORTABLE\shared-data`, or the product's default shared-data directory. Existing credentials remain subject to OS encryption and must be usable by the same local user/machine. Sign in to the source Code OSS profile first to seed future launches; no tokens are printed.
 
 Run directories **contain sensitive copies of local credentials**. Do not upload them or their logs. `CODE_OSS_DEV_RUN_ROOT` can select a private local directory; otherwise the launcher's per-user temporary run root is used. On POSIX, the root is owner-checked and made private. Keep the same environment override when invoking cleanup. Reused profiles are synchronized from the source on subsequent launches, so use the source profile for persistent authentication changes.
 

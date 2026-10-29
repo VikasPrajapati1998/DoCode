@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { TsServerLogLevel } from '../configuration/configuration';
 import { UnifiedConfigValue, unifiedConfigSection } from '../utils/configuration';
 import { Disposable } from '../utils/dispose';
@@ -16,7 +16,7 @@ export class LogLevelMonitor extends Disposable {
 
 	private readonly _logLevel: UnifiedConfigValue<string>;
 
-	constructor(private readonly context: vscode.ExtensionContext) {
+	constructor(private readonly context: docode.ExtensionContext) {
 		super();
 
 		this._logLevel = this._register(new UnifiedConfigValue<string>('tsserver.log', 'off', { fallbackSection: 'typescript' }));
@@ -69,18 +69,18 @@ export class LogLevelMonitor extends Disposable {
 			DisableLogging = 0,
 			DoNotShowAgain = 1
 		}
-		interface Item extends vscode.MessageItem {
+		interface Item extends docode.MessageItem {
 			readonly choice: Choice;
 		}
 
-		vscode.window.showInformationMessage<Item>(
-			vscode.l10n.t("TS Server logging is currently enabled which may impact performance."),
+		docode.window.showInformationMessage<Item>(
+			docode.l10n.t("TS Server logging is currently enabled which may impact performance."),
 			{
-				title: vscode.l10n.t("Disable logging"),
+				title: docode.l10n.t("Disable logging"),
 				choice: Choice.DisableLogging
 			},
 			{
-				title: vscode.l10n.t("Don't show again"),
+				title: docode.l10n.t("Don't show again"),
 				choice: Choice.DoNotShowAgain
 			})
 			.then(selection => {
@@ -88,7 +88,7 @@ export class LogLevelMonitor extends Disposable {
 					return;
 				}
 				if (selection.choice === Choice.DisableLogging) {
-					return vscode.workspace.getConfiguration().update(`${unifiedConfigSection}.tsserver.log`, 'off', true);
+					return docode.workspace.getConfiguration().update(`${unifiedConfigSection}.tsserver.log`, 'off', true);
 				} else if (selection.choice === Choice.DoNotShowAgain) {
 					return this.context.globalState.update(LogLevelMonitor.doNotPromptLogLevelStorageKey, true);
 				}

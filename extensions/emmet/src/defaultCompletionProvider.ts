@@ -3,18 +3,18 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Node, Stylesheet } from 'EmmetFlatNode';
 import { isValidLocationForEmmetAbbreviation, getSyntaxFromArgs } from './abbreviationActions';
 import { getEmmetHelper, getMappingForIncludedLanguages, parsePartialStylesheet, getEmmetConfiguration, getEmmetMode, isStyleSheet, getFlatNode, allowedMimeTypesInScriptTag, toLSTextDocument, getHtmlFlatNode, getEmbeddedCssNodeIfAny } from './util';
 import { Range as LSRange } from 'vscode-languageserver-textdocument';
 import { getRootNode } from './parseDocument';
 
-export class DefaultCompletionItemProvider implements vscode.CompletionItemProvider {
+export class DefaultCompletionItemProvider implements docode.CompletionItemProvider {
 
 	private lastCompletionType: string | undefined;
 
-	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, _: vscode.CancellationToken, context: vscode.CompletionContext): Thenable<vscode.CompletionList | undefined> | undefined {
+	public provideCompletionItems(document: docode.TextDocument, position: docode.Position, _: docode.CancellationToken, context: docode.CompletionContext): Thenable<docode.CompletionList | undefined> | undefined {
 		const completionResult = this.provideCompletionItemsInternal(document, position, context);
 		if (!completionResult) {
 			this.lastCompletionType = undefined;
@@ -40,8 +40,8 @@ export class DefaultCompletionItemProvider implements vscode.CompletionItemProvi
 		});
 	}
 
-	private provideCompletionItemsInternal(document: vscode.TextDocument, position: vscode.Position, context: vscode.CompletionContext): Thenable<vscode.CompletionList | undefined> | undefined {
-		const emmetConfig = vscode.workspace.getConfiguration('emmet');
+	private provideCompletionItemsInternal(document: docode.TextDocument, position: docode.Position, context: docode.CompletionContext): Thenable<docode.CompletionList | undefined> | undefined {
+		const emmetConfig = docode.workspace.getConfiguration('emmet');
 		const excludedLanguages = emmetConfig.excludeLanguages ? emmetConfig.excludeLanguages : [];
 		if (excludedLanguages.includes(document.languageId)) {
 			return;
@@ -67,14 +67,14 @@ export class DefaultCompletionItemProvider implements vscode.CompletionItemProvi
 		position = document.validatePosition(position);
 
 		// Don't show completions if there's a comment at the beginning of the line
-		const lineRange = new vscode.Range(position.line, 0, position.line, position.character);
+		const lineRange = new docode.Range(position.line, 0, position.line, position.character);
 		if (document.getText(lineRange).trimStart().startsWith('//')) {
 			return;
 		}
 
 		const helper = getEmmetHelper();
 		if (syntax === 'html') {
-			if (context.triggerKind === vscode.CompletionTriggerKind.TriggerForIncompleteCompletions) {
+			if (context.triggerKind === docode.CompletionTriggerKind.TriggerForIncompleteCompletions) {
 				switch (this.lastCompletionType) {
 					case 'html':
 						validateLocation = false;
@@ -133,9 +133,9 @@ export class DefaultCompletionItemProvider implements vscode.CompletionItemProvi
 		}
 
 		const offset = document.offsetAt(position);
-		if (isStyleSheet(document.languageId) && context.triggerKind !== vscode.CompletionTriggerKind.TriggerForIncompleteCompletions) {
+		if (isStyleSheet(document.languageId) && context.triggerKind !== docode.CompletionTriggerKind.TriggerForIncompleteCompletions) {
 			validateLocation = true;
-			const usePartialParsing = vscode.workspace.getConfiguration('emmet').optimizeStylesheetParsing === true;
+			const usePartialParsing = docode.workspace.getConfiguration('emmet').optimizeStylesheetParsing === true;
 			rootNode = usePartialParsing && document.lineCount > 1000 ? parsePartialStylesheet(document, position) : <Stylesheet>getRootNode(document, true);
 			if (!rootNode) {
 				return;
@@ -146,7 +146,7 @@ export class DefaultCompletionItemProvider implements vscode.CompletionItemProvi
 		// Fix for https://github.com/microsoft/vscode/issues/107578
 		// Validate location if syntax is of styleSheet type to ensure that location is valid for emmet abbreviation.
 		// For an html document containing a <style> node, compute the embeddedCssNode and fetch the flattened node as currentNode.
-		if (!isStyleSheet(document.languageId) && isStyleSheet(syntax) && context.triggerKind !== vscode.CompletionTriggerKind.TriggerForIncompleteCompletions) {
+		if (!isStyleSheet(document.languageId) && isStyleSheet(syntax) && context.triggerKind !== docode.CompletionTriggerKind.TriggerForIncompleteCompletions) {
 			validateLocation = true;
 			rootNode = getRootNode(document, true);
 			if (!rootNode) {
@@ -173,13 +173,13 @@ export class DefaultCompletionItemProvider implements vscode.CompletionItemProvi
 			if (abbreviation.startsWith('this.') || /\[[^\]=]*\]/.test(abbreviation)) {
 				isNoisePromise = Promise.resolve(true);
 			} else {
-				isNoisePromise = vscode.commands.executeCommand<vscode.SymbolInformation[] | undefined>('vscode.executeDocumentSymbolProvider', document.uri).then(symbols => {
+				isNoisePromise = docode.commands.executeCommand<docode.SymbolInformation[] | undefined>('docode.executeDocumentSymbolProvider', document.uri).then(symbols => {
 					return !!symbols && symbols.some(x => abbreviation === x.name || (abbreviation.startsWith(x.name + '.') && !/>|\*|\+/.test(abbreviation)));
 				});
 			}
 		}
 
-		return isNoisePromise.then((isNoise): vscode.CompletionList | undefined => {
+		return isNoisePromise.then((isNoise): docode.CompletionList | undefined => {
 			if (isNoise) {
 				return undefined;
 			}
@@ -187,31 +187,31 @@ export class DefaultCompletionItemProvider implements vscode.CompletionItemProvi
 			const config = getEmmetConfiguration(syntax!);
 			const result = helper.doComplete(toLSTextDocument(document), position, syntax, config);
 
-			const newItems: vscode.CompletionItem[] = [];
+			const newItems: docode.CompletionItem[] = [];
 			if (result && result.items) {
 				result.items.forEach((item: any) => {
-					const newItem = new vscode.CompletionItem(item.label);
+					const newItem = new docode.CompletionItem(item.label);
 					newItem.documentation = item.documentation;
 					newItem.detail = item.detail;
-					newItem.insertText = new vscode.SnippetString(item.textEdit.newText);
+					newItem.insertText = new docode.SnippetString(item.textEdit.newText);
 					const oldrange = item.textEdit.range;
-					newItem.range = new vscode.Range(oldrange.start.line, oldrange.start.character, oldrange.end.line, oldrange.end.character);
+					newItem.range = new docode.Range(oldrange.start.line, oldrange.start.character, oldrange.end.line, oldrange.end.character);
 
 					newItem.filterText = item.filterText;
 					newItem.sortText = item.sortText;
 
 					if (emmetConfig.showSuggestionsAsSnippets === true) {
-						newItem.kind = vscode.CompletionItemKind.Snippet;
+						newItem.kind = docode.CompletionItemKind.Snippet;
 					}
 					newItems.push(newItem);
 				});
 			}
 
-			return new vscode.CompletionList(newItems, true);
+			return new docode.CompletionList(newItems, true);
 		});
 	}
 }
 
 function toRange(lsRange: LSRange) {
-	return new vscode.Range(lsRange.start.line, lsRange.start.character, lsRange.end.line, lsRange.end.character);
+	return new docode.Range(lsRange.start.line, lsRange.start.character, lsRange.end.line, lsRange.end.character);
 }

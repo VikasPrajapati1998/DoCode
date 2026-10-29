@@ -1,0 +1,13 @@
+{
+	"name": "@docode/languagedetection",
+	"version": "1.0.23",
+	"description": "An npm package that uses guesslang's ML model to detect source code languages",
+	"main": "dist/lib/index.js",
+	"bin": {
+		"docode-languagedetection": "cli/index.js"
+	},
+	"module": "dist/lib/index.js",
+	"types": "dist/lib/index.d.ts",
+	"author": "Tyler Leonhardt",
+	"license": "MIT"
+}

@@ -3,8 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import { HubRpcConnection, type InterfaceHandlers } from '@vscode/hubrpc';
+import * as docode from 'docode';
+import { HubRpcConnection, type InterfaceHandlers } from '@docode/hubrpc';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Disposable } from '../util/dispose';
 import { getRangeFromPositionOrRange, MdLinkOpener } from '../util/openDocumentLink';
@@ -42,20 +42,20 @@ interface MarkdownCodeBlockEditorProviderApi {
 		request: {
 			readonly providerId: string;
 			readonly language: string;
-			readonly documentUri: vscode.Uri;
+			readonly documentUri: docode.Uri;
 		},
-		token: vscode.CancellationToken,
-	): vscode.ProviderResult<ProviderResolvedCodeBlockEditor>;
+		token: docode.CancellationToken,
+	): docode.ProviderResult<ProviderResolvedCodeBlockEditor>;
 	createHostTransport?(
 		transport: MarkdownCodeBlockEditorHostTransport,
-		token: vscode.CancellationToken,
-	): vscode.ProviderResult<vscode.Disposable>;
+		token: docode.CancellationToken,
+	): docode.ProviderResult<docode.Disposable>;
 }
 
 interface ProviderResolvedCodeBlockEditor {
 	readonly content:
-	| { readonly html: string; readonly baseUri?: vscode.Uri; readonly uri?: undefined }
-	| { readonly html?: undefined; readonly uri: vscode.Uri };
+	| { readonly html: string; readonly baseUri?: docode.Uri; readonly uri?: undefined }
+	| { readonly html?: undefined; readonly uri: docode.Uri };
 	readonly contentType?: 'text' | 'json';
 	readonly cacheKey?: string;
 	readonly runtimeKey?: string;
@@ -66,8 +66,8 @@ interface ProviderResolvedCodeBlockEditor {
 
 interface MarkdownCodeBlockEditorHostTransport {
 	readonly runtimeKey: string;
-	readonly onDidReceiveMessage: vscode.Event<unknown>;
-	readonly onDidDispose: vscode.Event<void>;
+	readonly onDidReceiveMessage: docode.Event<unknown>;
+	readonly onDidDispose: docode.Event<void>;
 	sendMessage(message: unknown): void;
 }
 
@@ -82,18 +82,18 @@ export interface MarkdownEditorEdit {
 /**
  * Owns the private RPC connection for one webview, replacing it on each HTML reload.
  */
-class AuthenticatedWebview implements vscode.Disposable {
+class AuthenticatedWebview implements docode.Disposable {
 
 	#messageSecret = generateUuid();
 	#connection: HubRpcConnection<undefined>;
 	#handlers: InterfaceHandlers<typeof markdownEditorHost> | undefined;
-	readonly #onReady = new vscode.EventEmitter<void>();
+	readonly #onReady = new docode.EventEmitter<void>();
 	readonly onReady = this.#onReady.event;
 	#ready = false;
 	#publishedReady = false;
 	#disposed = false;
 
-	constructor(readonly webview: vscode.Webview, readonly logger: ILogger) {
+	constructor(readonly webview: docode.Webview, readonly logger: ILogger) {
 		this.#connection = this.#connect();
 	}
 
@@ -117,20 +117,20 @@ class AuthenticatedWebview implements vscode.Disposable {
 		return this.#ready;
 	}
 
-	async whenReady(token: vscode.CancellationToken): Promise<void> {
+	async whenReady(token: docode.CancellationToken): Promise<void> {
 		if (this.#disposed || token.isCancellationRequested) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 		if (this.#publishedReady) {
 			return;
 		}
 		const pending = Promise.withResolvers<void>();
 		const ready = this.onReady(() => {
-			if (this.#disposed) { pending.reject(new vscode.CancellationError()); } else { pending.resolve(); }
+			if (this.#disposed) { pending.reject(new docode.CancellationError()); } else { pending.resolve(); }
 		});
-		const cancel = token.onCancellationRequested(() => pending.reject(new vscode.CancellationError()));
+		const cancel = token.onCancellationRequested(() => pending.reject(new docode.CancellationError()));
 		try {
-			if (this.#disposed || token.isCancellationRequested) { pending.reject(new vscode.CancellationError()); }
+			if (this.#disposed || token.isCancellationRequested) { pending.reject(new docode.CancellationError()); }
 			else if (this.#publishedReady) { pending.resolve(); }
 			await pending.promise;
 		} finally {
@@ -185,11 +185,11 @@ class AuthenticatedWebview implements vscode.Disposable {
 	}
 }
 
-class CodeBlockEditorHostTransportState implements vscode.Disposable {
-	readonly #onDidReceiveMessage = new vscode.EventEmitter<unknown>();
-	readonly #onDidDispose = new vscode.EventEmitter<void>();
+class CodeBlockEditorHostTransportState implements docode.Disposable {
+	readonly #onDidReceiveMessage = new docode.EventEmitter<unknown>();
+	readonly #onDidDispose = new docode.EventEmitter<void>();
 	readonly #pendingMessages: unknown[] = [];
-	#providerDisposable: vscode.Disposable | undefined;
+	#providerDisposable: docode.Disposable | undefined;
 	#ready = false;
 	#disposed = false;
 
@@ -220,7 +220,7 @@ class CodeBlockEditorHostTransportState implements vscode.Disposable {
 		this.#onDidReceiveMessage.fire(message);
 	}
 
-	setReady(providerDisposable: vscode.Disposable | undefined): void {
+	setReady(providerDisposable: docode.Disposable | undefined): void {
 		if (this.#disposed) {
 			providerDisposable?.dispose();
 			return;
@@ -247,13 +247,13 @@ class CodeBlockEditorHostTransportState implements vscode.Disposable {
 
 /**
  * Experimental hybrid (WYSIWYG) Markdown editor backed by the
- * `@vscode/markdown-editor` component. The {@link vscode.TextDocument} remains
+ * `@docode/markdown-editor` component. The {@link docode.TextDocument} remains
  * the single source of truth, so native undo/redo, dirty state and hot-exit are
  * preserved.
  */
-export class MarkdownEditorProvider extends Disposable implements vscode.CustomTextEditorProvider {
+export class MarkdownEditorProvider extends Disposable implements docode.CustomTextEditorProvider {
 
-	public static readonly viewType = 'vscode.markdown.editor';
+	public static readonly viewType = 'docode.markdown.editor';
 
 	/**
 	 * Memento key under which the last chosen edit/read-only mode is remembered.
@@ -262,27 +262,27 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 	 */
 	static readonly #readonlyStateKey = 'markdown.editor.readonly';
 
-	readonly #mediaRoot: vscode.Uri;
-	readonly #extensionUri: vscode.Uri;
-	readonly #globalState: vscode.Memento;
+	readonly #mediaRoot: docode.Uri;
+	readonly #extensionUri: docode.Uri;
+	readonly #globalState: docode.Memento;
 	readonly #linkOpener: MdLinkOpener;
 	readonly #contributions: MarkdownContributionProvider;
 	readonly #logger: ILogger;
-	readonly #tryOpenLink: (href: string, fromResource: vscode.Uri) => Promise<boolean>;
-	readonly #webviewPanels = new Map<vscode.WebviewPanel, AuthenticatedWebview>();
-	readonly #navigation = new Map<vscode.WebviewPanel, MarkdownEditorNavigation>();
-	readonly #focusedWebviewPanels = new Set<vscode.WebviewPanel>();
+	readonly #tryOpenLink: (href: string, fromResource: docode.Uri) => Promise<boolean>;
+	readonly #webviewPanels = new Map<docode.WebviewPanel, AuthenticatedWebview>();
+	readonly #navigation = new Map<docode.WebviewPanel, MarkdownEditorNavigation>();
+	readonly #focusedWebviewPanels = new Set<docode.WebviewPanel>();
 	readonly #providerApis = new Map<string, Promise<MarkdownCodeBlockEditorProviderApi | undefined>>();
 	readonly #resolvedCodeBlockEditors = new Map<string, Promise<ResolvedCodeBlockEditor | undefined>>();
 	readonly #resolvedCodeBlockEditorResources = new Set<string>();
 
 	constructor(
-		extensionUri: vscode.Uri,
-		globalState: vscode.Memento,
+		extensionUri: docode.Uri,
+		globalState: docode.Memento,
 		linkOpener: MdLinkOpener,
 		contributions: MarkdownContributionProvider,
 		logger: ILogger,
-		tryOpenLink: (href: string, fromResource: vscode.Uri) => Promise<boolean>,
+		tryOpenLink: (href: string, fromResource: docode.Uri) => Promise<boolean>,
 	) {
 		super();
 		this.#extensionUri = extensionUri;
@@ -291,49 +291,49 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		this.#contributions = contributions;
 		this.#logger = logger;
 		this.#tryOpenLink = tryOpenLink;
-		this.#mediaRoot = vscode.Uri.joinPath(this.#extensionUri, 'markdown-editor-out');
-		this._register(new vscode.Disposable(() => {
-			void vscode.commands.executeCommand('setContext', 'markdownEditorFocus', false);
+		this.#mediaRoot = docode.Uri.joinPath(this.#extensionUri, 'markdown-editor-out');
+		this._register(new docode.Disposable(() => {
+			void docode.commands.executeCommand('setContext', 'markdownEditorFocus', false);
 		}));
 	}
 
 	public async resolveCustomTextEditor(
-		document: vscode.TextDocument,
-		webviewPanel: vscode.WebviewPanel,
-		token: vscode.CancellationToken,
+		document: docode.TextDocument,
+		webviewPanel: docode.WebviewPanel,
+		token: docode.CancellationToken,
 	): Promise<void> {
 		await this.#resolveEditor(document, webviewPanel, token);
 	}
 
 	public async resolveCustomTextEditorInlineDiff(
-		documents: vscode.CustomEditorDiffDocuments<vscode.TextDocument>,
-		webviewPanel: vscode.WebviewPanel,
-		token: vscode.CancellationToken,
+		documents: docode.CustomEditorDiffDocuments<docode.TextDocument>,
+		webviewPanel: docode.WebviewPanel,
+		token: docode.CancellationToken,
 	): Promise<void> {
 		await this.#resolveEditor(documents.modified, webviewPanel, token, documents.original);
 	}
 
 	public resolveCustomTextEditorNavigation(
-		_document: vscode.TextDocument,
-		webviewPanel: vscode.WebviewPanel,
-		token: vscode.CancellationToken,
-	): vscode.CustomTextEditorNavigation {
+		_document: docode.TextDocument,
+		webviewPanel: docode.WebviewPanel,
+		token: docode.CancellationToken,
+	): docode.CustomTextEditorNavigation {
 		const navigation = this.#navigation.get(webviewPanel);
 		if (!navigation || token.isCancellationRequested) {
-			throw new vscode.CancellationError();
+			throw new docode.CancellationError();
 		}
 		return navigation;
 	}
 
-	async #resolveEditor(document: vscode.TextDocument, webviewPanel: vscode.WebviewPanel, token: vscode.CancellationToken, originalDocument?: vscode.TextDocument): Promise<void> {
-		if (!vscode.workspace.isTrusted) {
-			const cancel = { title: vscode.l10n.t("Cancel"), isCloseAffordance: true };
-			const openAnyway = { title: vscode.l10n.t("Open Anyway") };
-			const choice = await vscode.window.showWarningMessage(
-				vscode.l10n.t("This Markdown file is in an untrusted workspace. Do you want to open it anyway?"),
+	async #resolveEditor(document: docode.TextDocument, webviewPanel: docode.WebviewPanel, token: docode.CancellationToken, originalDocument?: docode.TextDocument): Promise<void> {
+		if (!docode.workspace.isTrusted) {
+			const cancel = { title: docode.l10n.t("Cancel"), isCloseAffordance: true };
+			const openAnyway = { title: docode.l10n.t("Open Anyway") };
+			const choice = await docode.window.showWarningMessage(
+				docode.l10n.t("This Markdown file is in an untrusted workspace. Do you want to open it anyway?"),
 				{
 					modal: true,
-					detail: vscode.l10n.t("For your security, only continue if you trust the source of this Markdown file."),
+					detail: docode.l10n.t("For your security, only continue if you trust the source of this Markdown file."),
 				},
 				cancel,
 				openAnyway,
@@ -353,24 +353,24 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		this.#wireSingle(document, webviewPanel, originalDocument, codeBlockEditorProviders, webview);
 	}
 
-	#configureWebview(document: vscode.TextDocument, editorWebview: AuthenticatedWebview, editEpoch: number): void {
+	#configureWebview(document: docode.TextDocument, editorWebview: AuthenticatedWebview, editEpoch: number): void {
 		const webview = editorWebview.webview;
-		const codeBlockEditorResourceRoots = vscode.workspace.isTrusted
+		const codeBlockEditorResourceRoots = docode.workspace.isTrusted
 			? this.#contributions.contributions.codeBlockEditorProviders.map(provider => provider.extension.extensionUri)
 			: [];
 		webview.options = {
 			enableScripts: true,
 			localResourceRoots: getMarkdownLocalResourceRoots(document.uri, [this.#mediaRoot, ...codeBlockEditorResourceRoots], {
-				includeWorkspaceResources: vscode.workspace.isTrusted,
+				includeWorkspaceResources: docode.workspace.isTrusted,
 			}),
 		};
 		webview.html = this.#getHtml(document, webview, editorWebview.messageSecret, editEpoch);
 	}
 
 	#wireSingle(
-		document: vscode.TextDocument,
-		webviewPanel: vscode.WebviewPanel,
-		originalDocument: vscode.TextDocument | undefined,
+		document: docode.TextDocument,
+		webviewPanel: docode.WebviewPanel,
+		originalDocument: docode.TextDocument | undefined,
 		initialCodeBlockEditorProviders: Promise<readonly CodeBlockEditorProviderDefinition[]>,
 		editorWebview: AuthenticatedWebview,
 	): void {
@@ -380,7 +380,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		let readonly = this.#globalState.get(MarkdownEditorProvider.#readonlyStateKey, true);
 		let codeBlockEditorProviders: readonly CodeBlockEditorProviderDefinition[] | undefined;
 		let contributionUpdate = 0;
-		const resolveCancellation = new vscode.CancellationTokenSource();
+		const resolveCancellation = new docode.CancellationTokenSource();
 		const hostTransports = new Map<string, CodeBlockEditorHostTransportState>();
 		const disposeHostTransport = (runtimeId: string, expected?: CodeBlockEditorHostTransportState): void => {
 			const transport = hostTransports.get(runtimeId);
@@ -401,7 +401,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		): void => {
 			disposeHostTransport(runtimeId);
 			const contribution = this.#contributions.contributions.codeBlockEditorProviders.find(candidate => candidate.id === providerId);
-			if (contribution?.source.kind !== 'exportApi' || contribution.source.apiVersion < 2 || !vscode.workspace.isTrusted) {
+			if (contribution?.source.kind !== 'exportApi' || contribution.source.apiVersion < 2 || !docode.workspace.isTrusted) {
 				return;
 			}
 			const state = new CodeBlockEditorHostTransportState(
@@ -489,7 +489,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 					this.#logger.trace('Markdown editor', 'Failed to refresh diagnostics', error));
 			}
 		};
-		const diagnosticListener = vscode.languages.onDidChangeDiagnostics(event => {
+		const diagnosticListener = docode.languages.onDidChangeDiagnostics(event => {
 			if (event.uris.some(uri => uri.toString() === document.uri.toString())) { diagnosticsChanged(); }
 		});
 		editorWebview.setHandlers({
@@ -568,7 +568,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				await editQueue.drain();
 				signal.throwIfAborted();
 				if (webviewPanel.active && !resolveCancellation.token.isCancellationRequested) {
-					await vscode.commands.executeCommand(message.command);
+					await docode.commands.executeCommand(message.command);
 				}
 			},
 			openLink: async (message, _context, { signal }) => {
@@ -610,14 +610,14 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 						content: computedEdit.expectedDocumentText,
 						epoch: messageEdit.editEpoch,
 					};
-					const edit = new vscode.WorkspaceEdit();
+					const edit = new docode.WorkspaceEdit();
 					edit.replace(
 						document.uri,
 						computedEdit.range,
 						computedEdit.replacementText,
 					);
 					try {
-						if (!await vscode.workspace.applyEdit(edit)) {
+						if (!await docode.workspace.applyEdit(edit)) {
 							throw new Error('Workspace rejected Markdown editor edit');
 						}
 						if (messageEdit.editEpoch === editQueue.epoch) {
@@ -630,10 +630,10 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 			},
 			addComment: comments.addComment,
 			deleteComment: comments.deleteComment,
-			highlight: async ({ source, languageId }) => vscode.languages.computeFullSyntaxHighlighting(source, languageId),
+			highlight: async ({ source, languageId }) => docode.languages.computeFullSyntaxHighlighting(source, languageId),
 		});
 
-		const onDocumentChange = vscode.workspace.onDidChangeTextDocument((e) => {
+		const onDocumentChange = docode.workspace.onDidChangeTextDocument((e) => {
 			if (e.document.uri.toString() !== document.uri.toString()) {
 				return;
 			}
@@ -673,7 +673,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				await refreshCodeBlockEditorProviders(true, true);
 			});
 		};
-		const onDidGrantWorkspaceTrust = vscode.workspace.onDidGrantWorkspaceTrust(() => {
+		const onDidGrantWorkspaceTrust = docode.workspace.onDidGrantWorkspaceTrust(() => {
 			reloadWebview();
 		});
 		const refreshCodeBlockEditorProviders = async (clearProviderApis: boolean, force: boolean): Promise<void> => {
@@ -697,7 +697,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		const onContributionsChanged = this.#contributions.onContributionsChanged(() => {
 			void refreshCodeBlockEditorProviders(true, false);
 		});
-		const invalidateResourceCache = (resources: readonly vscode.Uri[]): void => {
+		const invalidateResourceCache = (resources: readonly docode.Uri[]): void => {
 			const resourceKeys = resources.map(resource => resource.toString());
 			const dynamicResourceChanged = resourceKeys.some(resource => this.#resolvedCodeBlockEditorResources.has(resource));
 			const staticResourceChanged = this.#contributions.contributions.codeBlockEditorProviders.some(provider =>
@@ -706,13 +706,13 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				void refreshCodeBlockEditorProviders(false, dynamicResourceChanged);
 			}
 		};
-		const onDidSaveTextDocument = vscode.workspace.onDidSaveTextDocument(document => invalidateResourceCache([document.uri]));
-		const onDidCreateFiles = vscode.workspace.onDidCreateFiles(event => invalidateResourceCache(event.files));
-		const onDidDeleteFiles = vscode.workspace.onDidDeleteFiles(event => invalidateResourceCache(event.files));
-		const onDidRenameFiles = vscode.workspace.onDidRenameFiles(event => invalidateResourceCache(
+		const onDidSaveTextDocument = docode.workspace.onDidSaveTextDocument(document => invalidateResourceCache([document.uri]));
+		const onDidCreateFiles = docode.workspace.onDidCreateFiles(event => invalidateResourceCache(event.files));
+		const onDidDeleteFiles = docode.workspace.onDidDeleteFiles(event => invalidateResourceCache(event.files));
+		const onDidRenameFiles = docode.workspace.onDidRenameFiles(event => invalidateResourceCache(
 			event.files.flatMap(file => [file.oldUri, file.newUri])));
 		const onDidChangeViewState = webviewPanel.onDidChangeViewState(() => this.#updateEditorFocusContext());
-		const onDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration(event => {
+		const onDidChangeConfiguration = docode.workspace.onDidChangeConfiguration(event => {
 			if (event.affectsConfiguration('markdown.experimental.richLinks.enabled', document.uri)) {
 				reloadWebview();
 			}
@@ -720,7 +720,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				postConfiguration();
 			}
 		});
-		const onDidChangeLinkPresentationRules = vscode.window.onDidChangeLinkPresentationRules(() => {
+		const onDidChangeLinkPresentationRules = docode.window.onDidChangeLinkPresentationRules(() => {
 			reloadWebview();
 		});
 
@@ -770,11 +770,11 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 
 	async #updateEditorFocusContext(): Promise<void> {
 		const focused = Array.from(this.#focusedWebviewPanels).some(panel => panel.active);
-		await vscode.commands.executeCommand('setContext', 'markdownEditorFocus', focused);
+		await docode.commands.executeCommand('setContext', 'markdownEditorFocus', focused);
 	}
 
-	async #loadCodeBlockEditorProviders(webview: vscode.Webview): Promise<readonly CodeBlockEditorProviderDefinition[]> {
-		if (!vscode.workspace.isTrusted) {
+	async #loadCodeBlockEditorProviders(webview: docode.Webview): Promise<readonly CodeBlockEditorProviderDefinition[]> {
+		if (!docode.workspace.isTrusted) {
 			return [];
 		}
 		const result: CodeBlockEditorProviderDefinition[] = [];
@@ -792,7 +792,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				continue;
 			}
 			try {
-				const bytes = await vscode.workspace.fs.readFile(provider.source.resource);
+				const bytes = await docode.workspace.fs.readFile(provider.source.resource);
 				result.push({
 					id: provider.id,
 					selector: provider.selector,
@@ -818,11 +818,11 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 
 	async #resolveCodeBlockEditor(
 		contribution: MarkdownCodeBlockEditorProvider,
-		documentUri: vscode.Uri,
+		documentUri: docode.Uri,
 		language: string,
-		webview: vscode.Webview,
+		webview: docode.Webview,
 	): Promise<ResolvedCodeBlockEditor | undefined> {
-		if (contribution.source.kind !== 'exportApi' || !vscode.workspace.isTrusted) {
+		if (contribution.source.kind !== 'exportApi' || !docode.workspace.isTrusted) {
 			return undefined;
 		}
 		const requestCacheKey = `${contribution.id}\0${documentUri.toString()}\0${language}`;
@@ -847,17 +847,17 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 
 	async #doResolveCodeBlockEditor(
 		contribution: MarkdownCodeBlockEditorProvider,
-		documentUri: vscode.Uri,
+		documentUri: docode.Uri,
 		language: string,
-		webview: vscode.Webview,
+		webview: docode.Webview,
 	): Promise<ResolvedCodeBlockEditor | undefined> {
-		const cancellation = new vscode.CancellationTokenSource();
+		const cancellation = new docode.CancellationTokenSource();
 		let timedOut = false;
 		const timeout = setTimeout(() => {
 			timedOut = true;
 			cancellation.cancel();
 		}, 10_000);
-		let cancellationListener: vscode.Disposable | undefined;
+		let cancellationListener: docode.Disposable | undefined;
 		const cancelled = new Promise<undefined>(resolve => {
 			cancellationListener = cancellation.token.onCancellationRequested(() => resolve(undefined));
 		});
@@ -934,7 +934,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		contribution: MarkdownCodeBlockEditorProvider,
 		value: ProviderResolvedCodeBlockEditor,
 		language: string,
-		webview: vscode.Webview,
+		webview: docode.Webview,
 		hasHostTransport: boolean,
 	): Promise<ResolvedCodeBlockEditor | undefined> {
 		if (!isProviderResolvedCodeBlockEditor(value)) {
@@ -942,7 +942,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 			return undefined;
 		}
 		let html: string;
-		let baseUri: vscode.Uri | undefined;
+		let baseUri: docode.Uri | undefined;
 		if (value.content.html !== undefined) {
 			html = value.content.html;
 			baseUri = value.content.baseUri;
@@ -951,7 +951,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				this.#logger.trace('Markdown code block editor', `Provider ${contribution.id} returned a resource outside its extension and the workspace`);
 				return undefined;
 			}
-			const bytes = await vscode.workspace.fs.readFile(value.content.uri);
+			const bytes = await docode.workspace.fs.readFile(value.content.uri);
 			html = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
 			baseUri = value.content.uri;
 		}
@@ -975,7 +975,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 	async #initializeCodeBlockEditorHostTransport(
 		contribution: MarkdownCodeBlockEditorProvider,
 		state: CodeBlockEditorHostTransportState,
-		token: vscode.CancellationToken,
+		token: docode.CancellationToken,
 	): Promise<boolean> {
 		const provider = await this.#getCodeBlockEditorProvider(contribution);
 		if (!provider?.createHostTransport || token.isCancellationRequested) {
@@ -999,8 +999,8 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 	 * are converted to source character offsets here, since the webview works in
 	 * offsets.
 	 */
-	#wireQuickDiff(document: vscode.TextDocument, editorWebview: AuthenticatedWebview): vscode.Disposable {
-		const diffProvider = vscode.window.createSourceControlDiffInformation(document.uri);
+	#wireQuickDiff(document: docode.TextDocument, editorWebview: AuthenticatedWebview): docode.Disposable {
+		const diffProvider = docode.window.createSourceControlDiffInformation(document.uri);
 
 		const postMarkers = () => {
 			const diffInformation = diffProvider.diffInformation;
@@ -1018,16 +1018,16 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 		// Re-send once the webview has (re)initialized its model, and whenever the
 		// document settles on the version the changes were computed for.
 		const onReady = editorWebview.onReady(postMarkers);
-		const onDocumentChange = vscode.workspace.onDidChangeTextDocument((e) => {
+		const onDocumentChange = docode.workspace.onDidChangeTextDocument((e) => {
 			if (e.document.uri.toString() === document.uri.toString()) {
 				postMarkers();
 			}
 		});
 
-		return vscode.Disposable.from(diffProvider, onChange, onReady, onDocumentChange);
+		return docode.Disposable.from(diffProvider, onChange, onReady, onDocumentChange);
 	}
 
-	#wireDocumentDiff(originalDocument: vscode.TextDocument, modifiedDocument: vscode.TextDocument, editorWebview: AuthenticatedWebview): vscode.Disposable {
+	#wireDocumentDiff(originalDocument: docode.TextDocument, modifiedDocument: docode.TextDocument, editorWebview: AuthenticatedWebview): docode.Disposable {
 		const lineDiffProvider = new MarkdownPreviewLineDiffProvider(originalDocument, modifiedDocument);
 		const postMarkers = async () => {
 			if (!editorWebview.ready) {
@@ -1044,13 +1044,13 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 
 		const publishMarkers = () => editorWebview.report('Publish document diff', postMarkers());
 		const onReady = editorWebview.onReady(publishMarkers);
-		const onDocumentChange = vscode.workspace.onDidChangeTextDocument(event => {
+		const onDocumentChange = docode.workspace.onDidChangeTextDocument(event => {
 			if (event.document.uri.toString() === originalDocument.uri.toString() || event.document.uri.toString() === modifiedDocument.uri.toString()) {
 				publishMarkers();
 			}
 		});
 
-		return vscode.Disposable.from(onReady, onDocumentChange);
+		return docode.Disposable.from(onReady, onDocumentChange);
 	}
 
 	/**
@@ -1058,11 +1058,11 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 	 * editor renders its comments from) to the webview: existing comments are
 	 * forwarded for rendering, and comments the user adds in the Markdown editor
 	 * are written back to the shared store so they appear in the code editor too.
-	 * Comment ranges are converted between {@link vscode.Range} and the source
+	 * Comment ranges are converted between {@link docode.Range} and the source
 	 * character offsets the webview works in.
 	 */
-	#wireComments(document: vscode.TextDocument, editorWebview: AuthenticatedWebview): vscode.Disposable & Pick<InterfaceHandlers<typeof markdownEditorHost>, 'addComment' | 'deleteComment'> {
-		const commentsProvider = vscode.window.createAgentEditorComments(document.uri);
+	#wireComments(document: docode.TextDocument, editorWebview: AuthenticatedWebview): docode.Disposable & Pick<InterfaceHandlers<typeof markdownEditorHost>, 'addComment' | 'deleteComment'> {
+		const commentsProvider = docode.window.createAgentEditorComments(document.uri);
 		let revealedCommentId: string | undefined;
 
 		const postComments = () => {
@@ -1099,7 +1099,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 				if (message.endExclusive < message.start || message.endExclusive > document.getText().length) {
 					throw new Error('Invalid Markdown editor comment range');
 				}
-				const range = new vscode.Range(
+				const range = new docode.Range(
 					document.positionAt(message.start),
 					document.positionAt(message.endExclusive),
 				);
@@ -1108,7 +1108,7 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 			deleteComment: message => {
 				commentsProvider.deleteComment(message.id);
 			},
-			dispose: () => vscode.Disposable.from(commentsProvider, onChange, onDidRevealComment, onReady).dispose(),
+			dispose: () => docode.Disposable.from(commentsProvider, onChange, onDidRevealComment, onReady).dispose(),
 		};
 	}
 
@@ -1118,32 +1118,32 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 	 * `documentSyntaxHighlighting` proposed API, since the webview cannot call
 	 * it directly. Also forwards theme changes so the webview can re-highlight.
 	 */
-	#wireHighlight(editorWebview: AuthenticatedWebview): vscode.Disposable {
-		return vscode.languages.onDidChangeSyntaxHighlighting(() => {
+	#wireHighlight(editorWebview: AuthenticatedWebview): docode.Disposable {
+		return docode.languages.onDidChangeSyntaxHighlighting(() => {
 			if (editorWebview.ready) {
 				editorWebview.report('Refresh highlighting', editorWebview.renderer.highlightThemeChanged({}));
 			}
 		});
 	}
 
-	#getHtml(document: vscode.TextDocument, webview: vscode.Webview, messageSecret: string, editEpoch: number): string {
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.#mediaRoot, 'editor.js'));
-		const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(this.#mediaRoot, 'editor.css'));
+	#getHtml(document: docode.TextDocument, webview: docode.Webview, messageSecret: string, editEpoch: number): string {
+		const scriptUri = webview.asWebviewUri(docode.Uri.joinPath(this.#mediaRoot, 'editor.js'));
+		const styleUri = webview.asWebviewUri(docode.Uri.joinPath(this.#mediaRoot, 'editor.css'));
 		const baseUri = webview.asWebviewUri(document.uri);
 		const nonce = getNonce();
 		const initialState = encodeWebviewInitialState({
 			...this.#getEditorConfiguration(document.uri),
 			taskProgressLabels: {
-				title: vscode.l10n.t("Task Progress"),
-				summary: vscode.l10n.t("{0} of {1} tasks completed"),
-				language: vscode.env.language,
+				title: docode.l10n.t("Task Progress"),
+				summary: docode.l10n.t("{0} of {1} tasks completed"),
+				language: docode.env.language,
 			},
 			content: document.getText(),
 			documentVersion: document.version,
 			editEpoch,
 			readonly: this.#globalState.get(MarkdownEditorProvider.#readonlyStateKey, true),
-			richLinksEnabled: vscode.workspace.getConfiguration('markdown').get<boolean>('experimental.richLinks.enabled', true),
-			linkPresentationRules: vscode.window.linkPresentationRules.map(rule => ({
+			richLinksEnabled: docode.workspace.getConfiguration('markdown').get<boolean>('experimental.richLinks.enabled', true),
+			linkPresentationRules: docode.window.linkPresentationRules.map(rule => ({
 				id: rule.id,
 				source: rule.uriPattern.source,
 				flags: rule.uriPattern.flags,
@@ -1161,9 +1161,9 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta http-equiv="Content-Security-Policy"
 		content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; font-src ${webview.cspSource}; img-src ${webview.cspSource} https: data:; media-src ${webview.cspSource} https: data:; script-src 'nonce-${nonce}' ${webview.cspSource}; worker-src ${webview.cspSource} blob:; connect-src ${webview.cspSource}; frame-src 'self';" />
-	<meta name="vscode-markdown-editor-script-nonce" content="${nonce}" />
-	<meta name="vscode-markdown-editor-message-secret" content="${messageSecret}" />
-	<meta id="vscode-markdown-editor-initial-state" content="${initialState}" />
+	<meta name="docode-markdown-editor-script-nonce" content="${nonce}" />
+	<meta name="docode-markdown-editor-message-secret" content="${messageSecret}" />
+	<meta id="docode-markdown-editor-initial-state" content="${initialState}" />
 	<base href="${baseUri}" />
 	<link rel="stylesheet" href="${styleUri}" />
 	<title>Markdown Editor</title>
@@ -1174,9 +1174,9 @@ export class MarkdownEditorProvider extends Disposable implements vscode.CustomT
 </html>`;
 	}
 
-	#getEditorConfiguration(resource: vscode.Uri): MarkdownEditorConfiguration {
+	#getEditorConfiguration(resource: docode.Uri): MarkdownEditorConfiguration {
 		return {
-			highlightActiveBlock: vscode.workspace.getConfiguration('markdown.editor', resource).get<boolean>('highlightActiveBlock', true),
+			highlightActiveBlock: docode.workspace.getConfiguration('markdown.editor', resource).get<boolean>('highlightActiveBlock', true),
 		};
 	}
 }
@@ -1268,8 +1268,8 @@ function isProviderResolvedCodeBlockEditor(value: unknown): value is ProviderRes
 		return false;
 	}
 	const content = descriptor.content as Record<string, unknown>;
-	return (typeof content.html === 'string' && content.uri === undefined && (content.baseUri === undefined || content.baseUri instanceof vscode.Uri))
-		|| (content.html === undefined && content.uri instanceof vscode.Uri);
+	return (typeof content.html === 'string' && content.uri === undefined && (content.baseUri === undefined || content.baseUri instanceof docode.Uri))
+		|| (content.html === undefined && content.uri instanceof docode.Uri);
 }
 
 function isSandbox(value: unknown): value is MarkdownCodeBlockEditorSandbox | undefined {
@@ -1296,8 +1296,8 @@ function intersectSandbox(
 	};
 }
 
-function isAllowedCodeBlockEditorResource(resource: vscode.Uri, extensionUri: vscode.Uri): boolean {
-	if (vscode.workspace.getWorkspaceFolder(resource)) {
+function isAllowedCodeBlockEditorResource(resource: docode.Uri, extensionUri: docode.Uri): boolean {
+	if (docode.workspace.getWorkspaceFolder(resource)) {
 		return true;
 	}
 
@@ -1311,7 +1311,7 @@ function isAllowedCodeBlockEditorResource(resource: vscode.Uri, extensionUri: vs
 	return resourcePath === extensionPath || resourcePath.startsWith(extensionPrefix);
 }
 
-function getCodeBlockEditorResourceBaseUrl(webview: vscode.Webview, resource: vscode.Uri, resourceIsEntrypoint = true): string {
+function getCodeBlockEditorResourceBaseUrl(webview: docode.Webview, resource: docode.Uri, resourceIsEntrypoint = true): string {
 	const path = resourceIsEntrypoint
 		? resource.path.slice(0, resource.path.lastIndexOf('/') + 1)
 		: resource.path.endsWith('/') ? resource.path : `${resource.path}/`;
@@ -1349,12 +1349,12 @@ export function readMarkdownEditorEdit(message: unknown): MarkdownEditorEdit | u
 }
 
 export function computeMarkdownEditorEdit(
-	resource: vscode.Uri,
+	resource: docode.Uri,
 	documentText: string,
-	documentEol: vscode.EndOfLine,
+	documentEol: docode.EndOfLine,
 	webviewText: string,
 	edit: MarkdownEditorEdit,
-): { readonly range: vscode.Range; readonly replacementText: string; readonly expectedDocumentText: string; readonly nextWebviewText: string } | undefined {
+): { readonly range: docode.Range; readonly replacementText: string; readonly expectedDocumentText: string; readonly nextWebviewText: string } | undefined {
 	if (edit.endExclusive > webviewText.length) {
 		return undefined;
 	}
@@ -1365,7 +1365,7 @@ export function computeMarkdownEditorEdit(
 	if (start.line >= document.lineCount || end.line >= document.lineCount) {
 		return undefined;
 	}
-	const range = new vscode.Range(start.line, start.character, end.line, end.character);
+	const range = new docode.Range(start.line, start.character, end.line, end.character);
 	const replacementText = normalizeEol(edit.text, documentEol);
 	return {
 		range,
@@ -1375,17 +1375,17 @@ export function computeMarkdownEditorEdit(
 	};
 }
 
-function normalizeEol(value: string, eol: vscode.EndOfLine): string {
-	const lineEnding = eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n';
+function normalizeEol(value: string, eol: docode.EndOfLine): string {
+	const lineEnding = eol === docode.EndOfLine.CRLF ? '\r\n' : '\n';
 	return value.replace(/\r\n|\r|\n/g, lineEnding);
 }
 
 export function getInDocumentLinkTargetRange(
-	document: vscode.TextDocument,
+	document: docode.TextDocument,
 	target: ResolvedDocumentLinkTarget | undefined,
 	webviewText = document.getText(),
 ): { readonly start: number; readonly endExclusive: number; readonly selectionStart: number } | undefined {
-	if (target?.kind !== 'file' || !areUrisEqual(document.uri, vscode.Uri.from(target.uri))) {
+	if (target?.kind !== 'file' || !areUrisEqual(document.uri, docode.Uri.from(target.uri))) {
 		return undefined;
 	}
 	const targetRange = getRangeFromPositionOrRange(target.positionOrRange);
@@ -1428,33 +1428,33 @@ interface GutterMarkerMessage {
  * changes map to the offset span of their modified lines; deleted changes map to
  * an empty range at the boundary where the removed text used to be.
  *
- * Line ranges use {@link vscode.TextEditorLineRange} semantics: 1-based
+ * Line ranges use {@link docode.TextEditorLineRange} semantics: 1-based
  * `startLineNumber` and exclusive `endLineNumberExclusive`.
  */
-function toGutterMarkers(document: vscode.TextDocument, changes: readonly vscode.TextEditorChange[]): GutterMarkerMessage[] {
+function toGutterMarkers(document: docode.TextDocument, changes: readonly docode.TextEditorChange[]): GutterMarkerMessage[] {
 	const markers: GutterMarkerMessage[] = [];
 	for (const change of changes) {
-		if (change.kind === vscode.TextEditorChangeKind.Deletion) {
+		if (change.kind === docode.TextEditorChangeKind.Deletion) {
 			// The modified range is empty; place an empty marker at the start of the
 			// line where the removed content used to be.
 			const line = Math.max(0, change.modified.startLineNumber - 1);
-			const offset = document.offsetAt(new vscode.Position(line, 0));
+			const offset = document.offsetAt(new docode.Position(line, 0));
 			markers.push({ start: offset, endExclusive: offset, type: 'deleted' });
 			continue;
 		}
 
-		const start = document.offsetAt(new vscode.Position(change.modified.startLineNumber - 1, 0));
+		const start = document.offsetAt(new docode.Position(change.modified.startLineNumber - 1, 0));
 		const endExclusive = document.offsetAt(document.lineAt(change.modified.endLineNumberExclusive - 2).range.end);
 		markers.push({
 			start,
 			endExclusive,
-			type: change.kind === vscode.TextEditorChangeKind.Addition ? 'added' : 'modified',
+			type: change.kind === docode.TextEditorChangeKind.Addition ? 'added' : 'modified',
 		});
 	}
 	return markers;
 }
 
-export function lineRangesToGutterMarkers(document: vscode.TextDocument, changes: readonly ChangedLineRange[]): GutterMarkerMessage[] {
+export function lineRangesToGutterMarkers(document: docode.TextDocument, changes: readonly ChangedLineRange[]): GutterMarkerMessage[] {
 	return changes.map(change => {
 		if (change.modifiedRange.isEmpty) {
 			const offset = document.offsetAt(change.modifiedRange.start);

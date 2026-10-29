@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) Microsoft Corporation. All rights reserved.
+ * Licensed under the MIT License.
+ * Visual design adapted from DoCode src/vs/editor/contrib/rename/browser/renameWidget.css.
+ */
+
+.md-rename-widget {
+	box-sizing: border-box;
+	width: 280px;
+	max-width: 100%;
+	max-height: 100%;
+	overflow: auto;
+	padding: 4px 4px 0;
+	border: 1px solid var(--docode-widget-border, transparent);
+	border-radius: 4px;
+	box-shadow: var(--docode-shadow-lg, 0 2px 8px var(--docode-widget-shadow, #0003));
+	color: var(--docode-editorWidget-foreground, #333);
+	background: var(--docode-editorWidget-background, #f3f3f3);
+	font-family: var(--docode-font-family, sans-serif);
+	font-size: var(--docode-font-size, 13px);
+}
+
+.md-rename-widget[hidden] {
+	display: none;
+}
+
+.md-rename-widget.md-rename-overlay {
+	position: absolute;
+	z-index: 100;
+}
+
+.md-rename-widget .md-rename-input-shell {
+	display: flex;
+	padding: 3px;
+	border: 1px solid var(--docode-input-border, transparent);
+	border-radius: 4px;
+	background: var(--docode-input-background, #fff);
+}
+
+.md-rename-widget .md-rename-input-shell:focus-within {
+	border-color: var(--docode-focusBorder, #007acc);
+}
+
+.md-rename-widget .md-rename-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+	border: 0;
+	outline: none;
+	color: var(--docode-input-foreground, #333);
+	caret-color: var(--docode-editorCursor-foreground, currentColor);
+	background: transparent;
+	font-family: var(--docode-editor-font-family, monospace);
+	font-size: var(--docode-editor-font-size, 14px);
+	line-height: 20px;
+}
+
+.md-rename-widget .md-rename-message {
+	padding: 3px 0;
+	font-size: 11px;
+	line-height: 16px;
+	overflow-wrap: anywhere;
+}
+
+.md-rename-widget.md-rename-invalid .md-rename-input-shell {
+	border-color: var(--docode-inputValidation-errorBorder, #be1100);
+}
+
+.md-rename-widget.md-rename-invalid .md-rename-message {
+	color: var(--docode-inputValidation-errorForeground, var(--docode-errorForeground, #be1100));
+	background: var(--docode-inputValidation-errorBackground, transparent);
+}

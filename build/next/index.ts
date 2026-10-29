@@ -65,7 +65,7 @@ const options = {
 
 const SRC_DIR = 'src';
 const OUT_DIR = 'out';
-const OUT_VSCODE_DIR = 'out-vscode';
+const OUT_DOCODE_DIR = 'out-docode';
 
 // ============================================================================
 // Entry Points
@@ -74,8 +74,8 @@ const OUT_VSCODE_DIR = 'out-vscode';
 // Extension host bundles are excluded from private field mangling because they
 // expose API surface to extensions where encapsulation matters.
 const extensionHostEntryPoints = [
-	'vs/workbench/api/node/extensionHostProcess',
-	'vs/workbench/api/worker/extensionHostWorkerMain',
+	'do/workbench/api/node/extensionHostProcess',
+	'do/workbench/api/worker/extensionHostWorkerMain',
 ];
 
 function isExtensionHostBundle(filePath: string): boolean {
@@ -85,60 +85,60 @@ function isExtensionHostBundle(filePath: string): boolean {
 
 // Workers - shared between targets
 const workerEntryPoints = [
-	'vs/editor/common/services/editorWebWorkerMain',
-	'vs/workbench/api/worker/extensionHostWorkerMain',
-	'vs/workbench/contrib/notebook/common/services/notebookWebWorkerMain',
-	'vs/workbench/services/languageDetection/browser/languageDetectionWebWorkerMain',
-	'vs/workbench/services/search/worker/localFileSearchMain',
-	'vs/workbench/contrib/output/common/outputLinkComputerMain',
-	'vs/workbench/contrib/mediaPreview/browser/imageEncoderWorkerMain',
-	'vs/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.workerMain',
+	'do/editor/common/services/editorWebWorkerMain',
+	'do/workbench/api/worker/extensionHostWorkerMain',
+	'do/workbench/contrib/notebook/common/services/notebookWebWorkerMain',
+	'do/workbench/services/languageDetection/browser/languageDetectionWebWorkerMain',
+	'do/workbench/services/search/worker/localFileSearchMain',
+	'do/workbench/contrib/output/common/outputLinkComputerMain',
+	'do/workbench/contrib/mediaPreview/browser/imageEncoderWorkerMain',
+	'do/workbench/services/textMate/browser/backgroundTokenization/worker/textMateTokenizationWorker.workerMain',
 ];
 
 // Desktop-only workers (use electron-browser)
 const desktopWorkerEntryPoints = [
-	'vs/platform/profiling/electron-browser/profileAnalysisWorkerMain',
+	'do/platform/profiling/electron-browser/profileAnalysisWorkerMain',
 ];
 
 // Desktop workbench and code entry points
 const desktopEntryPoints = [
-	'vs/workbench/workbench.desktop.main',
-	'vs/sessions/sessions.desktop.main',
-	'vs/workbench/contrib/debug/node/telemetryApp',
-	'vs/platform/files/node/watcher/watcherMain',
-	'vs/platform/localTranscription/node/localTranscriptionMain',
-	'vs/platform/terminal/node/ptyHostMain',
-	'vs/platform/agentHost/node/agentHostMain',
-	'vs/platform/agentHost/node/diffWorkerMain',
-	'vs/workbench/api/node/extensionHostProcess',
+	'do/workbench/workbench.desktop.main',
+	'do/sessions/sessions.desktop.main',
+	'do/workbench/contrib/debug/node/telemetryApp',
+	'do/platform/files/node/watcher/watcherMain',
+	'do/platform/localTranscription/node/localTranscriptionMain',
+	'do/platform/terminal/node/ptyHostMain',
+	'do/platform/agentHost/node/agentHostMain',
+	'do/platform/agentHost/node/diffWorkerMain',
+	'do/workbench/api/node/extensionHostProcess',
 ];
 
 const codeEntryPoints = [
-	'vs/code/node/cliProcessMain',
-	'vs/code/electron-utility/sharedProcess/sharedProcessMain',
-	'vs/code/electron-browser/workbench/workbench',
-	'vs/sessions/electron-browser/sessions',
+	'do/code/node/cliProcessMain',
+	'do/code/electron-utility/sharedProcess/sharedProcessMain',
+	'do/code/electron-browser/workbench/workbench',
+	'do/sessions/electron-browser/sessions',
 ];
 
 // Additional web-only entry points (CDN build only, not in server-web)
-const sessionsWebEntryPoint = 'vs/sessions/sessions.web.main.internal';
+const sessionsWebEntryPoint = 'do/sessions/sessions.web.main.internal';
 const webOnlyEntryPoints = [
 	sessionsWebEntryPoint,
 ];
 
 const keyboardMapEntryPoints = [
-	'vs/workbench/services/keybinding/browser/keyboardLayouts/layout.contribution.linux',
-	'vs/workbench/services/keybinding/browser/keyboardLayouts/layout.contribution.darwin',
-	'vs/workbench/services/keybinding/browser/keyboardLayouts/layout.contribution.win',
+	'do/workbench/services/keybinding/browser/keyboardLayouts/layout.contribution.linux',
+	'do/workbench/services/keybinding/browser/keyboardLayouts/layout.contribution.darwin',
+	'do/workbench/services/keybinding/browser/keyboardLayouts/layout.contribution.win',
 ];
 
 // Server entry points (reh)
 const serverEntryPoints = [
-	'vs/workbench/api/node/extensionHostProcess',
-	'vs/platform/files/node/watcher/watcherMain',
-	'vs/platform/terminal/node/ptyHostMain',
-	'vs/platform/agentHost/node/agentHostMain',
-	'vs/platform/agentHost/node/diffWorkerMain',
+	'do/workbench/api/node/extensionHostProcess',
+	'do/platform/files/node/watcher/watcherMain',
+	'do/platform/terminal/node/ptyHostMain',
+	'do/platform/agentHost/node/agentHostMain',
+	'do/platform/agentHost/node/diffWorkerMain',
 ];
 
 /**
@@ -161,14 +161,14 @@ function getEntryPointsForTarget(target: BuildTarget): string[] {
 			return [
 				...serverEntryPoints,
 				...workerEntryPoints,
-				'vs/code/browser/workbench/workbench', // Includes workbench.web.main.internal.
+				'do/code/browser/workbench/workbench', // Includes workbench.web.main.internal.
 				...keyboardMapEntryPoints,
 			];
 		case 'web':
 			return [
 				...workerEntryPoints,
 				...webOnlyEntryPoints,
-				'vs/workbench/workbench.web.main.internal', // web workbench only (no browser shell)
+				'do/workbench/workbench.web.main.internal', // web workbench only (no browser shell)
 				...keyboardMapEntryPoints,
 			];
 		default:
@@ -183,21 +183,21 @@ function getCssBundleEntryPointsForTarget(target: BuildTarget): Set<string> {
 	switch (target) {
 		case 'desktop':
 			return new Set([
-				'vs/workbench/workbench.desktop.main',
-				'vs/code/electron-browser/workbench/workbench',
-				'vs/sessions/sessions.desktop.main',
-				'vs/sessions/electron-browser/sessions',
+				'do/workbench/workbench.desktop.main',
+				'do/code/electron-browser/workbench/workbench',
+				'do/sessions/sessions.desktop.main',
+				'do/sessions/electron-browser/sessions',
 			]);
 		case 'server':
 			return new Set(); // Server has no UI
 		case 'server-web':
 			return new Set([
-				'vs/code/browser/workbench/workbench',
+				'do/code/browser/workbench/workbench',
 			]);
 		case 'web':
 			return new Set([
-				'vs/workbench/workbench.web.main.internal',
-				'vs/sessions/sessions.web.main.internal',
+				'do/workbench/workbench.web.main.internal',
+				'do/sessions/sessions.web.main.internal',
 			]);
 		default:
 			throw new Error(`Unknown target: ${target}`);
@@ -848,7 +848,7 @@ Options for 'bundle':
 	--minify           Minify bundles, copied JavaScript resources, and SVG assets
 	--nls              Process NLS (localization) strings
 	--mangle-privates  Convert native #private fields to regular properties
-	--out <dir>        Output directory (default: out-vscode)
+	--out <dir>        Output directory (default: out-docode)
 	--target <target>  Build target: desktop (default), server, server-web, web
 	--source-map-base-url <url>  Rewrite sourceMappingURL to CDN URL
 
@@ -862,9 +862,9 @@ Examples:
 	npx tsx build/next/index.ts transpile --out out-build --exclude-tests
 	npx tsx build/next/index.ts bundle
 	npx tsx build/next/index.ts bundle --minify --nls
-	npx tsx build/next/index.ts bundle --nls --out out-vscode-min
-	npx tsx build/next/index.ts bundle --minify --nls --target server --out out-vscode-reh-min
-	npx tsx build/next/index.ts bundle --minify --nls --target server-web --out out-vscode-reh-web-min
+	npx tsx build/next/index.ts bundle --nls --out out-docode-min
+	npx tsx build/next/index.ts bundle --minify --nls --target server --out out-docode-reh-min
+	npx tsx build/next/index.ts bundle --minify --nls --target server-web --out out-docode-reh-web-min
 `);
 }
 
@@ -898,7 +898,7 @@ async function main(): Promise<void> {
 				break;
 
 			case 'bundle':
-				await bundle(options.out ?? OUT_VSCODE_DIR, options.minify, options.nls, options.manglePrivates, options.target as BuildTarget, options.sourceMapBaseUrl);
+				await bundle(options.out ?? OUT_DOCODE_DIR, options.minify, options.nls, options.manglePrivates, options.target as BuildTarget, options.sourceMapBaseUrl);
 				break;
 
 			default:

@@ -5,16 +5,16 @@
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
-	VSCODE_PATH=$(dirname $(dirname $(dirname $(dirname $(dirname $(realpath "$0"))))))
+	DOCODE_PATH=$(dirname $(dirname $(dirname $(dirname $(dirname $(realpath "$0"))))))
 else
-	VSCODE_PATH=$(dirname $(dirname $(dirname $(dirname $(dirname $(readlink -f $0))))))
+	DOCODE_PATH=$(dirname $(dirname $(dirname $(dirname $(dirname $(readlink -f $0))))))
 fi
 
-export VSCODE_DEV=1
+export DOCODE_DEV=1
 
 PROD_NAME="Code Server - Dev"
 VERSION=""
 COMMIT=""
 EXEC_NAME="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
-CLI_SCRIPT="$VSCODE_PATH/out/server-cli.js"
+CLI_SCRIPT="$DOCODE_PATH/out/server-cli.js"
 node "$CLI_SCRIPT" "$PROD_NAME" "$VERSION" "$COMMIT" "$EXEC_NAME" "$@"

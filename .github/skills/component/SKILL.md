@@ -10,7 +10,7 @@ Your goal is to create a component overview in markdown given the context provid
 <format>
 # [Component Name] Overview
 
-**Location**: `src/vs/[path/to/component]`
+**Location**: `src/do/[path/to/component]`
 **Type**: [Service/Contribution/Extension/API/etc.]
 **Layer (if applicable)**: [base/platform/editor/workbench/code/server]
 
@@ -35,9 +35,9 @@ Brief description of what this component does and why it exists.
 
 ### Key Files
 List all the key files and a brief description of their purpose:
-- **`src/vs/[path/to/component]/[filename.ts]`**: [Purpose and main exports]
-- **`src/vs/[path/to/component]/[service.ts]`**: [Service implementation details]
-- **`src/vs/[path/to/component]/[contribution.ts]`**: [Workbench contributions]
+- **`src/do/[path/to/component]/[filename.ts]`**: [Purpose and main exports]
+- **`src/do/[path/to/component]/[service.ts]`**: [Service implementation details]
+- **`src/do/[path/to/component]/[contribution.ts]`**: [Workbench contributions]
 
 ## Development Guidelines
 
@@ -51,7 +51,7 @@ List all the key files and a brief description of their purpose:
 - **Fill** each section with component-specific details
 - **Gather** information from the attached context and use available tools if needed to complete your understanding
 - **Ask** the user for clarification if you cannot fill out a section with accurate information
-- **Use complete file paths** from repository root (e.g., `src/vs/workbench/services/example/browser/exampleService.ts`)
+- **Use complete file paths** from repository root (e.g., `src/do/workbench/services/example/browser/exampleService.ts`)
 - **Keep** descriptions concise but comprehensive
 - **Use file references** instead of code snippets when making references to code as otherwise the code may become outdated
 </instructions>

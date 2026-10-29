@@ -7,7 +7,7 @@ import { Environment, EnvironmentParameters } from '@azure/ms-rest-azure-env';
 import Logger from './logger';
 import { MsalAuthProvider } from './node/authProvider';
 import { UriEventHandler } from './UriEventHandler';
-import { authentication, commands, ExtensionContext, l10n, window, workspace, Disposable, Uri } from 'vscode';
+import { authentication, commands, ExtensionContext, l10n, window, workspace, Disposable, Uri } from 'docode';
 import { MicrosoftAuthenticationTelemetryReporter, MicrosoftSovereignCloudAuthenticationTelemetryReporter } from './common/telemetryReporter';
 import { getSafeNotificationMessage } from './common/notification';
 

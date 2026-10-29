@@ -20,7 +20,7 @@ test('Connected defaults do not surface the theme active-top accent', async ({ p
 			capTop: getComputedStyle(activeEdge).borderTopColor,
 			capRadius: getComputedStyle(activeEdge).borderTopLeftRadius,
 			structuralBoundary: groupStyle.getPropertyValue('--modern-ui-connected-tab-border').trim(),
-			themeActiveTop: getComputedStyle(group.closest('.monaco-workbench')!).getPropertyValue('--vscode-tab-activeBorderTop').trim(),
+			themeActiveTop: getComputedStyle(group.closest('.monaco-workbench')!).getPropertyValue('--docode-tab-activeBorderTop').trim(),
 			shoulder: {
 				bottom: leftShoulder.bottom,
 				height: leftShoulder.height,

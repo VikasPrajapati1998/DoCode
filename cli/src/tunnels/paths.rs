@@ -92,7 +92,7 @@ impl InstalledServer {
 		let server_dir = self.get_install_folder(p);
 		ServerPaths {
 			// allow using the OSS server in development via an override
-			executable: if let Some(p) = option_env!("VSCODE_CLI_OVERRIDE_SERVER_PATH") {
+			executable: if let Some(p) = option_env!("DOCODE_CLI_OVERRIDE_SERVER_PATH") {
 				PathBuf::from(p)
 			} else {
 				server_dir

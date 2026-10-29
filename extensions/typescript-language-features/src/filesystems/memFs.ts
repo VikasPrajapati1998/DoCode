@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { basename, dirname } from 'path';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { Logger } from '../logging/logger';
 
-export class MemFs implements vscode.FileSystemProvider {
+export class MemFs implements docode.FileSystemProvider {
 
 	private readonly root = new FsDirectoryEntry(
 		new Map(),
@@ -20,46 +20,46 @@ export class MemFs implements vscode.FileSystemProvider {
 		private readonly logger: Logger,
 	) { }
 
-	stat(uri: vscode.Uri): vscode.FileStat {
+	stat(uri: docode.Uri): docode.FileStat {
 		this.logger.trace(`MemFs.stat ${this.id}. uri: ${uri}`);
 		const entry = this.getEntry(uri);
 		if (!entry) {
-			throw vscode.FileSystemError.FileNotFound();
+			throw docode.FileSystemError.FileNotFound();
 		}
 
 		return entry;
 	}
 
-	readDirectory(uri: vscode.Uri): [string, vscode.FileType][] {
+	readDirectory(uri: docode.Uri): [string, docode.FileType][] {
 		this.logger.trace(`MemFs.readDirectory ${this.id}. uri: ${uri}`);
 
 		const entry = this.getEntry(uri);
 		if (!entry) {
-			throw vscode.FileSystemError.FileNotFound();
+			throw docode.FileSystemError.FileNotFound();
 		}
 		if (!(entry instanceof FsDirectoryEntry)) {
-			throw vscode.FileSystemError.FileNotADirectory();
+			throw docode.FileSystemError.FileNotADirectory();
 		}
 
 		return Array.from(entry.contents.entries(), ([name, entry]) => [name, entry.type]);
 	}
 
-	readFile(uri: vscode.Uri): Uint8Array {
+	readFile(uri: docode.Uri): Uint8Array {
 		this.logger.trace(`MemFs.readFile ${this.id}. uri: ${uri}`);
 
 		const entry = this.getEntry(uri);
 		if (!entry) {
-			throw vscode.FileSystemError.FileNotFound();
+			throw docode.FileSystemError.FileNotFound();
 		}
 
 		if (!(entry instanceof FsFileEntry)) {
-			throw vscode.FileSystemError.FileIsADirectory(uri);
+			throw docode.FileSystemError.FileIsADirectory(uri);
 		}
 
 		return entry.data;
 	}
 
-	writeFile(uri: vscode.Uri, content: Uint8Array, { create, overwrite }: { create: boolean; overwrite: boolean }): void {
+	writeFile(uri: docode.Uri, content: Uint8Array, { create, overwrite }: { create: boolean; overwrite: boolean }): void {
 		this.logger.trace(`MemFs.writeFile ${this.id}. uri: ${uri}`);
 
 		const dir = this.getParent(uri);
@@ -72,38 +72,38 @@ export class MemFs implements vscode.FileSystemProvider {
 		if (!entry) {
 			if (create) {
 				dirContents.set(fileName, new FsFileEntry(content, time, time));
-				this._emitter.fire([{ type: vscode.FileChangeType.Created, uri }]);
+				this._emitter.fire([{ type: docode.FileChangeType.Created, uri }]);
 			} else {
-				throw vscode.FileSystemError.FileNotFound();
+				throw docode.FileSystemError.FileNotFound();
 			}
 		} else {
 			if (entry instanceof FsDirectoryEntry) {
-				throw vscode.FileSystemError.FileIsADirectory(uri);
+				throw docode.FileSystemError.FileIsADirectory(uri);
 			}
 
 			if (overwrite) {
 				entry.mtime = time;
 				entry.data = content;
-				this._emitter.fire([{ type: vscode.FileChangeType.Changed, uri }]);
+				this._emitter.fire([{ type: docode.FileChangeType.Changed, uri }]);
 			} else {
-				throw vscode.FileSystemError.NoPermissions('overwrite option was not passed in');
+				throw docode.FileSystemError.NoPermissions('overwrite option was not passed in');
 			}
 		}
 	}
 
-	rename(_oldUri: vscode.Uri, _newUri: vscode.Uri, _options: { overwrite: boolean }): void {
+	rename(_oldUri: docode.Uri, _newUri: docode.Uri, _options: { overwrite: boolean }): void {
 		throw new Error('not implemented');
 	}
 
-	delete(uri: vscode.Uri): void {
+	delete(uri: docode.Uri): void {
 		try {
 			const dir = this.getParent(uri);
 			dir.contents.delete(basename(uri.path));
-			this._emitter.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+			this._emitter.fire([{ type: docode.FileChangeType.Deleted, uri }]);
 		} catch (e) { }
 	}
 
-	createDirectory(uri: vscode.Uri): void {
+	createDirectory(uri: docode.Uri): void {
 		this.logger.trace(`MemFs.createDirectory ${this.id}. uri: ${uri}`);
 
 		const dir = this.getParent(uri);
@@ -111,7 +111,7 @@ export class MemFs implements vscode.FileSystemProvider {
 		dir.contents.set(basename(uri.path), new FsDirectoryEntry(new Map(), now, now));
 	}
 
-	private getEntry(uri: vscode.Uri): FsEntry | undefined {
+	private getEntry(uri: docode.Uri): FsEntry | undefined {
 		// TODO: have this throw FileNotFound itself?
 		// TODO: support configuring case sensitivity
 		let node: FsEntry = this.root;
@@ -138,30 +138,30 @@ export class MemFs implements vscode.FileSystemProvider {
 		return node;
 	}
 
-	private getParent(uri: vscode.Uri): FsDirectoryEntry {
+	private getParent(uri: docode.Uri): FsDirectoryEntry {
 		const dir = this.getEntry(uri.with({ path: dirname(uri.path) }));
 		if (!dir) {
-			throw vscode.FileSystemError.FileNotFound();
+			throw docode.FileSystemError.FileNotFound();
 		}
 		if (!(dir instanceof FsDirectoryEntry)) {
-			throw vscode.FileSystemError.FileNotADirectory();
+			throw docode.FileSystemError.FileNotADirectory();
 		}
 		return dir;
 	}
 
 	// --- manage file events
 
-	private readonly _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
+	private readonly _emitter = new docode.EventEmitter<docode.FileChangeEvent[]>();
 
-	readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._emitter.event;
+	readonly onDidChangeFile: docode.Event<docode.FileChangeEvent[]> = this._emitter.event;
 	private readonly watchers = new Map<string, Set<Symbol>>;
 
-	watch(resource: vscode.Uri): vscode.Disposable {
+	watch(resource: docode.Uri): docode.Disposable {
 		if (!this.watchers.has(resource.path)) {
 			this.watchers.set(resource.path, new Set());
 		}
 		const sy = Symbol(resource.path);
-		return new vscode.Disposable(() => {
+		return new docode.Disposable(() => {
 			const watcher = this.watchers.get(resource.path);
 			if (watcher) {
 				watcher.delete(sy);
@@ -174,7 +174,7 @@ export class MemFs implements vscode.FileSystemProvider {
 }
 
 class FsFileEntry {
-	readonly type = vscode.FileType.File;
+	readonly type = docode.FileType.File;
 
 	get size(): number {
 		return this.data.length;
@@ -188,7 +188,7 @@ class FsFileEntry {
 }
 
 class FsDirectoryEntry {
-	readonly type = vscode.FileType.Directory;
+	readonly type = docode.FileType.Directory;
 
 	get size(): number {
 		return [...this.contents.values()].reduce((acc: number, entry: FsEntry) => acc + entry.size, 0);

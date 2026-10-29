@@ -1,6 +1,6 @@
 ---
 description: VS Code test writing guidelines — unit tests, integration tests, snapshot tests, and clean teardown patterns. Reference when writing or updating tests.
-applyTo: "{src/vs/**/test/**,src/vs/**/*.test.ts,src/vs/**/*.integrationTest.ts}"
+applyTo: "{src/do/**/test/**,src/do/**/*.test.ts,src/do/**/*.integrationTest.ts}"
 ---
 
 # Writing Tests
@@ -11,8 +11,8 @@ Canonical reference: https://github.com/microsoft/vscode/wiki/Writing-Tests
 
 | Type | File suffix | Location | Runs in |
 |------|-------------|----------|---------|
-| Unit tests | `.test.ts` | `src/vs/**/test/` | Browser, Electron, or Node.js (depends on layer) |
-| Integration tests | `.integrationTest.ts` | `src/vs/**/test/` | Real external APIs |
+| Unit tests | `.test.ts` | `src/do/**/test/` | Browser, Electron, or Node.js (depends on layer) |
+| Integration tests | `.integrationTest.ts` | `src/do/**/test/` | Real external APIs |
 | Extension tests | Standard extension test system | `extensions/*/` | Extension host |
 
 ## Running Tests

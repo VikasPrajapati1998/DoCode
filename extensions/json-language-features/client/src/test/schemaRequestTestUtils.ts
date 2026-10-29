@@ -11,7 +11,7 @@ import { tmpdir } from 'os';
 import * as path from 'path';
 import { parse } from 'url';
 import { compileFunction, createContext } from 'vm';
-import type { ExtensionContext, Uri } from 'vscode';
+import type { ExtensionContext, Uri } from 'docode';
 
 type UrlMatcher = typeof import('../utils/urlMatch');
 type ClientMain = typeof import('../node/jsonClientMain');
@@ -53,7 +53,7 @@ class ResponseError extends Error {
 
 async function getUri(): Promise<typeof Uri> {
 	const outDir = process.argv.includes('--build') ? 'out-build' : 'out';
-	const uriModule = path.join(__dirname, '..', '..', '..', '..', '..', outDir, 'vs', 'base', 'common', 'uri.js');
+	const uriModule = path.join(__dirname, '..', '..', '..', '..', '..', outDir, 'do', 'base', 'common', 'uri.js');
 	return createRequire(__filename)(uriModule).URI;
 }
 
@@ -83,7 +83,7 @@ function createLoader(mocks: Record<string, object>, globals: Record<string, obj
 
 export async function createMatcher() {
 	const Uri = await getUri();
-	const load = createLoader({ vscode: { Uri } });
+	const load = createLoader({ docode: { Uri } });
 	const { matchesUrlPattern } = load<UrlMatcher>(path.join(__dirname, '..', 'utils', 'urlMatch.js'));
 	return (value: string, domains: Record<string, boolean>) => matchesUrlPattern(Uri.parse(value), domains);
 }
@@ -130,7 +130,7 @@ export async function createSchemaClient(transport: 'browser' | 'node', options:
 	const extensionSchemas = (options.extensionSchemas ?? []).map(url => ({ fileMatch: '*.json', url }));
 	const extension = { packageJSON: { contributes: { jsonValidation: extensionSchemas } } };
 	const mocks = {
-		vscode: {
+		docode: {
 			Uri,
 			Disposable,
 			RelativePattern: class { },
@@ -190,7 +190,7 @@ export async function createSchemaClient(transport: 'browser' | 'node', options:
 			createSchemaLoadStatusItem: statusItem,
 			createLanguageStatusItem: statusItem
 		},
-		'@vscode/extension-telemetry': class { dispose() { } },
+		'@docode/extension-telemetry': class { dispose() { } },
 		fs: {
 			promises: {
 				...fs,
@@ -233,8 +233,8 @@ export async function createSchemaClient(transport: 'browser' | 'node', options:
 	const main = load<ClientMain>(path.join(__dirname, '..', transport, 'jsonClientMain.js'));
 	const context: Partial<ExtensionContext> = {
 		subscriptions,
-		extensionUri: Uri.parse('vscode-test://extension/json'),
-		globalStorageUri: cacheDirectory ? Uri.file(cacheDirectory) : Uri.parse('vscode-test://storage/json'),
+		extensionUri: Uri.parse('docode-test://extension/json'),
+		globalStorageUri: cacheDirectory ? Uri.file(cacheDirectory) : Uri.parse('docode-test://storage/json'),
 		globalState: {
 			keys: () => [...state.keys()],
 			get: <T>(key: string, fallback?: T): T | undefined => state.has(key) ? state.get(key) as T : fallback,
@@ -247,7 +247,7 @@ export async function createSchemaClient(transport: 'browser' | 'node', options:
 		asAbsolutePath: (value: string) => path.resolve(__dirname, value)
 	};
 	await main.activate(context as ExtensionContext);
-	const request = handlers.get('vscode/content');
+	const request = handlers.get('docode/content');
 	assert.ok(request, 'The production client must register its schema request handler');
 	return {
 		request,

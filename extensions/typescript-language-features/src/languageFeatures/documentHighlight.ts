@@ -3,23 +3,23 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import type * as Proto from '../tsServer/protocol/protocol';
 import * as typeConverters from '../typeConverters';
 import { ITypeScriptServiceClient } from '../typescriptService';
 
-class TypeScriptDocumentHighlightProvider implements vscode.DocumentHighlightProvider, vscode.MultiDocumentHighlightProvider {
+class TypeScriptDocumentHighlightProvider implements docode.DocumentHighlightProvider, docode.MultiDocumentHighlightProvider {
 	public constructor(
 		private readonly client: ITypeScriptServiceClient
 	) { }
 
 	public async provideMultiDocumentHighlights(
-		document: vscode.TextDocument,
-		position: vscode.Position,
-		otherDocuments: vscode.TextDocument[],
-		token: vscode.CancellationToken
-	): Promise<vscode.MultiDocumentHighlight[]> {
+		document: docode.TextDocument,
+		position: docode.Position,
+		otherDocuments: docode.TextDocument[],
+		token: docode.CancellationToken
+	): Promise<docode.MultiDocumentHighlight[]> {
 		const allFiles = [document, ...otherDocuments].map(doc => this.client.toOpenTsFilePath(doc)).filter(file => !!file) as string[];
 		const file = this.client.toOpenTsFilePath(document);
 
@@ -37,8 +37,8 @@ class TypeScriptDocumentHighlightProvider implements vscode.DocumentHighlightPro
 		}
 
 		const result = response.body.map(highlightItem =>
-			new vscode.MultiDocumentHighlight(
-				vscode.Uri.file(highlightItem.file),
+			new docode.MultiDocumentHighlight(
+				docode.Uri.file(highlightItem.file),
 				[...convertDocumentHighlight(highlightItem)]
 			)
 		);
@@ -47,10 +47,10 @@ class TypeScriptDocumentHighlightProvider implements vscode.DocumentHighlightPro
 	}
 
 	public async provideDocumentHighlights(
-		document: vscode.TextDocument,
-		position: vscode.Position,
-		token: vscode.CancellationToken
-	): Promise<vscode.DocumentHighlight[]> {
+		document: docode.TextDocument,
+		position: docode.Position,
+		token: docode.CancellationToken
+	): Promise<docode.DocumentHighlight[]> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return [];
@@ -69,11 +69,11 @@ class TypeScriptDocumentHighlightProvider implements vscode.DocumentHighlightPro
 	}
 }
 
-function convertDocumentHighlight(highlight: Proto.DocumentHighlightsItem): ReadonlyArray<vscode.DocumentHighlight> {
+function convertDocumentHighlight(highlight: Proto.DocumentHighlightsItem): ReadonlyArray<docode.DocumentHighlight> {
 	return highlight.highlightSpans.map(span =>
-		new vscode.DocumentHighlight(
+		new docode.DocumentHighlight(
 			typeConverters.Range.fromTextSpan(span),
-			span.kind === 'writtenReference' ? vscode.DocumentHighlightKind.Write : vscode.DocumentHighlightKind.Read));
+			span.kind === 'writtenReference' ? docode.DocumentHighlightKind.Write : docode.DocumentHighlightKind.Read));
 }
 
 export function register(
@@ -82,8 +82,8 @@ export function register(
 ) {
 	const provider = new TypeScriptDocumentHighlightProvider(client);
 
-	return vscode.Disposable.from(
-		vscode.languages.registerDocumentHighlightProvider(selector.syntax, provider),
-		vscode.languages.registerMultiDocumentHighlightProvider(selector.syntax, provider)
+	return docode.Disposable.from(
+		docode.languages.registerDocumentHighlightProvider(selector.syntax, provider),
+		docode.languages.registerMultiDocumentHighlightProvider(selector.syntax, provider)
 	);
 }

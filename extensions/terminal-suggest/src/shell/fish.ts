@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import type { ICompletionResource } from '../types';
 import { getAliasesHelper } from './common';
 import { type ExecOptionsWithStringEncoding } from 'node:child_process';
@@ -29,21 +29,21 @@ async function getBuiltins(options: ExecOptionsWithStringEncoding): Promise<(str
 				completions.push({
 					label: { label: cmd, description: result.description },
 					detail: result.args,
-					documentation: new vscode.MarkdownString(result.documentation),
-					kind: vscode.TerminalCompletionItemKind.Method
+					documentation: new docode.MarkdownString(result.documentation),
+					kind: docode.TerminalCompletionItemKind.Method
 				});
 			} else {
 				console.warn(`Fish command "${cmd}" not found in cache.`);
 				completions.push({
 					label: cmd,
-					kind: vscode.TerminalCompletionItemKind.Method
+					kind: docode.TerminalCompletionItemKind.Method
 				});
 			}
 		} catch (e) {
 			// Ignore errors
 			completions.push({
 				label: cmd,
-				kind: vscode.TerminalCompletionItemKind.Method
+				kind: docode.TerminalCompletionItemKind.Method
 			});
 		}
 	}

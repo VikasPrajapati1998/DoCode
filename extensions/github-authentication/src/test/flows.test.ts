@@ -6,7 +6,7 @@
 import * as assert from 'assert';
 import { ExtensionHost, GitHubOAuthSignInProvider, GitHubSignInProvider, GitHubTarget, IFlowQuery, getFlows, isSignInProvider } from '../flows';
 import { Config } from '../config';
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 
 const enum Flows {
 	UrlHandlerFlow = 'url handler',
@@ -199,18 +199,18 @@ suite('getFlows', () => {
 		let originalConfig: boolean | undefined;
 
 		suiteSetup(async () => {
-			const config = vscode.workspace.getConfiguration('github-authentication');
+			const config = docode.workspace.getConfiguration('github-authentication');
 			originalConfig = config.get<boolean>('preferDeviceCodeFlow');
 		});
 
 		suiteTeardown(async () => {
-			const config = vscode.workspace.getConfiguration('github-authentication');
-			await config.update('preferDeviceCodeFlow', originalConfig, vscode.ConfigurationTarget.Global);
+			const config = docode.workspace.getConfiguration('github-authentication');
+			await config.update('preferDeviceCodeFlow', originalConfig, docode.ConfigurationTarget.Global);
 		});
 
 		test('returns device code flow first when preferDeviceCodeFlow is true - VS Code Desktop', async () => {
-			const config = vscode.workspace.getConfiguration('github-authentication');
-			await config.update('preferDeviceCodeFlow', true, vscode.ConfigurationTarget.Global);
+			const config = docode.workspace.getConfiguration('github-authentication');
+			await config.update('preferDeviceCodeFlow', true, docode.ConfigurationTarget.Global);
 
 			const flows = getFlows({
 				extensionHost: ExtensionHost.Local,
@@ -227,8 +227,8 @@ suite('getFlows', () => {
 		});
 
 		test('returns device code flow first when preferDeviceCodeFlow is true - Remote', async () => {
-			const config = vscode.workspace.getConfiguration('github-authentication');
-			await config.update('preferDeviceCodeFlow', true, vscode.ConfigurationTarget.Global);
+			const config = docode.workspace.getConfiguration('github-authentication');
+			await config.update('preferDeviceCodeFlow', true, docode.ConfigurationTarget.Global);
 
 			const flows = getFlows({
 				extensionHost: ExtensionHost.Remote,
@@ -243,8 +243,8 @@ suite('getFlows', () => {
 		});
 
 		test('returns normal flows when preferDeviceCodeFlow is true but device code flow is not supported - WebWorker', async () => {
-			const config = vscode.workspace.getConfiguration('github-authentication');
-			await config.update('preferDeviceCodeFlow', true, vscode.ConfigurationTarget.Global);
+			const config = docode.workspace.getConfiguration('github-authentication');
+			await config.update('preferDeviceCodeFlow', true, docode.ConfigurationTarget.Global);
 
 			const flows = getFlows({
 				extensionHost: ExtensionHost.WebWorker,

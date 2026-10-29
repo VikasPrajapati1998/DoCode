@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { env, UIKind, Uri } from 'vscode';
+import { env, UIKind, Uri } from 'docode';
 
 const LOCALHOST_ADDRESSES = ['localhost', '127.0.0.1', '0:0:0:0:0:0:0:1', '::1'];
 function isLocalhost(uri: Uri): boolean {
@@ -28,7 +28,7 @@ export function isSupportedEnvironment(uri: Uri): boolean {
 
 	return (
 		// vscode.dev & insiders.vscode.dev
-		/(?:^|\.)vscode\.dev$/.test(uri.authority) ||
+		/(?:^|\.)docode\.dev$/.test(uri.authority) ||
 		// github.dev & codespaces
 		/(?:^|\.)github\.dev$/.test(uri.authority) ||
 		// github.dev/codespaces local setup (github.localhost)

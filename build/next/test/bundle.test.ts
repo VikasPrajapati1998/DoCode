@@ -56,7 +56,7 @@ suite('production bundle helpers', () => {
 
 				test('emits scoped helpers for service parameter decorators and field initialization', async () => {
 					const source = `
-						import { createDecorator, _util } from './src/vs/platform/instantiation/common/instantiation.js';
+						import { createDecorator, _util } from './src/do/platform/instantiation/common/instantiation.js';
 						const IService = createDecorator<{ value: number }>('fixtureService');
 						class Consumer {
 							doubled = this.service.value * 2;

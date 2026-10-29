@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { DocumentSelector } from '../configuration/documentSelector';
 import { CachedResponse } from '../tsServer/cachedResponse';
 import { parseKindModifier } from '../tsServer/protocol/modifiers';
@@ -12,35 +12,35 @@ import * as PConst from '../tsServer/protocol/protocol.const';
 import * as typeConverters from '../typeConverters';
 import { ITypeScriptServiceClient } from '../typescriptService';
 
-const getSymbolKind = (kind: string): vscode.SymbolKind => {
+const getSymbolKind = (kind: string): docode.SymbolKind => {
 	switch (kind) {
-		case PConst.Kind.module: return vscode.SymbolKind.Module;
-		case PConst.Kind.class: return vscode.SymbolKind.Class;
-		case PConst.Kind.enum: return vscode.SymbolKind.Enum;
-		case PConst.Kind.interface: return vscode.SymbolKind.Interface;
-		case PConst.Kind.method: return vscode.SymbolKind.Method;
-		case PConst.Kind.memberVariable: return vscode.SymbolKind.Property;
-		case PConst.Kind.memberGetAccessor: return vscode.SymbolKind.Property;
-		case PConst.Kind.memberSetAccessor: return vscode.SymbolKind.Property;
-		case PConst.Kind.variable: return vscode.SymbolKind.Variable;
-		case PConst.Kind.const: return vscode.SymbolKind.Variable;
-		case PConst.Kind.localVariable: return vscode.SymbolKind.Variable;
-		case PConst.Kind.function: return vscode.SymbolKind.Function;
-		case PConst.Kind.localFunction: return vscode.SymbolKind.Function;
-		case PConst.Kind.constructSignature: return vscode.SymbolKind.Constructor;
-		case PConst.Kind.constructorImplementation: return vscode.SymbolKind.Constructor;
+		case PConst.Kind.module: return docode.SymbolKind.Module;
+		case PConst.Kind.class: return docode.SymbolKind.Class;
+		case PConst.Kind.enum: return docode.SymbolKind.Enum;
+		case PConst.Kind.interface: return docode.SymbolKind.Interface;
+		case PConst.Kind.method: return docode.SymbolKind.Method;
+		case PConst.Kind.memberVariable: return docode.SymbolKind.Property;
+		case PConst.Kind.memberGetAccessor: return docode.SymbolKind.Property;
+		case PConst.Kind.memberSetAccessor: return docode.SymbolKind.Property;
+		case PConst.Kind.variable: return docode.SymbolKind.Variable;
+		case PConst.Kind.const: return docode.SymbolKind.Variable;
+		case PConst.Kind.localVariable: return docode.SymbolKind.Variable;
+		case PConst.Kind.function: return docode.SymbolKind.Function;
+		case PConst.Kind.localFunction: return docode.SymbolKind.Function;
+		case PConst.Kind.constructSignature: return docode.SymbolKind.Constructor;
+		case PConst.Kind.constructorImplementation: return docode.SymbolKind.Constructor;
 	}
-	return vscode.SymbolKind.Variable;
+	return docode.SymbolKind.Variable;
 };
 
-class TypeScriptDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
+class TypeScriptDocumentSymbolProvider implements docode.DocumentSymbolProvider {
 
 	public constructor(
 		private readonly client: ITypeScriptServiceClient,
 		private readonly cachedResponse: CachedResponse<Proto.NavTreeResponse>,
 	) { }
 
-	public async provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.DocumentSymbol[] | undefined> {
+	public async provideDocumentSymbols(document: docode.TextDocument, token: docode.CancellationToken): Promise<docode.DocumentSymbol[] | undefined> {
 		const file = this.client.toOpenTsFilePath(document);
 		if (!file) {
 			return undefined;
@@ -53,7 +53,7 @@ class TypeScriptDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 		}
 
 		// The root represents the file. Ignore this when showing in the UI
-		const result: vscode.DocumentSymbol[] = [];
+		const result: docode.DocumentSymbol[] = [];
 		for (const item of response.body.childItems) {
 			TypeScriptDocumentSymbolProvider.convertNavTree(document.uri, result, item);
 		}
@@ -61,8 +61,8 @@ class TypeScriptDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 	}
 
 	private static convertNavTree(
-		resource: vscode.Uri,
-		output: vscode.DocumentSymbol[],
+		resource: docode.Uri,
+		output: docode.DocumentSymbol[],
 		item: Proto.NavigationTree,
 	): boolean {
 		let shouldInclude = TypeScriptDocumentSymbolProvider.shouldInclueEntry(item);
@@ -91,7 +91,7 @@ class TypeScriptDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 		return shouldInclude;
 	}
 
-	private static convertSymbol(item: Proto.NavigationTree, range: vscode.Range): vscode.DocumentSymbol {
+	private static convertSymbol(item: Proto.NavigationTree, range: docode.Range): docode.DocumentSymbol {
 		const selectionRange = item.nameSpan ? typeConverters.Range.fromTextSpan(item.nameSpan) : range;
 		let label = item.text;
 
@@ -100,7 +100,7 @@ class TypeScriptDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 			case PConst.Kind.memberSetAccessor: label = `(set) ${label}`; break;
 		}
 
-		const symbolInfo = new vscode.DocumentSymbol(
+		const symbolInfo = new docode.DocumentSymbol(
 			label,
 			'',
 			getSymbolKind(item.kind),
@@ -110,7 +110,7 @@ class TypeScriptDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 
 		const kindModifiers = parseKindModifier(item.kindModifiers);
 		if (kindModifiers.has(PConst.KindModifiers.deprecated)) {
-			symbolInfo.tags = [vscode.SymbolTag.Deprecated];
+			symbolInfo.tags = [docode.SymbolTag.Deprecated];
 		}
 
 		return symbolInfo;
@@ -129,6 +129,6 @@ export function register(
 	client: ITypeScriptServiceClient,
 	cachedResponse: CachedResponse<Proto.NavTreeResponse>,
 ) {
-	return vscode.languages.registerDocumentSymbolProvider(selector.syntax,
+	return docode.languages.registerDocumentSymbolProvider(selector.syntax,
 		new TypeScriptDocumentSymbolProvider(client, cachedResponse), { label: 'TypeScript' });
 }

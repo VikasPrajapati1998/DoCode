@@ -3,11 +3,11 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
+import * as docode from 'docode';
 import { getDeepestFlatNode, findNextWord, findPrevWord, getHtmlFlatNode, offsetRangeToSelection } from './util';
 import { HtmlNode } from 'EmmetFlatNode';
 
-export function nextItemHTML(document: vscode.TextDocument, selectionStart: vscode.Position, selectionEnd: vscode.Position, rootNode: HtmlNode): vscode.Selection | undefined {
+export function nextItemHTML(document: docode.TextDocument, selectionStart: docode.Position, selectionEnd: docode.Position, rootNode: HtmlNode): docode.Selection | undefined {
 	const selectionEndOffset = document.offsetAt(selectionEnd);
 	let currentNode = getHtmlFlatNode(document.getText(), rootNode, selectionEndOffset, false);
 	let nextNode: HtmlNode | undefined = undefined;
@@ -56,7 +56,7 @@ export function nextItemHTML(document: vscode.TextDocument, selectionStart: vsco
 	return nextNode && getSelectionFromNode(document, nextNode);
 }
 
-export function prevItemHTML(document: vscode.TextDocument, selectionStart: vscode.Position, selectionEnd: vscode.Position, rootNode: HtmlNode): vscode.Selection | undefined {
+export function prevItemHTML(document: docode.TextDocument, selectionStart: docode.Position, selectionEnd: docode.Position, rootNode: HtmlNode): docode.Selection | undefined {
 	const selectionStartOffset = document.offsetAt(selectionStart);
 	let currentNode = getHtmlFlatNode(document.getText(), rootNode, selectionStartOffset, false);
 	let prevNode: HtmlNode | undefined = undefined;
@@ -108,7 +108,7 @@ export function prevItemHTML(document: vscode.TextDocument, selectionStart: vsco
 	return attrSelection ? attrSelection : getSelectionFromNode(document, prevNode);
 }
 
-function getSelectionFromNode(document: vscode.TextDocument, node: HtmlNode): vscode.Selection | undefined {
+function getSelectionFromNode(document: docode.TextDocument, node: HtmlNode): docode.Selection | undefined {
 	if (node && node.open) {
 		const selectionStart = node.open.start + 1;
 		const selectionEnd = selectionStart + node.name.length;
@@ -117,7 +117,7 @@ function getSelectionFromNode(document: vscode.TextDocument, node: HtmlNode): vs
 	return undefined;
 }
 
-function getNextAttribute(document: vscode.TextDocument, selectionStart: number, selectionEnd: number, node: HtmlNode): vscode.Selection | undefined {
+function getNextAttribute(document: docode.TextDocument, selectionStart: number, selectionEnd: number, node: HtmlNode): docode.Selection | undefined {
 	if (!node.attributes || node.attributes.length === 0 || node.type === 'comment') {
 		return;
 	}
@@ -172,7 +172,7 @@ function getNextAttribute(document: vscode.TextDocument, selectionStart: number,
 	return;
 }
 
-function getPrevAttribute(document: vscode.TextDocument, selectionStart: number, selectionEnd: number, node: HtmlNode): vscode.Selection | undefined {
+function getPrevAttribute(document: docode.TextDocument, selectionStart: number, selectionEnd: number, node: HtmlNode): docode.Selection | undefined {
 	if (!node.attributes || node.attributes.length === 0 || node.type === 'comment') {
 		return;
 	}

@@ -51,7 +51,7 @@ reap_orphaned_codex_sandboxes() {
 		return 1
 	fi
 	for pid in "${orphans[@]}"; do
-		echo "::warning title=Orphaned Codex sandbox helper::Killed orphaned Codex sandbox helper $pid holding the Agent Host test tmpfs; see src/vs/platform/agentHost/test/node/e2e/KNOWN_ISSUES.md"
+		echo "::warning title=Orphaned Codex sandbox helper::Killed orphaned Codex sandbox helper $pid holding the Agent Host test tmpfs; see src/do/platform/agentHost/test/node/e2e/KNOWN_ISSUES.md"
 		describe_holders "$pid"
 		sudo -n kill -KILL -- "$pid" || true
 	done

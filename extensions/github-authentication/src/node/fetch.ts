@@ -5,7 +5,7 @@
 
 import * as http from 'http';
 import * as https from 'https';
-import { workspace } from 'vscode';
+import { workspace } from 'docode';
 import { Log } from '../common/logger';
 import { Readable } from 'stream';
 

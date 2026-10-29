@@ -21,8 +21,8 @@ it('renders Mermaid with host presentation controls, live source updates, visibl
 			resolveDir: extensionDir,
 			loader: 'ts',
 			contents: `
-				import { EditorModel, EditorView, StringValue } from '@vscode/markdown-editor';
-				import { VirtualizedIframeEmbeddedEditorFactory } from '@vscode/markdown-editor/web-editors';
+				import { EditorModel, EditorView, StringValue } from '@docode/markdown-editor';
+				import { VirtualizedIframeEmbeddedEditorFactory } from '@docode/markdown-editor/web-editors';
 				import { mermaidProvider } from './markdown-editor-src/mermaid/mermaidProvider';
 				const model = new EditorModel();
 				model.sourceText.set(new StringValue(${JSON.stringify(source)}), undefined);
@@ -54,7 +54,7 @@ it('renders Mermaid with host presentation controls, live source updates, visibl
 			},
 		}],
 	});
-	const css = await readFile(fileURLToPath(import.meta.resolve('@vscode/markdown-editor/editor.css')), 'utf8');
+	const css = await readFile(fileURLToPath(import.meta.resolve('@docode/markdown-editor/editor.css')), 'utf8');
 	const browser = await chromium.launch({ channel: process.platform === 'win32' ? 'msedge' : undefined, headless: true });
 	try {
 		const page = await browser.newPage({ viewport: { width: 1000, height: 700 } });

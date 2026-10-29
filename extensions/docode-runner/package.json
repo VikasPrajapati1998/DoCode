@@ -1,0 +1,96 @@
+{
+  "name": "docode-runner",
+  "displayName": "%displayName%",
+  "description": "%description%",
+  "version": "1.0.0",
+  "private": true,
+  "publisher": "docode",
+  "license": "MIT",
+  "engines": {
+    "docode": "*"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "docode-runner.run",
+        "title": "%command.run%",
+        "category": "DoCode",
+        "icon": "$(play)"
+      },
+      {
+        "command": "docode-runner.stop",
+        "title": "%command.stop%",
+        "category": "DoCode",
+        "icon": "$(debug-stop)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "docode-runner.run",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "docode-runner.stop",
+        "key": "ctrl+alt+m",
+        "mac": "cmd+alt+m"
+      }
+    ],
+    "menus": {
+      "editor/title/run": [
+        {
+          "command": "docode-runner.run",
+          "group": "navigation@0",
+          "when": "resourceScheme == file"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "docode-runner.run",
+          "group": "navigation@99",
+          "when": "editorTextFocus && resourceScheme == file"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "docode-runner.run",
+          "when": "editorIsOpen"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "%config.title%",
+      "properties": {
+        "docodeRunner.executorMap": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": { "type": "string" },
+          "markdownDescription": "%config.executorMap%"
+        },
+        "docodeRunner.saveBeforeRun": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.saveBeforeRun%"
+        },
+        "docodeRunner.clearTerminal": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.clearTerminal%"
+        },
+        "docodeRunner.runInFileDirectory": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.runInFileDirectory%"
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/docode/docode"
+  }
+}

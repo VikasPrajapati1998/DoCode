@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import type MarkdownIt from 'markdown-it';
 import mermaid from 'mermaid';
-import type { RendererContext } from 'vscode-notebook-renderer';
+import type { RendererContext } from 'docode-notebook-renderer';
 import { extendMarkdownItWithMermaid } from '../../src/markdownMermaid/markdownIt';
 import { buildMermaidConfig, loadExtensionConfig, registerMermaidAddons, renderMermaidBlocksInElement } from '../shared';
 import { DiagramManager } from '../shared/diagramManager';
@@ -15,9 +15,9 @@ interface MarkdownItRenderer {
 }
 
 export async function activate(ctx: RendererContext<void>) {
-	const markdownItRenderer = await ctx.getRenderer('vscode.markdown-it-renderer') as MarkdownItRenderer | undefined;
+	const markdownItRenderer = await ctx.getRenderer('docode.markdown-it-renderer') as MarkdownItRenderer | undefined;
 	if (!markdownItRenderer) {
-		throw new Error(`Could not load 'vscode.markdown-it-renderer'`);
+		throw new Error(`Could not load 'docode.markdown-it-renderer'`);
 	}
 
 	const themeTracker = new VsCodeMermaidThemeTracker();
@@ -45,7 +45,7 @@ export async function activate(ctx: RendererContext<void>) {
 			renderMermaidBlocksInElement(temp, (mermaidContainer, content, _contentHash, isError) => {
 				const liveEl = shadowRoot?.getElementById(mermaidContainer.id);
 				if (liveEl) {
-					liveEl.dataset.vscodeContext = mermaidContainer.dataset.vscodeContext ?? '';
+					liveEl.dataset.docodeContext = mermaidContainer.dataset.docodeContext ?? '';
 					liveEl.innerHTML = content;
 					if (!isError) {
 						diagramManager.setup(liveEl.id, liveEl);

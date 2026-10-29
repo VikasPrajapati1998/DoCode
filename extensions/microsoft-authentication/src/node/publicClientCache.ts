@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AccountInfo } from '@azure/msal-node';
-import { SecretStorage, LogOutputChannel, Disposable, EventEmitter, Memento, Event } from 'vscode';
+import { SecretStorage, LogOutputChannel, Disposable, EventEmitter, Memento, Event } from 'docode';
 import { ICachedPublicClientApplication, ICachedPublicClientApplicationManager } from '../common/publicClientCache';
 import { CachedPublicClientApplication } from './cachedPublicClientApplication';
 import { IAccountAccess, ScopedAccountAccess } from '../common/accountAccess';

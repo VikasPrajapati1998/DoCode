@@ -46,18 +46,18 @@ function getErrorMessage(error: unknown): string {
 }
 
 /**
- * Merges `mermaidError: true` into the element's `data-vscode-context` so that mermaid-specific
+ * Merges `mermaidError: true` into the element's `data-docode-context` so that mermaid-specific
  * context menu commands that don't make sense on an unrendered diagram (like reset pan/zoom)
  * can be hidden.
  */
 export function markVsCodeContextAsError(el: HTMLElement): void {
 	let context: Record<string, unknown>;
 	try {
-		context = JSON.parse(el.dataset.vscodeContext || '{}');
+		context = JSON.parse(el.dataset.docodeContext || '{}');
 	} catch {
 		context = {};
 	}
-	el.dataset.vscodeContext = JSON.stringify({ ...context, mermaidError: true });
+	el.dataset.docodeContext = JSON.stringify({ ...context, mermaidError: true });
 }
 
 function renderMermaidElement(
@@ -80,7 +80,7 @@ function renderMermaidElement(
 	const diagramId = `d${containerId}`;
 
 	mermaidContainer.id = containerId;
-	mermaidContainer.dataset.vscodeContext = JSON.stringify({
+	mermaidContainer.dataset.docodeContext = JSON.stringify({
 		webviewSection: 'mermaid',
 		mermaidSource: source,
 		preventDefaultContextMenuItems: true,

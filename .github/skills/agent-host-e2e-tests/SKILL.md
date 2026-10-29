@@ -1,13 +1,13 @@
 ---
 name: agent-host-e2e-tests
-description: Use when writing, recording, updating, validating, or troubleshooting Agent Host end-to-end and real-provider integration tests under src/vs/platform/agentHost/test/node/e2e and providerIntegration. Covers adding a cross-provider test, re-recording fixtures after an SDK bump, required cross-platform Azure validation, gating non-deterministic or platform-specific tests, and diagnosing replay cache misses.
+description: Use when writing, recording, updating, validating, or troubleshooting Agent Host end-to-end and real-provider integration tests under src/do/platform/agentHost/test/node/e2e and providerIntegration. Covers adding a cross-provider test, re-recording fixtures after an SDK bump, required cross-platform Azure validation, gating non-deterministic or platform-specific tests, and diagnosing replay cache misses.
 ---
 
 # Agent host end-to-end tests
 
 These tests run the whole agent host end-to-end (real server, real bundled provider SDK/CLI, real AHP protocol) while replaying recorded model traffic from committed YAML fixtures — deterministic and tokenless.
 
-**Before doing anything, read the architecture + troubleshooting reference:** `src/vs/platform/agentHost/test/node/e2e/README.md`
+**Before doing anything, read the architecture + troubleshooting reference:** `src/do/platform/agentHost/test/node/e2e/README.md`
 
 It documents the mental model, the fixture format, every config flag, and a symptom→cause→fix troubleshooting table. This skill is only the *workflows*; the README is the source of truth for *how it works*.
 
@@ -54,7 +54,7 @@ Re-record when you add a test, or when a bundled SDK/CLI bump changes its wire b
 2. Record per provider:
    ```bash
    AGENT_HOST_REPLAY_RECORD=1 ./scripts/test-integration.sh --run \
-     src/vs/platform/agentHost/test/node/e2e/providers/claudeAgentHostE2E.integrationTest.ts
+     src/do/platform/agentHost/test/node/e2e/providers/claudeAgentHostE2E.integrationTest.ts
    ```
    Repeat for `copilotAgentHostE2E` / `codexAgentHostE2E` as needed.
 3. **Review `git diff` on the fixtures**: no local usernames/absolute paths, no tokens, no unreleased model ids. If something leaked, the fix is to extend normalization/redaction in `capiReplayProxy.ts` (`_normalize` + the `*_RE` redactors) and re-record — not to edit the fixture.
@@ -77,7 +77,7 @@ Always add a comment explaining *why* the gate exists. Also add or update the co
 
 New Agent Host E2E and real-provider integration tests are not ready to merge after local or GitHub pull-request CI alone. Push the branch, open or update a draft PR, then use the `azure-pipelines` skill to validate the real packaged Electron integration-test path.
 
-1. Queue VS Code pipeline definition `111` with `VSCODE_BUILD_TYPE=CI`; enable Windows, Linux, and macOS x64 while disabling publishing, release, Web, ARM, Alpine, and Snap artifacts. The `azure-pipelines` skill contains the canonical command.
+1. Queue VS Code pipeline definition `111` with `DOCODE_BUILD_TYPE=CI`; enable Windows, Linux, and macOS x64 while disabling publishing, release, Web, ARM, Alpine, and Snap artifacts. The `azure-pipelines` skill contains the canonical command.
 2. Monitor jobs as they finish. Inspect a failed platform's `Agent Host E2E Tests (Electron)` job and its `🧪 Run Agent Host E2E tests (Electron)` task (test ID `integration-agent-host-e2e`) immediately rather than waiting for unrelated stages to complete.
 3. Treat the Agent Host E2E result as accepted only when the `🧪 Run Agent Host E2E tests (Electron)` task succeeds on Windows, Linux, and macOS.
 4. Rerun an apparently unrelated or pre-existing failure in isolation before attributing it to the PR.
